@@ -27,3 +27,15 @@
 *.i*86
 *.x86_64
 *.hex
+
+# 开放模式 @华兄
+SI/
+Debug/
+Exe/
+List/
+Obj/
+Listing/
+Output/
+Doc/
+
+# 保守模式 @华兄
