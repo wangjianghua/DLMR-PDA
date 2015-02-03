@@ -191,6 +191,10 @@ WM_HWIN g_hWin_about; //关于
 WM_HWIN g_hWin_TimeSet; //时间设置
 
 WM_HWIN g_hWin_mem;
+WM_HWIN g_hWin_Err;
+
+WM_HWIN g_hWin_TimeBar;  //主页时间
+WM_HWIN g_hWin_Date;     //显示日期
 
 u8 rf_send_buf[20] = {0x23, 0x24, 0x78, 0x1a, 0x39, 0x23, 0x24, 0x78, 0x1a, 0x39, 0x12};
 u8 rf_int_status[8];
@@ -203,6 +207,15 @@ int G_II;
 uc8 g_testString[] = "Hello \xe7\xa1\xae! \n";
 
 uc16 g_16string [] = {0x53D6, 0x56DE, 0x62,'\r\n',0};
+
+void APP_Shutdown()
+{
+    SYS_PWR_OFF();
+    LCD_BL_OFF();
+    LCD_PWR_OFF();
+    LED_UART_OFF();
+    LED_PLC_OFF();
+}
 
 void APP_StartButtonTest()
 {
@@ -222,11 +235,7 @@ void APP_StartButtonTest()
         }
         else
         {
-            SYS_PWR_OFF();
-            LCD_BL_OFF();
-            LCD_PWR_OFF();
-            LED_UART_OFF();
-            LED_PLC_OFF();
+            APP_Shutdown();
             keyCnt = 0;
             return;
             //return;
@@ -289,6 +298,12 @@ static  void  App_TaskStart (void *p_arg)
         {
             i = 0;
             RTC_ReadTime(g_rtc_time); 
+            g_sys_control.sleepTimeout++;
+            if(g_sys_control.sleepTimeout > 60)
+            {
+                APP_Shutdown();
+            }
+                
         }
 
         for(n = 0; n < 32; n++)
@@ -331,6 +346,13 @@ static  void  App_TaskGUI (void *p_arg)
     (void)p_arg;
     WM_HWIN hItem;
     unsigned char timebuf[10];
+    unsigned char timebuf_nosec[6];
+    unsigned char timebuf_date[11];
+    
+#if OS_CRITICAL_METHOD == 3u
+        OS_CPU_SR  cpu_sr = 0u;
+#endif  
+
     g_hWin_menu = CreatePDA_IconMenu();
     WM_ShowWindow(g_hWin_menu);
    
@@ -340,9 +362,16 @@ static  void  App_TaskGUI (void *p_arg)
 
     while (DEF_TRUE) {                                          /* Task body, always written as an infinite loop.           */
         GUI_Exec();
-        //TEXT_SetText(TSK_Get_Time_Text(),);
+        
+        OS_ENTER_CRITICAL();
         memcpy(timebuf,RTC2Text(),10);
-        TEXT_SetText(TSK_Get_Time_Text(),timebuf);
+        TEXT_SetText(g_hWin_TimeBar,timebuf);
+        //memcpy(timebuf_nosec,RTC2Text_NoSec(),6);
+        //TEXT_SetText(g_hWin_TimeBar,timebuf_nosec);
+        memcpy(timebuf_date,RTC2Text_Date(),11);
+        TEXT_SetText(g_hWin_Date,timebuf_date);
+        OS_EXIT_CRITICAL();
+        
         OSTimeDlyHMSM(0, 0, 0, 100);     
     }
 }

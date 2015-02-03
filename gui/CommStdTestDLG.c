@@ -119,7 +119,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { WINDOW_CreateIndirect,   "CommStdTest", ID_WINDOW_0,   0,   0,   240, 295, 0, 0x0,  0 }, 
   { BUTTON_CreateIndirect,   RoutTab,       ID_BUTTON_3,   9,   9,   90,  28,  0, 0x0,  0 },//路由表
   { BUTTON_CreateIndirect,   DataSignBtn,   ID_BUTTON_2,   147, 9,   90,  28,  0, 0x0,  0 },//数据标识
-  { EDIT_CreateIndirect,     "Edit",        ID_EDIT_0,     96,  51,  135, 20,  0, 0x64, 0 },//AAAA
+  { EDIT_CreateIndirect,     "Edit",        ID_EDIT_0,     96,  51,  135, 20,  0, GUI_645_ADDR_LENGTH, 0 },//AAAA
   { DROPDOWN_CreateIndirect, "Dropdown",    ID_DROPDOWN_0, 96,  85, 135,  19,  0, 0x0,  0 },
   { EDIT_CreateIndirect,     "Edit",        ID_EDIT_2,     96,  119, 135, 20,  0, 0x64, 0 },//123
   { EDIT_CreateIndirect,     "Edit",        ID_EDIT_1,     96,  156, 135, 20,  0, 0x64, 0 },//456
@@ -222,6 +222,7 @@ static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
 {
     u8  i, tb[GUI_645_ADDR_LENGTH+2], len;
     WM_HWIN hItem;
+    WM_HWIN hWin;
  
     int dropdown_num;
     
@@ -230,17 +231,16 @@ static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
 
     if(strlen(tb) != GUI_645_ADDR_LENGTH)
     {
-        //error proc
-        //GUI_MessageBox()
-        //MESSAGEBOX_Create("dst addr error!", "error", 0);
-        //EDIT_SetText(hItem, "11111");
-        ERROR_BOX(GUI_MSBOX_ADDR_ERROR);
+        ERR_NOTE(g_hWin_std,GUI_MSBOX_ADDR_ERROR);
+        //g_hWin_Err=CreateErrNote(g_hWin_std);
+        //hItem=ERR_Get_Text();
+        //TEXT_SetText(hItem,"NONONO");
         return DEV_ERROR;
     }
     
     if(DEV_OK != GUI_GetMeterAddr(tb))
     {
-        ERROR_BOX(GUI_MSBOX_ADDR_ERROR);
+        ERR_NOTE(g_hWin_std,GUI_MSBOX_ADDR_ERROR);
         return DEV_ERROR;
     }    
     //
@@ -262,7 +262,9 @@ static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
     }
     else
     {        
-        ERROR_BOX(GUI_MSBOX_PROC_ERROR);       
+        ERR_NOTE(g_hWin_std,GUI_MSBOX_PROC_ERROR); 
+        
+        //g_hWin_Err=CreateErrNote(g_hWin_std);
         return DEV_ERROR;
     }
         //g_sys_register_para.plcProtocol = DL_T_07;
@@ -279,13 +281,20 @@ static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
     
     if(strlen(tb) != (len<<1))
     {       
-        ERROR_BOX(GUI_MSBOX_DIDO_ERROR);
+        ERR_NOTE(g_hWin_std,GUI_MSBOX_DIDO_ERROR);
+        
+        //g_hWin_Err=CreateErrNote(g_hWin_std);
         return DEV_ERROR;
     }
 
     if(DEV_OK != GUI_GetStrDataFlag(tb, g_sys_register_para.plcProtocol ))
     {
-        ERROR_BOX(GUI_MSBOX_DIDO_ERROR);
+        ERR_NOTE(g_hWin_std,GUI_MSBOX_DIDO_ERROR);
+        
+        //g_hWin_Err=CreateErrNote(g_hWin_std);
+        
+        
+        
         return DEV_ERROR;
     }
     
@@ -483,10 +492,10 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                     Focus_Widget(pMsg,ID_DROPDOWN_0);  
                     break;
                 case '3':
-                    Focus_Widget(pMsg,ID_EDIT_1);  
+                    Focus_Widget(pMsg,ID_EDIT_2);  
                     break;    
                 case '4':
-                    Focus_Widget(pMsg,ID_EDIT_2);  
+                    Focus_Widget(pMsg,ID_EDIT_1);  
                     break;
                 case '5':
                     Focus_Widget(pMsg,ID_EDIT_3);  
@@ -496,6 +505,8 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                     g_hWin_std = HBWIN_NULL;
                     WM_BringToBottom(g_hWin_msg);
                     WM_HideWindow(g_hWin_msg);
+                    WM_ShowWindow(g_hWin_TimeBar);
+                    WM_ShowWindow(g_hWin_Date);
                     WM_SetFocus(g_hWin_menu); 
                     break;
 

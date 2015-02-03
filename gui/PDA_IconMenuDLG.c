@@ -41,6 +41,10 @@
 #define ID_TEXT_5     (GUI_ID_USER + 0x06)
 #define ID_TEXT_6     (GUI_ID_USER + 0x07)
 #define ID_TEXT_7     (GUI_ID_USER + 0x08) 
+#define ID_TEXT_8     (GUI_ID_USER + 0x09) 
+#define ID_LISTVIEW_0 (GUI_ID_USER + 0x0A) 
+#define ID_TEXT_9     (GUI_ID_USER + 0x0B) 
+//#define ID_TEXT_10    (GUI_ID_USER + 0x0C) 
 
 
 extern GUI_CONST_STORAGE GUI_BITMAP _bmSystem;
@@ -97,26 +101,32 @@ static const char UploadIcon[]="\xe5\xa3\xb9";
 static const char DownloadIcon[]="\xe8\xb4\xb0";
 
 //电池
-//\xe5\x8d\x81    10 
-//\xe7\x8e\x96    9
-//\xe6\x8d\x8c    8
-//\xe6\x9f\x92    7
-//\xe9\x99\x86    6
-//\xe4\xbc\x8d    5
 static const char Battery_100[]="\xe5\x8d\x81";
 static const char Battery_80[] ="\xe7\x8e\x96";
 static const char Battery_60[] ="\xe6\x8d\x8c";
 static const char Battery_40[] ="\xe6\x9f\x92";
 static const char Battery_20[] ="\xe9\x99\x86";
 
+//监控
+static const char MonitorIcon[]="\xe8\x82\x86";
+//关闭监控
+static const char CloseMonitor[]="\xe5\x8f\x81";
+
+//当前规约:DL-T-07
+static const char Protocol_07[]="\xe8\xa7\x84\xe7\xba\xa6:DL-T-07";
+
+static const char Protocol_97[]="\xe8\xa7\x84\xe7\xba\xa6:DL-T-97";
+
+
 
 //任务栏资源列表
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
-  { WINDOW_CreateIndirect,  NULL,           ID_WINDOW_0,  0,   0, 240,25, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    "00",           ID_TEXT_0,    3,   5, 70, 15, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    UploadIcon,     ID_TEXT_5,    143, 5, 17, 17, 0, 0x0, 0 }, 
-  { TEXT_CreateIndirect,    DownloadIcon,   ID_TEXT_6,    160, 5, 17, 17, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    " ",            ID_TEXT_7,    190, 4, 42, 17, 0, 0x0, 0 }
+  { WINDOW_CreateIndirect,  NULL,           ID_WINDOW_0,  0,   0, 240, 25, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    "protocol",     ID_TEXT_0,    3,   3, 100,  15, 0, 0x0, 0 },
+  //{ TEXT_CreateIndirect,    MonitorIcon ,   ID_TEXT_1,    78,  5, 40,  15, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    UploadIcon,     ID_TEXT_5,    143, 5, 17,  17, 0, 0x0, 0 }, 
+  { TEXT_CreateIndirect,    DownloadIcon,   ID_TEXT_6,    160, 5, 17,  17, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    " ",            ID_TEXT_7,    190, 4, 42,  17, 0, 0x0, 0 },
     
 };
 
@@ -144,11 +154,42 @@ WM_HWIN TSK_Get_Download_Text()
     return WM_GetDialogItem(g_hWin_task,ID_TEXT_6);
 }
 
-WM_HWIN TSK_Get_Time_Text()
+WM_HWIN TSK_Get_Protocol_Text()
 {
     return WM_GetDialogItem(g_hWin_task,ID_TEXT_0);
 }
 
+void TSK_Set_Monitor(void)
+{
+    WM_HWIN hItem;
+    hItem=WM_GetDialogItem(g_hWin_task,ID_TEXT_1);
+    TEXT_SetFont(hItem,&GUI_Font_Battery_40);
+    TEXT_SetText(hItem,MonitorIcon);
+}
+
+void TSK_Set_Protocol_Text(void)
+{
+    WM_HWIN hItem;
+    hItem=WM_GetDialogItem(g_hWin_task,ID_TEXT_0);
+    if(g_sys_register_para.plcProtocol==DL_T_07)
+    {
+        TEXT_SetText(hItem,Protocol_07);
+    }
+    else if(g_sys_register_para.plcProtocol==DL_T_97)
+    {
+        TEXT_SetText(hItem,Protocol_97);
+    }
+}
+
+#if 0
+void TSK_Close_Monitor(void)
+{
+    WM_HWIN hItem;
+    hItem=WM_GetDialogItem(g_hWin_task,ID_TEXT_1);
+    TEXT_SetFont(hItem,&GUI_Font_Battery_40);
+    TEXT_SetText(hItem,CloseMonitor);
+}
+#endif
 
 
 /************************************************
@@ -222,8 +263,6 @@ void Data_Download_Yellow(u32 color)
             i = 0xffffffff;
         }               
     }
-    //GUI_Delay(15);
-    //TEXT_SetTextColor(hItem,GUI_WHITE);
 }
 
 
@@ -272,6 +311,7 @@ static void _cbTaskDialog(WM_MESSAGE * pMsg)
   switch (pMsg->MsgId) 
   {
       case WM_INIT_DIALOG:
+        GUI_UC_SetEncodeUTF8();
         WINDOW_SetBkColor(pMsg->hWin, GUI_GRAY);
         
         hItem=WM_GetDialogItem(pMsg->hWin,ID_TEXT_5);
@@ -279,8 +319,27 @@ static void _cbTaskDialog(WM_MESSAGE * pMsg)
         
         hItem=WM_GetDialogItem(pMsg->hWin,ID_TEXT_6);
         TEXT_SetTextColor(hItem,GUI_WHITE);
+#if 0
+        hItem=WM_GetDialogItem(pMsg->hWin,ID_TEXT_1);
+        TEXT_SetFont(hItem,&GUI_Font_Battery_40);
+        TEXT_SetText(hItem,MonitorIcon);
+        TEXT_SetTextColor(hItem,GUI_RED);
+#endif
 
-        
+
+#if 1
+        //TSK_Set_Protocol_Text();
+        hItem=WM_GetDialogItem(pMsg->hWin,ID_TEXT_0);
+
+        if(g_sys_register_para.plcProtocol==DL_T_07)
+        {
+            TEXT_SetText(hItem,Protocol_07);
+        }
+        else if(g_sys_register_para.plcProtocol==DL_T_97)
+        {
+            TEXT_SetText(hItem,Protocol_97);
+        }
+#endif       
         hItem=WM_GetDialogItem(pMsg->hWin,ID_TEXT_7); 
         TEXT_SetFont(hItem,&GUI_Font_Battery_40);
         break;
@@ -328,32 +387,43 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
 						case 0:
 							g_hWin_para = CreateCommParaSet();
                             WM_BringToBottom(g_hWin_msg);
+                            WM_HideWindow(g_hWin_TimeBar);
+                            WM_HideWindow(g_hWin_Date);
                             //WM_SetFocus(g_hWin_para);
 							break;
 						case 1:
 							g_hWin_std = CreateCommStdTest();
                             WM_BringToBottom(g_hWin_msg);
+                            WM_HideWindow(g_hWin_TimeBar);
+                            WM_HideWindow(g_hWin_Date);
                             WM_SetFocus(g_hWin_std);
 							break;
 						case 2:
-							g_hWin_mem = CreateMemManage();
+							g_hWin_mem=CreateMemManage();
                             WM_BringToBottom(g_hWin_msg);
+                            WM_HideWindow(g_hWin_TimeBar);
+                            WM_HideWindow(g_hWin_Date);
                             WM_SetFocus(g_hWin_mem);
-                            //MMD_Set_FD_PROGBAR(100);
 							break;
                         case 3:
 							g_hWin_ReadMeter=CreateReadMeter();
                             WM_BringToBottom(g_hWin_msg);
+                            WM_HideWindow(g_hWin_TimeBar);
+                            WM_HideWindow(g_hWin_Date);
                             WM_SetFocus(g_hWin_ReadMeter);
 							break;
 						case 4:
 							g_hWin_monitor=CreateMonitor();
                             WM_BringToBottom(g_hWin_msg);
+                            WM_HideWindow(g_hWin_TimeBar);
+                            WM_HideWindow(g_hWin_Date);
                             WM_SetFocus(g_hWin_monitor);
 							break;
                         case 5:
                             g_hWin_about=Createabout();
                             WM_BringToBottom(g_hWin_msg);
+                            WM_HideWindow(g_hWin_TimeBar);
+                            WM_HideWindow(g_hWin_Date);
                             WM_SetFocus(g_hWin_about);
                             break;
 						
@@ -376,14 +446,28 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       CreatePDA_IconMenu
-*/
 
 
+WM_HWIN TimeBarDisp(void)
+{
+    WM_HWIN hText;
+    hText=TEXT_CreateEx(20,30,200,31,g_hWin_menu,WM_CF_SHOW,TEXT_CF_HCENTER,ID_TEXT_8,"00:00");
+    TEXT_SetFont(hText,&GUI_Fontcn27);
+    TEXT_SetTextColor(hText,GUI_DARKGRAY);
+    return hText;
+}
 
 
+WM_HWIN DateBarDisp(void)
+{
+    WM_HWIN hText;
+    hText=TEXT_CreateEx(20,63,200,21,g_hWin_menu,WM_CF_SHOW,TEXT_CF_HCENTER,ID_TEXT_9," ");
+    TEXT_SetFont(hText,&GUI_Fontdate20);
+    //TEXT_SetTextColor(hText,GUI_BLUE);
+    //TEXT_SetBkColor(hText,GUI_WHITE);
+    return hText;
+
+}
 
 WM_HWIN CreatePDA_IconMenu(void);
 
@@ -392,7 +476,7 @@ WM_HWIN CreatePDA_IconMenu(void);
 WM_HWIN CreatePDA_IconMenu(void)
 {
   WM_HWIN hWin;	
- // WM_HWIN hTaskWin;
+  WM_HWIN hText;
   WM_HTIMER hTimer;
   
   //int hour=15;
@@ -402,6 +486,7 @@ WM_HWIN CreatePDA_IconMenu(void)
   
   WM_SetCreateFlags(WM_CF_MEMDEV);
   GUI_UC_SetEncodeUTF8();
+  WIDGET_SetDefaultEffect(&WIDGET_Effect_Simple);
 
   
             
@@ -423,18 +508,23 @@ WM_HWIN CreatePDA_IconMenu(void)
   
   ICONVIEW_SetBkColor(hWin, ICONVIEW_CI_SEL, GUI_BLUE | 0xC0000000);
   ICONVIEW_SetFrame(hWin,GUI_COORD_X,15);
-  ICONVIEW_SetFrame(hWin,GUI_COORD_Y,40);
+  ICONVIEW_SetFrame(hWin,GUI_COORD_Y,70);
   
   ICONVIEW_SetSpace(hWin,GUI_COORD_X,10);
   ICONVIEW_SetSpace(hWin,GUI_COORD_Y,35);
-  
+
+ 
+  //GUI_SetPenSize(4);
+  //GUI_SetColor(GUI_GREEN);
+  //GUI_DrawHLine(27,5,145);
+
+
   g_hWin_task=GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), _cbTaskDialog, WM_HBKWIN, 0, 0);
-  hTimer = WM_CreateTimer(g_hWin_task, 0, 2000, 0);//创建定时器
-  
+  hTimer = WM_CreateTimer(g_hWin_task, 0, 2000, 0);
+  g_hWin_TimeBar=TimeBarDisp();
+  g_hWin_Date=DateBarDisp();
   WM_SetFocus(hWin);
   WM_SetCallback(WM_HBKWIN, _cbIconWin);
-  
-  
   return hWin;
 }
 

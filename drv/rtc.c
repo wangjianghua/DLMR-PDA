@@ -473,7 +473,7 @@ void RtcTimeToSysTime(SYS_TIME *p_sys_time)
     p_sys_time->sec = atoi(sec);
 }
 
-
+//包含秒
 unsigned char *RTC2Text(void)
 {
     unsigned char timebuf[10];
@@ -481,4 +481,25 @@ unsigned char *RTC2Text(void)
     sprintf(timebuf,"%02x:%02x:%02x",g_rtc_time[HOUR_POS],g_rtc_time[MIN_POS],g_rtc_time[SEC_POS]);
     return timebuf;
 }
+
+//不包含秒
+unsigned char *RTC2Text_NoSec(void)
+{
+    unsigned char timebuf[6];
+    sprintf(timebuf,"%02x:%02x",g_rtc_time[HOUR_POS],g_rtc_time[MIN_POS]);
+    return timebuf;
+
+}
+
+//日期显示 格式20xx-xx-xx年月日
+unsigned char *RTC2Text_Date(void)
+{
+    unsigned char timebuf[11];
+    sprintf(timebuf,"20%02x-%02x-%02x",g_rtc_time[YEAR_POS],g_rtc_time[MONTH_POS],g_rtc_time[DATE_POS]);
+    return timebuf;
+}
+
+
+
+
 

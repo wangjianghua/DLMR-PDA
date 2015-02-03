@@ -125,7 +125,8 @@ void  App_TaskKey (void *p_arg)
             if(GPIO_PIN_RESET != HAL_GPIO_ReadPin(KEYBOARD_COL_PORT, g_key_control.key_col))
                 break;
         }
-        
+
+        g_sys_control.sleepTimeout = 0;
         
         GUI_SendKeyMsg(key_msg , 0);//松开的时候发送
 

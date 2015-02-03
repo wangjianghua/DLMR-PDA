@@ -71,6 +71,7 @@ typedef struct __sys_control__
     u32   testProgBarVal;
     u32   procTask;    //当前系统需要处理的任务
     u32   pwrValue;//电池电量
+    u32   sleepTimeout;
     u8    recentMeterAddr[6];   //最近使用的表地址
     u8    defaultDataFlag[4];   //最近使用的表地址
     OS_EVENT *downMb; //邮箱发送的消息

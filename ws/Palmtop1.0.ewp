@@ -2137,6 +2137,9 @@
       <name>$PROJ_DIR$\..\gui\DataSignDLG.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\gui\ErrNoteDLG.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\gui\GUI_public_fun.c</name>
     </file>
     <file>

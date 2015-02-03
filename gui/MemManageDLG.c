@@ -30,18 +30,19 @@
 *
 **********************************************************************
 */
-#define ID_WINDOW_0 (GUI_ID_USER + 0x00)
-#define ID_TEXT_0 (GUI_ID_USER + 0x01)
-#define ID_TEXT_1 (GUI_ID_USER + 0x02)
-#define ID_TEXT_2 (GUI_ID_USER + 0x03)
-#define ID_TEXT_3 (GUI_ID_USER + 0x04)
-#define ID_EDIT_0 (GUI_ID_USER + 0x05)
-#define ID_EDIT_1 (GUI_ID_USER + 0x06)
+#define ID_WINDOW_0  (GUI_ID_USER + 0x00)
+#define ID_TEXT_0    (GUI_ID_USER + 0x01)
+#define ID_TEXT_1    (GUI_ID_USER + 0x02)
+#define ID_TEXT_2    (GUI_ID_USER + 0x03)
+#define ID_TEXT_3    (GUI_ID_USER + 0x04)
+#define ID_EDIT_0    (GUI_ID_USER + 0x05)
+#define ID_EDIT_1    (GUI_ID_USER + 0x06)
 #define ID_PROGBAR_0 (GUI_ID_USER + 0x07)
-#define ID_BUTTON_0 (GUI_ID_USER + 0x08)
-#define ID_BUTTON_1 (GUI_ID_USER + 0x09)
-#define ID_BUTTON_2 (GUI_ID_USER + 0x0A)
+#define ID_BUTTON_0  (GUI_ID_USER + 0x08)
+#define ID_BUTTON_1  (GUI_ID_USER + 0x09)
+#define ID_BUTTON_2  (GUI_ID_USER + 0x0A)
 #define ID_PROGBAR_1 (GUI_ID_USER + 0x0B)
+#define ID_TEXT_4    (GUI_ID_USER + 0x0C)
 
 
 
@@ -62,6 +63,7 @@ static const char FactorySet[]="\xe6\x81\xa2\xe5\xa4\x8d\xe5\x87\xba\xe5\x8e\x82
 static const char MemFormat[]="\xe6\xa0\xbc\xe5\xbc\x8f\xe5\x8c\x96";
 static const char MemReturn[]="\xe8\xbf\x94\xe5\x9b\x9e";
 static const char MemConfirm[]="F1\xe7\xa1\xae\xe5\xae\x9a";
+static const char VersionNum[]="\xe7\x89\x88\xe6\x9c\xac\xe5\x8f\xb7:20150127";
 // USER START (Optionally insert additional static data)
 // USER END
 
@@ -74,14 +76,15 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { TEXT_CreateIndirect,     MemSize,      ID_TEXT_0,    15,  22,  80,  20, 0, 0x0,  0 },
   { TEXT_CreateIndirect,     MemUsage,     ID_TEXT_1,    15,  111, 80,  20, 0, 0x0,  0 },
   { TEXT_CreateIndirect,     FileNum,      ID_TEXT_2,    15,  65,  80,  20, 0, 0x0,  0 },
-  { TEXT_CreateIndirect,     FactorySet,   ID_TEXT_3,    15,  155, 108,  20, 0, 0x0,  0 },
+  { TEXT_CreateIndirect,     FactorySet,   ID_TEXT_3,    15,  155, 108, 20, 0, 0x0,  0 },
+  { TEXT_CreateIndirect,     VersionNum,    ID_TEXT_4,    15,  185, 200, 20, 0, 0x0,  0 },
   { EDIT_CreateIndirect,     "Edit",       ID_EDIT_0,    120, 21,  110, 20, 0, 0x64, 0 },
   { EDIT_CreateIndirect,     "Edit",       ID_EDIT_1,    120, 67,  110, 20, 0, 0x64, 0 },
   { PROGBAR_CreateIndirect,  "Progbar",    ID_PROGBAR_0, 120, 113, 110, 20, 0, 0x0,  0 },
   { BUTTON_CreateIndirect,   MemConfirm,   ID_BUTTON_0,  120, 152, 110, 25, 0, 0x0,  0 },
   { BUTTON_CreateIndirect,   MemFormat,    ID_BUTTON_1,  11,  260, 80,  25, 0, 0x0,  0 },
   { BUTTON_CreateIndirect,   MemReturn,    ID_BUTTON_2,  149, 260, 80,  25, 0, 0x0,  0 },
-  { PROGBAR_CreateIndirect,  "Progbar",    ID_PROGBAR_1,  9,   228, 222, 20,  0, 0x0,  0 },
+  { PROGBAR_CreateIndirect,  "Progbar",    ID_PROGBAR_1, 9,   228, 222, 20,  0, 0x0,  0 },
   // USER START (Optionally insert additional widgets)
   // USER END
 };
@@ -193,21 +196,26 @@ static void _cbDialog(WM_MESSAGE * pMsg)
             switch(Id) {}
             break;
           case WM_KEY:
-            switch(((WM_KEY_INFO *)(pMsg->Data.p))->Key)
+            
+            if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
             {
-                case GUI_KEY_GREEN:
-                    SYS_ADD_TASK(SYS_TASK_FORMAT_DISK);                    
-                    break;
-                case GUI_KEY_YELLOW:
-                    WM_DeleteWindow(g_hWin_mem);
-                    g_hWin_mem=0;
-                    WM_SetFocus(g_hWin_menu);
-                    break;
-                case GUI_KEY_F1:
-                    break;
-
-            }
-                
+                switch(((WM_KEY_INFO *)(pMsg->Data.p))->Key)
+                {
+                    case GUI_KEY_GREEN:
+                        //SYS_ADD_TASK(SYS_TASK_FORMAT_DISK);
+                        ERR_NOTE(g_hWin_mem, 4);//»∑»œ∏Ò ΩªØÂ
+                        break;
+                    case GUI_KEY_YELLOW:
+                        WM_DeleteWindow(g_hWin_mem);
+                        g_hWin_mem=0;
+                        WM_ShowWindow(g_hWin_TimeBar);
+                        WM_ShowWindow(g_hWin_Date);
+                        WM_SetFocus(g_hWin_menu);
+                        break;
+                    case GUI_KEY_F1:
+                        break;
+                }
+            }   
                 
             break;
           default:

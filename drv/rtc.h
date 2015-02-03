@@ -43,6 +43,8 @@ unsigned char Bcd2HexChar(unsigned char bcd);
 unsigned char Hex2BcdChar(unsigned char hex);
 void RtcTimeToSysTime(SYS_TIME *Time);
 unsigned char *RTC2Text(void);
+unsigned char *RTC2Text_Date(void);
+
 
 
 #ifdef __cplusplus

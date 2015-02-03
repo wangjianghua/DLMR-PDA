@@ -233,6 +233,7 @@ void DEV_Init(void)
 
     memcpy(g_sys_control.recentMeterAddr, c_test_addr, 6);
     memcpy(g_sys_control.defaultDataFlag, c_default_dataflag, 4);
+    g_sys_control.sleepTimeout = 0;
     
 }
 

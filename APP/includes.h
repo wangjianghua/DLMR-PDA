@@ -164,8 +164,12 @@ extern WM_HWIN g_hWin_task;
 extern WM_HWIN g_hWin_about; //关于
 extern WM_HWIN g_hWin_TimeSet; //时间设置
 extern WM_HWIN g_hWin_mem;
+extern WM_HWIN g_hWin_Err;
 
 extern WM_HWIN g_hWin_ReadMeterMsg;
+
+extern WM_HWIN g_hWin_TimeBar;
+extern WM_HWIN g_hWin_Date;
 
 extern int DataSign_value;
 extern char DataSign_Text[TEXT_LEN];//??????????,???????

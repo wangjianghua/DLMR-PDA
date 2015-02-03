@@ -40,7 +40,7 @@
 #define GUI_MSBOX_DIDO_ERROR       1
 #define GUI_MSBOX_PROC_ERROR       2
 
-#define ERROR_BOX(error_no)     MESSAGEBOX_Create(&gc_messageBoxText[error_no][0],"Error",0)
+//#define ERROR_BOX(error_no)     MESSAGEBOX_Create(&gc_messageBoxText[error_no][0],"Error",0)
 
 
 typedef struct _sys_parameter_pkg_
@@ -61,7 +61,7 @@ typedef struct _sys_parameter_pkg_
 extern SEND_PARA_PKG g_send_para_pkg;      //参数包
 //extern SYS_PARA_PKG sys_para_pkg; //参数包指针
 
-extern const char gc_messageBoxText[][32];
+extern const char *gc_messageBoxText[];
 
 //SYS_PARA_PKG     g_para_pkg_ptr;
 

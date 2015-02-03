@@ -90,12 +90,12 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { TEXT_CreateIndirect,   Hour,      ID_TEXT_3,   51,  150, 40,  20, 0, 0x0, 0 },
   { TEXT_CreateIndirect,   Minite,    ID_TEXT_4,   51,  187, 40,  20, 0, 0x0, 0 },
   { TEXT_CreateIndirect,   Second,    ID_TEXT_5,   51,  222, 40,  20, 0, 0x0, 0 },
-  { EDIT_CreateIndirect,   "year",    ID_EDIT_0,   110, 41,  80,  20, 0, 0x64, 0 },
-  { EDIT_CreateIndirect,   "month",   ID_EDIT_1,   110, 77,  80,  20, 0, 0x64, 0 },
-  { EDIT_CreateIndirect,   "day",     ID_EDIT_2,   110, 112, 80,  20, 0, 0x64, 0 },
-  { EDIT_CreateIndirect,   "hour",    ID_EDIT_3,   110, 148, 80,  20, 0, 0x64, 0 },
-  { EDIT_CreateIndirect,   "min",     ID_EDIT_4,   110, 185, 80,  20, 0, 0x64, 0 },
-  { EDIT_CreateIndirect,   "sec",     ID_EDIT_5,   110, 220, 80,  20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect,   "year",    ID_EDIT_0,   110, 41,  80,  20, 0, 2, 0 },
+  { EDIT_CreateIndirect,   "month",   ID_EDIT_1,   110, 77,  80,  20, 0, 2, 0 },
+  { EDIT_CreateIndirect,   "day",     ID_EDIT_2,   110, 112, 80,  20, 0, 2, 0 },
+  { EDIT_CreateIndirect,   "hour",    ID_EDIT_3,   110, 148, 80,  20, 0, 2, 0 },
+  { EDIT_CreateIndirect,   "min",     ID_EDIT_4,   110, 185, 80,  20, 0, 2, 0 },
+  { EDIT_CreateIndirect,   "sec",     ID_EDIT_5,   110, 220, 80,  20, 0, 2, 0 },
   { BUTTON_CreateIndirect, Confirm,   ID_BUTTON_0, 10,  259, 80,  25, 0, 0x0, 0 },
   { BUTTON_CreateIndirect, Cancel,    ID_BUTTON_1, 150, 261, 80,  25, 0, 0x0, 0 },
   { TEXT_CreateIndirect,   TimeSet,   ID_TEXT_6,   60,  12,  150, 20, 0, 0x0, 0 },
@@ -330,6 +330,7 @@ static void _cbDialog(WM_MESSAGE * pMsg)
             {
                 case GUI_KEY_GREEN: /*保存重新设置的时间*/
                     Time_From_Widget(g_rtc_time);
+                    
                     RTC_WriteTime(g_rtc_time);
                     //RTC2Text();
                     //Time_Init(pMsg);

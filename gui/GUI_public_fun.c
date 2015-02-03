@@ -5,6 +5,47 @@
 u8 s_prbf[512];
 
 
+#if 0
+static void _cbErrNote(WM_MESSAGE *pMsg)
+{
+    int Id;
+    WM_HWIN hItem;
+    switch(pMsg->MsgId)
+    {
+        case WM_INIT_DIALOG:
+             FRAMEWIN_SetClientColor(pMsg->hWin, GUI_RED);
+            hItem=WM_GetDialogItem(pMsg->hWin,GUI_ID_OK);
+            BUTTON_SetBkColor(hItem,0,GUI_RED);
+            break;
+        case WM_KEY:
+            switch(((WM_KEY_INFO *)(pMsg->Data.p))->Key)
+            {
+                case GUI_KEY_ENTER:
+                    WM_DeleteWindow(g_hWin_Err);
+                    WM_SetFocus(g_hWin_mem);
+                    break;
+            }
+            break;
+         default: 
+            WM_DefaultProc(pMsg);
+            break;
+    }
+}
+
+
+WM_HWIN ERROR_BOX(int error_no)
+{
+    WM_HWIN hItem;
+    WM_HWIN hWin;
+    hWin=MESSAGEBOX_Create(&gc_messageBoxText[error_no][0],"Error",0);
+    WM_SetFocus(hWin);
+    WM_SetCallback(hWin,_cbErrNote);
+    return hWin;
+}
+
+#endif
+
+
 u8 GUI_Hex2Char(u8 ch)
 {
     ch = ch & 0x0f;

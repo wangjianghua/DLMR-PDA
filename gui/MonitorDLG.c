@@ -95,7 +95,6 @@ static const char Start[]="F1 \xe5\xbc\x80 \xe5\xa7\x8b";
 
 //±£´æ
 static const char Save[]="\xe4\xbf\x9d\xe5\xad\x98";
-
 /*********************************************************************
 *
 *       _aDialogCreate
@@ -224,6 +223,8 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             case GUI_KEY_YELLOW:
                 WM_DeleteWindow(g_hWin_monitor);
                 g_hWin_monitor=HBWIN_NULL;
+                WM_ShowWindow(g_hWin_TimeBar);
+                WM_ShowWindow(g_hWin_Date);
                 WM_SetFocus(g_hWin_menu);
                 break;
             case '#':
@@ -234,12 +235,14 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 break;
             case GUI_KEY_F1:
                 ButtonBlink(pMsg,ID_BUTTON_2);
+                //TSK_Set_Monitor();
                 g_send_para_pkg.cmdType = PLC_CMD_TYPE_R2L;
                 g_sys_control.guiState = GUI_PLC_MSG_LISTING;                        
                 OSMboxPost(g_sys_control.downMb, (void*)&g_send_para_pkg);
                 break;
             case GUI_KEY_F2:
                 ButtonBlink(pMsg,ID_BUTTON_5);
+                //TSK_Close_Monitor();
                 g_send_para_pkg.cmdType = PLC_CMD_TYPE_L2R;
                 g_sys_control.guiState = GUI_PLC_MSG_LISTING;
                 OSMboxPost(g_sys_control.downMb, (void*)&g_send_para_pkg);

@@ -117,14 +117,22 @@ static const char Save[]="\xe4\xbf\x9d\xe5\xad\x98";
 //取消
 static const char Cancel[]="\xe5\x8f\x96\xe6\xb6\x88";
 
+//"\xe5\x9c\xb0\xe5\x9d\x80\xe9\x94\x99\xe8\xaf\xaf"
+// 
+const char AddrErr[]="\xe5\x9c\xb0\xe5\x9d\x80\xe9\x94\x99\xe8\xaf\xaf!";
+const char DataFlagErr[]="\xe6\x95\xb0\xe6\x8d\xae\xe6\xa0\x87\xe8\xaf\x86\xe9\x94\x99\xe8\xaf\xaf!";
+const char ProtocolErr[]="\xe8\xa7\x84\xe7\xba\xa6\xe4\xb8\x8d\xe5\x8c\xb9\xe9\x85\x8d!";
+const char MonthOutRange[]="\xe6\x9c\x88\xe4\xbb\xbd\xe8\xb6\x85\xe5\x87\xba\xe8\x8c\x83\xe5\x9b\xb4";
+const char ConfirmFoumat[]="\xe7\xa1\xae\xe5\xae\x9a\xe6\xa0\xbc\xe5\xbc\x8f\xe5\x8c\x96\xe5\x86\x85\xe5\xad\x98\xe5\x90\x97\xef\xbc\x9f?";
 
 
-
-const char gc_messageBoxText[][32] = 
+const char *gc_messageBoxText[] = 
 {
-    "Address Error!",
-    "Data Flag Error!",
-    "Protocol Error!",
+    AddrErr,
+    DataFlagErr,
+    ProtocolErr,
+    MonthOutRange,
+    ConfirmFoumat,
 };
 
 
@@ -145,7 +153,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
 
     { BUTTON_CreateIndirect, ReadMeter, ID_BUTTON_0, 147, 7, 80, 30, 0, 0x0, 0 },
     { TEXT_CreateIndirect, MeterNum, ID_TEXT_0, 8, 50, 72, 20, 0, 0x0, 0 },
-    { EDIT_CreateIndirect, NULL, ID_EDIT_0, 89, 46, 136, 20, 0, 0x64, 0 },
+    { EDIT_CreateIndirect, NULL, ID_EDIT_0, 89, 46, 136, 20, 0, GUI_645_ADDR_LENGTH, 0 },
         
     { TEXT_CreateIndirect, ReadMeterSel, ID_TEXT_1, 8, 74, 69, 20, 0, 0x0, 0 },
     { DROPDOWN_CreateIndirect, NULL, ID_DROPDOWN_0, 89, 73, 136, 19, 0, 0x0, 0 },
@@ -219,7 +227,7 @@ static u8 RMD_Get_Para(WM_MESSAGE *pMsg)
         //GUI_MessageBox()
         //MESSAGEBOX_Create("dst addr error!", "error", 0);
         //EDIT_SetText(hItem, "11111");
-        ERROR_BOX(GUI_MSBOX_ADDR_ERROR);
+        //ERROR_BOX(GUI_MSBOX_ADDR_ERROR);
         return DEV_ERROR;
     }
 
@@ -496,6 +504,8 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 g_hWin_ReadMeter=HBWIN_NULL;
                 WM_BringToBottom(g_hWin_msg);
                 WM_HideWindow(g_hWin_msg);
+                WM_ShowWindow(g_hWin_TimeBar);
+                WM_ShowWindow(g_hWin_Date);
                 WM_SetFocus(g_hWin_menu);
                 break;
             case GUI_KEY_F1: /*获取表号*/

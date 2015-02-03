@@ -60,9 +60,6 @@
 
 
 
-U32  Edit0_Value;  //把edit文本字符串转化为的数值
-U32  Edit1_Value;
-U32  Edit2_Value;
 
 char Edit0_Text[10]; //edit文本字符串
 char Edit1_Text[10];
@@ -184,6 +181,7 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     hItem = WM_GetDialogItem(pMsg->hWin, ID_DROPDOWN_0);
     DROPDOWN_AddString(hItem, " DL/T-07");
     DROPDOWN_AddString(hItem, " DL/T-97");
+    //WM_DisableWindow(hItem);
     
     //DROPDOWN_SetSel(hItem,g_sys_register_para.plcProtocol);
     
@@ -206,6 +204,7 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     DROPDOWN_AddString(hItem, " 2400");
     DROPDOWN_AddString(hItem, " 4800");
     DROPDOWN_AddString(hItem, " 9600");
+    WM_DisableWindow(hItem);
     //DROPDOWN_SetSel(hItem,g_sys_register_para.baudrate);
     switch(g_sys_register_para.baudrate)
     {
@@ -233,6 +232,7 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     hItem = WM_GetDialogItem(pMsg->hWin, ID_DROPDOWN_2);
     //DROPDOWN_AddString(hItem, " 485");
     DROPDOWN_AddString(hItem, WaveCarrier);
+    WM_DisableWindow(hItem);
     //DROPDOWN_AddString(hItem, Infrared);
     //DROPDOWN_SetSel(hItem,g_sys_register_para.channel);
     g_sys_register_para.channel = 0;
@@ -310,33 +310,6 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     // Initialization of 'Dropdown'
     //
 
-#if 0
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_DROPDOWN_5);
-    DROPDOWN_AddString(hItem, " 0");
-    DROPDOWN_AddString(hItem, " 1");
-    DROPDOWN_AddString(hItem, " 2");
-    DROPDOWN_AddString(hItem, " 3");
-    DROPDOWN_AddString(hItem, " 4");
-    //DROPDOWN_SetSel(hItem,g_sys_register_para.number);
-    switch(g_sys_register_para.number)
-    {
-        case 0:
-            DROPDOWN_SetSel(hItem,0);
-            break;
-        case 1:
-            DROPDOWN_SetSel(hItem,1);
-            break;
-        case 2:
-            DROPDOWN_SetSel(hItem,2);
-            break;
-        case 3:
-            DROPDOWN_SetSel(hItem,3);
-            break;
-        case 4:
-            DROPDOWN_SetSel(hItem,4);
-            break;
-    }
-#endif
     //
     // Initialization of 'Edit'
     //
@@ -471,30 +444,6 @@ void para_store(WM_MESSAGE * pMsg)
         default:
             break;
     }
-#if 0
-    hItem=WM_GetDialogItem(pMsg->hWin,ID_DROPDOWN_5);
-    SelNum=DROPDOWN_GetSel(hItem);
-    switch(SelNum)
-    {
-        case 0:
-            g_sys_register_para.number=0;
-            break;
-        case 1:
-            g_sys_register_para.number=1;
-            break;
-        case 2:
-            g_sys_register_para.number=2;
-            break;
-        case 3:
-            g_sys_register_para.number=3;
-            break;
-        case 4:
-            g_sys_register_para.number=4;
-            break;
-        default:
-            break;
-    }
-#endif
 }
 
 
@@ -510,6 +459,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
   switch (pMsg->MsgId) {
   case WM_INIT_DIALOG:
     GUI_UC_SetEncodeUTF8();
+    
     //DEV_Parameters_Read();
     _init_dialog(pMsg);
     break;
@@ -572,16 +522,6 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 WM_SetFocus(g_hWin_menu);
                 break;
             }
-            //在edit中按保存的话，消费到edit中了，也可以保存各项数据
-            /*************************************************************
-            else if((((WM_KEY_INFO*)(pMsg->Data.p))->Key) == GUI_KEY_GREEN)
-            {
-                para_storage(pMsg,ID_EDIT_0,Edit0_Text,0);
-                para_storage(pMsg,ID_EDIT_1,Edit1_Text,1);
-                para_storage(pMsg,ID_EDIT_2,Edit2_Text,2);
-                //DEV_Parameters_Write();
-            }
-            **************************************************************/
             else 
             {
                 break;
@@ -604,10 +544,15 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 WM_DeleteWindow(g_hWin_para);
                 g_hWin_para=HBWIN_NULL;
                 WM_SetFocus(g_hWin_menu);
+                WM_ShowWindow(g_hWin_TimeBar);
+                WM_ShowWindow(g_hWin_Date);
                 break;
              case GUI_KEY_GREEN:  /*  保存数据  */
                 para_store(pMsg);
+                TSK_Set_Protocol_Text();
                 DEV_Parameters_Write();
+                //hItem=TSK_Get_Protocol_Text();
+                //TEXT_SetText();
                 break;
              case GUI_KEY_F1:
                 g_hWin_TimeSet=CreateTimeSet();

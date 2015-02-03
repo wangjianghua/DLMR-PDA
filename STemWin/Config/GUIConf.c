@@ -66,6 +66,11 @@ Purpose     : Display controller initialization
 
 extern GUI_CONST_STORAGE GUI_FONT GUI_Font_Song_16;
 extern GUI_CONST_STORAGE GUI_FONT GUI_Font_Battery_40;
+//extern GUI_CONST_STORAGE GUI_FONT GUI_FontAlgerian20;
+extern GUI_CONST_STORAGE GUI_FONT GUI_Fontcn27;
+extern GUI_CONST_STORAGE GUI_FONT GUI_Fontdate20;
+
+
 
 /*********************************************************************
 *
@@ -102,7 +107,7 @@ void GUI_X_Config(void) {
   TEXT_SetDefaultFont(GUI_DEFAULT_FONT);
   LISTVIEW_SetDefaultFont(GUI_DEFAULT_FONT);
   HEADER_SetDefaultFont(GUI_DEFAULT_FONT);
- 
+  FRAMEWIN_SetDefaultFont(GUI_DEFAULT_FONT);
 
   
   //ICONVIEW_SE
