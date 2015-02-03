@@ -62,6 +62,7 @@ static  OS_STK         App_TaskGUIStk[APP_CFG_TASK_GUI_STK_SIZE]; //added on  01
 static  OS_STK         App_TaskKeyStk[APP_CFG_TASK_KEY_STK_SIZE];
 static  OS_STK         App_TaskPLCStk[APP_CFG_TASK_PLC_STK_SIZE];
 static  OS_STK         App_TaskGMPStk[APP_CFG_TASK_GMP_STK_SIZE];
+static  OS_STK         App_TaskRFStk[APP_CFG_TASK_RF_STK_SIZE];
 
 
 /*
@@ -73,6 +74,7 @@ static  OS_STK         App_TaskGMPStk[APP_CFG_TASK_GMP_STK_SIZE];
 static  void           App_TaskStart                (void *p_arg);
 static  void           App_TaskGUI                  (void *p_arg); //GUI任务 added on 01.15
 static  void           App_TaskGMP                  (void *p_arg);
+static  void           App_TaskRF                   (void *p_arg);
 
 static  void           App_MemAlloc                 (void);
 static  void           App_TaskCreate               (void);
@@ -210,11 +212,13 @@ uc16 g_16string [] = {0x53D6, 0x56DE, 0x62,'\r\n',0};
 
 void APP_Shutdown()
 {
+#if 0    
     SYS_PWR_OFF();
     LCD_BL_OFF();
     LCD_PWR_OFF();
     LED_UART_OFF();
     LED_PLC_OFF();
+#endif    
 }
 
 void APP_StartButtonTest()
@@ -378,6 +382,45 @@ static  void  App_TaskGUI (void *p_arg)
 
 /*
 *********************************************************************************************************
+*                                             App_TaskRF()
+*
+* Description : This task monitors the state of the push buttons and passes messages to AppTaskUserIF()
+*
+* Argument(s) : p_arg   is the argument passed to 'App_TaskRF()' by 'OSTaskCreateExt()'.
+*
+* Return(s)  : none.
+*
+* Caller(s)  : This is a task.
+*
+* Note(s)    : none.
+*********************************************************************************************************
+*/
+static  void  App_TaskRF (void *p_arg)
+{
+    INT8U err;
+    u8 rf_send_msg[] = "hello, world!\n";
+
+    
+    (void)p_arg;
+
+    while (DEF_TRUE) {
+        OSSemPend(g_sem_rf, OS_TICKS_PER_SEC, &err);
+
+        if(OS_ERR_NONE == err)
+        {
+            LED_PLC_TOGGLE();
+            
+            pc_uart_send(g_rf_param.rx.buf, g_rf_param.rx.rx_len);
+        }
+        else
+        {            
+            //RF_Tx(rf_send_msg, sizeof(rf_send_msg));
+        }
+    }
+}
+
+/*
+*********************************************************************************************************
 *                                             App_TaskGMP()
 *
 * Description : This task monitors the state of the push buttons and passes messages to AppTaskUserIF()
@@ -451,6 +494,7 @@ static  void  App_EventCreate (void)
 {    
     g_sem_end = OSSemCreate(0);
     g_sem_plc = OSSemCreate(0);
+    g_sem_rf = OSSemCreate(0);
 	g_key_control.key_sem = OSSemCreate(0);    
     
     g_sys_control.downMb = OSMboxCreate(NULL); /*创建消息邮箱用来发送调试参数的结构体*/
@@ -560,6 +604,20 @@ static  void  App_TaskCreate (void)
 
 #if (OS_TASK_NAME_EN > 0)
     OSTaskNameSet(APP_CFG_TASK_PLC_PRIO, "PLC", &err);    
+#endif
+
+    OSTaskCreateExt((void (*)(void *)) App_TaskRF,
+                    (void           *) 0,
+                    (OS_STK         *)&App_TaskRFStk[APP_CFG_TASK_RF_STK_SIZE - 1],
+                    (INT8U           ) APP_CFG_TASK_RF_PRIO,
+                    (INT16U          ) APP_CFG_TASK_RF_PRIO,
+                    (OS_STK         *)&App_TaskRFStk[0],
+                    (INT32U          ) APP_CFG_TASK_RF_STK_SIZE,
+                    (void           *) 0,
+                    (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
+
+#if (OS_TASK_NAME_EN > 0)
+    OSTaskNameSet(APP_CFG_TASK_PLC_PRIO, "RF", &err);    
 #endif
 }
 

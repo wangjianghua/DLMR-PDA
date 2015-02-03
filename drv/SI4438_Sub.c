@@ -63,15 +63,15 @@ u8 g_plc_buf[100]={0};
 rf_status_t RF_Tx(u8 * buf, u8 len)
 {
 
-    BSP_LED_On(0);
+    //BSP_LED_On(0);
     
     DISABLE_RF_INT();
     
     //buf[0]=len;
     g_rf_param.tx.buf = buf;
-    g_rf_param.tx.tx_len = len + 2;
+    g_rf_param.tx.tx_len = len;
     
-    g_rf_param.tx.Index = SI_Send_Packet(len + 2, buf);
+    g_rf_param.tx.Index = SI_Send_Packet(len, buf);
 
     g_rf_param.rf_state = RF_STATE_TX; 
     g_rf_param.tx.Timeout = 1;
@@ -116,7 +116,7 @@ void RF_Event_Handle(void)
     if(sta1 & RXPKT_DONE) 
     {//接收数据包完成中断的处理
 
-        BSP_LED_On(0);
+        //BSP_LED_On(0);
 		
         g_rf_param.RSSI = SI_Read_RSSI();
         if (RF_STATE_RX != g_rf_param.rf_state)
@@ -136,13 +136,15 @@ void RF_Event_Handle(void)
         
         RF_Listen();
 
-        BSP_LED_Off(0);
+        //BSP_LED_Off(0);
 
 
 
-        g_rf_param.rx.rx_len=0;
+        //g_rf_param.rx.rx_len=0; //华兄
         g_rf_param.rx.Timeout=0;
 		//_sys_plc_reset();
+
+        OSSemPost(g_sem_rf); //华兄
 	}
 	 else if (sta1 & RXFF_AF) 
 	{   
@@ -189,7 +191,7 @@ void RF_Event_Handle(void)
 //#endif
             RF_Listen();
             g_rf_param.tx.Timeout=0;
-            BSP_LED_Off(0);
+            //BSP_LED_Off(0);
             _sys_plc_reset();
 		}
 	}

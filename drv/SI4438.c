@@ -316,7 +316,6 @@ u8 SI_SendCmd_Noresp(u8 Data_len,const u8 *CmdData)
   //return 0;
 }
 
-
 /************************************************/
 //函数名：Write_TxData 
 //功能：写入FIFO数组数据

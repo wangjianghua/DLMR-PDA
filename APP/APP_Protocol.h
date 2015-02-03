@@ -58,6 +58,7 @@ typedef struct _plc_prm
 } PLC_PRM, *P_PLC_PRM;
 
 extern OS_EVENT *g_sem_plc;
+extern OS_EVENT *g_sem_rf;
 extern u8 g_cur_freq;
 extern PLC_PRM g_plc_prm;
 

@@ -21,7 +21,7 @@ ActionState=1
 Enabled=0
 ShowSource=1
 [DebugChecksum]
-Checksum=-268880890
+Checksum=1050622060
 [Exceptions]
 StopOnUncaught=_ 0
 StopOnThrow=_ 0
@@ -108,15 +108,6 @@ GraphEnabled=0
 ShowTimeLog=1
 ShowTimeSum=1
 SumSortOrder=0
-[Disassemble mode]
-mode=0
-[Breakpoints2]
-Bp0=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\drv\SI4438.c}.299.2" 0 0 1 "" 0 "" 0
-Bp1=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\drv\SI4438.c}.221.9" 0 0 1 "" 0 "" 0
-Bp2=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\drv\SI4438.c}.369.5" 0 0 1 "" 0 "" 0
-Bp3=_ 0 "EMUL_CODE" "0x080477E4" 0 0 1 "" 0 "" 0
-Bp4=_ 0 "EMUL_CODE" "0x08060362" 0 0 1 "" 0 "" 0
-Count=5
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""
@@ -124,18 +115,6 @@ Category=_ 0
 [TermIOLog]
 LoggingEnabled=_ 0
 LogFile=_ ""
-[Aliases]
-A0=_ "C:\Users\Administrator\Desktop\PDA_2015.01.19\PDA\APP\app.c" ""
-A1=_ "C:\Users\Administrator\Desktop\PDA_2015.01.19\PDA\drv\SI4438.c" ""
-A2=_ "C:\Users\Administrator\Desktop\PDA_2015.01.19\PDA\drv\Src\stm32f2xx_hal_flash.c" ""
-A3=_ "C:\Users\Administrator\Desktop\PDA_2015.01.19\PDA\uCOS-II\Source\os_tmr.c" ""
-A4=_ "E:\palmtop0129\palmtop0127\APP\app.c" ""
-A5=_ "E:\palmtop0129\palmtop0127\FatFs\ff.c" ""
-A6=_ "E:\palmtop0129\palmtop0127\drv\Src\stm32f2xx_hal_flash.c" ""
-A7=_ "E:\palmtop0129\palmtop0127\drv\sd.c" ""
-A8=_ "E:\palmtop0129\palmtop0127\uCOS-II\Source\os_tmr.c" ""
-Count=9
-SuppressDialog=0
 [PowerProbe]
 Frequency=10000
 Probe0=I0
@@ -148,3 +127,24 @@ Mode=3
 Graph=0
 Symbiont=0
 Exclusions=
+[Disassemble mode]
+mode=0
+[Breakpoints2]
+Bp0=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\drv\SI4438.c}.299.2" 0 0 1 "" 0 "" 0
+Bp1=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\drv\SI4438.c}.221.9" 0 0 1 "" 0 "" 0
+Bp2=_ 0 "EMUL_CODE" "0x080477E4" 0 0 1 "" 0 "" 0
+Bp3=_ 0 "EMUL_CODE" "0x08060362" 0 0 1 "" 0 "" 0
+Bp4=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\drv\SI4438_Sub.c}.127.36" 0 0 1 "" 0 "" 0
+Count=5
+[Aliases]
+A0=_ "C:\Users\Administrator\Desktop\PDA_2015.01.19\PDA\APP\app.c" ""
+A1=_ "C:\Users\Administrator\Desktop\PDA_2015.01.19\PDA\drv\SI4438.c" ""
+A2=_ "C:\Users\Administrator\Desktop\PDA_2015.01.19\PDA\drv\Src\stm32f2xx_hal_flash.c" ""
+A3=_ "C:\Users\Administrator\Desktop\PDA_2015.01.19\PDA\uCOS-II\Source\os_tmr.c" ""
+A4=_ "E:\palmtop0129\palmtop0127\APP\app.c" ""
+A5=_ "E:\palmtop0129\palmtop0127\FatFs\ff.c" ""
+A6=_ "E:\palmtop0129\palmtop0127\drv\Src\stm32f2xx_hal_flash.c" ""
+A7=_ "E:\palmtop0129\palmtop0127\drv\sd.c" ""
+A8=_ "E:\palmtop0129\palmtop0127\uCOS-II\Source\os_tmr.c" ""
+Count=9
+SuppressDialog=0
