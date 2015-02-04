@@ -398,7 +398,7 @@ static  void  App_TaskGUI (void *p_arg)
 static  void  App_TaskRF (void *p_arg)
 {
     INT8U err;
-    u8 rf_send_msg[] = "hello, world!\n";
+    u8 rf_dl645_read[] = {0x68, 0x00, 0x36, 0x19, 0x00, 0x00, 0x00, 0x68, 0x11, 0x04, 0x33, 0x32, 0x34, 0x33, 0x00, 0x16};
 
     
     (void)p_arg;
@@ -414,7 +414,11 @@ static  void  App_TaskRF (void *p_arg)
         }
         else
         {            
-            //RF_Tx(rf_send_msg, sizeof(rf_send_msg));
+            RF_Tx(rf_dl645_read, sizeof(rf_dl645_read));
+
+            OSTimeDlyHMSM(0, 0, 1, 500);
+
+            LED_PLC_TOGGLE();
         }
     }
 }
