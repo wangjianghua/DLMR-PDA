@@ -1903,10 +1903,16 @@
       <name>$PROJ_DIR$\..\APP\DL645.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\APP\GDW376_2.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\APP\link_manager.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\APP\queue.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\APP\RF_App.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\APP\uart_link.c</name>

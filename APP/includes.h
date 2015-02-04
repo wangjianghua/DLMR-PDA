@@ -126,6 +126,8 @@ typedef __I uint8_t vuc8;   /*!< Read Only */
 #include "si4438.h"
 #include "si4438_sub.h"
 #include "DL645.h" //ЛЊаж
+#include "GDW376_2.h" //ЛЊаж
+#include "RF_App.h" //ЛЊаж
 #include "APP_Protocol.h"
 #include "queue.h" 
 #include "link_manager.h"
