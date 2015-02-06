@@ -5,8 +5,15 @@
 PLC_Copy_Status_C Mode_Status;
 USART_Rev_C User_Com;
 
-/****************************************GDW*******************************************************************************/
 u8 RF_App_SEQ=0;
+u8 Network_SEQ=0;
+u8 Pro_III5_SEQ=0;
+u16	Pan_ID;
+u8 Main_Addr[6];
+
+#define GDW_MAC_SEQ 	Pro_III5_SEQ
+
+/****************************************GDW*******************************************************************************/
 u8	RF_Rev_App_Sub(u8 *buf,u8 leng,u8 *buff)
 {
 	GDW_RF_App_layer_C	*GDW_RF_App_layer_ptr;
@@ -20,7 +27,7 @@ u8	RF_Rev_App_Sub(u8 *buf,u8 leng,u8 *buff)
 	memcpy(buff,GDW_RF_App_layer_ptr->Data+i,leng-3-i);
 	return(leng-3-i);
 }
-u8 Network_SEQ=0;
+
 u8	RF_Rev_Network_Sub(u8 *buf,u8 leng,GDW3762_App_C *GDW3762_App_Ptr)
 {
 	GDW_RF_Network_layer_C	*GDW_RF_Network_layer_ptr;
@@ -72,8 +79,7 @@ u8	RF_Rev_Network_Sub(u8 *buf,u8 leng,GDW3762_App_C *GDW3762_App_Ptr)
 	}
 	return(length);
 }
-u16	Pan_ID;
-extern u8 Main_Addr[6];
+
 u8	RF_Rev_MAC_Sub(u8 *buf,Frame_3762_C *Frame_3762_Ptr,u8 leng)
 {
 	GDW_RF_MAC_layer_C	*GDW_RF_MAC_layer_ptr;
@@ -163,9 +169,15 @@ u8	Greate_GDW_App_Sub(u8 type,u8 *data,u8 len,u8 *send_buf)
 	
 	GDW_RF_App_layer_ptr=(GDW_RF_App_layer_C		*)send_buf;
 	GDW_RF_App_layer_ptr->FCD=2;
+
+#if 0    
 	RF_App_SEQ++;
 	if(!RF_App_SEQ)RF_App_SEQ=1;
 	GDW_RF_App_layer_ptr->SEQ=RF_App_SEQ;
+#else //ЛЊаж
+    GDW_RF_App_layer_ptr->SEQ = 0;
+#endif
+
 	GDW_RF_App_layer_ptr->DTI_bps=0;
 	memcpy(GDW_RF_App_layer_ptr->Data,data,len);
 	return(len+3);
@@ -218,8 +230,6 @@ u8	Greate_GDW_Network_Sub(u8 *Addr,u8 leve,u8 type,u8 *data,u8 len,u8 *send_buf)
 }
 
 //------------------------------------------------------------------------------------------------------------------------
-extern u8 Pro_III5_SEQ;
-#define GDW_MAC_SEQ 	Pro_III5_SEQ
 
 void  GDW_Greate_MAC_Inf(GDW_RF_MAC_layer_C	*GDW_RF_MAC_layer_ptr,u8 type,u16 PanID)
 {

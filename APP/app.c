@@ -198,7 +198,7 @@ WM_HWIN g_hWin_Err;
 WM_HWIN g_hWin_TimeBar;  //主页时间
 WM_HWIN g_hWin_Date;     //显示日期
 
-u8 rf_send_buf[20] = {0x23, 0x24, 0x78, 0x1a, 0x39, 0x23, 0x24, 0x78, 0x1a, 0x39, 0x12};
+u8 rf_send_buf[256] = {0x23, 0x24, 0x78, 0x1a, 0x39, 0x23, 0x24, 0x78, 0x1a, 0x39, 0x12};
 u8 rf_int_status[8];
 u8 rf_part_info[8];
 u8 rf_device_state[2];
@@ -398,29 +398,39 @@ static  void  App_TaskGUI (void *p_arg)
 static  void  App_TaskRF (void *p_arg)
 {
     INT8U err;
+    u8 rf_read_addr[] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x00, 0x36, 0x19, 0x00, 0x00, 0x00};
+    u8 rf_reply_addr[] = {0x00, 0x36, 0x19, 0x00, 0x00, 0x00, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA};
     u8 rf_dl645_read[] = {0x68, 0x00, 0x36, 0x19, 0x00, 0x00, 0x00, 0x68, 0x11, 0x04, 0x33, 0x32, 0x34, 0x33, 0x00, 0x16};
+    u8 rf_dl645_reply[] = {0xFE, 0xFE, 0xFE, 0xFE, 0x68, 0x00, 0x36, 0x19, 0x00, 0x00, 0x00, 0x68, 0x91, 0x18, 0x33, 0x32, 0x34, 0x33, 0x4C, 0x6C, 0x33, 0x33, 0x89, 0x35, 0x33, 0x33, 0x53, 0x33, 0x33, 0x33, 0x6B, 0x33, 0x33, 0x33, 0x38, 0x69, 0x33, 0x33, 0xCD, 0x16};
     u8 rf_test_msg[] = "hello, world!";
+    u8 rf_send_len;
+
+#define RF_SEND_BUF         rf_send_buf
+#define RF_SEND_LEN         rf_send_len
+
+#define RF_RECV_BUF         g_rf_param.rx.buf
+#define RF_RECV_LEN         g_rf_param.rx.rx_len
 
     
     (void)p_arg;
 
     while (DEF_TRUE) {
-        OSSemPend(g_sem_rf, OS_TICKS_PER_SEC, &err);
+        OSSemPend(g_sem_rf, 3 * OS_TICKS_PER_SEC, &err);
 
         if(OS_ERR_NONE == err)
         {
             LED_PLC_TOGGLE();
             
-            pc_uart_send(g_rf_param.rx.buf, g_rf_param.rx.rx_len);
+            pc_uart_send(RF_RECV_BUF, RF_RECV_LEN);
         }
         else
         {            
-#if 0            
-            RF_Tx(rf_dl645_read, sizeof(rf_dl645_read));
-
-            OSTimeDlyHMSM(0, 0, 1, 500);
-
+#if 1
             LED_PLC_TOGGLE();
+
+            rf_send_len = GDW_RF_Protocol_2013(rf_read_addr, 0x00, 0x00, 0x00, rf_dl645_read, sizeof(rf_dl645_read), rf_send_buf);
+
+            pc_uart_send(RF_SEND_BUF, RF_SEND_LEN); 
 #else
             RF_Tx(rf_test_msg, sizeof(rf_test_msg));
 #endif
