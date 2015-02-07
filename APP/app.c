@@ -415,7 +415,7 @@ static  void  App_TaskRF (void *p_arg)
     (void)p_arg;
 
     while (DEF_TRUE) {
-        OSSemPend(g_sem_rf, 3 * OS_TICKS_PER_SEC, &err);
+        OSSemPend(g_sem_rf, 5 * OS_TICKS_PER_SEC, &err);
 
         if(OS_ERR_NONE == err)
         {
@@ -432,7 +432,7 @@ static  void  App_TaskRF (void *p_arg)
 
             pc_uart_send(RF_SEND_BUF, RF_SEND_LEN); 
 #else
-            RF_Tx(rf_test_msg, sizeof(rf_test_msg));
+            /* RF_Tx(rf_test_msg, sizeof(rf_test_msg)); */
 #endif
         }
     }

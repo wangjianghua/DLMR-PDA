@@ -341,6 +341,7 @@
 extern const u8 Read_INT_Status_cmd[4];
 
 u8 Api_GetResponse(u8 Resp_Len, u8 *Resp_Data);
+u16	cal_crc_ITU(u8 *ptr,u16 len);
 void SI4438_Init(void);
 u8 SI_Read_INT_Info(void);
 void SI_Freq_Set(u8 arry,u8 chen);

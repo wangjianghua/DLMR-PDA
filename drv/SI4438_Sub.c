@@ -62,26 +62,28 @@ u8 g_plc_buf[100]={0};
  *****************************************************************************/
 rf_status_t RF_Tx(u8 * buf, u8 len)
 {
+    u16 crc;
 
-    //BSP_LED_On(0);
-    
+        
     DISABLE_RF_INT();
+
+    crc = cal_crc_ITU(buf, len);
     
-    //buf[0]=len;
+    /* buf[0] = len; */
+    buf[len] = crc >> 8;
+    buf[len + 1] = crc;
+    
     g_rf_param.tx.buf = buf;
-    g_rf_param.tx.tx_len = len;
+    g_rf_param.tx.tx_len = len + 2;
     
-    g_rf_param.tx.Index = SI_Send_Packet(len, buf);
+    g_rf_param.tx.Index = SI_Send_Packet(len + 2, buf);
 
     g_rf_param.rf_state = RF_STATE_TX; 
     g_rf_param.tx.Timeout = 1;
     
-    
     ENABLE_RF_INT();
     
-    
-    
-    return RF_STATUS_SUCCESS;
+    return (RF_STATUS_SUCCESS);
 }
 
 

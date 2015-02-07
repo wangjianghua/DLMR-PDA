@@ -328,13 +328,17 @@ u8 SI_Write_Fifo(u8 Tx_Len,const u8 *Tx_Data)
     u8 Cts_Value=0;
     u16 ErrCnt=0;
     u16 i,temp;
-
     u8 len;
-    
+
+
+#if 0    
 	if(Tx_Len > TX_AE_THRESHOLD)
         len = TX_AE_THRESHOLD;//·¢ËÍµôTX_AE_THRESHOLD£¬ÔÚÌîTX_AE_THRESHOLDµÄÊý¾        
 	else 
         len = Tx_Len; 
+#else //»ªÐÖ
+    len = Tx_Len;
+#endif
 
     NSEL_CLR;
    
@@ -350,7 +354,7 @@ u8 SI_Write_Fifo(u8 Tx_Len,const u8 *Tx_Data)
 #if 0
     SpiHandle.Instance->DR = Tx_Len + 1;
 #else //»ªÐÖ
-    SpiHandle.Instance->DR = Tx_Len;
+    SpiHandle.Instance->DR = Tx_Len - 2; //Êý¾ÝÊµ¼Ê³¤¶È
 #endif
     		  
     while (!__HAL_SPI_GET_FLAG(&SpiHandle, SPI_FLAG_RXNE));
@@ -538,7 +542,27 @@ void SI_Enter_Rx(void)
      
 }
 
-
+u16	cal_crc_ITU(u8 *ptr,u16 len)
+{
+	u16 crc=0xFFFF;
+	u8 i;
+	while(len--)
+	{
+		crc^=*ptr++;
+		for(i=0;i<8;i++)
+		{
+			if(crc&0x0001)
+			{
+				crc>>=1;
+				crc^=0x8408;
+			}
+			else
+				crc>>=1;
+		}
+	}
+	crc^=0xFFFF;
+	return(crc);
+}
 
 rf_status_t SI_Init()
 {
