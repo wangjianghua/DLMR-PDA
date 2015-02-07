@@ -67,16 +67,19 @@ rf_status_t RF_Tx(u8 * buf, u8 len)
         
     DISABLE_RF_INT();
 
+    memmove(buf + 1, buf, len); //数组全体往后挪一个位置
+
+    buf[0] = len;
+
     crc = cal_crc_ITU(buf, len);
     
-    /* buf[0] = len; */
-    buf[len] = crc >> 8;
-    buf[len + 1] = crc;
+    buf[len + 1] = crc >> 8;
+    buf[len + 2] = crc;
     
     g_rf_param.tx.buf = buf;
-    g_rf_param.tx.tx_len = len + 2;
+    g_rf_param.tx.tx_len = len + 3;
     
-    g_rf_param.tx.Index = SI_Send_Packet(len + 2, buf);
+    g_rf_param.tx.Index = SI_Send_Packet(len + 3, buf);
 
     g_rf_param.rf_state = RF_STATE_TX; 
     g_rf_param.tx.Timeout = 1;

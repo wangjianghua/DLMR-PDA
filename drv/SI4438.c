@@ -348,7 +348,7 @@ u8 SI_Write_Fifo(u8 Tx_Len,const u8 *Tx_Data)
     while (!__HAL_SPI_GET_FLAG(&SpiHandle, SPI_FLAG_RXNE));
     Cts_Value = SpiHandle.Instance->DR;
 
-
+#if 0
     while (!__HAL_SPI_GET_FLAG(&SpiHandle, SPI_FLAG_TXE)); //检查指定的SPI标志位设置与否:发送缓存空标志位
 
 #if 0
@@ -359,7 +359,8 @@ u8 SI_Write_Fifo(u8 Tx_Len,const u8 *Tx_Data)
     		  
     while (!__HAL_SPI_GET_FLAG(&SpiHandle, SPI_FLAG_RXNE));
     Cts_Value = SpiHandle.Instance->DR;
- 
+#endif
+
     for (i=0; i < len; i++)    // Send input data array via SPI
     {
        
@@ -504,15 +505,15 @@ u8 SI_Send_Packet(u8 bLength, u8 *abPayload)
     abApi_Write[2] = 2;               // Number of properties to be written
     abApi_Write[3] = PROP_PKT_FIELD_1_LENGTH_7_0; // Specify first property
 
-#if 1    
+#if 0    
     abApi_Write[4] = bLength + 1;    // Field length (variable packet length info)
 #else //华兄
     abApi_Write[4] = bLength;
 #endif
 
-    abApi_Write[5] = 0;           // Field length (variable packet length info)
+    //abApi_Write[5] = 0;           // Field length (variable packet length info)
     //bApi_SendCommand(5,abApi_Write);        // Send command to the radio IC
-    SI_SendCmd_Noresp(6,&abApi_Write[0] );
+    SI_SendCmd_Noresp(5,&abApi_Write[0] );
     
 
     // Read ITs, clear pending ones
