@@ -80,15 +80,15 @@ void ERR_Sel_Win(void)
     {
         WM_SetFocus(g_hWin_mem);
     }
-    if(g_hWin_std > 0)
-    {
-        WM_SetFocus(g_hWin_std);
-    }
     if(g_hWin_TimeSet> 0)
     {
-        WM_SetFocus(g_hWin_std);
+        WM_SetFocus(g_hWin_TimeSet);
     }
     if(g_hWin_relay > 0)
+    {
+        WM_SetFocus(g_hWin_relay);
+    }
+    if(g_hWin_std>0)
     {
         WM_SetFocus(g_hWin_std);
     }
@@ -136,7 +136,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     switch(Id) {;}
     break;
   case WM_KEY:
-    if((((WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt)==0)
+    if((((WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt)==1)
     {
         switch((((WM_KEY_INFO*)(pMsg->Data.p))->Key))
         {
@@ -188,6 +188,7 @@ void ERR_NOTE(WM_HWIN paraentWin,int err_no)//unsigned char *err_text)
     //WM_HWIN hWin;
     WM_HWIN hItem;
     g_hWin_Err=CreateErrNote(paraentWin);
+    WM_SetFocus(g_hWin_Err);
     hItem=WM_GetDialogItem(g_hWin_Err,ID_TEXT_0);
     TEXT_SetText(hItem,&gc_messageBoxText[err_no][0]);
 

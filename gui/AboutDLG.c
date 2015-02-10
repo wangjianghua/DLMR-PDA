@@ -45,47 +45,47 @@ static const char Cancel[]="\xe8\xbf\x94\xe5\x9b\x9e";
 
 static const char Update[]="\xe5\x8d\x87\xe7\xba\xa7";
 
+//ÍË³ö
+static const char Quit[]="\xe9\x80\x80\xe5\x87\xba";
+
+
 static const char *HelpMsg[45]={
-   "1.\xe7\xbb\xbf\xe8\x89\xb2"
-    "\xe5\x92\x8c\xe7\xba\xa2\xe8\x89\xb2",
-    "\xe6\x8c\x89\xe9\x94\xae\xe5\xaf\xb9",
-    "\xe5\xba\x94\xe7\x9a\x84\xe5\xb0\xb1",
-    "\xe6\x98\xaf\xe5\xb1\x8f\xe5\xb9\x95",
-    "\xe4\xb8\xad\xe7\x9a\x84\xe4\xb8\xa4",
-    "\xe4\xb8\xaa\xe7\x9b\xb8\xe5\x90\x8c",
-    "\xe9\xa2\x9c\xe8\x89\xb2\xe7\x9a\x84",
-    "\xe6\x8c\x89\xe9\x92\xae\xe3\x80\x82.\n\n",
-    "2.\xe9\xa1\xb5\xe9\x9d\xa2",
-    "\xe4\xb8\xad\xe6\xaf\x8f\xe4\xb8\xaa",
-    "\xe9\x80\x89\xe9\xa1\xb9\xe5\x89\x8d",
-    "\xe9\x9d\xa2\xe9\x83\xbd\xe6\x9c\x89",
-    "\xe4\xb8\x80\xe4\xb8\xaa\xe5\xaf\xb9",
-    "\xe5\xba\x94\xe7\x9a\x84\xe6\x95\xb0",
-    "\xe5\xad\x97\xe5\x92\x8c\xe7\xac\xa6",
-    "\xe5\x8f\xb7\xef\xbc\x8c\xe6\x8c\x89",
-    "\xe4\xb8\x8b\xe5\xaf\xb9\xe5\xba\x94",
-    "\xe7\x9a\x84\xe6\x95\xb0\xe5\xad\x97",
-    "\xe6\x88\x96\xe7\xac\xa6\xe5\x8f\xb7",
-    "\xe5\x90\x8e\xef\xbc\x8c\xe5\x8f\xaf",
-    "\xe4\xbb\xa5\xe5\xaf\xb9\xe7\x9b\xb8",
-    "\xe5\xba\x94\xe7\x9a\x84\xe9\x80\x89",
-    "\xe9\xa1\xb9\xe8\xbf\x9b\xe8\xa1\x8c",
-    "\xe9\x80\x89\xe6\x8b\xa9\xe6\x88\x96",
-    "\xe8\xae\xbe\xe7\xbd\xae\xe3\x80\x82\n\n",
-    "3.TAB\xe9\x94\xae",
-    "\xe4\xb9\x9f\xe5\x8f\xaf\xe4\xbb\xa5",
-    "\xe8\xbf\x9b\xe8\xa1\x8c\xe9\x80\x89",
-    "\xe9\xa1\xb9\xe7\x9a\x84\xe5\x88\x87",
-    "\xe6\x8d\xa2\xe3\x80\x82\n\n",
-    "4.\xe5\xbd\x93\xe5\x9c\xa8",
-    "\xe7\xbc\x96\xe8\xbe\x91\xe7\x9a\x84",
-    "\xe6\x97\xb6\xe5\x80\x99\xef\xbc\x8c",
-    "\xe6\x8c\x89\xe4\xb8\x8b(ESC)\xe9\x94\xae",
-    "\xe5\x8f\xaf\xe4\xbb\xa5\xe9\x80\x80",
-    "\xe5\x87\xba\xe7\xbc\x96\xe8\xbe\x91",
-    "\xe3\x80\x82\n\n",
-   
+   "1.\xe7\xbb\xbf\xe8\x89\xb2\xe5\x92\x8c",
+
+    "\xe7\xba\xa2\xe8\x89\xb2\xe6\x8c\x89\xe9\x94\xae",
+
+    "\xe5\xaf\xb9\xe5\xba\x94\xe7\x9a\x84\xe5\xb0\xb1",
+
+    "\xe6\x98\xaf\xe5\xb1\x8f\xe5\xb9\x95\xe4\xb8\xad",
+
+    "\xe7\x9a\x84\xe4\xb8\xa4\xe4\xb8\xaa\xe7\x9b\xb8",
+
+    "\xe5\x90\x8c\xe9\xa2\x9c\xe8\x89\xb2\xe7\x9a\x84",
+
+    "\xe6\x8c\x89\xe9\x92\xae\xef\xbc\x88\xe7\xa1\xae\xe5\xae\x9a",
+
+    "\xe6\x88\x96\xe8\x80\x85\xe9\x80\x80\xe5\x87\xba\xef\xbc\x89\n\n",
+
+    "2.\xe7\x94\xa8\xe4\xb8\x8a\xe4\xb8\x8b",
+
+    "\xe6\x96\xb9\xe5\x90\x91\xe9\x94\xae\xe5\x8f\xaf",
+
+    "\xe4\xbb\xa5\xe5\xaf\xb9\xe7\x9b\xb8\xe5\xba\x94",
+
+    "\xe9\x80\x89\xe9\xa1\xb9\xe8\xbf\x9b\xe8\xa1\x8c",
+
+    "\xe9\x80\x89\xe6\x8b\xa9\n\n",
+
+    "3.\xe9\x80\x89\xe4\xb8\xad\xe7\x9b\xb8",
+
+    "\xe5\xba\x94\xe9\x80\x89\xe9\xa1\xb9\xe5\x90\x8e\xef\xbc\x8c",
+
+    "\xe6\x8c\x89OK\xe9\x94\xae\xe8\xbf\x9b",
+
+    "\xe5\x85\xa5\xe7\xbc\x96\xe8\xbe\x91",
+  
 };
+
 /*********************************************************************
 *
 *       _aDialogCreate
@@ -93,7 +93,7 @@ static const char *HelpMsg[45]={
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { WINDOW_CreateIndirect, NULL, ID_WINDOW_0, 0, 0, 240, 295, 0, 0x0, 0 },
   { MULTIEDIT_CreateIndirect, NULL, ID_MULTIEDIT_0, 1, 2, 238, 255, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, Cancel, ID_BUTTON_0, 175, 264, 55, 25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, Quit,    ID_BUTTON_0, 175, 264, 55, 25, 0, 0x0, 0 },
   { BUTTON_CreateIndirect, Update,  ID_BUTTON_1,  8,  264, 55, 25, 0, 0x0, 0 },
 };
 
@@ -137,50 +137,41 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
 
     
     break;
-  case WM_NOTIFY_PARENT:
-    Id    = WM_GetId(pMsg->hWinSrc);
-    NCode = pMsg->Data.v;
-    switch(Id) 
-    {
-        case ID_MULTIEDIT_0: // Notifications sent by 'Multiedit'
-            switch(NCode) 
-            {
-                case WM_NOTIFICATION_CLICKED:
-                break;
-            }
-    }
-    break;
+  
 
   case WM_KEY:
     {
-        switch(((WM_KEY_INFO*)(pMsg->Data.p))->Key)
+        if((((WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt)==1)
         {
-            case GUI_KEY_YELLOW:
-                WM_DeleteWindow(g_hWin_about);
-                g_hWin_about=0;
-                WM_ShowWindow(g_hWin_TimeBar);
-                WM_ShowWindow(g_hWin_Date);
-                WM_SetFocus(g_hWin_menu);
-                break;
-            case GUI_KEY_GREEN:
-                //WM_DeleteWindow(g_hWin_about);
-                //g_hWin_about=0;
-                //WM_SetFocus(g_hWin_menu);
-                //MESSAGEBOX_Create("Upgrade? Yes or Not?", "Tip", 0);
-                //WM_SetFocus()
-                if(g_sys_register_para.bootFlag != BOOT_REQUEST_ACT)
-                {
-                    g_sys_register_para.bootFlag = BOOT_REQUEST_ACT;
-                    DEV_Parameters_Write();
-                }
-                
-                
-                DEV_SoftReset();
+            switch(((WM_KEY_INFO*)(pMsg->Data.p))->Key)
+            {
+                case GUI_KEY_YELLOW:
+                    WM_DeleteWindow(g_hWin_about);
+                    g_hWin_about=0;
+                    WM_ShowWindow(g_hWin_TimeBar);
+                    WM_ShowWindow(g_hWin_Date);
+                    WM_SetFocus(g_hWin_menu);
+                    break;
+                case GUI_KEY_GREEN:
+                    //WM_DeleteWindow(g_hWin_about);
+                    //g_hWin_about=0;
+                    //WM_SetFocus(g_hWin_menu);
+                    //MESSAGEBOX_Create("Upgrade? Yes or Not?", "Tip", 0);
+                    //WM_SetFocus()
+                    if(g_sys_register_para.bootFlag != BOOT_REQUEST_ACT)
+                    {
+                        g_sys_register_para.bootFlag = BOOT_REQUEST_ACT;
+                        DEV_Parameters_Write();
+                    }
+                    
+                    
+                    DEV_SoftReset();
 
-                //DEV_Power_Off();
+                    //DEV_Power_Off();
 
-                //while(1);
-                break;
+                    //while(1);
+                    break;
+            }
         }
     }
     break;

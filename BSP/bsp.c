@@ -644,6 +644,12 @@ void BSP_GPIO_Configuration(void)
     GPIO_InitStructure.Pull  = GPIO_PULLUP; 
     HAL_GPIO_Init(GPIOG, &GPIO_InitStructure); 
 
+    GPIO_InitStructure.Pin = GPIO_PIN_7; 
+    GPIO_InitStructure.Mode =  GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
+    //GPIO_InitStructure.Pull  = GPIO_NOPULL; 
+    HAL_GPIO_Init(GPIOG, &GPIO_InitStructure); 
+
 	/* Configure the PLC_PWR pin */
     GPIO_InitStructure.Pin = GPIO_PIN_6|GPIO_PIN_5; 
     GPIO_InitStructure.Mode =  GPIO_MODE_OUTPUT_PP;
@@ -1157,18 +1163,19 @@ void  BSP_LED_Toggle (CPU_INT08U  led)
     }        
 }
 
-//#define NEW_POWER_VER_E6
+#define NEW_POWER_VER_E6
 
 void PLC_PWR_ON(void)
 {
     //HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_SET);
 
-#ifdef   NEW_POWER_VER_E6  
+#ifdef  NEW_POWER_VER_E6  
     HAL_GPIO_WritePin(GPIOE, GPIO_PIN_5, GPIO_PIN_SET);  //PLC POWER_ON
     HAL_GPIO_WritePin(GPIOE, GPIO_PIN_6, GPIO_PIN_SET);  //12v
 #else    
     HAL_GPIO_WritePin(GPIOE, GPIO_PIN_6, GPIO_PIN_RESET);
 #endif
+
 }
 
 void PLC_PWR_OFF(void)

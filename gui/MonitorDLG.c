@@ -95,6 +95,10 @@ static const char Start[]="F1 \xe5\xbc\x80 \xe5\xa7\x8b";
 
 //保存
 static const char Save[]="\xe4\xbf\x9d\xe5\xad\x98";
+
+//退出
+static const char Quit[]="\xe9\x80\x80\xe5\x87\xba";
+
 /*********************************************************************
 *
 *       _aDialogCreate
@@ -105,7 +109,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { BUTTON_CreateIndirect, ReadNope, ID_BUTTON_0, 142, 43, 93, 25, 0, 0x0, 0 },
   { BUTTON_CreateIndirect, ClearScr, ID_BUTTON_1, 8, 43, 90, 25, 0, 0x0, 0 },
   { BUTTON_CreateIndirect, Start, ID_BUTTON_2, 8, 8, 90, 25, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, Cancel, ID_BUTTON_3, 182, 265, 55, 25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, Quit, ID_BUTTON_3, 182, 265, 55, 25, 0, 0x0, 0 },
   { BUTTON_CreateIndirect, Save, ID_BUTTON_4, 10, 265, 55, 25, 0, 0x0, 0 },
   { TEXT_CreateIndirect,   Data, ID_TEXT_0, 10, 73, 56, 20, 0, 0x0, 0 },
   { MULTIEDIT_CreateIndirect, NULL, ID_MULTIEDIT_0, 4, 93, 232, 163, 0, 0x0, 0 },
@@ -152,19 +156,6 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     
 
     
-   // hItem = WM_GetDialogItem(pMsg->hWin, ID_DROPDOWN_0);
-   // DROPDOWN_AddString(hItem, Monitor);
-    //DROPDOWN_AddString(hItem, Copy);
-    //DROPDOWN_AddString(hItem, ReadNope);
-    //
-    // Initialization of 'Multiedit'
-    //
-    //hItem = WM_GetDialogItem(pMsg->hWin, ID_MULTIEDIT_0);
-    //MULTIEDIT_SetText(hItem, "Multiedit");
-    
-    //
-    // Initialization of 'Multiedit'
-    //
     hItem = WM_GetDialogItem(pMsg->hWin, ID_MULTIEDIT_0);
     //WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
     MULTIEDIT_SetAutoScrollV(hItem,1);
@@ -216,7 +207,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     }
     break;
   case WM_KEY:
-    if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)//按键释放。added on 2015.1.4
+    if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==1)//按键释放。
     {
         switch(((WM_KEY_INFO *)(pMsg->Data.p))->Key)
         {
@@ -226,6 +217,11 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 WM_ShowWindow(g_hWin_TimeBar);
                 WM_ShowWindow(g_hWin_Date);
                 WM_SetFocus(g_hWin_menu);
+   
+                g_send_para_pkg.cmdType = PLC_CMD_TYPE_L2R;
+                g_sys_control.guiState = GUI_PLC_MSG_IDLE;
+                OSMboxPost(g_sys_control.downMb, (void*)&g_send_para_pkg);
+                
                 break;
             case '#':
                 ButtonBlink(pMsg,ID_BUTTON_0);

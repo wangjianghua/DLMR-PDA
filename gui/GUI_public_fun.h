@@ -39,6 +39,56 @@
 #define GUI_MSBOX_ADDR_ERROR       0
 #define GUI_MSBOX_DIDO_ERROR       1
 #define GUI_MSBOX_PROC_ERROR       2
+#define GUI_MSBOX_MONTH_ERROR      3
+#define GUI_MSBOX_DAY_ERROR        4
+#define GUI_MSBOX_HOUR_ERROR       5
+#define GUI_MSBOX_MIN_ERROR        6
+#define GUI_MSBOX_FORMAT_ERROR     7
+
+
+#define KEY_PRESS_CNT_MIN          0  //按键次数
+#define KEY_PRESS_CNT_MAX          8  //最大按键次数
+
+
+#define LISTBOX_PROTOCOL           0
+#define LISTBOX_CHANNEL            1
+#define LISTBOX_BAUDRATE           2
+#define LISTBOX_PREAM              3
+#define LISTBOX_STOPBIT            4
+#define LISTBOX_CTLCODE            5
+#define LISTBOX_READ_SEL           6
+
+
+#define EDIT_SCR_OUTTIME           0
+#define EDIT_PASSWORD              1
+#define EDIT_RECV_DELAY            2
+#define EDIT_BETWEEN_ACT           3
+#define EDIT_ADDR                  4
+#define EDIT_DATA_FLAG             5
+#define EDIT_LENGTH                6
+#define EDIT_DATA                  7
+#define EDIT_METER_NUM             8
+
+#define EDIT_YEAR                  9
+#define EDIT_MONTH                 10
+#define EDIT_DAY                   11
+#define EDIT_HOUR                  12
+#define EDIT_MIN                   13
+#define EDIT_SEC                   14
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //#define ERROR_BOX(error_no)     MESSAGEBOX_Create(&gc_messageBoxText[error_no][0],"Error",0)
 
@@ -62,6 +112,9 @@ extern SEND_PARA_PKG g_send_para_pkg;      //参数包
 //extern SYS_PARA_PKG sys_para_pkg; //参数包指针
 
 extern const char *gc_messageBoxText[];
+
+//extern const u32 c_645DidoDef[2][PLC_CTRL_MAX_NUM];
+
 
 //SYS_PARA_PKG     g_para_pkg_ptr;
 
@@ -121,10 +174,15 @@ u8* GUI_hex2PowerDataStr(u8 * srcBuf, u32 len);
 
 WM_HWIN MND_Get_MultiEdit();
 
-u32 GUI_GetMeterAddr(u8 * dbuf);
+u32 GUI_GetMeterAddr(u8 * dbuf, u8 * gbuf);
+
 WM_HWIN RMD_Get_PROGBAR();
 WM_HWIN MMD_Get_PROGBAR();
 WM_HWIN GUI_Get_PROGBAR();
+WM_HWIN RMD_Get_MeterNum(void);
+WM_HWIN RMD_Get_ReadSel(void);
+
+
 
 u32 GUI_GetStrDataFlag(u8 * dbuf, u32 pro_ver);
 u8* GUI_hex2MeterAddrStr(u8 * srcBuf, u32 len);

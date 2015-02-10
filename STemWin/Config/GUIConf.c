@@ -108,6 +108,7 @@ void GUI_X_Config(void) {
   LISTVIEW_SetDefaultFont(GUI_DEFAULT_FONT);
   HEADER_SetDefaultFont(GUI_DEFAULT_FONT);
   FRAMEWIN_SetDefaultFont(GUI_DEFAULT_FONT);
+  LISTBOX_SetDefaultFont(GUI_DEFAULT_FONT);
 
   
   //ICONVIEW_SE

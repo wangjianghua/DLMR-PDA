@@ -11,17 +11,24 @@ u8 CheckDL645_Frame(u8 *buff)
     u8 len,i,CS,offset;
     for(offset=0; offset<12; offset++)
     {
-        if(buff[offset]==0x68)break;//查找帧头68H
+        if(buff[offset]==0x68)
+            break;//查找帧头68H
     }
-    if(offset>10)return(120);
+    if(offset>10)
+        return(DL645_FRAME_ERROR);
 
-    if(buff[7+offset]!=0x68)return(120);
+    if(buff[7+offset]!=0x68)
+        return(DL645_FRAME_ERROR);
+    
     len=buff[offset+9];
-    if(buff[len+11+offset]!=0x16)return(120);
+    if(buff[len+11+offset]!=0x16)
+        return(DL645_FRAME_ERROR);
     CS=0;
     len+=10;
-    for(i=0; i<len; i++)CS+=buff[offset+i];
-    if(CS!=buff[len+offset])return(120);
+    for(i=0; i<len; i++)
+        CS+=buff[offset+i];
+    if(CS!=buff[len+offset])
+        return(DL645_FRAME_ERROR);
     return(offset);
 }
 
@@ -105,7 +112,7 @@ u8 Create_DL645_LeveFrame(u8 *leve_Addr,u8 leve,u8 *Addr,u8 C,u8 len,u8 *data,u8
 	return(Point+12);	
 }
 
-void Analysis_DL645_Frame(u8 *Addr,u8 *buff, DL645_Frame_Stat_C * pFreame_st)
+u32 Analysis_DL645_Frame(u8 *Addr,u8 *buff, DL645_Frame_Stat_C * pFreame_st)
 {
 	//DL645_Frame_Stat_C	Freame_st;
 	DL645_Frame_C *DL645_Frame;
@@ -114,7 +121,7 @@ void Analysis_DL645_Frame(u8 *Addr,u8 *buff, DL645_Frame_Stat_C * pFreame_st)
 	pFreame_st->ID_Leng=0;
 	pFreame_st->Status=0;
 	i = CheckDL645_Frame(buff);
-	if(i<6)
+	if(i != DL645_FRAME_ERROR)
 	{
 		pFreame_st->Status=1; //合法645报文
 		
@@ -131,7 +138,7 @@ void Analysis_DL645_Frame(u8 *Addr,u8 *buff, DL645_Frame_Stat_C * pFreame_st)
         
 		Frame_Sub_33(DL645_Frame->Data,DL645_Frame->L);
         
-		pFreame_st->C=DL645_Frame->C;
+		pFreame_st->C = DL645_Frame->C;
         
 		if((DL645_Frame->C&0x10)||(DL645_Frame->C==0x83))
 		{
@@ -142,10 +149,12 @@ void Analysis_DL645_Frame(u8 *Addr,u8 *buff, DL645_Frame_Stat_C * pFreame_st)
 		{
 			pFreame_st->protocol=DL645_1997;
 			if(DL645_Frame->C==0x81)pFreame_st->ID_Leng=2;
-		}        
+		}     
+
+        return DL645_FRAME_OK;
 	}
     
 	//return(pFreame_st->C);
-	return; //华兄
+	return DL645_FRAME_ERROR; //华兄
 }
 

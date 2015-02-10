@@ -13,18 +13,10 @@ KEY_CON g_key_control;
 #define ID_TEXT_1             (GUI_ID_USER + 0x06)
 
 
-/************************************************************
-因为发送了两次按键消息，所以加一个全局计数变量进行计数
-按下的时候是0，释放后是1，事件只在按键释放的时候响应
-
-*************************************************************/
-//int g_key_press_count=0;  //added on 2014.12.31   
-
-
 
 static const int s_key_msg_map[4][KEYBOARD_ROW_NUM] = 
 {
-    {'*','7', '4', '1', GUI_KEY_TAB, GUI_KEY_ESCAPE},
+    {'*','7', '4', '1', GUI_KEY_SPACE, GUI_KEY_ESCAPE},
     {GUI_KEY_F1,'0', '8', '5', '2', GUI_KEY_DOWN},
     {GUI_KEY_F2,'#', '9', '6', '3', GUI_KEY_BACKSPACE},
     {GUI_KEY_ENTER, GUI_KEY_YELLOW, GUI_KEY_RIGHT, GUI_KEY_UP, GUI_KEY_LEFT, GUI_KEY_GREEN},
@@ -113,7 +105,7 @@ void  App_TaskKey (void *p_arg)
         default:
             goto key_proc_end;
         }
-
+        
         if(i < KEYBOARD_ROW_NUM)
         {
             key_msg = s_key_msg_map[n][i];
@@ -126,9 +118,13 @@ void  App_TaskKey (void *p_arg)
                 break;
         }
 
+        g_sys_control.shutdownTimeout = 0;
         g_sys_control.sleepTimeout = 0;
         
         GUI_SendKeyMsg(key_msg , 0);//松开的时候发送
+
+        if(g_sys_control.sysPowerState == SYS_POWER_IDLE)
+            APP_Wakeup();
 
         
 

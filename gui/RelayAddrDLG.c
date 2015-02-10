@@ -108,6 +108,10 @@ static const char Start[]="\xe6\x8c\x89 * \xe5\xbc\x80 \xe5\xa7\x8b";
 //保存
 static const char Save[]="\xe4\xbf\x9d\xe5\xad\x98";
 
+//退出
+static const char Quit[]="\xe9\x80\x80\xe5\x87\xba";
+
+
 //启动路由
 static const char StartRoute[]="*\xe5\x90\xaf\xe5\x8a\xa8\xe8\xb7\xaf\xe7\x94\xb1";
 
@@ -124,7 +128,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { BUTTON_CreateIndirect,   Modify,     ID_BUTTON_5,   142, 82,  88,  28,  0, 0x0, 0 },
   { LISTVIEW_CreateIndirect, NULL,       ID_LISTVIEW_0, 8,   116, 224, 144, 0, 0x0, 0 },
   { BUTTON_CreateIndirect,   Save,       ID_BUTTON_3,   8,   264, 55,  25,  0, 0x0, 0 },
-  { BUTTON_CreateIndirect,   Cancel,     ID_BUTTON_4,   167, 264, 55,  25,  0, 0x0, 0 },
+  { BUTTON_CreateIndirect,   Quit,     ID_BUTTON_4,   167, 264, 55,  25,  0, 0x0, 0 },
   
 };
 

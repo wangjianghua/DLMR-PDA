@@ -32,6 +32,8 @@
 #define DL645_Data_MAX                         230 //ЛЊаж
 
 
+#define DL645_FRAME_ERROR      200
+#define DL645_FRAME_OK         0
 
 typedef struct
 {
@@ -54,7 +56,7 @@ typedef struct
 } DL645_Frame_C;
 #pragma pack()
 void Create_DL645_Frame(u8 *Addr, u8 C, u8 len, DL645_Frame_C *DL645_Frame);
-void Analysis_DL645_Frame(u8 *Addr,u8 *buff, DL645_Frame_Stat_C * pFreame_st);
+u32 Analysis_DL645_Frame(u8 *Addr,u8 *buff, DL645_Frame_Stat_C * pFreame_st);
 
 #ifdef __cplusplus
 }

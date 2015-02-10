@@ -224,16 +224,31 @@ unsigned int DEV_Parameters_Write(void)
     return DEV_OK;    
 }
 
-const u8 c_test_addr[6] = {0x0, 0x36, 0x19, 0x0, 0x0, 0x0};
-const u8 c_default_dataflag[4] = {0x00, 0x01, 0x0, 0x0};
+const u8 c_test_addr[6] = {0x76, 0x05, 0x31, 0x01, 0x0, 0x18};
+const u8 c_default_dataflag[4] = {0x00, 0x00, 0x01, 0x0};
+
+const u8 c_97_dataflag[4] = {0x90,0x10, 0x00, 0x00};
+
 void DEV_Init(void)
 {
     //unsigned char err;   
     DEV_Parameters_Read();  
 
     memcpy(g_sys_control.recentMeterAddr, c_test_addr, 6);
-    memcpy(g_sys_control.defaultDataFlag, c_default_dataflag, 4);
+
+    if(g_sys_register_para.plcProtocol==DL_T_07)
+    {
+        memcpy(g_sys_control.defaultDataFlag, c_default_dataflag, 4);
+    }
+    else if(g_sys_register_para.plcProtocol==DL_T_97)
+    {
+        memcpy(g_sys_control.defaultDataFlag, c_97_dataflag, 4);
+    }
+    g_sys_control.shutdownTimeout = 0;
+
     g_sys_control.sleepTimeout = 0;
+
+    g_sys_control.sysPowerState = SYS_POWER_WAKEUP;
     
 }
 

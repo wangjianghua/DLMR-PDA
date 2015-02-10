@@ -5,45 +5,6 @@
 u8 s_prbf[512];
 
 
-#if 0
-static void _cbErrNote(WM_MESSAGE *pMsg)
-{
-    int Id;
-    WM_HWIN hItem;
-    switch(pMsg->MsgId)
-    {
-        case WM_INIT_DIALOG:
-             FRAMEWIN_SetClientColor(pMsg->hWin, GUI_RED);
-            hItem=WM_GetDialogItem(pMsg->hWin,GUI_ID_OK);
-            BUTTON_SetBkColor(hItem,0,GUI_RED);
-            break;
-        case WM_KEY:
-            switch(((WM_KEY_INFO *)(pMsg->Data.p))->Key)
-            {
-                case GUI_KEY_ENTER:
-                    WM_DeleteWindow(g_hWin_Err);
-                    WM_SetFocus(g_hWin_mem);
-                    break;
-            }
-            break;
-         default: 
-            WM_DefaultProc(pMsg);
-            break;
-    }
-}
-
-
-WM_HWIN ERROR_BOX(int error_no)
-{
-    WM_HWIN hItem;
-    WM_HWIN hWin;
-    hWin=MESSAGEBOX_Create(&gc_messageBoxText[error_no][0],"Error",0);
-    WM_SetFocus(hWin);
-    WM_SetCallback(hWin,_cbErrNote);
-    return hWin;
-}
-
-#endif
 
 
 u8 GUI_Hex2Char(u8 ch)
@@ -94,7 +55,7 @@ u8* GUI_hex2MeterAddrStr(u8 * srcBuf, u32 len)
 
 }
 
-u32 GUI_GetMeterAddr(u8 * dbuf)
+u32 GUI_GetMeterAddr(u8 * dbuf, u8 * gbuf)
 {
     u8 rmd_ch;
     u8 i;
@@ -106,7 +67,10 @@ u32 GUI_GetMeterAddr(u8 * dbuf)
             //error proc
             return DEV_ERROR;
         }
-        g_send_para_pkg.dstAddr[5-i] = rmd_ch<<4;
+        //g_send_para_pkg.dstAddr[5-i] = rmd_ch<<4;
+        //g_sys_control.recentMeterAddr[5-i] = rmd_ch<<4;
+        gbuf[5-i] = rmd_ch<<4;
+       
         
         if(((rmd_ch = GUI_char2hex(dbuf[(i<<1)+1])) == 0xff))
         {
@@ -114,7 +78,9 @@ u32 GUI_GetMeterAddr(u8 * dbuf)
             return DEV_ERROR;
         }
         
-        g_send_para_pkg.dstAddr[5-i] |= rmd_ch;
+        //g_send_para_pkg.dstAddr[5-i] |= rmd_ch;
+        //g_sys_control.recentMeterAddr[5-i] |= rmd_ch;
+        gbuf[5-i] |= rmd_ch;
     }
 
     return DEV_OK;
@@ -130,8 +96,8 @@ void GUI_GetHexDataFlag(u8 * strbuf, u8* dataflag, u8 len)
 
     for(i = 0; i < len; i++)
     {
-        *strbuf++ = GUI_Hex2Char( dataflag[i]>>4);
-        *strbuf++ = GUI_Hex2Char( dataflag[i]&0x0f);
+        *strbuf++ = GUI_Hex2Char( dataflag[len-i-1]>>4);
+        *strbuf++ = GUI_Hex2Char( dataflag[len-i-1]&0x0f);
     }
 
     *strbuf = '\0';
@@ -155,6 +121,7 @@ u32 GUI_GetStrDataFlag(u8 * dbuf, u32 pro_ver)
             return DEV_ERROR;
         }
         g_send_para_pkg.dataFlag[len-1-i] = rmd_ch<<4;
+        g_sys_control.defaultDataFlag[len-1-i] = rmd_ch<<4;
         
         if(((rmd_ch = GUI_char2hex(dbuf[(i<<1)+1])) == 0xff))
         {
@@ -163,11 +130,12 @@ u32 GUI_GetStrDataFlag(u8 * dbuf, u32 pro_ver)
         }
         
         g_send_para_pkg.dataFlag[len-1-i] |= rmd_ch;
+        g_sys_control.defaultDataFlag[len-1-i] |= rmd_ch;
     }
 
     return DEV_OK;
 }
-
+//电量化为尖峰平谷小数
 u8* GUI_hex2PowerDataStr(u8 * srcBuf, u32 len)
 {
 
@@ -228,7 +196,7 @@ void GUI_print_recv_buf()
 
             if(g_sys_control.guiState == GUI_PLC_MSG_TEST)
             {
-                STM_proc_resp_data();
+            //    STM_proc_resp_data();
             }
         }
         else if(g_sys_control.guiState == GUI_PLC_MSG_LISTING)
@@ -288,6 +256,8 @@ void GUI_Msg_Proc()
 {
     WM_HWIN hItem;
 
+    
+
     if(g_plc_prm.sendStatus == PLC_MSG_SENDING)    
     {        
         //g_plc_prm.send_buf
@@ -297,7 +267,34 @@ void GUI_Msg_Proc()
         //GUI_Delay(15);
         Data_Upload_Green(1);
         GUI_print_send_buf();
+        return;
        
+    }
+
+    if((g_plc_prm.result == PLC_RES_FAIL) || (g_plc_prm.result == PLC_RES_TIMEOUT))
+    {
+        g_plc_prm.result = PLC_RES_NONE;
+        return;
+    }
+
+    if(g_plc_prm.result == PLC_RES_ERROR_FRAME)
+    {
+       
+        Data_Download_Yellow(1);
+        GUI_print_recv_buf();
+
+        hItem = GUI_Get_PROGBAR();
+        if(hItem != WM_HWIN_NULL)
+        {
+            PROGBAR_SetBarColor(hItem, 0, GUI_RED);
+            g_sys_control.testProgBarVal = 100;
+            PROGBAR_SetValue(hItem, g_sys_control.testProgBarVal);              
+        }
+           
+        //g_sys_control.guiState = GUI_PLC_MSG_IDLE;
+        g_plc_prm.sendStatus = PLC_MSG_IDLE; 
+        g_plc_prm.result = PLC_RES_NONE;
+        return;
     }
 
     if((g_plc_prm.sendStatus == PLC_MSG_RECEIVED) )
@@ -322,7 +319,7 @@ void GUI_Msg_Proc()
         g_plc_prm.sendStatus = PLC_MSG_IDLE;
     }
 
-
+    g_plc_prm.result = PLC_RES_NONE;
 
    
     

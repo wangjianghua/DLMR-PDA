@@ -27,7 +27,9 @@
 *
 **********************************************************************
 */
+
 #define ID_WINDOW_0       (GUI_ID_USER + 0x6C)
+
 
 #define ID_TEXT_0         (GUI_ID_USER + 0x6D)
 #define ID_TEXT_1         (GUI_ID_USER + 0x6E)
@@ -39,23 +41,25 @@
 #define ID_TEXT_7         (GUI_ID_USER + 0x74)
 #define ID_TEXT_8         (GUI_ID_USER + 0x75)
 
-#define ID_DROPDOWN_0     (GUI_ID_USER + 0x76)
-#define ID_DROPDOWN_1     (GUI_ID_USER + 0x77)
-#define ID_DROPDOWN_2     (GUI_ID_USER + 0x78)
-#define ID_DROPDOWN_3     (GUI_ID_USER + 0x79)
-#define ID_DROPDOWN_4     (GUI_ID_USER + 0x7A)
-#define ID_DROPDOWN_5     (GUI_ID_USER + 0x7B)
+
+#define ID_EDIT_0     (GUI_ID_USER + 0x76)
+#define ID_EDIT_1     (GUI_ID_USER + 0x77)
+#define ID_EDIT_2     (GUI_ID_USER + 0x78)
+#define ID_EDIT_3     (GUI_ID_USER + 0x79)
+#define ID_EDIT_4     (GUI_ID_USER + 0x7A)
+#define ID_EDIT_5     (GUI_ID_USER + 0x7B)
 
 
-#define ID_EDIT_0         (GUI_ID_USER + 0x7C)
-#define ID_EDIT_1         (GUI_ID_USER + 0x7D)
-#define ID_EDIT_2         (GUI_ID_USER + 0x7E)
-#define ID_EDIT_3         (GUI_ID_USER + 0x7F)
+#define ID_EDIT_6         (GUI_ID_USER + 0x7C)
+#define ID_EDIT_7         (GUI_ID_USER + 0x7D)
+#define ID_EDIT_8         (GUI_ID_USER + 0x7E)
 
 
 #define ID_BUTTON_0       (GUI_ID_USER + 0x80)
 #define ID_BUTTON_1       (GUI_ID_USER + 0x81)
 #define ID_BUTTON_2       (GUI_ID_USER + 0x82)
+
+#define ID_LISTBOX_0      (GUI_ID_USER + 0x83)
 
 
 
@@ -66,6 +70,7 @@ char Edit1_Text[10];
 char Edit2_Text[10];
 
 
+static int key_press_cnt = 1;//按键次数，按上下键盘的时候对应不同的button
 
 /*********************************************************************
 *
@@ -77,28 +82,28 @@ char Edit2_Text[10];
 //通信参数设置
 static const char CommParaSet[]="\xe9\x80\x9a\xe4\xbf\xa1\xe5\x8f\x82\xe6\x95\xb0\xe8\xae\xbe\xe7\xbd\xae";
 //接收数据延时
-static const char RevDataDelay[]="8-\xe6\x8e\xa5\xe6\x94\xb6\xe6\x95\xb0\xe6\x8d\xae\xe5\xbb\xb6\xe6\x97\xb6";
+static const char RevDataDelay[]="\xe6\x8e\xa5\xe6\x94\xb6\xe6\x95\xb0\xe6\x8d\xae\xe5\xbb\xb6\xe6\x97\xb6";
 //执行间隔时间
-static const char BetwoonAct[]="9-\xe6\x89\xa7\xe8\xa1\x8c\xe9\x97\xb4\xe9\x9a\x94\xe6\x97\xb6\xe9\x97\xb4";
+static const char BetweenAct[]="\xe6\x89\xa7\xe8\xa1\x8c\xe9\x97\xb4\xe9\x9a\x94\xe6\x97\xb6\xe9\x97\xb4";
 //电力载波
 static const char WaveCarrier[]="\xe7\x94\xb5\xe5\x8a\x9b\xe8\xbd\xbd\xe6\xb3\xa2";
 
 //红外
-static const char Infrared[]=" \xe7\xba\xa2\xe5\xa4\x96";
+static const char Infrared[]="\xe7\xba\xa2\xe5\xa4\x96";
 //规约
-static const char Protocal[]="1- \xe8\xa7\x84  \xe7\xba\xa6:";
+static const char Protocal[]="\xe8\xa7\x84  \xe7\xba\xa6:";
 //通道
-static const char Channel[]="2- \xe9\x80\x9a  \xe9\x81\x93:";
+static const char Channel[]="\xe9\x80\x9a  \xe9\x81\x93:";
 //波特率
-static const char BaudRate[]="3- \xe6\xb3\xa2\xe7\x89\xb9\xe7\x8e\x87:";
+static const char BaudRate[]="\xe6\xb3\xa2\xe7\x89\xb9\xe7\x8e\x87:";
 //前导符
-static const char Preamble[]="4- \xe5\x89\x8d\xe5\xaf\xbc\xe7\xac\xa6:";
+static const char Preamble[]="\xe5\x89\x8d\xe5\xaf\xbc\xe7\xac\xa6:";
 //停止位
-static const char StopBit[]="5- \xe5\x81\x9c\xe6\xad\xa2\xe4\xbd\x8d:";
+static const char StopBit[]="\xe5\x81\x9c\xe6\xad\xa2\xe4\xbd\x8d:";
 //个数
-static const char Number[]="6- \xe4\xb8\xaa  \xe6\x95\xb0:";
+static const char Number[]="\xe4\xb8\xaa  \xe6\x95\xb0:";
 //密码
-static const char PassWord[]="7- \xe5\xaf\x86  \xe7\xa0\x81:";
+static const char PassWord[]="\xe5\xaf\x86  \xe7\xa0\x81:";
 //保存
 static const char Save[]="\xe4\xbf\x9d\xe5\xad\x98";
 //取消
@@ -108,7 +113,31 @@ static const char Cancel[]="\xe5\x8f\x96\xe6\xb6\x88";
 static const char TimeSet[]="F1\xe6\x97\xb6\xe9\x97\xb4\xe8\xae\xbe\xe7\xbd\xae";
 
 //屏幕超时
-static const char ScrTimeout[]="6-\xe5\xb1\x8f\xe5\xb9\x95\xe8\xb6\x85\xe6\x97\xb6(\xe7\xa7\x92)";
+static const char ScrTimeout[]="\xe5\xb1\x8f\xe5\xb9\x95\xe8\xb6\x85\xe6\x97\xb6(\xe7\xa7\x92)";
+
+//退出
+static const char Quit[]="\xe9\x80\x80\xe5\x87\xba";
+
+
+
+
+static const GUI_ConstString pProtocolText[] = {
+  "DL-T-97", "DL-T-07",NULL
+};
+
+static const GUI_ConstString pChannelText[]={
+    "\xe7\x94\xb5\xe5\x8a\x9b\xe8\xbd\xbd\xe6\xb3\xa2",
+    "485",
+    "\xe7\xba\xa2\xe5\xa4\x96",
+};
+
+
+
+
+
+
+
+
 
 /*********************************************************************
 *
@@ -119,51 +148,191 @@ static const char ScrTimeout[]="6-\xe5\xb1\x8f\xe5\xb9\x95\xe8\xb6\x85\xe6\x97\x
 
 
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
-  { WINDOW_CreateIndirect, CommParaSet, ID_WINDOW_0, 0, 0, 240, 295, 0, 0x0, 0 },
-    
-  { DROPDOWN_CreateIndirect, "Dropdown",   ID_DROPDOWN_0, 130, 12,  104, 19, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,     Protocal,     ID_TEXT_0, 8,  14,  80,  24, 0, 0x0, 0 }, 
-  { DROPDOWN_CreateIndirect, "Dropdown",   ID_DROPDOWN_2, 130, 39,  104, 19, 0, 0x0, 0 },
-  { DROPDOWN_CreateIndirect, "Dropdown",   ID_DROPDOWN_1, 130, 67,  103, 19, 0, 0x0, 0 },
-  { DROPDOWN_CreateIndirect, "Dropdown",   ID_DROPDOWN_4, 130, 96,  103, 19, 0, 0x0, 0 },
-  { DROPDOWN_CreateIndirect, "Dropdown",   ID_DROPDOWN_3, 130, 125, 104, 19, 0, 0x0, 0 }, 
-  { TEXT_CreateIndirect,     Channel,      ID_TEXT_2,     8,   40,  80, 20, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,     BaudRate,     ID_TEXT_1,     8,   69,  80, 24, 0, 0x0, 0 }, 
-  { TEXT_CreateIndirect,     StopBit ,     ID_TEXT_3,     8,   126, 80, 24, 0, 0x0, 0 },    
-  { TEXT_CreateIndirect,     Preamble,     ID_TEXT_4,     8,   98,  80, 20, 0, 0x0, 0 },
-    
-  { TEXT_CreateIndirect,     ScrTimeout,   ID_TEXT_5,     8,   156, 110, 20, 0, 0x0, 0 },
-  { EDIT_CreateIndirect,     "ScrTimeout", ID_EDIT_3,     130, 155, 104, 19, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,     PassWord,     ID_TEXT_6,     8,   185, 95, 20, 0, 0x0, 0 },
-    
-  { EDIT_CreateIndirect,     "Edit",       ID_EDIT_0,     130, 182, 104, 20, 0, 0x64, 0 },
-  { TEXT_CreateIndirect,     RevDataDelay, ID_TEXT_7,     8,   211, 110, 20, 0, 0x0, 0 },
-  { EDIT_CreateIndirect,     "Edit",       ID_EDIT_1,     130, 209, 104, 20, 0, 0x64, 0 },
-  { TEXT_CreateIndirect,     BetwoonAct,   ID_TEXT_8,     8,   239, 110, 20, 0, 0x0, 0 },
-  { EDIT_CreateIndirect,     "Edit",       ID_EDIT_2,     130, 237, 104, 20, 0, 0x64, 0 },
-  { BUTTON_CreateIndirect,   Save,         ID_BUTTON_0,   8,   264, 55, 25, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect,   Cancel,       ID_BUTTON_1,   176, 264, 55, 25, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect,   TimeSet,      ID_BUTTON_2,   75,  264, 90, 25, 0, 0x0, 0 },
+
+  { WINDOW_CreateIndirect,  "cps_new",    ID_WINDOW_0, 0,   0,   240, 295, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    Protocal,     ID_TEXT_0,   8,   12,  110, 20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    Channel,      ID_TEXT_1,   8,   39,  110, 20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    BaudRate,     ID_TEXT_2,   8,   63,  110, 20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    Preamble,     ID_TEXT_3,   8,   87,  110, 20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    StopBit,      ID_TEXT_4,   8,   112, 110, 20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    ScrTimeout,   ID_TEXT_5,   8,   142, 110, 20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    PassWord,     ID_TEXT_6,   8,   165, 110, 20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    RevDataDelay, ID_TEXT_7,   8,   193, 110, 20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    BetweenAct,   ID_TEXT_8,   8,   226, 110, 20, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect,  Save,         ID_BUTTON_0, 9,   264, 55,  20, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect,  Quit,         ID_BUTTON_1, 172, 263, 55,  20, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect,  TimeSet,      ID_BUTTON_2, 74,  263, 80,  20, 0, 0x0, 0 },
+  { EDIT_CreateIndirect,    NULL,       ID_EDIT_0,   128, 12,  103, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect,    NULL,       ID_EDIT_1,   128, 37,  103, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect,    NULL,       ID_EDIT_2,   128, 63,  103, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect,    NULL,       ID_EDIT_3,   128, 88,  103, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect,    NULL,       ID_EDIT_4,   128, 114, 103, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect,    NULL,       ID_EDIT_5,   128, 140, 103, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect,    NULL,       ID_EDIT_6,   128, 166, 103, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect,    NULL,       ID_EDIT_7,   128, 194, 103, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect,    NULL,       ID_EDIT_8,   128, 222, 103, 20, 0, 0x64, 0 },
+
 };
 
 
 
 
+static const GUI_WIDGET_CREATE_INFO _aListBoxWidget[] = {
+  { WINDOW_CreateIndirect,   "CPS_Protocol_Set",  ID_WINDOW_0,  7,   11, 200, 119, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect,   "Button",            ID_BUTTON_0,  7,   83, 80,  20,  0, 0x0, 0 },
+  { LISTBOX_CreateIndirect,  "Listbox",           ID_LISTBOX_0, 5,   7,  190, 47,  0, 0x0, 0 },
+  { BUTTON_CreateIndirect,   "Button",            ID_BUTTON_1,  109, 82, 80,  20,  0, 0x0, 0 },
+  // USER START (Optionally insert additional widgets)
+  // USER END
+};
 
-/**************************************************************
-*
-*                     初始化对话框
-*所有的dropdown的string中，前面都加了一个空格，不然会对相应的
-*数字按键有所响应
-***************************************************************/
+
+
+
+//向上选择
+void CPS_SelEdt_Up(WM_MESSAGE * pMsg)
+{
+    WM_HWIN hItem;
+    if(key_press_cnt==KEY_PRESS_CNT_MIN)
+    {
+        
+        //WM_SetFocus(hItem);
+        
+        hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_8);
+        //EDIT_SetBkColor(hItem,0,GUI_GREEN);
+        WM_SetFocus(hItem);
+
+        hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
+        EDIT_SetBkColor(hItem,0,0xC0C0C0);
+        
+        key_press_cnt=KEY_PRESS_CNT_MAX;
+    }
+    else
+    {
+        key_press_cnt--;
+        hItem=WM_GetDialogItem(pMsg->hWin,(ID_EDIT_0+key_press_cnt));
+        //EDIT_SetBkColor(hItem,0,GUI_GREEN);
+        WM_SetFocus(hItem);
+
+        hItem=WM_GetDialogItem(pMsg->hWin,(ID_EDIT_0+key_press_cnt+1));
+        EDIT_SetBkColor(hItem,0,0xC0C0C0);
+    }
+
+
+}
+//向下选择
+void CPS_SelEdt_Down(WM_MESSAGE *pMsg)
+{
+    WM_HWIN hItem;
+    if(key_press_cnt==KEY_PRESS_CNT_MAX)
+    {
+        hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
+        //EDIT_SetBkColor(hItem,0,GUI_GREEN);
+        WM_SetFocus(hItem);
+        
+        hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_8);
+        EDIT_SetBkColor(hItem,0,0xC0C0C0);
+        
+        key_press_cnt=KEY_PRESS_CNT_MIN;
+    }
+    else
+    {
+        key_press_cnt++;
+        hItem=WM_GetDialogItem(pMsg->hWin,(ID_EDIT_0+key_press_cnt));
+        //EDIT_SetBkColor(hItem,0,GUI_GREEN);
+        WM_SetFocus(hItem);
+        
+        hItem=WM_GetDialogItem(pMsg->hWin,(ID_EDIT_0+key_press_cnt-1));
+        EDIT_SetBkColor(hItem,0,0xC0C0C0);
+
+    }
+
+}
+
+void CPS_Color_Change(WM_MESSAGE *pMsg)
+{
+    WM_HWIN hItem;
+    int i;
+    for(i=0;i<9;i++)
+    {
+        hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0+i);
+        if(WM_HasFocus(hItem)==1)
+        {
+            EDIT_SetBkColor(hItem,0,GUI_GREEN);
+        }
+
+    }
+}
+
+WM_HWIN CPS_Set_Proto(void)
+{
+    //WM_HWIN hItem;
+    return  WM_GetDialogItem(g_hWin_para,ID_EDIT_0);
+    //EDIT_SetText(hItem,pText);
+}
+
+WM_HWIN CPS_Set_Channel(void)
+{
+    return  WM_GetDialogItem(g_hWin_para,ID_EDIT_1);
+}
+
+WM_HWIN CPS_Set_BaudRate(void)
+{
+    return  WM_GetDialogItem(g_hWin_para,ID_EDIT_2);
+}
+
+WM_HWIN CPS_Set_Pream(void)
+{
+   return  WM_GetDialogItem(g_hWin_para,ID_EDIT_3);
+}
+
+WM_HWIN CPS_Set_StopBit(void)
+{
+   return  WM_GetDialogItem(g_hWin_para,ID_EDIT_4);
+}
+
+WM_HWIN CPS_Set_ScrOutTime(void)
+{
+   return  WM_GetDialogItem(g_hWin_para,ID_EDIT_5);
+}
+
+WM_HWIN CPS_Set_Pwd(void)
+{
+    return  WM_GetDialogItem(g_hWin_para,ID_EDIT_6);
+}
+
+WM_HWIN CPS_Set_RevDelay(void)
+{
+    return  WM_GetDialogItem(g_hWin_para,ID_EDIT_7);
+}
+
+WM_HWIN CPS_Set_BetweenAct(void)
+{
+    return  WM_GetDialogItem(g_hWin_para,ID_EDIT_8);
+}
+
+
+
+
+
+
+
+
+
+void CPS_Set_Edit_Proto(WM_MESSAGE *pMsg,int WidgetId,unsigned char *pText)
+{
+    WM_HWIN hItem;
+    hItem=WM_GetDialogItem(g_hWin_Input,ID_EDIT_0);
+    EDIT_SetText(hItem,pText);
+}
+
+
+//初始化对话框
 static void _init_dialog(WM_MESSAGE * pMsg)
 {
     WM_HWIN hItem;
+    int i;
     
-        //
-        // Initialization of 'Dropdown'
-        //
-
     hItem = WM_GetDialogItem(pMsg->hWin, ID_BUTTON_0);
     BUTTON_SetBkColor(hItem,0,GUI_GREEN);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
@@ -176,275 +345,121 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     BUTTON_SetBkColor(hItem,0,GUI_CYAN);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
 
-
-    
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_DROPDOWN_0);
-    DROPDOWN_AddString(hItem, " DL/T-07");
-    DROPDOWN_AddString(hItem, " DL/T-97");
-    //WM_DisableWindow(hItem);
-    
-    //DROPDOWN_SetSel(hItem,g_sys_register_para.plcProtocol);
-    
+    for(i=0;i<9;i++)
+    {
+        hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0+i);
+        WM_DisableWindow(hItem);
+    }
+    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_0);
     switch(g_sys_register_para.plcProtocol)
     {
         case DL_T_07:
-            DROPDOWN_SetSel(hItem,0);
+            EDIT_SetText(hItem, "DL-T-07");
             break;
         case DL_T_97:
-            DROPDOWN_SetSel(hItem,1);
-            break;
-    }
-    //WM_SetFocus(hItem);
-    //
-    // Initialization of 'Dropdown'
-    //
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_DROPDOWN_1);
-    DROPDOWN_AddString(hItem, " 1200");
-    DROPDOWN_AddString(hItem, " 1500");
-    DROPDOWN_AddString(hItem, " 2400");
-    DROPDOWN_AddString(hItem, " 4800");
-    DROPDOWN_AddString(hItem, " 9600");
-    WM_DisableWindow(hItem);
-    //DROPDOWN_SetSel(hItem,g_sys_register_para.baudrate);
-    switch(g_sys_register_para.baudrate)
-    {
-        case 1200:
-            DROPDOWN_SetSel(hItem,0);
-            break;
-        case 1500:
-            DROPDOWN_SetSel(hItem,1);
-            break;
-        case 2400:
-            DROPDOWN_SetSel(hItem,2);
-            break;
-        case 4800:
-            DROPDOWN_SetSel(hItem,3);
-            break;
-        case 9600:
-            DROPDOWN_SetSel(hItem,4);
-            break;
+            EDIT_SetText(hItem, "DL-T-97");
     }
     
 
-    //
-    // Initialization of 'Dropdown'
-    //
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_DROPDOWN_2);
-    //DROPDOWN_AddString(hItem, " 485");
-    DROPDOWN_AddString(hItem, WaveCarrier);
-    WM_DisableWindow(hItem);
-    //DROPDOWN_AddString(hItem, Infrared);
-    //DROPDOWN_SetSel(hItem,g_sys_register_para.channel);
+    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_1);
+    //EDIT_SetText(hItem, "channel");
     g_sys_register_para.channel = 0;
     switch(g_sys_register_para.channel)
     {
         case CHANNEL_485:
-            DROPDOWN_SetSel(hItem,1);
+            EDIT_SetText(hItem,"485");
             break;
           
         case CHANNEL_WAVE:
-            DROPDOWN_SetSel(hItem,0);
+            EDIT_SetText(hItem,WaveCarrier);
             break;
          
         case CHANNEL_INFRD:
-            DROPDOWN_SetSel(hItem,2);
+            EDIT_SetText(hItem,Infrared);
             break;
     }
+    //EDIT_SetBkColor(hItem,0,GUI_GREEN);
     
 
-    //
-    // Initialization of 'Dropdown'
-    //
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_DROPDOWN_3);
-    DROPDOWN_AddString(hItem, " 1");
-    DROPDOWN_AddString(hItem, " 2");
-    //DROPDOWN_SetSel(hItem,g_sys_register_para.stopbit);
-    //WIDGET_AndState(WM_HWIN hObj,int State);
-    switch(g_sys_register_para.stopbit)
+    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_2);
+    //EDIT_SetText(hItem, "115200");
+    switch(g_sys_register_para.baudrate)
     {
-        case ONE_STOPBIT:
-            DROPDOWN_SetSel(hItem, 0);
+        case 1200:
+            EDIT_SetText(hItem,"1200");
             break;
-        case TWO_STOPBIT:
-            DROPDOWN_SetSel(hItem, 1);
-            break;     
+        case 1500:
+            EDIT_SetText(hItem,"1500");
+            break;
+        case 2400:
+            EDIT_SetText(hItem,"2400");
+            break;
+        case 4800:
+            EDIT_SetText(hItem,"4800");
+            break;
+        case 9600:
+            EDIT_SetText(hItem,"9600");
+            break;
     }
-    
-    
-    //
-    // Initialization of 'Dropdown'
-    //
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_DROPDOWN_4);
-    DROPDOWN_AddString(hItem, " FA");
-    DROPDOWN_AddString(hItem, " FB");
-    DROPDOWN_AddString(hItem, " FC");
-    DROPDOWN_AddString(hItem, " FD");
-    DROPDOWN_AddString(hItem, " FE");
-    DROPDOWN_AddString(hItem, " FF");
-    //DROPDOWN_SetSel(hItem,g_sys_register_para.preamble);
+
+    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_3);
+    //EDIT_SetText(hItem, "pream");
     switch(g_sys_register_para.preamble)
     {
         case 0xFA:
-            DROPDOWN_SetSel(hItem,0);
+            EDIT_SetText(hItem,"FA");
             break;
         case 0xFB:
-            DROPDOWN_SetSel(hItem,1);
+            EDIT_SetText(hItem,"FB");
             break;
         case 0xFC:
-            DROPDOWN_SetSel(hItem,2);
+            EDIT_SetText(hItem,"FC");
             break;
         case 0xFD:
-            DROPDOWN_SetSel(hItem,3);
+            EDIT_SetText(hItem,"FD");
             break;
         case 0xFE:
-            DROPDOWN_SetSel(hItem,4);
+            EDIT_SetText(hItem,"FE");
             break;
         case 0xFF:
-            DROPDOWN_SetSel(hItem,5);
+            EDIT_SetText(hItem,"FF");
             break;
     }
 
+    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_4);
+    //EDIT_SetText(hItem, "stop");
+    switch(g_sys_register_para.stopbit)
+    {
+        case ONE_STOPBIT:
+            EDIT_SetText(hItem, "1");
+            break;
+        case TWO_STOPBIT:
+            EDIT_SetText(hItem, "2");
+            break;     
+    }
 
-   
-    //
-    // Initialization of 'Dropdown'
-    //
-
-    //
-    // Initialization of 'Edit'
-    //
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_0);
-    int_to_char(g_sys_register_para.meterPassword,Edit0_Text,sizeof(Edit0_Text));
+    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_5);
+    int_to_char(g_sys_register_para.scrTimeout,Edit0_Text,sizeof(Edit0_Text));
     EDIT_SetText(hItem, Edit0_Text);
-    
-    //EDIT_AddKey(hItem,GUI_KEY_YELLOW);
-    // EDIT_AddKey(hItem,GUI_KEY_YELLOW);
-    //WM_SetFocus(hItem);
-    //
-    // Initialization of 'Edit'
-    //
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_1);
+
+    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_6);
+    EDIT_SetText(hItem, "123456");
+
+    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_7);
     int_to_char(g_sys_register_para.recvDelayTime,Edit1_Text,sizeof(Edit1_Text));
     EDIT_SetText(hItem, Edit1_Text); 
-    //EDIT_AddKey(hItem,GUI_KEY_YELLOW);
-    //WM_SetFocus(hItem);
-    //
-    // Initialization of 'Edit'
-    //
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_2);
+    
+    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_8);
     int_to_char(g_sys_register_para.execInterval,Edit2_Text,sizeof(Edit2_Text));
     EDIT_SetText(hItem, Edit2_Text);
-    
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_3);
-    //int_to_char(g_sys_register_para.execInterval,Edit2_Text,sizeof(Edit2_Text));
-    EDIT_SetText(hItem, "30");
 
 }
 
 
 
-void para_store(WM_MESSAGE * pMsg)
-{
-    WM_HWIN hItem;
-    
-    int SelNum;
-    hItem=WM_GetDialogItem(pMsg->hWin,ID_DROPDOWN_0);
-    SelNum=DROPDOWN_GetSel(hItem);
-    switch(SelNum)
-    {
-        case 0:
-            g_sys_register_para.plcProtocol = DL_T_07;
-            break;
-        case 1:
-            g_sys_register_para.plcProtocol = DL_T_97;
-            break;
-        default:
-            break;
-    }
-    
-    hItem=WM_GetDialogItem(pMsg->hWin,ID_DROPDOWN_2);
-    SelNum=DROPDOWN_GetSel(hItem);
-    switch(SelNum)
-    {
-        case 0:
-            g_sys_register_para.channel=CHANNEL_485;
-            break;
-            
-        case 1:
-            g_sys_register_para.channel=CHANNEL_WAVE;
-            break;
-        case 2:
-            g_sys_register_para.channel=CHANNEL_INFRD;
-            break;
-        default:
-            break;
-    }
-    
-    hItem=WM_GetDialogItem(pMsg->hWin,ID_DROPDOWN_1);
-    SelNum=DROPDOWN_GetSel(hItem);
-    switch(SelNum)
-    {
-        case 0:
-            g_sys_register_para.baudrate=1200;
-            break;
-        case 1:
-            g_sys_register_para.baudrate=1500;
-            break;
-        case 2:
-            g_sys_register_para.baudrate=2400;
-            break;
-        case 3:
-            g_sys_register_para.baudrate=4800;
-            break;
-        case 4:
-            g_sys_register_para.baudrate=9600;
-            break;
-        default:
-            break;
 
-    }
-    
-    hItem=WM_GetDialogItem(pMsg->hWin,ID_DROPDOWN_4);
-    SelNum=DROPDOWN_GetSel(hItem);
-    switch(SelNum)
-    {
-        case 0:
-            g_sys_register_para.preamble=0xFA;
-            break;
-        case 1:
-            g_sys_register_para.preamble=0XFB;
-            break;
-        case 2:
-            g_sys_register_para.preamble=0XFC;
-            break;
-        case 3:
-            g_sys_register_para.preamble=0XFD;
-            break;
-        case 4:
-            g_sys_register_para.preamble=0XFE;
-            break;
-        case 5:
-            g_sys_register_para.preamble=0XFF;
-            break;
-        default:
-            break;
-    }
 
-    
-    hItem=WM_GetDialogItem(pMsg->hWin,ID_DROPDOWN_3);
-    SelNum=DROPDOWN_GetSel(hItem);
-    switch(SelNum)
-    {
-        case 0:
-            g_sys_register_para.stopbit=ONE_STOPBIT;
-            break;
-        case 1:
-            g_sys_register_para.stopbit=TWO_STOPBIT;
-            break;
-        default:
-            break;
-    }
-}
+
 
 
 /*********************************************************************
@@ -453,112 +468,155 @@ void para_store(WM_MESSAGE * pMsg)
 */
 static void _cbDialog(WM_MESSAGE * pMsg) {
   WM_HWIN hItem;
+  WM_HWIN hListBox;
   int     NCode;
   int     Id;
   int     sel_num;//获取到选择的规约参数保存到发送参数的包里
+  int     key_num;
+  //int     i;
+  
+  key_num=((WM_KEY_INFO *)(pMsg->Data.p))->Key;
+  
   switch (pMsg->MsgId) {
   case WM_INIT_DIALOG:
     GUI_UC_SetEncodeUTF8();
     
     //DEV_Parameters_Read();
     _init_dialog(pMsg);
+    //CPS_Color_Change(pMsg);
     break;
 
-  case WM_NOTIFY_PARENT:
-      Id  = WM_GetId(pMsg->hWinSrc);
-      switch(Id)
-      {
-          case ID_EDIT_0:
-              Enable_Widget(pMsg,ID_EDIT_0);
-              Disable_Widget(pMsg,ID_EDIT_1);
-              Disable_Widget(pMsg,ID_EDIT_2);
-              Disable_Widget(pMsg,ID_EDIT_3);
-              break;
-          case ID_EDIT_1:
-              Enable_Widget(pMsg,ID_EDIT_1);
-              Disable_Widget(pMsg,ID_EDIT_0);
-              Disable_Widget(pMsg,ID_EDIT_2);
-              Disable_Widget(pMsg,ID_EDIT_3);
-              break;
-          case ID_EDIT_2:
-              Enable_Widget(pMsg,ID_EDIT_2);
-              Disable_Widget(pMsg,ID_EDIT_0);
-              Disable_Widget(pMsg,ID_EDIT_1);
-              Disable_Widget(pMsg,ID_EDIT_3);
-              break;
-          case ID_EDIT_3:
-              Enable_Widget(pMsg,ID_EDIT_3);
-              Disable_Widget(pMsg,ID_EDIT_0);
-              Disable_Widget(pMsg,ID_EDIT_1);
-              Disable_Widget(pMsg,ID_EDIT_2);
-            break;
-       }
-       //在dropdown的时候，禁用掉edit
-       if((Id>=ID_DROPDOWN_0)&&(Id<=ID_DROPDOWN_4))
-       {
-          Disable_Widget(pMsg,ID_EDIT_0);
-          Disable_Widget(pMsg,ID_EDIT_1);
-          Disable_Widget(pMsg,ID_EDIT_2);
-          Disable_Widget(pMsg,ID_EDIT_3);
-       }
-       break;
-
+    
   case WM_KEY:
-    if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
     {
         //输入消息消费到edit中
         Id  = WM_GetId(pMsg->hWinSrc);
-        if((Id >=  ID_EDIT_0) && (Id <=  ID_EDIT_3))
+        if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==1)
         {
-            if((((WM_KEY_INFO*)(pMsg->Data.p))->Key) == GUI_KEY_ESCAPE)
+            switch(Id)
             {
-                hItem=WM_GetDialogItem(pMsg->hWin,ID_DROPDOWN_0);   
-                WM_SetFocus(hItem); 
-            }
-            else if((((WM_KEY_INFO*)(pMsg->Data.p))->Key) == GUI_KEY_YELLOW)
-            {
-                WM_DeleteWindow(g_hWin_para);
-                g_hWin_para=HBWIN_NULL;
-                WM_SetFocus(g_hWin_menu);
+              case ID_EDIT_0:
+                if(key_num==GUI_KEY_ENTER)
+                {
+                  g_sys_control.selectWidget=LISTBOX_PROTOCOL;
+                  g_hWin_Input=Create_ListBox_Set(g_hWin_para);                   
+                  WM_SetFocus(g_hWin_Input);
+                }
                 break;
-            }
-            else 
-            {
+              case ID_EDIT_1:
+                if(key_num==GUI_KEY_ENTER)
+                {
+                  g_sys_control.selectWidget=LISTBOX_CHANNEL;
+                  g_hWin_Input=Create_ListBox_Set(g_hWin_para);
+                  WM_SetFocus(g_hWin_Input);
+                }
                 break;
-            }
+              case ID_EDIT_2:
+                if(key_num==GUI_KEY_ENTER)
+                {
+                  g_sys_control.selectWidget=LISTBOX_BAUDRATE;
+                  g_hWin_Input=Create_ListBox_Set(g_hWin_para);
+                  WM_SetFocus(g_hWin_Input);
+                }
+                break;
+              case ID_EDIT_3:
+                if(key_num==GUI_KEY_ENTER)
+                {
+                  g_sys_control.selectWidget=LISTBOX_PREAM;
+                  g_hWin_Input=Create_ListBox_Set(g_hWin_para);
+                  WM_SetFocus(g_hWin_Input);
+                }
+                break;
+              case ID_EDIT_4:
+                if(key_num==GUI_KEY_ENTER)
+                {
+                  g_sys_control.selectWidget=LISTBOX_STOPBIT;
+                  g_hWin_Input=Create_ListBox_Set(g_hWin_para);
+                  WM_SetFocus(g_hWin_Input);
+                }
+                break;
+              case ID_EDIT_5:
+                if(key_num==GUI_KEY_ENTER)
+                {
+                  g_sys_control.selectWidget=EDIT_SCR_OUTTIME;
+                  g_hWin_Input=Create_Edit_Set(g_hWin_para);
+                  WM_SetFocus(g_hWin_Input);
+                }
+                break;
+              case ID_EDIT_6:
+                if(key_num==GUI_KEY_ENTER)
+                {
+                  g_sys_control.selectWidget=EDIT_PASSWORD;
+                  g_hWin_Input=Create_Edit_Set(g_hWin_para);
+                  
+                  WM_SetFocus(g_hWin_Input);
+                }
+                break;
+              case ID_EDIT_7:
+                if(key_num==GUI_KEY_ENTER)
+                {
+                  g_sys_control.selectWidget=EDIT_RECV_DELAY;
+                  g_hWin_Input=Create_Edit_Set(g_hWin_para);
+                  WM_SetFocus(g_hWin_Input);
+                }
+                break;
+              case ID_EDIT_8:
+                if(key_num==GUI_KEY_ENTER)
+                {
+                  g_sys_control.selectWidget=EDIT_BETWEEN_ACT;
+                  g_hWin_Input=Create_Edit_Set(g_hWin_para);
+                  WM_SetFocus(g_hWin_Input);
+                }
+                break;            
+                
+            }               
+
         }
         switch(((WM_KEY_INFO*)(pMsg->Data.p))->Key)
         {
-
-             case '1':  Focus_Widget(pMsg,ID_DROPDOWN_0);   break;   
-             case '3':  Focus_Widget(pMsg,ID_DROPDOWN_1);   break;   
-             case '2':  Focus_Widget(pMsg,ID_DROPDOWN_2);   break;
-             case '5':  Focus_Widget(pMsg,ID_DROPDOWN_3);   break;   
-             case '4':  Focus_Widget(pMsg,ID_DROPDOWN_4);   break;   
-             case '6':  Focus_Widget(pMsg,ID_EDIT_3);       break;   
-             case '7':  Focus_Widget(pMsg,ID_EDIT_0);       break;   
-             case '8':  Focus_Widget(pMsg,ID_EDIT_1);       break;
-             case '9':  Focus_Widget(pMsg,ID_EDIT_2);       break;
              
              case GUI_KEY_YELLOW:
-                WM_DeleteWindow(g_hWin_para);
-                g_hWin_para=HBWIN_NULL;
-                WM_SetFocus(g_hWin_menu);
-                WM_ShowWindow(g_hWin_TimeBar);
-                WM_ShowWindow(g_hWin_Date);
+                if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==1)
+                {
+                    WM_DeleteWindow(g_hWin_para);
+                    g_hWin_para=HBWIN_NULL;
+                    WM_SetFocus(g_hWin_menu);
+                    WM_ShowWindow(g_hWin_TimeBar);
+                    WM_ShowWindow(g_hWin_Date);
+                    key_press_cnt=1;
+                }
                 break;
              case GUI_KEY_GREEN:  /*  保存数据  */
-                para_store(pMsg);
-                TSK_Set_Protocol_Text();
-                DEV_Parameters_Write();
-                //hItem=TSK_Get_Protocol_Text();
-                //TEXT_SetText();
+                if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
+                {
+                    //para_store(pMsg);
+                    TSK_Set_Protocol_Text();
+                    DEV_Parameters_Write();
+                }
                 break;
              case GUI_KEY_F1:
-                g_hWin_TimeSet=CreateTimeSet();
-                WM_SetFocus(g_hWin_TimeSet);
+                if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
+                {
+                    g_hWin_TimeSet=CreateTimeSet();
+                    WM_SetFocus(g_hWin_TimeSet);
+                }
                 break;
-            default: break;                                                                  
+             case GUI_KEY_UP:
+                if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
+                {
+                    CPS_SelEdt_Up(pMsg);
+                    CPS_Color_Change(pMsg);
+                }
+                
+                break;
+             case GUI_KEY_DOWN:
+                if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
+                {
+                    CPS_SelEdt_Down(pMsg);
+                    CPS_Color_Change(pMsg);
+                }
+                
+             default: break;                                                                  
         }
     }
     break;
@@ -589,3 +647,7 @@ WM_HWIN CreateCommParaSet(void) {
 
 
 /*************************** End of file ****************************/
+
+
+
+

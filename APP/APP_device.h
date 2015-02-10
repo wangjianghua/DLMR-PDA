@@ -35,8 +35,15 @@ Sector 7 0x0806 0000 - 0x0807 FFFF 128 Kbyte
 #define DEV_ERROR            1
 #define DEV_OK               0
 
+#define SYS_POWER_INIT          0
+#define SYS_POWER_IDLE          1
+#define SYS_POWER_WAKEUP        2
+#define SYS_POWER_SHUTDOWN      3
 
 #define SYS_TASK_FORMAT_DISK     0X00000001
+
+
+#define GET_USB_VOL()    HAL_GPIO_ReadPin(GPIOG,GPIO_PIN_13)
 
 
 typedef struct  __sys_storage_struct__
@@ -50,6 +57,8 @@ unsigned int versionDate;
 unsigned int meterPassword;//密码
 unsigned int recvDelayTime;//接受数据延时
 unsigned int execInterval;//执行时间
+unsigned int scrTimeout;           //屏幕超时
+
 unsigned int plcProtocol; //规约
 unsigned int channel; //通道
 unsigned int baudrate; //波特率
@@ -61,7 +70,7 @@ unsigned int number;
 
 //unsigned int pwrValue;//电池电量
 
-unsigned int para_data[SRM_PARA_NUMBER-13];
+unsigned int para_data[SRM_PARA_NUMBER-14];
 }ROM_PARA, *P_ROM_PARA;
 
 typedef struct __sys_control__
@@ -71,9 +80,13 @@ typedef struct __sys_control__
     u32   testProgBarVal;
     u32   procTask;    //当前系统需要处理的任务
     u32   pwrValue;//电池电量
+    u32   shutdownTimeout;
     u32   sleepTimeout;
+    u32   sysPowerState;
+    u32   sysUsbVol;
+    u32   selectWidget;         //根据此值选择不同的回调函数
     u8    recentMeterAddr[6];   //最近使用的表地址
-    u8    defaultDataFlag[4];   //最近使用的表地址
+    u8    defaultDataFlag[4];   //最近使用的数据标识
     OS_EVENT *downMb; //邮箱发送的消息
     OS_EVENT *upMb; //邮箱发送的消息
     u32 sd_total_capacity; //SD卡总容量
@@ -93,4 +106,9 @@ unsigned int DEV_Parameters_Write(void);
 void DEV_Parameters_Read(void);
 void DEV_Power_Off();
 void DEV_SoftReset(void);
+
+void APP_Sleep(void);
+void APP_Wakeup();
+void APP_Shutdown();
+
 #endif

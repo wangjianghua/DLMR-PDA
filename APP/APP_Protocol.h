@@ -22,9 +22,15 @@
 
 #define DL645_INDEX           (FREQ_INDEX + FREQ_LEN)  
 
+
+
 #define PLC_RES_SUCC           0
 #define PLC_RES_FAIL           1
 #define PLC_RES_TIMEOUT        2
+#define PLC_RES_ERROR_FRAME    3
+#define PLC_RES_NONE           4
+
+
 
 #define PLC_MSG_NOINIT              0
 #define PLC_MSG_IDLE                1

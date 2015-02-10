@@ -167,6 +167,33 @@ unsigned int RS485_postProcess(pvoid h)
     return (TRUE);
 }
 
+u32 PRO_DL645_Proc()
+{
+    if(DL645_FRAME_ERROR == Analysis_DL645_Frame(g_send_para_pkg.dstAddr, 
+                                        (u8 *)&dl645_frame_recv,
+                                        &dl645_frame_stat))
+    {
+         g_plc_prm.result = PLC_RES_FAIL;                                                 
+    }
+    else
+    {                
+        if((0 == dl645_frame_stat.Status)                            
+            || (dl645_frame_stat.C == 0))
+        {
+            g_plc_prm.result = PLC_RES_FAIL;                            
+        }
+        else if ((dl645_frame_stat.C & DL645_REPLY_STAT_MASK))
+        {
+            g_plc_prm.result = PLC_RES_ERROR_FRAME;
+        }
+        else
+        {
+            g_plc_prm.result = PLC_RES_SUCC;
+        }
+    }
+    return g_plc_prm.result;
+}
+
 unsigned int PLC_postProcess(pvoid h)
 {
     P_MSG_INFO  pMsg = (P_MSG_INFO)h;
@@ -317,20 +344,9 @@ u8 plc_listen_record(void)
 void  PRO_Databuf_Proc() 
 {
     u32 len;
-    
-    Analysis_DL645_Frame(g_send_para_pkg.dstAddr, 
-                        (u8 *)&dl645_frame_recv,
-                        &dl645_frame_stat);
 
-    if((0 == dl645_frame_stat.Status) || (dl645_frame_stat.C & DL645_REPLY_STAT_MASK))
+    if(PLC_RES_SUCC == PRO_DL645_Proc())       
     {
-        g_plc_prm.result = PLC_RES_FAIL;
-        
-        
-    }
-    else
-    {
-        g_plc_prm.result = PLC_RES_SUCC;                        
 
         len = dl645_frame_recv.L;
 
@@ -387,6 +403,8 @@ void  PRO_Databuf_Proc()
 * Note(s)    : none.
 *********************************************************************************************************
 */
+#pragma optimize = low
+
 void  App_TaskPLC (void *p_arg)
 {
     INT8U err;
@@ -437,6 +455,7 @@ void  App_TaskPLC (void *p_arg)
 
                 OSMboxPost(g_sys_control.upMb, (void *)&g_plc_prm);
                 break;
+                
             case PLC_CMD_TYPE_R2L:
                 OSSemAccept(g_sem_plc);
                 
@@ -446,24 +465,11 @@ void  App_TaskPLC (void *p_arg)
                 
                 OSSemPend(g_sem_plc, 5 * OS_TICKS_PER_SEC, &err);
 
+                g_plc_prm.data_len = 0;
+
                 if(OS_ERR_NONE == err)
                 {
-                    Analysis_DL645_Frame(g_send_para_pkg.dstAddr, 
-                                        (u8 *)&dl645_frame_recv,
-                                        &dl645_frame_stat);
-                
-                    if((0 == dl645_frame_stat.Status) || (dl645_frame_stat.C & DL645_REPLY_STAT_MASK))
-                    {
-                        g_plc_prm.result = PLC_RES_FAIL;
-                        
-                        g_plc_prm.data_len = 0;
-                    }
-                    else
-                    {
-                        g_plc_prm.result = PLC_RES_SUCC;
-
-                        g_plc_prm.data_len = 0;
-                    }
+                    PRO_DL645_Proc();
                 }
                 else
                 {
@@ -491,20 +497,7 @@ void  App_TaskPLC (void *p_arg)
 
                 if(OS_ERR_NONE == err)
                 {
-                    Analysis_DL645_Frame(g_send_para_pkg.dstAddr, 
-                                         (u8 *)&dl645_frame_recv,
-                                         &dl645_frame_stat);
-                
-                    if((0 == dl645_frame_stat.Status) || (dl645_frame_stat.C & DL645_REPLY_STAT_MASK))
-                    {
-                        g_plc_prm.result = PLC_RES_FAIL;
-                                                
-                    }
-                    else
-                    {
-                        g_plc_prm.result = PLC_RES_SUCC;
-                       
-                    }
+                    PRO_DL645_Proc();
                 }
                 else
                 {
@@ -556,6 +549,8 @@ void  App_TaskPLC (void *p_arg)
                 g_plc_prm.sendStatus = PLC_MSG_SENDING;
                 
                 OSMboxPost(g_sys_control.upMb, (void *)&g_plc_prm);
+
+                OSTimeDly(200);
                 
                 OSSemPend(g_sem_plc, 5 * OS_TICKS_PER_SEC, &err);
 

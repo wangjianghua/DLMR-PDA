@@ -2149,6 +2149,9 @@
       <name>$PROJ_DIR$\..\gui\GUI_public_fun.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\gui\InputWidget.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\gui\MemManageDLG.c</name>
     </file>
     <file>

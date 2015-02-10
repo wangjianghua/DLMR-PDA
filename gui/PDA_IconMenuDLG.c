@@ -134,11 +134,12 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
 
 static const BITMAP_ITEM _aBitmapItem[] = 
 {
+  
   {&_bmSystem,    CommParaSetText  },  //通信参数设置
-  {&bmprotocal,   CommStdTestText  },  //通信规约调试
-  {&bmTFcard,     TFcardText       },  //内存管理
   {&bmmeter,      ReadMeterText    },  //常用抄表 
+  {&bmprotocal,   CommStdTestText  },  //通信规约调试
   {&_bmmonitor,   MonitorText      },  //监控
+  {&bmTFcard,     TFcardText       },  //内存管理 
   {&bmabout,      About            }
   	
 };
@@ -270,27 +271,27 @@ void Battery_State(uint16_t pwr_val)
 {
     WM_HWIN hItem;
     hItem=WM_GetDialogItem(g_hWin_task,ID_TEXT_7);
-    if((pwr_val>0)&&(pwr_val<600))
+    if((pwr_val>2079)&&(pwr_val<2172))
     {
         TEXT_SetText(hItem,Battery_20);
         TEXT_SetTextColor(hItem,GUI_RED);
     }
-    else if((pwr_val>=600)&&(pwr_val<1080))
+    else if((pwr_val>=2175)&&(pwr_val<2230))
     {
         TEXT_SetText(hItem,Battery_40);
         TEXT_SetTextColor(hItem,GUI_YELLOW);
     }
-    else if((pwr_val>=1080)&&(pwr_val<1650))
+    else if((pwr_val>=2236)&&(pwr_val<2262))
     {
         TEXT_SetText(hItem,Battery_60);
-        TEXT_SetTextColor(hItem,GUI_YELLOW);
+        TEXT_SetTextColor(hItem,GUI_GREEN);
     }
-    else if((pwr_val>=1650)&&(pwr_val<2200))
+    else if((pwr_val>=2265)&&(pwr_val<2291))
     {
         TEXT_SetText(hItem,Battery_80);
         TEXT_SetTextColor(hItem,GUI_GREEN);
     }
-    else if(pwr_val>=2200)
+    else if(pwr_val>=2298)
     {
         TEXT_SetText(hItem,Battery_100);
         TEXT_SetTextColor(hItem,GUI_GREEN);
@@ -360,7 +361,6 @@ static void _cbTaskDialog(WM_MESSAGE * pMsg)
 *       _cbDialog
 */
 
-
 static void _cbIconWin(WM_MESSAGE * pMsg) 
 {
 	int     NCode;
@@ -379,6 +379,10 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
 			GUI_Clear();
 			break;
 		case WM_KEY:
+            
+           // if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
+            {
+            
 			switch(((WM_KEY_INFO*)(pMsg->Data.p))->Key)
 			{
 				case GUI_KEY_ENTER:
@@ -389,36 +393,40 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
                             WM_BringToBottom(g_hWin_msg);
                             WM_HideWindow(g_hWin_TimeBar);
                             WM_HideWindow(g_hWin_Date);
-                            //WM_SetFocus(g_hWin_para);
+                            WM_SetFocus(g_hWin_para);
 							break;
-						case 1:
+                            
+						case 2:
 							g_hWin_std = CreateCommStdTest();
                             WM_BringToBottom(g_hWin_msg);
                             WM_HideWindow(g_hWin_TimeBar);
                             WM_HideWindow(g_hWin_Date);
                             WM_SetFocus(g_hWin_std);
 							break;
-						case 2:
+						case 4:
 							g_hWin_mem=CreateMemManage();
                             WM_BringToBottom(g_hWin_msg);
                             WM_HideWindow(g_hWin_TimeBar);
                             WM_HideWindow(g_hWin_Date);
                             WM_SetFocus(g_hWin_mem);
 							break;
-                        case 3:
-							g_hWin_ReadMeter=CreateReadMeter();
+                            
+                        case 1:
+			                g_hWin_ReadMeter=CreateReadMeter();
                             WM_BringToBottom(g_hWin_msg);
                             WM_HideWindow(g_hWin_TimeBar);
                             WM_HideWindow(g_hWin_Date);
                             WM_SetFocus(g_hWin_ReadMeter);
 							break;
-						case 4:
+                            
+						case 3:
 							g_hWin_monitor=CreateMonitor();
                             WM_BringToBottom(g_hWin_msg);
                             WM_HideWindow(g_hWin_TimeBar);
                             WM_HideWindow(g_hWin_Date);
                             WM_SetFocus(g_hWin_monitor);
 							break;
+                            
                         case 5:
                             g_hWin_about=Createabout();
                             WM_BringToBottom(g_hWin_msg);
@@ -432,6 +440,7 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
 					}
 				break;
 			}
+            }
 			break;
 		default:
 			WM_DefaultProc(pMsg);

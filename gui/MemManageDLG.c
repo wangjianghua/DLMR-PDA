@@ -64,6 +64,10 @@ static const char MemFormat[]="\xe6\xa0\xbc\xe5\xbc\x8f\xe5\x8c\x96";
 static const char MemReturn[]="\xe8\xbf\x94\xe5\x9b\x9e";
 static const char MemConfirm[]="F1\xe7\xa1\xae\xe5\xae\x9a";
 static const char VersionNum[]="\xe7\x89\x88\xe6\x9c\xac\xe5\x8f\xb7:20150127";
+
+//ÕÀ≥ˆ
+static const char Quit[]="\xe9\x80\x80\xe5\x87\xba";
+
 // USER START (Optionally insert additional static data)
 // USER END
 
@@ -83,7 +87,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { PROGBAR_CreateIndirect,  "Progbar",    ID_PROGBAR_0, 120, 113, 110, 20, 0, 0x0,  0 },
   { BUTTON_CreateIndirect,   MemConfirm,   ID_BUTTON_0,  120, 152, 110, 25, 0, 0x0,  0 },
   { BUTTON_CreateIndirect,   MemFormat,    ID_BUTTON_1,  11,  260, 80,  25, 0, 0x0,  0 },
-  { BUTTON_CreateIndirect,   MemReturn,    ID_BUTTON_2,  149, 260, 80,  25, 0, 0x0,  0 },
+  { BUTTON_CreateIndirect,   Quit,    ID_BUTTON_2,  149, 260, 80,  25, 0, 0x0,  0 },
   { PROGBAR_CreateIndirect,  "Progbar",    ID_PROGBAR_1, 9,   228, 222, 20,  0, 0x0,  0 },
   // USER START (Optionally insert additional widgets)
   // USER END
@@ -186,9 +190,6 @@ static void _cbDialog(WM_MESSAGE * pMsg)
 
             //hItem = WM_GetDialogItem(pMsg->hWin, ID_PROGBAR_1);     
             //PROGBAR_SetValue(hItem, 100);
-
-            
-            
             break;
           case WM_NOTIFY_PARENT:
             Id    = WM_GetId(pMsg->hWinSrc);
@@ -197,13 +198,13 @@ static void _cbDialog(WM_MESSAGE * pMsg)
             break;
           case WM_KEY:
             
-            if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
+            if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==1)
             {
                 switch(((WM_KEY_INFO *)(pMsg->Data.p))->Key)
                 {
                     case GUI_KEY_GREEN:
                         //SYS_ADD_TASK(SYS_TASK_FORMAT_DISK);
-                        ERR_NOTE(g_hWin_mem, 4);//»∑»œ∏Ò ΩªØÂ
+                        ERR_NOTE(g_hWin_mem, GUI_MSBOX_FORMAT_ERROR);//»∑»œ∏Ò ΩªØÂ
                         break;
                     case GUI_KEY_YELLOW:
                         WM_DeleteWindow(g_hWin_mem);

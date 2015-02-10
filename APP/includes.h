@@ -173,8 +173,11 @@ extern WM_HWIN g_hWin_ReadMeterMsg;
 extern WM_HWIN g_hWin_TimeBar;
 extern WM_HWIN g_hWin_Date;
 
+extern WM_HWIN g_hWin_Input;
+
 extern int DataSign_value;
 extern char DataSign_Text[TEXT_LEN];//??????????,???????
+
 
 //extern GUI_CONST_STORAGE GUI_BITMAP bm_Upload;
 

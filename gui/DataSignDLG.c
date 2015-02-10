@@ -84,6 +84,10 @@ static const char Confirm[]="\xe7\xa1\xae\xe5\xae\x9a";
 //取消
 static const char Cancel[]="\xe5\x8f\x96\xe6\xb6\x88";
 
+//退出
+static const char Quit[]="\xe9\x80\x80\xe5\x87\xba";
+
+
 static const char _acItems[][64] = 
 {
     //当前正
@@ -116,7 +120,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { LISTVIEW_CreateIndirect,   NULL,     ID_LISTVIEW_0, 8,   50,  225, 203, 0, 0x0, 0 },
   { TEXT_CreateIndirect,       DataSign, ID_TEXT_1,     13,  31,  80,  20,  0, 0x0, 0 },
   { BUTTON_CreateIndirect,     Confirm,  ID_BUTTON_0,   8,   264, 55,  25,  0, 0x0, 0 },
-  { BUTTON_CreateIndirect,     Cancel,   ID_BUTTON_1,   175, 264, 55,  25,  0, 0x0, 0 },
+  { BUTTON_CreateIndirect,     Quit,   ID_BUTTON_1,   175, 264, 55,  25,  0, 0x0, 0 },
   // USER START (Optionally insert additional widgets)
   // USER END
 };
@@ -149,6 +153,7 @@ static void set_datasign_value(WM_MESSAGE *pMsg)
     LISTVIEW_GetItemText(hItem,1,LISTVIEW_GetSel(hItem),DataSign_Text,TEXT_LEN);
     //g_sys_register_para.para_data[9]=atoi(DataSign_Text);
     CST_Set_DataFlag(DataSign_Text);
+    GUI_GetStrDataFlag(DataSign_Text, g_sys_register_para.plcProtocol);
     //CST_Set_DataFlag();
        
 }

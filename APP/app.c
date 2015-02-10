@@ -197,6 +197,7 @@ WM_HWIN g_hWin_Err;
 
 WM_HWIN g_hWin_TimeBar;  //主页时间
 WM_HWIN g_hWin_Date;     //显示日期
+WM_HWIN g_hWin_Input;    //各种输入小框体
 
 u8 rf_send_buf[256] = {0x23, 0x24, 0x78, 0x1a, 0x39, 0x23, 0x24, 0x78, 0x1a, 0x39, 0x12};
 u8 rf_int_status[8];
@@ -212,12 +213,42 @@ uc16 g_16string [] = {0x53D6, 0x56DE, 0x62,'\r\n',0};
 
 void APP_Shutdown()
 {
-#if 0    
+    //if(g_sys_control.sysUsbVol)
+    //    return;
+    g_sys_control.sysPowerState = SYS_POWER_SHUTDOWN;
     SYS_PWR_OFF();
     LCD_BL_OFF();
     LCD_PWR_OFF();
     LED_UART_OFF();
     LED_PLC_OFF();
+}
+
+void APP_Sleep(void)
+{
+#if 0
+    //if(g_sys_control.sysUsbVol)
+    //    return;
+    
+    g_sys_control.sysPowerState = SYS_POWER_IDLE;
+    //SYS_PWR_OFF();
+    LCD_BL_OFF();
+    LCD_PWR_OFF();
+    //LED_UART_OFF();
+    //LED_PLC_OFF();
+#endif    
+}
+
+void APP_Wakeup()
+{
+#if 0
+    g_sys_control.sysPowerState = SYS_POWER_WAKEUP;
+    //SYS_PWR_OFF();
+    //LCD_BL_ON();
+    //LCD_PWR_ON();
+
+    LCD_X_DisplayDriver(0, LCD_X_INITCONTROLLER, 0);
+    //LED_UART_OFF();
+    //LED_PLC_OFF();
 #endif    
 }
 
@@ -302,12 +333,30 @@ static  void  App_TaskStart (void *p_arg)
         {
             i = 0;
             RTC_ReadTime(g_rtc_time); 
-            g_sys_control.sleepTimeout++;
-            if(g_sys_control.sleepTimeout > 60)
+            g_sys_control.shutdownTimeout++;
+            if(g_sys_control.shutdownTimeout > (g_sys_register_para.scrTimeout+30))//开大点，不然老是自动关机
             {
                 APP_Shutdown();
+                g_sys_control.shutdownTimeout = 0;
             }
-                
+            
+            g_sys_control.sleepTimeout++;
+            if(g_sys_control.sleepTimeout > g_sys_register_para.scrTimeout)//开大点，不然老是自动关机
+            {
+                APP_Sleep();
+                g_sys_control.sleepTimeout = 0;
+            }
+
+               
+        }
+
+        if(GET_USB_VOL() == 0)
+        {
+            g_sys_control.sysUsbVol = 1;
+        }
+        else
+        {
+            g_sys_control.sysUsbVol = 0;
         }
 
         for(n = 0; n < 32; n++)
@@ -367,14 +416,12 @@ static  void  App_TaskGUI (void *p_arg)
     while (DEF_TRUE) {                                          /* Task body, always written as an infinite loop.           */
         GUI_Exec();
         
-        OS_ENTER_CRITICAL();
         memcpy(timebuf,RTC2Text(),10);
         TEXT_SetText(g_hWin_TimeBar,timebuf);
         //memcpy(timebuf_nosec,RTC2Text_NoSec(),6);
         //TEXT_SetText(g_hWin_TimeBar,timebuf_nosec);
         memcpy(timebuf_date,RTC2Text_Date(),11);
         TEXT_SetText(g_hWin_Date,timebuf_date);
-        OS_EXIT_CRITICAL();
         
         OSTimeDlyHMSM(0, 0, 0, 100);     
     }
@@ -479,9 +526,11 @@ static  void  App_TaskGMP (void *p_arg)
                 wh = GUI_Get_PROGBAR();
                 if(wh != WM_HWIN_NULL)
                 {
+                    
                     PROGBAR_SetValue(wh, g_sys_control.testProgBarVal);
                     if(g_sys_control.testProgBarVal < 90)
                     {
+                       PROGBAR_SetBarColor(wh, 0, GUI_GREEN);
                        g_sys_control.testProgBarVal += 1;
                     }
                 }

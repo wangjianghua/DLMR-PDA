@@ -37,7 +37,7 @@
 #define ID_BUTTON_2   (GUI_ID_USER + 0x79)
 #define ID_BUTTON_3   (GUI_ID_USER + 0x7A)
 
-#define ID_DROPDOWN_0 (GUI_ID_USER + 0x7B)
+
 
 #define ID_TEXT_0     (GUI_ID_USER + 0x7C)
 #define ID_TEXT_1     (GUI_ID_USER + 0x7D)
@@ -59,9 +59,12 @@
 #define ID_EDIT_4     (GUI_ID_USER + 0x8C)
 #define ID_EDIT_5     (GUI_ID_USER + 0x8D)
 
-#define ID_PROGBAR_0  (GUI_ID_USER + 0x8E)
+#define ID_EDIT_6     (GUI_ID_USER + 0x8E)
 
-#define ID_BUTTON_4   (GUI_ID_USER + 0x8F)//自动获取表号
+
+#define ID_PROGBAR_0  (GUI_ID_USER + 0x8F)
+
+#define ID_BUTTON_4   (GUI_ID_USER + 0x90)//自动获取表号
 
 //static int PressCount = 0;
 
@@ -117,13 +120,23 @@ static const char Save[]="\xe4\xbf\x9d\xe5\xad\x98";
 //取消
 static const char Cancel[]="\xe5\x8f\x96\xe6\xb6\x88";
 
+//退出
+static const char Quit[]="\xe9\x80\x80\xe5\x87\xba";
+
+
 //"\xe5\x9c\xb0\xe5\x9d\x80\xe9\x94\x99\xe8\xaf\xaf"
 // 
 const char AddrErr[]="\xe5\x9c\xb0\xe5\x9d\x80\xe9\x94\x99\xe8\xaf\xaf!";
 const char DataFlagErr[]="\xe6\x95\xb0\xe6\x8d\xae\xe6\xa0\x87\xe8\xaf\x86\xe9\x94\x99\xe8\xaf\xaf!";
 const char ProtocolErr[]="\xe8\xa7\x84\xe7\xba\xa6\xe4\xb8\x8d\xe5\x8c\xb9\xe9\x85\x8d!";
-const char MonthOutRange[]="\xe6\x9c\x88\xe4\xbb\xbd\xe8\xb6\x85\xe5\x87\xba\xe8\x8c\x83\xe5\x9b\xb4";
-const char ConfirmFoumat[]="\xe7\xa1\xae\xe5\xae\x9a\xe6\xa0\xbc\xe5\xbc\x8f\xe5\x8c\x96\xe5\x86\x85\xe5\xad\x98\xe5\x90\x97\xef\xbc\x9f?";
+const char MonthOutRange[]="\xe6\x9c\x88\xe4\xbb\xbd\xe8\xb6\x85\xe5\x87\xba\xe8\x8c\x83\xe5\x9b\xb4!";
+const char DayOutRange[]  ="\xe6\x97\xa5\xe6\x9c\x9f\xe8\xb6\x85\xe5\x87\xba\xe8\x8c\x83\xe5\x9b\xb4!";
+const char HourOutRange[] ="\xe6\x97\xb6\xe9\x97\xb4\xe8\xb6\x85\xe5\x87\xba\xe8\x8c\x83\xe5\x9b\xb4!";
+const char MinOutRange[]  ="\xe5\x88\x86\xe9\x92\x9f\xe8\xb6\x85\xe5\x87\xba\xe8\x8c\x83\xe5\x9b\xb4!";
+
+const char ConfirmFormat[]="\xe7\xa1\xae\xe5\xae\x9a\xe6\xa0\xbc\xe5\xbc\x8f\xe5\x8c\x96\xe5\x86\x85\xe5\xad\x98\xe5\x90\x97\xef\xbc\x9f?";
+
+
 
 
 const char *gc_messageBoxText[] = 
@@ -132,7 +145,10 @@ const char *gc_messageBoxText[] =
     DataFlagErr,
     ProtocolErr,
     MonthOutRange,
-    ConfirmFoumat,
+    DayOutRange,
+    HourOutRange,
+    MinOutRange,   
+    ConfirmFormat,
 };
 
 
@@ -148,40 +164,40 @@ const char *gc_messageBoxText[] =
 *       _aDialogCreate
 */
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
-    { WINDOW_CreateIndirect, "ReadMeter", ID_WINDOW_0, 0, 0, 240, 295, 0, 0x0, 0 },
-    { BUTTON_CreateIndirect, GetMeterNum, ID_BUTTON_1, 14, 7, 90, 30, 0, 0x0, 0 },
+    { WINDOW_CreateIndirect, "ReadMeter",   ID_WINDOW_0, 0, 0, 240, 295, 0, 0x0, 0 },
+    { BUTTON_CreateIndirect, GetMeterNum,   ID_BUTTON_1, 14, 7, 90, 30, 0, 0x0, 0 },
 
-    { BUTTON_CreateIndirect, ReadMeter, ID_BUTTON_0, 147, 7, 80, 30, 0, 0x0, 0 },
-    { TEXT_CreateIndirect, MeterNum, ID_TEXT_0, 8, 50, 72, 20, 0, 0x0, 0 },
-    { EDIT_CreateIndirect, NULL, ID_EDIT_0, 89, 46, 136, 20, 0, GUI_645_ADDR_LENGTH, 0 },
+    { BUTTON_CreateIndirect, ReadMeter,     ID_BUTTON_0, 147, 7,  80,  30, 0, 0x0, 0 },
+    { TEXT_CreateIndirect, MeterNum,        ID_TEXT_0,   8,   50, 72,  20, 0, 0x0, 0 },
+    { EDIT_CreateIndirect, NULL,            ID_EDIT_0,   89,  46, 136, 20, 0, GUI_645_ADDR_LENGTH, 0 },
         
-    { TEXT_CreateIndirect, ReadMeterSel, ID_TEXT_1, 8, 74, 69, 20, 0, 0x0, 0 },
-    { DROPDOWN_CreateIndirect, NULL, ID_DROPDOWN_0, 89, 73, 136, 19, 0, 0x0, 0 },
+    { TEXT_CreateIndirect, ReadMeterSel,    ID_TEXT_1,   8,   74, 69,  20, 0, 0x0, 0 },
+    { EDIT_CreateIndirect,         NULL,    ID_EDIT_6,   89,  73, 136, 19, 0, 0x64, 0 },
         
-    { TEXT_CreateIndirect, TotalVal, ID_TEXT_2, 23, 103, 49, 20, 0, 0x0, 0 },
-    { EDIT_CreateIndirect, NULL, ID_EDIT_1, 89, 101, 106, 20, 0, 0x64, 0 },
-    { TEXT_CreateIndirect, "kWh", ID_TEXT_7, 199, 101, 35, 20, 0, 0x0, 0 },
+    { TEXT_CreateIndirect, TotalVal,        ID_TEXT_2,   23, 103, 49, 20, 0, 0x0, 0 },
+    { EDIT_CreateIndirect, NULL,            ID_EDIT_1,   89, 101, 106, 20, 0, 0x64, 0 },
+    { TEXT_CreateIndirect, "kWh",           ID_TEXT_7,   199, 101, 35, 20, 0, 0x0, 0 },
         
-    { TEXT_CreateIndirect, "\xe5\xb0\x96", ID_TEXT_3, 23, 129, 80, 20, 0, 0x0, 0 },
-    { EDIT_CreateIndirect, NULL, ID_EDIT_2, 89, 128, 106, 20, 0, 0x64, 0 },
-    { TEXT_CreateIndirect, "kWh", ID_TEXT_8, 199, 128, 35, 20, 0, 0x0, 0 },
+    { TEXT_CreateIndirect, "\xe5\xb0\x96",  ID_TEXT_3,   23, 129, 80, 20, 0, 0x0, 0 },
+    { EDIT_CreateIndirect, NULL,            ID_EDIT_2,   89, 128, 106, 20, 0, 0x64, 0 },
+    { TEXT_CreateIndirect, "kWh",           ID_TEXT_8,   199, 128, 35, 20, 0, 0x0, 0 },
         
-    { TEXT_CreateIndirect, "\xe5\xb3\xb0", ID_TEXT_4, 23, 158, 80, 20, 0, 0x0, 0 },
-    { EDIT_CreateIndirect, NULL, ID_EDIT_3, 89, 156, 106, 20, 0, 0x64, 0 },
-    { TEXT_CreateIndirect, "kWh", ID_TEXT_9, 199, 156, 35, 20, 0, 0x0, 0 },
+    { TEXT_CreateIndirect, "\xe5\xb3\xb0",  ID_TEXT_4,   23, 158, 80, 20, 0, 0x0, 0 },
+    { EDIT_CreateIndirect, NULL,            ID_EDIT_3,   89, 156, 106, 20, 0, 0x64, 0 },
+    { TEXT_CreateIndirect, "kWh",           ID_TEXT_9,   199, 156, 35, 20, 0, 0x0, 0 },
         
-    { TEXT_CreateIndirect, "\xe5\xb9\xb3", ID_TEXT_5, 23, 187, 80, 20, 0, 0x0, 0 },
-    { EDIT_CreateIndirect, NULL, ID_EDIT_4, 89, 185, 106, 20, 0, 0x64, 0 },
-    { TEXT_CreateIndirect, "kWh", ID_TEXT_10, 199, 185, 35, 20, 0, 0x0, 0 },
+    { TEXT_CreateIndirect, "\xe5\xb9\xb3",  ID_TEXT_5,   23, 187, 80, 20, 0, 0x0, 0 },
+    { EDIT_CreateIndirect, NULL,            ID_EDIT_4,   89, 185, 106, 20, 0, 0x64, 0 },
+    { TEXT_CreateIndirect, "kWh",           ID_TEXT_10,  199, 185, 35, 20, 0, 0x0, 0 },
         
-    { TEXT_CreateIndirect, "\xe8\xb0\xb7", ID_TEXT_6, 23, 211, 80, 20, 0, 0x0, 0 },
-    { EDIT_CreateIndirect, NULL, ID_EDIT_5, 89, 209, 106, 20, 0, 0x64, 0 },    
-    { TEXT_CreateIndirect, "kWh", ID_TEXT_11, 199, 209, 35, 20, 0, 0x0, 0 },
-        
-    { BUTTON_CreateIndirect, Save, ID_BUTTON_2, 8, 264, 55, 25, 0, 0x0, 0 },
-    { BUTTON_CreateIndirect, Msg, ID_BUTTON_4, 74, 264, 90, 25, 0, 0x0, 0 },
-    { BUTTON_CreateIndirect, Cancel, ID_BUTTON_3, 175, 264, 55, 25, 0, 0x0, 0},
-    { PROGBAR_CreateIndirect, NULL,   ID_PROGBAR_0, 8, 237, 220, 20, 0, 0x0, 0},
+    { TEXT_CreateIndirect, "\xe8\xb0\xb7",  ID_TEXT_6,   23, 211, 80, 20, 0, 0x0, 0 },
+    { EDIT_CreateIndirect, NULL,            ID_EDIT_5,   89, 209, 106, 20, 0, 0x64, 0 },    
+    { TEXT_CreateIndirect, "kWh",           ID_TEXT_11,  199, 209, 35, 20, 0, 0x0, 0 },
+       
+    { BUTTON_CreateIndirect, Save,          ID_BUTTON_2, 8, 264, 55, 25, 0, 0x0, 0 },
+    { BUTTON_CreateIndirect, Msg,           ID_BUTTON_4, 74, 264, 90, 25, 0, 0x0, 0 },
+    { BUTTON_CreateIndirect, Quit,        ID_BUTTON_3, 175, 264, 55, 25, 0, 0x0, 0},
+    { PROGBAR_CreateIndirect, NULL,         ID_PROGBAR_0, 8, 237, 220, 20, 0, 0x0, 0},
 };
 
 
@@ -196,18 +212,36 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
 **********************************************************************
 */
 
-const u32 c_645DidoDef[2][PLC_CTRL_MAX_NUM] = 
-{ 
+#if 1
+
+static const u32 c_645DidoDef[2][PLC_CTRL_MAX_NUM] = { 
+
     //97规约
     {0x901f,    0x902f,     0x9410,     0x9420,5,6,7,8,9,10,11,12,13,14,15,16},
     //07规约
     {0x0001ff00,0X0002ff00, 0X0001ff01, 0X0002ff01,4,5,6,7,8,9,10,11,12,13,14,15,}
 };
 
+#endif
+
 WM_HWIN RMD_Get_PROGBAR()
 {    
-     return WM_GetDialogItem(g_hWin_ReadMeter, ID_PROGBAR_0);            
+    return WM_GetDialogItem(g_hWin_ReadMeter, ID_PROGBAR_0);            
 }
+
+
+WM_HWIN RMD_Get_MeterNum(void)
+{
+    return WM_GetDialogItem(g_hWin_ReadMeter,ID_EDIT_0);
+}
+
+
+WM_HWIN RMD_Get_ReadSel(void)
+{
+    return WM_GetDialogItem(g_hWin_ReadMeter,ID_EDIT_6);
+}
+
+
 
 
 static u8 RMD_Get_Para(WM_MESSAGE *pMsg)
@@ -231,13 +265,14 @@ static u8 RMD_Get_Para(WM_MESSAGE *pMsg)
         return DEV_ERROR;
     }
 
-    if(DEV_OK != GUI_GetMeterAddr(rmd))
+    if(DEV_OK != GUI_GetMeterAddr(rmd, g_send_para_pkg.dstAddr))
     {
         return DEV_ERROR;
     }
     
-    hItem=WM_GetDialogItem(pMsg->hWin,ID_DROPDOWN_0);
-    dropdown_selnum=DROPDOWN_GetSel(hItem);  
+#if 0
+    //hItem=WM_GetDialogItem(pMsg->hWin,ID_DROPDOWN_0);
+    //dropdown_selnum=DROPDOWN_GetSel(hItem);  
     
     if(g_sys_register_para.plcProtocol==DL_T_07)
     {        
@@ -260,6 +295,9 @@ static u8 RMD_Get_Para(WM_MESSAGE *pMsg)
         return DEV_ERROR;
     }
 
+#endif
+    g_send_para_pkg.dataLen = 0;
+
     g_send_para_pkg.cmdType = PLC_CMD_TYPE_COMMON;
     
     return DEV_OK;
@@ -268,11 +306,13 @@ static u8 RMD_Get_Para(WM_MESSAGE *pMsg)
 
 
 
+
 void RMD_proc_resp_data(void)
 {
     WM_HWIN hItem;
     u8 * pbuf;
     u32 len;
+
 
     pbuf = g_plc_prm.data_buf;
     len = g_plc_prm.data_len;
@@ -368,16 +408,17 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
   WM_HWIN hItem;
   int     NCode;
   int     Id;
+  int     key_num;
   // USER START (Optionally insert additional variables)
   // USER END
-
+  int i;
   switch (pMsg->MsgId) {
   case WM_INIT_DIALOG:
     //
     // Initialization of 'Edit'
     //
     GUI_UC_SetEncodeUTF8();
-
+   
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_2);
     BUTTON_SetBkColor(hItem,0,GUI_GREEN);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
@@ -399,6 +440,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_0);
     //EDIT_SetText(hItem, "0");
+    WM_DisableWindow(hItem);
     EDIT_SetText(hItem, (const char *)GUI_hex2MeterAddrStr(g_sys_control.recentMeterAddr, 6));
     //WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
     //
@@ -436,70 +478,69 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     EDIT_SetText(hItem, "0");
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
     WM_DisableWindow(hItem);
+
+    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_6);
+    EDIT_SetText(hItem, Positive);
+    if(g_sys_register_para.plcProtocol==DL_T_07)
+    {        
+        memcpy(g_send_para_pkg.dataFlag,
+            &c_645DidoDef[g_sys_register_para.plcProtocol][0],
+            4);
+        
+        g_send_para_pkg.ctlCode=0x11;
+    }
+    else if(g_sys_register_para.plcProtocol==DL_T_97)
+    {
+        memcpy(g_send_para_pkg.dataFlag,
+            &c_645DidoDef[g_sys_register_para.plcProtocol][0],
+            2);
+        g_send_para_pkg.ctlCode=0x01; 
+
+    }
     
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_DROPDOWN_0);
-    DROPDOWN_AddString(hItem, Positive);
-    DROPDOWN_AddString(hItem, Negative);
-    DROPDOWN_AddString(hItem, DayPositive);
-    DROPDOWN_AddString(hItem, DayNegative);
+    EDIT_SetBkColor(hItem,0,GUI_GREEN);
+    WM_DisableWindow(hItem);
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_PROGBAR_0);
     PROGBAR_SetBarColor(hItem,0,GUI_GREEN);
-    //PROGBAR_SetBarColor(hItem,1,GUI_WHITE);
-    
-    break;
-  case WM_PAINT:
-    //GUI_BMP_Draw(&bm_Upload,160,4);
-    //GUI_Clear();
-    
-    break;
-  case WM_NOTIFY_PARENT:
-    Id    = WM_GetId(pMsg->hWinSrc);
-    NCode = pMsg->Data.v;
-    switch(Id) 
-    {
-        case ID_DROPDOWN_0:
-            hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
-            WM_DisableWindow(hItem);
-            break;
-        case ID_EDIT_0:
-            hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
-            WM_EnableWindow(hItem);
-            break;
-        default:
-            break;
-    }
+
+   
     break;
 
   case WM_KEY:
-    if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)//按键释放。added on 2015.1.4
+   
+    Id=WM_GetId(pMsg->hWinSrc);
+    key_num=((WM_KEY_INFO *)(pMsg->Data.p))->Key;
+    
+    if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==1)//按键点击。
     {
-        Id=WM_GetId(pMsg->hWinSrc);
-
-        int TimeCount;//进度条参数
-            
-        if(Id==ID_EDIT_0)
+        switch(Id)
         {
-            if((((WM_KEY_INFO *)(pMsg->Data.p))->Key)==GUI_KEY_ESCAPE)
+          case ID_EDIT_0:
+            if(key_num==GUI_KEY_ENTER)
             {
-                hItem=WM_GetDialogItem(pMsg->hWin,ID_DROPDOWN_0);
-                WM_SetFocus(hItem);
+              g_sys_control.selectWidget=EDIT_METER_NUM;
+              g_hWin_Input=Create_Edit_Set(g_hWin_ReadMeter);
+              WM_SetFocus(g_hWin_Input);
             }
-            else if((((WM_KEY_INFO*)(pMsg->Data.p))->Key) == GUI_KEY_YELLOW)
+            break;
+          case ID_EDIT_6:
+            if(key_num==GUI_KEY_ENTER)
             {
-                WM_DeleteWindow(g_hWin_ReadMeter);
-                g_hWin_ReadMeter=HBWIN_NULL;
-                WM_SetFocus(g_hWin_menu);
-                break;
+              g_sys_control.selectWidget=LISTBOX_READ_SEL;
+              g_hWin_Input=Create_ListBox_Set(g_hWin_ReadMeter);
+              WM_SetFocus(g_hWin_Input);
             }
-            else
-            {
-                break;
-            }
+            break;
         }
-        switch(((WM_KEY_INFO *)(pMsg->Data.p))->Key)
-        {
-            case GUI_KEY_YELLOW:
+    }
+
+                
+    switch(((WM_KEY_INFO *)(pMsg->Data.p))->Key)
+    {
+        case GUI_KEY_YELLOW:
+            if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==1)
+            {
                 WM_DeleteWindow(g_hWin_ReadMeter);
                 g_hWin_ReadMeter=HBWIN_NULL;
                 WM_BringToBottom(g_hWin_msg);
@@ -507,43 +548,57 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 WM_ShowWindow(g_hWin_TimeBar);
                 WM_ShowWindow(g_hWin_Date);
                 WM_SetFocus(g_hWin_menu);
-                break;
-            case GUI_KEY_F1: /*获取表号*/
-                //hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
-                //EDIT_SetText(hItem,"003619000000");
+                g_sys_control.guiState = GUI_PLC_MSG_IDLE;
+            }
+            break;
+            
+        case GUI_KEY_F1: /*获取表号*/
+            if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
+            {
                 g_send_para_pkg.cmdType = PLC_CMD_BROAD_READ;
                 g_sys_control.guiState = GUI_PLC_MSG_READ;                        
                 OSMboxPost(g_sys_control.downMb, (void*)&g_send_para_pkg);
-                break;
-                
-            case '#':
-               // g_hWin_ReadMeterMsg=CreateReadMeterMessage();
-               // WM_ShowWindow(g_hWin_ReadMeterMsg);
-               // WM_SetFocus(g_hWin_ReadMeterMsg);
-                WM_BringToTop(g_hWin_msg);
-                WM_ShowWindow(g_hWin_msg);                    
-                WM_SetFocus(g_hWin_msg);
-                break;
-                
-            case GUI_KEY_F2:
-#if 0                
-                ButtonBlink(pMsg,ID_BUTTON_0);
-                hItem=WM_GetDialogItem(pMsg->hWin,ID_PROGBAR_0);
-                for(TimeCount=1;TimeCount<=10;TimeCount++)
-                {
-                    GUI_Delay(100);
-                    PROGBAR_SetValue(hItem,10*TimeCount);
-                }
-#endif                
+            }
+            break;
+            
+        case '#':
+            if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
+            {
+                 WM_BringToTop(g_hWin_msg);
+                 WM_ShowWindow(g_hWin_msg);                    
+                 WM_SetFocus(g_hWin_msg);
+            }
+            break;
+            
+        case GUI_KEY_F2:                
+            if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
+            {
                 if(DEV_OK == RMD_Get_Para(pMsg))//获取参数数据
                 {
                     g_sys_control.guiState = GUI_PLC_MSG_READ;
                     OSMboxPost(g_sys_control.downMb, (void*)&g_send_para_pkg);
                 }
-           
-                break;
-        }
+            }
+       
+            break;
+
+        case GUI_KEY_UP:
+            hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
+            EDIT_SetBkColor(hItem,0,GUI_GREEN);
+            WM_SetFocus(hItem);
+            hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_6);
+            EDIT_SetBkColor(hItem,0,0xC0C0C0);
+            break;
+
+        case GUI_KEY_DOWN:
+            hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_6);
+            EDIT_SetBkColor(hItem,0,GUI_GREEN);
+            WM_SetFocus(hItem);
+            hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
+            EDIT_SetBkColor(hItem,0,0xC0C0C0);
+            break;
     }
+   
     break;
 
   case WM_MSG_CLOSE:
@@ -572,3 +627,5 @@ WM_HWIN CreateReadMeter(void) {
 // USER END
 
 /*************************** End of file ****************************/
+
+
