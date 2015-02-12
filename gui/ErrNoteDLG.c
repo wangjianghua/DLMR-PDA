@@ -92,6 +92,10 @@ void ERR_Sel_Win(void)
     {
         WM_SetFocus(g_hWin_std);
     }
+    if(g_hWin_about>0)
+    {
+        WM_SetFocus(g_hWin_about);
+    }
 }
 
 
@@ -149,6 +153,16 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 if(g_hWin_mem>0)
                 {
                     SYS_ADD_TASK(SYS_TASK_FORMAT_DISK);
+                }
+                if(g_hWin_about>0)
+                {
+                  
+                  if(g_sys_register_para.bootFlag != BOOT_REQUEST_ACT)
+                  {
+                      g_sys_register_para.bootFlag = BOOT_REQUEST_ACT;
+                      DEV_Parameters_Write();
+                  }
+                  DEV_SoftReset();
                 }
                 ERR_Sel_Win();
                 break;

@@ -64,27 +64,26 @@ rf_status_t RF_Tx(u8 * buf, u8 len)
 {
     u16 crc;
 
-        
+    
     DISABLE_RF_INT();
-
     memmove(buf + 1, buf, len); //数组全体往后挪一个位置
-
     buf[0] = len;
-
     crc = cal_crc_ITU(buf, len + 1);
     
     buf[len + 1] = (u8)crc;
     buf[len + 2] = (u8)(crc >> 8);
-    
     g_rf_param.tx.buf = buf;
     g_rf_param.tx.tx_len = len + 3;
     
     g_rf_param.tx.Index = SI_Send_Packet(len + 3, buf);
 
     ENABLE_RF_INT();
-
     g_rf_param.rf_state = RF_STATE_TX; 
     g_rf_param.tx.Timeout = 1;
+    
+    
+    
+    
     
     return (RF_STATUS_SUCCESS);
 }
@@ -148,7 +147,6 @@ void RF_Event_Handle(void)
         //g_rf_param.rx.rx_len=0; //华兄
         g_rf_param.rx.Timeout=0;
 		//_sys_plc_reset();
-
         OSSemPost(g_sem_rf); //华兄
 	}
 	 else if (sta1 & RXFF_AF) 

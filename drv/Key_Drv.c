@@ -16,7 +16,7 @@ KEY_CON g_key_control;
 
 static const int s_key_msg_map[4][KEYBOARD_ROW_NUM] = 
 {
-    {'*','7', '4', '1', GUI_KEY_SPACE, GUI_KEY_ESCAPE},
+    {'*','7', '4', '1', GUI_KEY_TAB, GUI_KEY_ESCAPE},
     {GUI_KEY_F1,'0', '8', '5', '2', GUI_KEY_DOWN},
     {GUI_KEY_F2,'#', '9', '6', '3', GUI_KEY_BACKSPACE},
     {GUI_KEY_ENTER, GUI_KEY_YELLOW, GUI_KEY_RIGHT, GUI_KEY_UP, GUI_KEY_LEFT, GUI_KEY_GREEN},

@@ -316,6 +316,7 @@ u8 SI_SendCmd_Noresp(u8 Data_len,const u8 *CmdData)
   //return 0;
 }
 
+
 /************************************************/
 //º¯ÊýÃû£ºWrite_TxData 
 //¹¦ÄÜ£ºÐ´ÈëFIFOÊý×éÊý¾Ý
@@ -328,9 +329,9 @@ u8 SI_Write_Fifo(u8 Tx_Len,const u8 *Tx_Data)
     u8 Cts_Value=0;
     u16 ErrCnt=0;
     u16 i,temp;
+
     u8 len;
-
-
+    
 #if 0    
 	if(Tx_Len > TX_AE_THRESHOLD)
         len = TX_AE_THRESHOLD;//·¢ËÍµôTX_AE_THRESHOLD£¬ÔÚÌîTX_AE_THRESHOLDµÄÊý¾        
@@ -350,7 +351,6 @@ u8 SI_Write_Fifo(u8 Tx_Len,const u8 *Tx_Data)
 
 #if 0
     while (!__HAL_SPI_GET_FLAG(&SpiHandle, SPI_FLAG_TXE)); //¼ì²éÖ¸¶¨µÄSPI±êÖ¾Î»ÉèÖÃÓë·ñ:·¢ËÍ»º´æ¿Õ±êÖ¾Î»
-
 #if 0
     SpiHandle.Instance->DR = Tx_Len + 1;
 #else //»ªÐÖ
@@ -360,7 +360,7 @@ u8 SI_Write_Fifo(u8 Tx_Len,const u8 *Tx_Data)
     while (!__HAL_SPI_GET_FLAG(&SpiHandle, SPI_FLAG_RXNE));
     Cts_Value = SpiHandle.Instance->DR;
 #endif
-
+ 
     for (i=0; i < len; i++)    // Send input data array via SPI
     {
        
@@ -504,14 +504,11 @@ u8 SI_Send_Packet(u8 bLength, u8 *abPayload)
     abApi_Write[1] = PROP_PKT_GROUP;        // Select property group
     abApi_Write[2] = 2;               // Number of properties to be written
     abApi_Write[3] = PROP_PKT_FIELD_1_LENGTH_7_0; // Specify first property
-
 #if 0    
     abApi_Write[4] = bLength + 1;    // Field length (variable packet length info)
 #else //»ªÐÖ
     abApi_Write[4] = bLength;
 #endif
-
-    //abApi_Write[5] = 0;           // Field length (variable packet length info)
     //bApi_SendCommand(5,abApi_Write);        // Send command to the radio IC
     SI_SendCmd_Noresp(5,&abApi_Write[0] );
     

@@ -1002,24 +1002,35 @@ void BSP_ADC_Init(void)
 
 uint16_t BSP_ADC_ReadPwr(void)
 {
-     HAL_ADC_Start(&AdcHandle);
-  
-    /*##-4- Wait for the end of conversion #####################################*/
-    /*  Before starting a new conversion, you need to check the current state of
-         the peripheral; if it's busy you need to wait for the end of current
-         conversion before starting a new one.
-         For simplicity reasons, this example is just waiting till the end of the
-         conversion, but application may perform other tasks while conversion
-         operation is ongoing. */
-    HAL_ADC_PollForConversion(&AdcHandle, 10);
-  
-    /* Check if the continous conversion of regular channel is finished */
-    if (HAL_ADC_GetState(&AdcHandle) == HAL_ADC_STATE_EOC_REG)
+    int i ;
+
+    uhADCxConvertedValue = 0;
+    //for(i=0 ; i< 10 ; i++)
     {
-      /*##-5- Get the converted value of regular channel  ########################*/
-      uhADCxConvertedValue = HAL_ADC_GetValue(&AdcHandle);
+         HAL_ADC_Start(&AdcHandle);
+         
+      
+        /*##-4- Wait for the end of conversion #####################################*/
+        /*  Before starting a new conversion, you need to check the current state of
+             the peripheral; if it's busy you need to wait for the end of current
+             conversion before starting a new one.
+             For simplicity reasons, this example is just waiting till the end of the
+             conversion, but application may perform other tasks while conversion
+             operation is ongoing. */
+        HAL_ADC_PollForConversion(&AdcHandle, 10);
+      
+        /* Check if the continous conversion of regular channel is finished */
+        
+        
+        if (HAL_ADC_GetState(&AdcHandle) == HAL_ADC_STATE_EOC_REG)
+        {
+          /*##-5- Get the converted value of regular channel  ########################*/
+          uhADCxConvertedValue = HAL_ADC_GetValue(&AdcHandle);
+        }   
     }
 
+    //uhADCxConvertedValue = uhADCxConvertedValue/10;
+    
     return  uhADCxConvertedValue ;//ADC读取的电压值
 
 

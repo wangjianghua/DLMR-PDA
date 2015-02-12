@@ -351,6 +351,10 @@ void TMS_Color_Change(WM_MESSAGE *pMsg)
         {
             EDIT_SetBkColor(hItem,0,GUI_GREEN);
         }
+        else if(WM_HasFocus(hItem)==0)
+        {
+            EDIT_SetBkColor(hItem,0,0xC0C0C0);
+        }
 
     }
 }
@@ -469,7 +473,13 @@ static void _cbDialog(WM_MESSAGE * pMsg)
                     WM_DeleteWindow(g_hWin_TimeSet);
                     g_hWin_TimeSet=HBWIN_NULL;
                     WM_SetFocus(g_hWin_para);
+                    tms_key_cnt=1;
                     break;   
+
+                case GUI_KEY_TAB:
+                    TMS_Color_Change(pMsg);
+                    
+                    break;
             }
 
         }

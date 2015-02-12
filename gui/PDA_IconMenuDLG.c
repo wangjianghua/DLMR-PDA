@@ -100,33 +100,39 @@ static const char UploadIcon[]="\xe5\xa3\xb9";
 //下行标志
 static const char DownloadIcon[]="\xe8\xb4\xb0";
 
+
+
+
 //电池
 static const char Battery_100[]="\xe5\x8d\x81";
 static const char Battery_80[] ="\xe7\x8e\x96";
 static const char Battery_60[] ="\xe6\x8d\x8c";
 static const char Battery_40[] ="\xe6\x9f\x92";
 static const char Battery_20[] ="\xe9\x99\x86";
+static const char Battery_00[] ="\xe4\xbc\x8d";
 
 //监控
-static const char MonitorIcon[]="\xe8\x82\x86";
+//static const char MonitorIcon[]="\xe8\x82\x86";
 //关闭监控
-static const char CloseMonitor[]="\xe5\x8f\x81";
+//static const char CloseMonitor[]="\xe5\x8f\x81";
 
 //当前规约:DL-T-07
-static const char Protocol_07[]="\xe8\xa7\x84\xe7\xba\xa6:DL-T-07";
+//static const char Protocol_07[]="\xe8\xa7\x84\xe7\xba\xa6:DLT-07";
+static const char Protocol_07[]="DLT-07";
 
-static const char Protocol_97[]="\xe8\xa7\x84\xe7\xba\xa6:DL-T-97";
+
+static const char Protocol_97[]="DLT-97";
 
 
 
 //任务栏资源列表
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { WINDOW_CreateIndirect,  NULL,           ID_WINDOW_0,  0,   0, 240, 25, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    "protocol",     ID_TEXT_0,    3,   3, 100,  15, 0, 0x0, 0 },
-  //{ TEXT_CreateIndirect,    MonitorIcon ,   ID_TEXT_1,    78,  5, 40,  15, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    UploadIcon,     ID_TEXT_5,    143, 5, 17,  17, 0, 0x0, 0 }, 
-  { TEXT_CreateIndirect,    DownloadIcon,   ID_TEXT_6,    160, 5, 17,  17, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    " ",            ID_TEXT_7,    190, 4, 42,  17, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    "protocol",     ID_TEXT_0,    3,   3, 60,  15, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    "PLC-R" ,       ID_TEXT_1,    70,  3, 60,  15, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    UploadIcon,     ID_TEXT_5,    143, 3, 17,  17, 0, 0x0, 0 }, 
+  { TEXT_CreateIndirect,    DownloadIcon,   ID_TEXT_6,    160, 3, 17,  17, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    Battery_20,     ID_TEXT_7,    190, 3, 42,  17, 0, 0x0, 0 },
     
 };
 
@@ -141,7 +147,7 @@ static const BITMAP_ITEM _aBitmapItem[] =
   {&_bmmonitor,   MonitorText      },  //监控
   {&bmTFcard,     TFcardText       },  //内存管理 
   {&bmabout,      About            }
-  	
+
 };
 
 
@@ -164,8 +170,22 @@ void TSK_Set_Monitor(void)
 {
     WM_HWIN hItem;
     hItem=WM_GetDialogItem(g_hWin_task,ID_TEXT_1);
-    TEXT_SetFont(hItem,&GUI_Font_Battery_40);
-    TEXT_SetText(hItem,MonitorIcon);
+    //TEXT_SetFont(hItem,&GUI_Font_Battery_40);
+    if(g_send_para_pkg.cmdType==PLC_CMD_TYPE_R2L)
+    {
+        TEXT_SetText(hItem,"PLC-L");
+        //TEXT_SetBkColor(hItem,GUI_GREEN);
+    }
+    else if(g_send_para_pkg.cmdType==PLC_CMD_TYPE_L2R)
+    {
+        TEXT_SetText(hItem,"PLC-R");
+        //TEXT_SetBkColor(hItem,GUI_GREEN);
+    }
+    else if(g_send_para_pkg.cmdType==PLC_CMD_TYPE_NODE)
+    {
+        TEXT_SetText(hItem,"PLC-N");
+        //TEXT_SetBkColor(hItem,GUI_GREEN);
+    }
 }
 
 void TSK_Set_Protocol_Text(void)
@@ -181,6 +201,10 @@ void TSK_Set_Protocol_Text(void)
         TEXT_SetText(hItem,Protocol_97);
     }
 }
+
+
+//void TSK_Set
+
 
 #if 0
 void TSK_Close_Monitor(void)
@@ -267,31 +291,37 @@ void Data_Download_Yellow(u32 color)
 }
 
 
-void Battery_State(uint16_t pwr_val)
+void Battery_State(WM_MESSAGE *pMsg ,int pwr_val)
 {
     WM_HWIN hItem;
-    hItem=WM_GetDialogItem(g_hWin_task,ID_TEXT_7);
-    if((pwr_val>2079)&&(pwr_val<2172))
+    hItem=WM_GetDialogItem(pMsg->hWin,ID_TEXT_7);
+    if(pwr_val < 2138)
+    {
+        TEXT_SetText(hItem,Battery_00);
+        TEXT_SetTextColor(hItem,GUI_RED);
+    }
+    
+    else if((pwr_val > 2140)&&(pwr_val < 2206))
     {
         TEXT_SetText(hItem,Battery_20);
         TEXT_SetTextColor(hItem,GUI_RED);
     }
-    else if((pwr_val>=2175)&&(pwr_val<2230))
+    else if((pwr_val >= 2208)&&(pwr_val < 2272))
     {
         TEXT_SetText(hItem,Battery_40);
         TEXT_SetTextColor(hItem,GUI_YELLOW);
     }
-    else if((pwr_val>=2236)&&(pwr_val<2262))
+    else if((pwr_val >= 2276)&&(pwr_val < 2335))
     {
         TEXT_SetText(hItem,Battery_60);
         TEXT_SetTextColor(hItem,GUI_GREEN);
     }
-    else if((pwr_val>=2265)&&(pwr_val<2291))
+    else if((pwr_val >= 2337)&&(pwr_val < 2435))
     {
         TEXT_SetText(hItem,Battery_80);
         TEXT_SetTextColor(hItem,GUI_GREEN);
     }
-    else if(pwr_val>=2298)
+    else if(pwr_val >= 2437)
     {
         TEXT_SetText(hItem,Battery_100);
         TEXT_SetTextColor(hItem,GUI_GREEN);
@@ -320,14 +350,6 @@ static void _cbTaskDialog(WM_MESSAGE * pMsg)
         
         hItem=WM_GetDialogItem(pMsg->hWin,ID_TEXT_6);
         TEXT_SetTextColor(hItem,GUI_WHITE);
-#if 0
-        hItem=WM_GetDialogItem(pMsg->hWin,ID_TEXT_1);
-        TEXT_SetFont(hItem,&GUI_Font_Battery_40);
-        TEXT_SetText(hItem,MonitorIcon);
-        TEXT_SetTextColor(hItem,GUI_RED);
-#endif
-
-
 #if 1
         //TSK_Set_Protocol_Text();
         hItem=WM_GetDialogItem(pMsg->hWin,ID_TEXT_0);
@@ -343,9 +365,10 @@ static void _cbTaskDialog(WM_MESSAGE * pMsg)
 #endif       
         hItem=WM_GetDialogItem(pMsg->hWin,ID_TEXT_7); 
         TEXT_SetFont(hItem,&GUI_Font_Battery_40);
+        Battery_State(pMsg,g_sys_control.pwrValue);
         break;
       case WM_TIMER:
-        Battery_State(g_sys_control.pwrValue);
+        Battery_State(pMsg,g_sys_control.pwrValue);
         WM_RestartTimer(pMsg->Data.v, 1000);
         break;
 

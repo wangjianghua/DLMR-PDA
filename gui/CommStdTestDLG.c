@@ -36,20 +36,24 @@
 #define ID_BUTTON_2 (GUI_ID_USER + 0x0A)
 #define ID_BUTTON_3 (GUI_ID_USER + 0x0B)
 #define ID_BUTTON_4 (GUI_ID_USER + 0x0C)
+#define ID_BUTTON_5 (GUI_ID_USER + 0x0D)
 
-#define ID_TEXT_0 (GUI_ID_USER + 0x0D)
-#define ID_TEXT_1 (GUI_ID_USER + 0x0E)
-#define ID_TEXT_2 (GUI_ID_USER + 0x0F)
-#define ID_TEXT_3 (GUI_ID_USER + 0x10)
-#define ID_TEXT_4 (GUI_ID_USER + 0x11)
 
-#define ID_EDIT_0 (GUI_ID_USER + 0x12)
-#define ID_EDIT_1 (GUI_ID_USER + 0x13)
-#define ID_EDIT_2 (GUI_ID_USER + 0x14)
-#define ID_EDIT_3 (GUI_ID_USER + 0x15)
-#define ID_EDIT_4 (GUI_ID_USER + 0x16)
+#define ID_TEXT_0 (GUI_ID_USER + 0x0E)
+#define ID_TEXT_1 (GUI_ID_USER + 0x0F)
+#define ID_TEXT_2 (GUI_ID_USER + 0x10)
+#define ID_TEXT_3 (GUI_ID_USER + 0x11)
+#define ID_TEXT_4 (GUI_ID_USER + 0x12)
+#define ID_TEXT_5 (GUI_ID_USER + 0x13)
 
-#define ID_PROGBAR_0 (GUI_ID_USER + 0x17)
+#define ID_EDIT_0 (GUI_ID_USER + 0x14)
+#define ID_EDIT_1 (GUI_ID_USER + 0x15)
+#define ID_EDIT_2 (GUI_ID_USER + 0x16)
+#define ID_EDIT_3 (GUI_ID_USER + 0x17)
+#define ID_EDIT_4 (GUI_ID_USER + 0x18)
+#define ID_EDIT_5 (GUI_ID_USER + 0x19)
+
+#define ID_PROGBAR_0 (GUI_ID_USER + 0x1A)
 
 
 // USER START (Optionally insert additional defines)
@@ -116,7 +120,11 @@ static const char Cancel[]="\xe5\x8f\x96\xe6\xb6\x88";
 
 //退出
 static const char Quit[]="\xe9\x80\x80\xe5\x87\xba";
+//速率
+static const char Speed[]="\xe9\x80\x9f    \xe7\x8e\x87";
 
+//获取设备地址
+static const char GetDevAddr[]="* \xe8\x8e\xb7\xe5\x8f\x96\xe8\xae\xbe\xe5\xa4\x87\xe5\x9c\xb0\xe5\x9d\x80";
 
 // USER START (Optionally insert additional static data)
 // USER END
@@ -125,29 +133,34 @@ static const char Quit[]="\xe9\x80\x80\xe5\x87\xba";
 *
 *       _aDialogCreate
 */
+
+
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
-  { WINDOW_CreateIndirect,  "CommProtoTest", ID_WINDOW_0,  0,   0,   240, 295, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect,  RoutTab,         ID_BUTTON_0,  6,   14,  80,  20,  0, 0x0, 0 },
-  { BUTTON_CreateIndirect,  DataSignBtn,     ID_BUTTON_1,  151, 14,  80,  20,  0, 0x0, 0 },
-  { BUTTON_CreateIndirect,  Send,            ID_BUTTON_2,  6,   267, 55,  20,  0, 0x0, 0 },
-  { BUTTON_CreateIndirect,  Msg,             ID_BUTTON_3,  80,  267, 80,  20,  0, 0x0, 0 },
-  { BUTTON_CreateIndirect,  Quit,          ID_BUTTON_4,  178, 266, 55,  20,  0, 0x0, 0 },
-    
-  { TEXT_CreateIndirect,    TarAddr,         ID_TEXT_0,    8,   49,  80, 20,  0, 0x0, 0 },
-  { TEXT_CreateIndirect,    CtlCode,         ID_TEXT_1,    8,   83,  80, 20,  0, 0x0, 0 },
-  { TEXT_CreateIndirect,    DataSign,        ID_TEXT_2,    8,  122, 80, 20,  0, 0x0, 0 },
-  { TEXT_CreateIndirect,    Length,          ID_TEXT_3,    8,  156, 80, 20,  0, 0x0, 0 },
-  { TEXT_CreateIndirect,    DataField,       ID_TEXT_4,    8,  195, 80, 20,  0, 0x0, 0 },
-    
-  { EDIT_CreateIndirect,    "addr",          ID_EDIT_0,    96,  48,  135, 20,  0, 0x64, 0 },
-  { EDIT_CreateIndirect,    "ctl",           ID_EDIT_1,    96,  82,  135, 20,  0, 0x64, 0 },
-  { EDIT_CreateIndirect,    "flag",          ID_EDIT_2,    96,  118, 135, 20,  0, 0x64, 0 },
-  { EDIT_CreateIndirect,    "length",        ID_EDIT_3,    96,  156, 135, 20,  0, 0x64, 0 },
-  { EDIT_CreateIndirect,    "data",          ID_EDIT_4,    96,  195, 135, 20,  0, 0x64, 0 },
-  { PROGBAR_CreateIndirect, "Progbar",       ID_PROGBAR_0, 12,  236, 216, 20,  0, 0x0, 0 },
-  // USER START (Optionally insert additional widgets)
-  // USER END
-};
+  { WINDOW_CreateIndirect, "cps",      ID_WINDOW_0,  0,   0,   240, 295, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, RoutTab,    ID_BUTTON_0,  6,   8,  80,  20, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, DataSignBtn,ID_BUTTON_1,  151, 8,  80,  20, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, Send,       ID_BUTTON_2,  6,   267, 55,  20, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, Msg,        ID_BUTTON_3,  80,  267, 80,  20, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, Quit,       ID_BUTTON_4,  178, 266, 55,  20, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, GetDevAddr, ID_BUTTON_5,  7,   37,  227, 20, 0, 0x0, 0 },
+
+  { TEXT_CreateIndirect, Speed ,       ID_TEXT_0,    8,   67,  80,  20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect, TarAddr,      ID_TEXT_1,    8,   99,  110, 20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect, CtlCode,      ID_TEXT_2,    8,   128, 110, 20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect, DataSign,     ID_TEXT_3,    8,   159, 110, 20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect, Length,       ID_TEXT_4,    8,   191, 110, 20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect, DataField,    ID_TEXT_5,    8,   215, 110, 20, 0, 0x0, 0 },
+
+  { EDIT_CreateIndirect, "Edit",       ID_EDIT_0,    130, 65,  103, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect, "Edit",       ID_EDIT_1,    130, 96,  103, 20, 0, 0x64, 0 }, 
+  { EDIT_CreateIndirect, "Edit",       ID_EDIT_2,    130, 126, 103, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect, "Edit",       ID_EDIT_3,    130, 156, 103, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect, "Edit",       ID_EDIT_4,    130, 187, 103, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect, "Edit",       ID_EDIT_5,    130, 215, 103, 20, 0, 0x64, 0 },
+  { PROGBAR_CreateIndirect, "Progbar", ID_PROGBAR_0, 12, 241, 216, 20, 0, 0x0, 0 },
+
+};  
+
 
 /*********************************************************************
 *
@@ -206,7 +219,7 @@ void STM_Print_resp_data(u8 * src, u8 * send_ptr, u8 len)
     {
         *send_ptr++ = GUI_Hex2Char( src[i]>>4);
         *send_ptr++ = GUI_Hex2Char( src[i]&0x0f);
-        *send_ptr++ = ' ';
+        //*send_ptr++ = ' ';
     }
     *send_ptr++ = 0;
 }
@@ -223,19 +236,30 @@ void STM_proc_resp_data(void)
     len = g_plc_prm.data_len;
 
     if(g_hWin_std != WM_HWIN_NULL)
-    {        
-        hItem = WM_GetDialogItem(g_hWin_std, ID_EDIT_3);
-        sprintf(temb, "%d", len);
-        EDIT_SetText(hItem, temb);
+    {   
+        if(6==len)
+        {
+            hItem = WM_GetDialogItem(g_hWin_std, ID_EDIT_1);
+            //sprintf(temb, "%d", pbuf);
+            //STM_Print_resp_data(pbuf,temb, len);
+
+            EDIT_SetText(hItem, 
+                (const char*)GUI_hex2MeterAddrStr(pbuf, len));
+        }
+        //EDIT_SetText(hItem, temb);
         
         //SWITCH(DATA FLAG)
         if(len)
         {
             if(len > 8)
+            {
                 len = 8;
-            hItem = WM_GetDialogItem(g_hWin_std, ID_EDIT_4);
-            STM_Print_resp_data(pbuf,temb, len);      
-            EDIT_SetText(hItem, temb);           
+            }
+            hItem = WM_GetDialogItem(g_hWin_std, ID_EDIT_5);
+            EDIT_SetText(hItem, 
+            (const char*)GUI_hex2MeterAddrStr(pbuf, len));
+            //STM_Print_resp_data(pbuf,temb, len);      
+            //EDIT_SetText(hItem, temb);           
         }                            
     }
 }
@@ -245,10 +269,11 @@ static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
     u8  i, tb[GUI_645_ADDR_LENGTH+2], len;
     WM_HWIN hItem;
     WM_HWIN hWin;
+    u8 addr[] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA};
  
     int dropdown_num;
     
-    hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
+    hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_1);
     EDIT_GetText(hItem, tb, GUI_645_ADDR_LENGTH+1);
     
     //GUI_GetStrDataFlag(tb , GUI_645_ADDR_LENGTH);
@@ -259,7 +284,11 @@ static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
         return DEV_ERROR;
     }
     
-    if(DEV_OK != GUI_GetMeterAddr(tb, g_send_para_pkg.dstAddr))
+    if(0x13 == g_send_para_pkg.ctlCode)
+    {
+        memcpy(g_send_para_pkg.dstAddr, addr, sizeof(addr));
+    }
+    else if(DEV_OK != GUI_GetMeterAddr(tb, g_send_para_pkg.dstAddr))
     {
         ERR_NOTE(g_hWin_std,GUI_MSBOX_ADDR_ERROR);
         return DEV_ERROR;
@@ -279,7 +308,7 @@ static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
     //g_sys_register_para.plcProtocol = DL_T_07;
 
 
-    hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_2);
+    hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_3);
     //g_send_para_pkg.g_datasign = EDIT_GetValue(pMsg->hWin);
     EDIT_GetText(hItem, tb, 8 + 1);
 
@@ -305,11 +334,19 @@ static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
     }
     
 
-    hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_3);/*长度*/
+    hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_4);/*长度*/
     EDIT_GetText(hItem,std_Edit1_Text,4);
-    g_send_para_pkg.dataLen = atoi(std_Edit1_Text);
+
+    if(0x13 == g_send_para_pkg.ctlCode)
+    {
+        g_send_para_pkg.dataLen = 0;
+    }
+    else
+    {
+        g_send_para_pkg.dataLen = atoi(std_Edit1_Text);
+    }
   
-    hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_4);/*数据*/
+    hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_5);/*数据*/
     EDIT_GetText(hItem, tb, 20);
 
     g_send_para_pkg.cmdType = PLC_CMD_TYPE_COMMON;
@@ -329,14 +366,14 @@ void CPT_SelEdt_Up(WM_MESSAGE * pMsg)
         
         //WM_SetFocus(hItem);
         
-        hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_4);
+        hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_5);
         ///EDIT_SetBkColor(hItem,0,GUI_GREEN);
         WM_SetFocus(hItem);
 
-        hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
+        hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_1);
         EDIT_SetBkColor(hItem,0,0xC0C0C0);
         
-        key_press_cnt=4;
+        key_press_cnt=5;
     }
     else
     {
@@ -353,13 +390,13 @@ void CPT_SelEdt_Up(WM_MESSAGE * pMsg)
 void CPT_SelEdt_Down(WM_MESSAGE *pMsg)
 {
     WM_HWIN hItem;
-    if(key_press_cnt==4)
+    if(key_press_cnt==5)
     {
         hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
         //EDIT_SetBkColor(hItem,0,GUI_GREEN);
         WM_SetFocus(hItem);
         
-        hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_4);
+        hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_5);
         EDIT_SetBkColor(hItem,0,0xC0C0C0);
         
         key_press_cnt=KEY_PRESS_CNT_MIN;
@@ -383,12 +420,16 @@ void CPT_Color_Change(WM_MESSAGE *pMsg)
 {
     WM_HWIN hItem;
     int i;
-    for(i=0;i<5;i++)
+    for(i=0;i<6;i++)
     {
         hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0+i);
         if(WM_HasFocus(hItem)==1)
         {
             EDIT_SetBkColor(hItem,0,GUI_GREEN);
+        }
+        else if(WM_HasFocus(hItem)==0)
+        {
+            EDIT_SetBkColor(hItem,0,0xC0C0C0);
         }
 
     }
@@ -398,34 +439,34 @@ void CPT_Color_Change(WM_MESSAGE *pMsg)
 void CST_Set_DataFlag(u8 * tst)
 {
     WM_HWIN hItem;
-    hItem=WM_GetDialogItem(g_hWin_std,(ID_EDIT_2));
+    hItem=WM_GetDialogItem(g_hWin_std,(ID_EDIT_3));
     EDIT_SetText(hItem, tst); 
 }
 
 
 WM_HWIN CPT_Set_Addr(void)
 {
-    return WM_GetDialogItem(g_hWin_std,ID_EDIT_0);
+    return WM_GetDialogItem(g_hWin_std,ID_EDIT_1);
 }
 
 WM_HWIN CPT_Set_CtlCode(void)
 {
-    return WM_GetDialogItem(g_hWin_std,ID_EDIT_1);
+    return WM_GetDialogItem(g_hWin_std,ID_EDIT_2);
 }
 
 WM_HWIN CPT_Set_DataFlag(void)
 {
-    return WM_GetDialogItem(g_hWin_std,ID_EDIT_2);
+    return WM_GetDialogItem(g_hWin_std,ID_EDIT_3);
 }
 
 WM_HWIN CPT_Set_Length(void)
 {
-    return WM_GetDialogItem(g_hWin_std,ID_EDIT_3);
+    return WM_GetDialogItem(g_hWin_std,ID_EDIT_4);
 }
 
 WM_HWIN CPT_Set_Data(void)
 {
-    return WM_GetDialogItem(g_hWin_std,ID_EDIT_4);
+    return WM_GetDialogItem(g_hWin_std,ID_EDIT_5);
 }
 
 
@@ -454,15 +495,20 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     BUTTON_SetBkColor(hItem,0,GUI_YELLOW);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
 
-    for(i=0;i<5;i++)
+    hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_5);
+    //BUTTON_SetBkColor(hItem,0,GUI_YELLOW);
+    WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
+
+    for(i=0;i<6;i++)
     {
         hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0+i);
         WM_DisableWindow(hItem);
     }
 
-
+    hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
+    EDIT_SetText(hItem,"1200");
     
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_0);
+    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_1);
     //EDIT_SetHexMode(pMsg->hWin,0x999999999999,0,0xffffffffffffff);
     //GUI_EditHex(hItem);
     
@@ -471,7 +517,7 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     // Initialization of 'Dropdown'
     //
     
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_1);
+    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_2);
     EDIT_SetText(hItem, Readdata);
      if(g_sys_register_para.plcProtocol == DL_T_07)
     {
@@ -483,7 +529,7 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     }
     //EDIT_SetBkColor(hItem,0,GUI_GREEN);
 
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_2);
+    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_3);
     //hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_3);
     GUI_GetHexDataFlag(tempbuf, g_sys_control.defaultDataFlag, 4);
     EDIT_SetText(hItem, tempbuf);
@@ -491,12 +537,12 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     //
     // Initialization of 'Edit'
     //
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_3);
+    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_4);
     //GUI_GetHexDataFlag(tempbuf, g_sys_control.defaultDataFlag, 4);
     EDIT_SetText(hItem, "0");
     
     
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_4);
+    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_5);
     EDIT_SetText(hItem, "00000000");
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_PROGBAR_0);
@@ -536,13 +582,23 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
               case ID_EDIT_0:
                 if(key_num==GUI_KEY_ENTER)
                 {
+                  g_sys_control.selectWidget=LISTBOX_SPEED;
+                  g_hWin_Input=Create_ListBox_Set(g_hWin_std);
+                  
+                  WM_SetFocus(g_hWin_Input);
+                }
+                break;
+                
+              case ID_EDIT_1:
+                if(key_num==GUI_KEY_ENTER)
+                {
                   g_sys_control.selectWidget=EDIT_ADDR;
                   g_hWin_Input=Create_Edit_Set(g_hWin_std);
                   
                   WM_SetFocus(g_hWin_Input);
                 }
                 break;
-              case ID_EDIT_1:
+              case ID_EDIT_2:
                 if(key_num==GUI_KEY_ENTER)
                 {
                   g_sys_control.selectWidget=LISTBOX_CTLCODE;
@@ -551,7 +607,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                   WM_SetFocus(g_hWin_Input);
                 }
                 break;
-              case ID_EDIT_2:
+              case ID_EDIT_3:
                 if(key_num==GUI_KEY_ENTER)
                 {
                   g_sys_control.selectWidget=EDIT_DATA_FLAG;
@@ -559,7 +615,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                   WM_SetFocus(g_hWin_Input);
                 }
                 break;
-              case ID_EDIT_3:
+              case ID_EDIT_4:
                 if(key_num==GUI_KEY_ENTER)
                 {
                   g_sys_control.selectWidget=EDIT_LENGTH;
@@ -567,7 +623,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                   WM_SetFocus(g_hWin_Input);
                 }
                 break;
-              case ID_EDIT_4:
+              case ID_EDIT_5:
                 if(key_num==GUI_KEY_ENTER)
                 {
                   g_sys_control.selectWidget=EDIT_DATA;
@@ -591,6 +647,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                     WM_ShowWindow(g_hWin_Date);
                     WM_SetFocus(g_hWin_menu); 
                     g_sys_control.guiState = GUI_PLC_MSG_IDLE;
+                    key_press_cnt=1;
                 }
                 break;
                 
@@ -639,6 +696,15 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                     WM_ShowWindow(g_hWin_DataSign);
                     WM_SetFocus(g_hWin_DataSign);
                 }
+                break;
+
+             case GUI_KEY_TAB:
+                if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
+                {
+                    //CPT_SelEdt_Up(pMsg);
+                    CPT_Color_Change(pMsg);
+                }
+                
                 break;
 
             case '#':

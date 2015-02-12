@@ -79,6 +79,7 @@
 #define  APP_CFG_TASK_GMP_STK_SIZE                      512u   //gui msg proc 
 #define  APP_CFG_TASK_RF_STK_SIZE                       512u
 
+
 /*
 *********************************************************************************************************
 *                                            BSP CFG

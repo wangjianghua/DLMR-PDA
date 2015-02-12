@@ -105,9 +105,7 @@ typedef enum {
 #define RF_AIR_BAUD_RATE 2400
 #define RF_STATISTICS
 #define MH1803_frm_change(x,y) RF_Frame_chang(x,y)
-
 extern rf_param g_rf_param;
-
 /*****************************************************************************
  * Name			: SI_Init
  * Function		: 初始化MH1803射频芯片及本模块的全局变量

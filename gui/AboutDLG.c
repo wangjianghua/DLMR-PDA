@@ -153,20 +153,9 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                     WM_SetFocus(g_hWin_menu);
                     break;
                 case GUI_KEY_GREEN:
-                    //WM_DeleteWindow(g_hWin_about);
-                    //g_hWin_about=0;
-                    //WM_SetFocus(g_hWin_menu);
-                    //MESSAGEBOX_Create("Upgrade? Yes or Not?", "Tip", 0);
-                    //WM_SetFocus()
-                    if(g_sys_register_para.bootFlag != BOOT_REQUEST_ACT)
-                    {
-                        g_sys_register_para.bootFlag = BOOT_REQUEST_ACT;
-                        DEV_Parameters_Write();
-                    }
+                    //ERR_NOTE(g_hWin_about, GUI_MSBOX_UPDATE_CFM);
+                    ERR_NOTE(g_hWin_about,8);
                     
-                    
-                    DEV_SoftReset();
-
                     //DEV_Power_Off();
 
                     //while(1);

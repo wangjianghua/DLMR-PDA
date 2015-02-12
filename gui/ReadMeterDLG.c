@@ -50,21 +50,23 @@
 #define ID_TEXT_8     (GUI_ID_USER + 0x84)  
 #define ID_TEXT_9     (GUI_ID_USER + 0x85)  
 #define ID_TEXT_10    (GUI_ID_USER + 0x86)  
-#define ID_TEXT_11    (GUI_ID_USER + 0x87) 
+#define ID_TEXT_11    (GUI_ID_USER + 0x87)
+#define ID_TEXT_12    (GUI_ID_USER + 0x88)
 
-#define ID_EDIT_0     (GUI_ID_USER + 0x88)
-#define ID_EDIT_1     (GUI_ID_USER + 0x89)
-#define ID_EDIT_2     (GUI_ID_USER + 0x8A)
-#define ID_EDIT_3     (GUI_ID_USER + 0x8B)
-#define ID_EDIT_4     (GUI_ID_USER + 0x8C)
-#define ID_EDIT_5     (GUI_ID_USER + 0x8D)
+#define ID_EDIT_0     (GUI_ID_USER + 0x89)
+#define ID_EDIT_1     (GUI_ID_USER + 0x8A)
+#define ID_EDIT_2     (GUI_ID_USER + 0x8B)
+#define ID_EDIT_3     (GUI_ID_USER + 0x8C)
+#define ID_EDIT_4     (GUI_ID_USER + 0x8D)
+#define ID_EDIT_5     (GUI_ID_USER + 0x8E)
 
-#define ID_EDIT_6     (GUI_ID_USER + 0x8E)
+#define ID_EDIT_6     (GUI_ID_USER + 0x8F)
+#define ID_EDIT_7     (GUI_ID_USER + 0x90)
 
 
-#define ID_PROGBAR_0  (GUI_ID_USER + 0x8F)
+#define ID_PROGBAR_0  (GUI_ID_USER + 0x91)
 
-#define ID_BUTTON_4   (GUI_ID_USER + 0x90)//自动获取表号
+#define ID_BUTTON_4   (GUI_ID_USER + 0x92)//自动获取表号
 
 //static int PressCount = 0;
 
@@ -114,6 +116,10 @@ static const char TotalVal[]="\xe6\x80\xbb\xe7\x94\xb5\xe9\x87\x8f";
 //抄表
 static const char ReadMeter[]="F2\xe6\x8a\x84\xe8\xa1\xa8";
 
+//速率
+static const char Speed[]="\xe9\x80\x9f    \xe7\x8e\x87";
+
+
 //保存
 static const char Save[]="\xe4\xbf\x9d\xe5\xad\x98";
 
@@ -136,7 +142,7 @@ const char MinOutRange[]  ="\xe5\x88\x86\xe9\x92\x9f\xe8\xb6\x85\xe5\x87\xba\xe8
 
 const char ConfirmFormat[]="\xe7\xa1\xae\xe5\xae\x9a\xe6\xa0\xbc\xe5\xbc\x8f\xe5\x8c\x96\xe5\x86\x85\xe5\xad\x98\xe5\x90\x97\xef\xbc\x9f?";
 
-
+const char UpdateConfirm[]="\xe7\xa1\xae\xe8\xae\xa4\xe5\x8d\x87\xe7\xba\xa7\xe5\x90\x97\xef\xbc\x9f?";
 
 
 const char *gc_messageBoxText[] = 
@@ -149,6 +155,7 @@ const char *gc_messageBoxText[] =
     HourOutRange,
     MinOutRange,   
     ConfirmFormat,
+    UpdateConfirm,
 };
 
 
@@ -164,40 +171,43 @@ const char *gc_messageBoxText[] =
 *       _aDialogCreate
 */
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
-    { WINDOW_CreateIndirect, "ReadMeter",   ID_WINDOW_0, 0, 0, 240, 295, 0, 0x0, 0 },
-    { BUTTON_CreateIndirect, GetMeterNum,   ID_BUTTON_1, 14, 7, 90, 30, 0, 0x0, 0 },
+    { WINDOW_CreateIndirect,  "ReadMeter",  ID_WINDOW_0, 0,   0,  240, 295, 0, 0x0, 0 },
+    { BUTTON_CreateIndirect,  GetMeterNum,  ID_BUTTON_1, 4,   7,  85,  25, 0, 0x0, 0 },
+    { BUTTON_CreateIndirect, ReadMeter,     ID_BUTTON_0, 167, 7,  65,  25, 0, 0x0, 0 },
+        
+    { TEXT_CreateIndirect,   MeterNum,      ID_TEXT_0,   8,   46, 72,  20, 0, 0x0, 0 },
+    { EDIT_CreateIndirect,   NULL,          ID_EDIT_0,   89,  42, 141, 20, 0, GUI_645_ADDR_LENGTH, 0 },
+        
+    { TEXT_CreateIndirect, ReadMeterSel,    ID_TEXT_1,   8,   69, 69,  20, 0, 0x0, 0 },
+    { EDIT_CreateIndirect,         NULL,    ID_EDIT_6,   89,  68, 141, 20, 0, 0x64, 0 },
 
-    { BUTTON_CreateIndirect, ReadMeter,     ID_BUTTON_0, 147, 7,  80,  30, 0, 0x0, 0 },
-    { TEXT_CreateIndirect, MeterNum,        ID_TEXT_0,   8,   50, 72,  20, 0, 0x0, 0 },
-    { EDIT_CreateIndirect, NULL,            ID_EDIT_0,   89,  46, 136, 20, 0, GUI_645_ADDR_LENGTH, 0 },
+    { TEXT_CreateIndirect, Speed,         ID_TEXT_12,  8,   93, 69,  20, 0, 0x0, 0 },
+    { EDIT_CreateIndirect,  NULL,         ID_EDIT_7,   89,  92, 141, 20, 0, 0x64, 0 },
         
-    { TEXT_CreateIndirect, ReadMeterSel,    ID_TEXT_1,   8,   74, 69,  20, 0, 0x0, 0 },
-    { EDIT_CreateIndirect,         NULL,    ID_EDIT_6,   89,  73, 136, 19, 0, 0x64, 0 },
+    { TEXT_CreateIndirect, TotalVal,        ID_TEXT_2,   23,  118, 49, 20, 0, 0x0, 0 },
+    { EDIT_CreateIndirect, NULL,            ID_EDIT_1,   89,  116, 106, 20, 0, 0x64, 0 },
+    { TEXT_CreateIndirect, "kWh",           ID_TEXT_7,   199, 116, 35, 20, 0, 0x0, 0 },
         
-    { TEXT_CreateIndirect, TotalVal,        ID_TEXT_2,   23, 103, 49, 20, 0, 0x0, 0 },
-    { EDIT_CreateIndirect, NULL,            ID_EDIT_1,   89, 101, 106, 20, 0, 0x64, 0 },
-    { TEXT_CreateIndirect, "kWh",           ID_TEXT_7,   199, 101, 35, 20, 0, 0x0, 0 },
+    { TEXT_CreateIndirect, "\xe5\xb0\x96",  ID_TEXT_3,   23,  142, 80, 20, 0, 0x0, 0 },
+    { EDIT_CreateIndirect, NULL,            ID_EDIT_2,   89,  141, 106, 20, 0, 0x64, 0 },
+    { TEXT_CreateIndirect, "kWh",           ID_TEXT_8,   199, 141, 35, 20, 0, 0x0, 0 },
         
-    { TEXT_CreateIndirect, "\xe5\xb0\x96",  ID_TEXT_3,   23, 129, 80, 20, 0, 0x0, 0 },
-    { EDIT_CreateIndirect, NULL,            ID_EDIT_2,   89, 128, 106, 20, 0, 0x64, 0 },
-    { TEXT_CreateIndirect, "kWh",           ID_TEXT_8,   199, 128, 35, 20, 0, 0x0, 0 },
+    { TEXT_CreateIndirect, "\xe5\xb3\xb0",  ID_TEXT_4,   23,  167, 80, 20, 0, 0x0, 0 },
+    { EDIT_CreateIndirect, NULL,            ID_EDIT_3,   89,  165, 106, 20, 0, 0x64, 0 },
+    { TEXT_CreateIndirect, "kWh",           ID_TEXT_9,   199, 165, 35, 20, 0, 0x0, 0 },
         
-    { TEXT_CreateIndirect, "\xe5\xb3\xb0",  ID_TEXT_4,   23, 158, 80, 20, 0, 0x0, 0 },
-    { EDIT_CreateIndirect, NULL,            ID_EDIT_3,   89, 156, 106, 20, 0, 0x64, 0 },
-    { TEXT_CreateIndirect, "kWh",           ID_TEXT_9,   199, 156, 35, 20, 0, 0x0, 0 },
+    { TEXT_CreateIndirect, "\xe5\xb9\xb3",  ID_TEXT_5,   23,  192, 80, 20, 0, 0x0, 0 },
+    { EDIT_CreateIndirect, NULL,            ID_EDIT_4,   89,  190, 106, 20, 0, 0x64, 0 },
+    { TEXT_CreateIndirect, "kWh",           ID_TEXT_10,  199, 190, 35, 20, 0, 0x0, 0 },
         
-    { TEXT_CreateIndirect, "\xe5\xb9\xb3",  ID_TEXT_5,   23, 187, 80, 20, 0, 0x0, 0 },
-    { EDIT_CreateIndirect, NULL,            ID_EDIT_4,   89, 185, 106, 20, 0, 0x64, 0 },
-    { TEXT_CreateIndirect, "kWh",           ID_TEXT_10,  199, 185, 35, 20, 0, 0x0, 0 },
-        
-    { TEXT_CreateIndirect, "\xe8\xb0\xb7",  ID_TEXT_6,   23, 211, 80, 20, 0, 0x0, 0 },
-    { EDIT_CreateIndirect, NULL,            ID_EDIT_5,   89, 209, 106, 20, 0, 0x64, 0 },    
-    { TEXT_CreateIndirect, "kWh",           ID_TEXT_11,  199, 209, 35, 20, 0, 0x0, 0 },
+    { TEXT_CreateIndirect, "\xe8\xb0\xb7",  ID_TEXT_6,   23,  216, 80, 20, 0, 0x0, 0 },
+    { EDIT_CreateIndirect, NULL,            ID_EDIT_5,   89,  214, 106, 20, 0, 0x64, 0 },    
+    { TEXT_CreateIndirect, "kWh",           ID_TEXT_11,  199, 214, 35, 20, 0, 0x0, 0 },
        
     { BUTTON_CreateIndirect, Save,          ID_BUTTON_2, 8, 264, 55, 25, 0, 0x0, 0 },
     { BUTTON_CreateIndirect, Msg,           ID_BUTTON_4, 74, 264, 90, 25, 0, 0x0, 0 },
     { BUTTON_CreateIndirect, Quit,        ID_BUTTON_3, 175, 264, 55, 25, 0, 0x0, 0},
-    { PROGBAR_CreateIndirect, NULL,         ID_PROGBAR_0, 8, 237, 220, 20, 0, 0x0, 0},
+    { PROGBAR_CreateIndirect, NULL,         ID_PROGBAR_0, 8, 239, 220, 20, 0, 0x0, 0},
 };
 
 
@@ -224,6 +234,13 @@ static const u32 c_645DidoDef[2][PLC_CTRL_MAX_NUM] = {
 
 #endif
 
+
+
+
+
+
+
+
 WM_HWIN RMD_Get_PROGBAR()
 {    
     return WM_GetDialogItem(g_hWin_ReadMeter, ID_PROGBAR_0);            
@@ -241,6 +258,112 @@ WM_HWIN RMD_Get_ReadSel(void)
     return WM_GetDialogItem(g_hWin_ReadMeter,ID_EDIT_6);
 }
 
+
+
+static u8 RMD_key_cnt=1;
+
+void RMD_Sel_Down(WM_MESSAGE *pMsg)
+{
+    WM_HWIN hItem;
+    if(2==RMD_key_cnt)
+    {
+        hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
+        WM_SetFocus(hItem);
+        RMD_key_cnt=0;
+    }
+    else
+    {
+        RMD_key_cnt++;
+        switch(RMD_key_cnt)
+        {
+            case 0:
+                hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
+                WM_SetFocus(hItem);
+                break;
+            case 1:
+                hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_6);
+                WM_SetFocus(hItem);
+                break;
+            case 2:
+                hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_7);
+                WM_SetFocus(hItem);
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+
+void RMD_Sel_Up(WM_MESSAGE *pMsg)
+{
+    WM_HWIN hItem;
+
+    if(0==RMD_key_cnt)
+    {
+        hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_7);
+        WM_SetFocus(hItem);
+        RMD_key_cnt=2;
+    }
+    else
+    {
+        RMD_key_cnt--;
+        switch(RMD_key_cnt)
+        {
+            case 0:
+                hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
+                WM_SetFocus(hItem);
+                break;
+            case 1:
+                hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_6);
+                WM_SetFocus(hItem);
+                break;
+            case 2:
+                hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_7);
+                WM_SetFocus(hItem);
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+
+void RMD_Color_Change(WM_MESSAGE *pMsg)
+{
+    WM_HWIN hItem;
+
+    
+    hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
+    if(WM_HasFocus(hItem)==1)
+    {
+        EDIT_SetBkColor(hItem,0,GUI_GREEN);
+    }
+    else if(WM_HasFocus(hItem)==0)
+    {
+        EDIT_SetBkColor(hItem,0,0xC0C0C0);
+    }
+    
+    hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_6);
+    if(WM_HasFocus(hItem)==1)
+    {
+        EDIT_SetBkColor(hItem,0,GUI_GREEN);
+    }
+    else if(WM_HasFocus(hItem)==0)
+    {
+        EDIT_SetBkColor(hItem,0,0xC0C0C0);
+    }
+
+    hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_7);
+    if(WM_HasFocus(hItem)==1)
+    {
+        EDIT_SetBkColor(hItem,0,GUI_GREEN);
+    }
+    else if(WM_HasFocus(hItem)==0)
+    {
+        EDIT_SetBkColor(hItem,0,0xC0C0C0);
+    }
+}
 
 
 
@@ -446,38 +569,21 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     //
     // Initialization of 'Edit'
     //
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_1);
-    EDIT_SetText(hItem, "0");
-    WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
+
+    for(i = 0;i < 5; i++)
+    {
+        hItem=WM_GetDialogItem(pMsg->hWin,(ID_EDIT_1+i));
+        EDIT_SetText(hItem, "0");
+        WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
+        WM_DisableWindow(hItem);
+    }
+    
+    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_7);
+    EDIT_SetText(hItem, "1200");
+    //WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
     WM_DisableWindow(hItem);
-    //
-    // Initialization of 'Edit'
-    //
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_2);
-    EDIT_SetText(hItem, "0");
-    WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
-    WM_DisableWindow(hItem);
-    //
-    // Initialization of 'Edit'
-    //
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_3);
-    EDIT_SetText(hItem, "0");
-    WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
-    WM_DisableWindow(hItem);
-    //
-    // Initialization of 'Edit'
-    //
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_4);
-    EDIT_SetText(hItem, "0");
-    WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
-    WM_DisableWindow(hItem);
-    //
-    // Initialization of 'Edit'
-    //
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_5);
-    EDIT_SetText(hItem, "0");
-    WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
-    WM_DisableWindow(hItem);
+
+    
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_6);
     EDIT_SetText(hItem, Positive);
@@ -528,6 +634,15 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             if(key_num==GUI_KEY_ENTER)
             {
               g_sys_control.selectWidget=LISTBOX_READ_SEL;
+              g_hWin_Input=Create_ListBox_Set(g_hWin_ReadMeter);
+              WM_SetFocus(g_hWin_Input);
+            }
+            break;
+            
+          case ID_EDIT_7:
+            if(key_num==GUI_KEY_ENTER)
+            {
+              g_sys_control.selectWidget=LISTBOX_SPEED;
               g_hWin_Input=Create_ListBox_Set(g_hWin_ReadMeter);
               WM_SetFocus(g_hWin_Input);
             }
@@ -583,19 +698,19 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             break;
 
         case GUI_KEY_UP:
-            hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
-            EDIT_SetBkColor(hItem,0,GUI_GREEN);
-            WM_SetFocus(hItem);
-            hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_6);
-            EDIT_SetBkColor(hItem,0,0xC0C0C0);
+            if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
+            {
+                RMD_Sel_Up(pMsg);
+                RMD_Color_Change(pMsg);
+            }
             break;
 
         case GUI_KEY_DOWN:
-            hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_6);
-            EDIT_SetBkColor(hItem,0,GUI_GREEN);
-            WM_SetFocus(hItem);
-            hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
-            EDIT_SetBkColor(hItem,0,0xC0C0C0);
+            if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
+            {
+                RMD_Sel_Down(pMsg);
+                RMD_Color_Change(pMsg);
+            }
             break;
     }
    

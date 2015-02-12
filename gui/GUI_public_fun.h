@@ -12,7 +12,8 @@
 #define PLC_CMD_TYPE_R2L          0  //read to listening
 #define PLC_CMD_TYPE_L2R          1  //listening to read
 #define PLC_CMD_TYPE_COMMON       2  //
-#define PLC_CMD_BROAD_READ        3  //广播读标号
+#define PLC_CMD_TYPE_NODE         3
+#define PLC_CMD_BROAD_READ        4  //广播读表号
 
 
 #define ICON_FLOW_FLASH_TIMEOUT   60
@@ -45,7 +46,6 @@
 #define GUI_MSBOX_MIN_ERROR        6
 #define GUI_MSBOX_FORMAT_ERROR     7
 
-
 #define KEY_PRESS_CNT_MIN          0  //按键次数
 #define KEY_PRESS_CNT_MAX          8  //最大按键次数
 
@@ -57,6 +57,7 @@
 #define LISTBOX_STOPBIT            4
 #define LISTBOX_CTLCODE            5
 #define LISTBOX_READ_SEL           6
+#define LISTBOX_SPEED              7
 
 
 #define EDIT_SCR_OUTTIME           0
@@ -75,6 +76,9 @@
 #define EDIT_HOUR                  12
 #define EDIT_MIN                   13
 #define EDIT_SEC                   14
+
+#define EDIT_PWD_CFM               15 //升级确认
+//#define EDIT_SPEED                 16
 
 
 
@@ -112,6 +116,7 @@ extern SEND_PARA_PKG g_send_para_pkg;      //参数包
 //extern SYS_PARA_PKG sys_para_pkg; //参数包指针
 
 extern const char *gc_messageBoxText[];
+extern const char *pTextSpeed[];
 
 //extern const u32 c_645DidoDef[2][PLC_CTRL_MAX_NUM];
 

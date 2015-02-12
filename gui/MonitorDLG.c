@@ -157,10 +157,12 @@ static void _init_dialog(WM_MESSAGE * pMsg)
 
     
     hItem = WM_GetDialogItem(pMsg->hWin, ID_MULTIEDIT_0);
+    MULTIEDIT_SetFont(hItem,&GUI_Font_Song_16);
     //WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
     MULTIEDIT_SetAutoScrollV(hItem,1);
+    //WM_DisableWindow(hItem);
     MULTIEDIT_SetReadOnly(hItem,1);
-
+    MULTIEDIT_SetWrapWord(hItem);
 
 
 
@@ -225,15 +227,22 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 break;
             case '#':
                 ButtonBlink(pMsg,ID_BUTTON_0);
+                g_send_para_pkg.cmdType = PLC_CMD_TYPE_NODE;
+                g_sys_control.guiState = GUI_PLC_MSG_LISTING; 
+                TSK_Set_Monitor();
+                OSMboxPost(g_sys_control.downMb, (void*)&g_send_para_pkg);
                 break;
             case '*':
                 ButtonBlink(pMsg,ID_BUTTON_1);
+                hItem=WM_GetDialogItem(pMsg->hWin,ID_MULTIEDIT_0);
+                MULTIEDIT_SetText(hItem,"\0");
                 break;
             case GUI_KEY_F1:
                 ButtonBlink(pMsg,ID_BUTTON_2);
                 //TSK_Set_Monitor();
                 g_send_para_pkg.cmdType = PLC_CMD_TYPE_R2L;
-                g_sys_control.guiState = GUI_PLC_MSG_LISTING;                        
+                g_sys_control.guiState = GUI_PLC_MSG_LISTING; 
+                TSK_Set_Monitor();
                 OSMboxPost(g_sys_control.downMb, (void*)&g_send_para_pkg);
                 break;
             case GUI_KEY_F2:
@@ -241,6 +250,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 //TSK_Close_Monitor();
                 g_send_para_pkg.cmdType = PLC_CMD_TYPE_L2R;
                 g_sys_control.guiState = GUI_PLC_MSG_LISTING;
+                TSK_Set_Monitor();
                 OSMboxPost(g_sys_control.downMb, (void*)&g_send_para_pkg);
                 break;
         }

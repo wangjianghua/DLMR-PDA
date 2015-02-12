@@ -21,7 +21,7 @@ ActionState=1
 Enabled=0
 ShowSource=1
 [DebugChecksum]
-Checksum=69679094
+Checksum=499538935
 [Exceptions]
 StopOnUncaught=_ 0
 StopOnThrow=_ 0
@@ -56,9 +56,10 @@ Fmt3=SPI_TypeDef-CR1	4	0
 [array_types]
 Fmt0=u8[100]	4	0
 Fmt1=u8[256]	4	0
-Fmt2=u8[512]	4	0
-Fmt3=u8[6]	4	0
-Fmt4=u8[8]	4	0
+Fmt2=u8[30]	4	0
+Fmt3=u8[512]	4	0
+Fmt4=u8[6]	4	0
+Fmt5=u8[8]	4	0
 [watch_formats]
 Fmt0={W}0:IconViewIndex	4	0
 Fmt1={W}0:g_plc_buf	4	2
@@ -139,8 +140,7 @@ Bp1=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\drv\SI4438.c}.221.9" 0 0 1 "" 0 "" 0
 Bp2=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\drv\SI4438.c}.370.9" 0 0 1 "" 0 "" 0
 Bp3=_ 0 "EMUL_CODE" "0x080477E4" 0 0 1 "" 0 "" 0
 Bp4=_ 0 "EMUL_CODE" "0x08060362" 0 0 1 "" 0 "" 0
-Bp5=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\gui\PDA_IconMenuDLG.c}.246.9" 0 0 1 "" 0 "" 0
-Count=6
+Count=5
 [Aliases]
 A0=_ "C:\Users\Administrator\Desktop\PDA_2015.01.19\PDA\APP\app.c" ""
 A1=_ "C:\Users\Administrator\Desktop\PDA_2015.01.19\PDA\drv\SI4438.c" ""

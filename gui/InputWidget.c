@@ -96,6 +96,10 @@ static const char MeterNum[]="\xe7\x94\xb5\xe8\xa1\xa8\xe8\xa1\xa8\xe5\x8f\xb7";
 //抄表项目
 static const char ReadMeterSel[]="\xe6\x8a\x84\xe8\xa1\xa8\xe9\xa1\xb9\xe7\x9b\xae";
 
+static const char ConfirmUpdata[]="\xe8\xaf\xb7\xe8\xbe\x93\xe5\x85\xa5\xe5\xaf\x86\xe7\xa0\x81";
+//速率
+static const char Speed[]="\xe9\x80\x9f    \xe7\x8e\x87";
+
 
 static const char Year[]  ="\xe5\xb9\xb4:";
 static const char Month[] ="\xe6\x9c\x88:";
@@ -104,20 +108,31 @@ static const char Hour[]  ="\xe6\x97\xb6:";
 static const char Minite[]="\xe5\x88\x86:";
 static const char Second[]="\xe7\xa7\x92:";
 
+const char *pTextSpeed[]={
 
+    "\xe8\xae\xbe\xe4\xb8\xba 270 III \xe4\xbb\xa3",
+    "\xe8\xae\xbe\xe4\xb8\xba 270 3.5 \xe4\xbb\xa3",
+    "\xe8\xae\xbe\xe4\xb8\xba 270 II \xe4\xbb\xa3",
+    "\xe8\xae\xbe\xe4\xb8\xba 421 50BPS",
+    "\xe8\xae\xbe\xe4\xb8\xba 421 50BPS",
+    "\xe8\xae\xbe\xe4\xb8\xba 421 100BPS",
+    "\xe8\xae\xbe\xe4\xb8\xba 421 600BPS",
+    "\xe8\xae\xbe\xe4\xb8\xba 421 1200BPS",
+    
+};
 
 static const GUI_WIDGET_CREATE_INFO _aListBoxCreate[] = {
-  { FRAMEWIN_CreateIndirect,  "ListBox",  ID_FRAMEWIN_0,  20,  40, 200, 200, 0, 0x0, 0 },
-  { LISTBOX_CreateIndirect, "Listbox",    ID_LISTBOX_0, 5,   7,  182, 120,  0, 0x0, 0 },
-  { BUTTON_CreateIndirect,  Save,    ID_BUTTON_0,  5,   140, 55,  25,  0, 0x0, 0 },
-  { BUTTON_CreateIndirect,  Quit,     ID_BUTTON_1,  138, 140, 55,  25,  0, 0x0, 0 },
+  { FRAMEWIN_CreateIndirect,  "ListBox",  ID_FRAMEWIN_0,  20,  40,  200, 200,  0, 0x0, 0 },
+  { LISTBOX_CreateIndirect,   "Listbox",  ID_LISTBOX_0,   5,   7,   182, 120,  0, 0x0, 0 },
+  { BUTTON_CreateIndirect,    Save,       ID_BUTTON_0,    5,   140, 55,  25,   0, 0x0, 0 },
+  { BUTTON_CreateIndirect,    Quit,       ID_BUTTON_1,    138, 140, 55,  25,   0, 0x0, 0 },
 };
 
 static const GUI_WIDGET_CREATE_INFO _aEditCreate[] = {
   { FRAMEWIN_CreateIndirect, "Edit",  ID_FRAMEWIN_0, 20,  60, 200, 160, 0, 0x0,  0 },
-  { BUTTON_CreateIndirect, Save, ID_BUTTON_0, 5,   82, 55,  25,  0, 0x0,  0 },
-  { BUTTON_CreateIndirect, Quit,  ID_BUTTON_1, 138, 82, 55,  25,  0, 0x0,  0 },
-  { EDIT_CreateIndirect,   "Edit",    ID_EDIT_0,   14,  38, 165, 25,  0, 0x64, 0 },
+  { BUTTON_CreateIndirect,   Save,    ID_BUTTON_0,   5,   82, 55,  25,  0, 0x0,  0 },
+  { BUTTON_CreateIndirect,   Quit,    ID_BUTTON_1,   138, 82, 55,  25,  0, 0x0,  0 },
+  { EDIT_CreateIndirect,     "Edit",  ID_EDIT_0,     14,  38, 165, 25,  0, 0x64, 0 },
   //{ TEXT_CreateIndirect,   "Text",    ID_TEXT_0,   14,  16, 165, 20,  0, 0x0,  0 },
 
 };
@@ -130,6 +145,7 @@ const char *Listbox_FrameTitle[]={
     StopBit,
     CtlCode,
     ReadMeterSel,
+    Speed,
 };
 
 const char *Edit_FrameTitle[]={
@@ -147,7 +163,8 @@ const char *Edit_FrameTitle[]={
     Day,
     Hour,
     Minite,
-    Second
+    Second,
+    ConfirmUpdata
 };
 
 const u8 c_645ctrlDef[2][PLC_CTRL_MAX_NUM] = 
@@ -190,6 +207,10 @@ static void Select_Focus(void)
     if(g_hWin_TimeSet>0)
     {
         WM_SetFocus(g_hWin_TimeSet);
+    }
+    if(g_hWin_about>0)
+    {
+        WM_SetFocus(g_hWin_about);
     }
 
 }
@@ -312,6 +333,10 @@ static void Select_Input_Edit(int  EditNum)
             EDIT_GetText(hItem,tmpTextBuf,3);
             hItem=TMS_Get_Sec();
             break;
+        case EDIT_PWD_CFM:
+            EDIT_GetText(hItem,tmpTextBuf,7);
+            break;
+
             
         default:
             break;
@@ -353,9 +378,7 @@ static void _init_edit(WM_MESSAGE *pMsg,int EditNum)
 
         case EDIT_ADDR:
             hItem=CPT_Set_Addr();
-            EDIT_GetText(hItem,tmpTextBuf,13);
-            //Fill_Zero(tmpTextBuf);
-            
+            EDIT_GetText(hItem,tmpTextBuf,13);            
             break;
 
         case EDIT_DATA_FLAG:
@@ -485,6 +508,8 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
     //u8 tmpTextBuf[32];
     u32 Sel_Num;
     WM_HWIN hItem;
+    int i;
+    
     hItem=WM_GetDialogItem(pMsg->hWin,ID_LISTBOX_0);
     
     switch(ListBoxNum)
@@ -537,6 +562,7 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
             break;
 
         case LISTBOX_PREAM:
+#if 0
             LISTBOX_AddString(hItem, "FA");
             LISTBOX_AddString(hItem, "FB");
             LISTBOX_AddString(hItem, "FC");
@@ -564,6 +590,7 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
                     LISTBOX_SetSel(hItem,5);
                     break;
             }
+#endif
             break;
 
         case LISTBOX_STOPBIT:
@@ -593,6 +620,14 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
            LISTBOX_AddString(hItem, DayPositive);
            LISTBOX_AddString(hItem, DayNegative);
            break;
+
+        case LISTBOX_SPEED:
+            for(i = 0;i < 8;i++)
+            {
+                LISTBOX_AddString(hItem,pTextSpeed[i]);
+            }
+            break;
+            
         default:
            break;
     }
@@ -682,6 +717,7 @@ static void Select_ListBox_Row(int  WidgetNum)
             break;
             
         case LISTBOX_PREAM:
+#if 0
             switch(SelNum)
             {
                 case 0:
@@ -715,6 +751,7 @@ static void Select_ListBox_Row(int  WidgetNum)
                     EDIT_SetText(hWin,"FF");
                     break;
             }
+#endif
             break;
 
          case LISTBOX_STOPBIT:
@@ -739,11 +776,11 @@ static void Select_ListBox_Row(int  WidgetNum)
             {
                 case 0:
                     
-                    if(g_sys_register_para.plcProtocol == DL_T_07)
+                    if(g_sys_register_para.plcProtocol == DL_T_97)
                     {
                         g_send_para_pkg.ctlCode = c_645ctrlDef[g_sys_register_para.plcProtocol][SelNum]; 
                     }
-                    else if(g_sys_register_para.plcProtocol == DL_T_97)
+                    else if(g_sys_register_para.plcProtocol == DL_T_07)
                     {
                         g_send_para_pkg.ctlCode = c_645ctrlDef[g_sys_register_para.plcProtocol][SelNum]; 
                     }
@@ -753,11 +790,11 @@ static void Select_ListBox_Row(int  WidgetNum)
                     
                 case 1:
                     
-                    if(g_sys_register_para.plcProtocol == DL_T_07)
+                    if(g_sys_register_para.plcProtocol == DL_T_97)
                     {
                         g_send_para_pkg.ctlCode = c_645ctrlDef[g_sys_register_para.plcProtocol][SelNum]; 
                     }
-                    else if(g_sys_register_para.plcProtocol == DL_T_97)
+                    else if(g_sys_register_para.plcProtocol == DL_T_07)
                     {
                         g_send_para_pkg.ctlCode = c_645ctrlDef[g_sys_register_para.plcProtocol][SelNum]; 
                     }
@@ -766,11 +803,11 @@ static void Select_ListBox_Row(int  WidgetNum)
                     break;
                 case 2:
                     
-                    if(g_sys_register_para.plcProtocol == DL_T_07)
+                    if(g_sys_register_para.plcProtocol == DL_T_97)
                     {
                         g_send_para_pkg.ctlCode = c_645ctrlDef[g_sys_register_para.plcProtocol][SelNum]; 
                     }
-                    else if(g_sys_register_para.plcProtocol == DL_T_97)
+                    else if(g_sys_register_para.plcProtocol == DL_T_07)
                     {
                         g_send_para_pkg.ctlCode = c_645ctrlDef[g_sys_register_para.plcProtocol][SelNum]; 
                     }

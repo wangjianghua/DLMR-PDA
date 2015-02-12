@@ -199,7 +199,7 @@ WM_HWIN g_hWin_TimeBar;  //主页时间
 WM_HWIN g_hWin_Date;     //显示日期
 WM_HWIN g_hWin_Input;    //各种输入小框体
 
-u8 rf_send_buf[256] = {0x23, 0x24, 0x78, 0x1a, 0x39, 0x23, 0x24, 0x78, 0x1a, 0x39, 0x12};
+u8 rf_send_buf[20] = {0x23, 0x24, 0x78, 0x1a, 0x39, 0x23, 0x24, 0x78, 0x1a, 0x39, 0x12};
 u8 rf_int_status[8];
 u8 rf_part_info[8];
 u8 rf_device_state[2];
@@ -327,6 +327,7 @@ static  void  App_TaskStart (void *p_arg)
     DEBUG_PRINT(("OS Tasks Run!\n"));
 
     //FatFs_Test();
+    //BSP_BEEP();
 
     while (DEF_TRUE) {                                          /* Task body, always written as an infinite loop.           */
         if(i++ >= 10)
@@ -334,14 +335,14 @@ static  void  App_TaskStart (void *p_arg)
             i = 0;
             RTC_ReadTime(g_rtc_time); 
             g_sys_control.shutdownTimeout++;
-            if(g_sys_control.shutdownTimeout > (g_sys_register_para.scrTimeout+30))//开大点，不然老是自动关机
+            if(g_sys_control.shutdownTimeout > (g_sys_register_para.scrTimeout+500))//开大点方便调试
             {
                 APP_Shutdown();
                 g_sys_control.shutdownTimeout = 0;
             }
             
             g_sys_control.sleepTimeout++;
-            if(g_sys_control.sleepTimeout > g_sys_register_para.scrTimeout)//开大点，不然老是自动关机
+            if(g_sys_control.sleepTimeout > g_sys_register_para.scrTimeout)//
             {
                 APP_Sleep();
                 g_sys_control.sleepTimeout = 0;
@@ -372,8 +373,8 @@ static  void  App_TaskStart (void *p_arg)
                 }
             }
         }
-               
-        g_sys_control.pwrValue=BSP_ADC_ReadPwr();//读电压
+        
+        g_sys_control.pwrValue = BSP_ADC_ReadPwr();
         //TEXT_SetText(TSK_Get_Time_Text(),RTC2Text());
         OSTimeDlyHMSM(0, 0, 0, 100);
     }
@@ -451,35 +452,28 @@ static  void  App_TaskRF (void *p_arg)
     u8 rf_dl645_reply[] = {0xFE, 0xFE, 0xFE, 0xFE, 0x68, 0x00, 0x36, 0x19, 0x00, 0x00, 0x00, 0x68, 0x91, 0x18, 0x33, 0x32, 0x34, 0x33, 0x4C, 0x6C, 0x33, 0x33, 0x89, 0x35, 0x33, 0x33, 0x53, 0x33, 0x33, 0x33, 0x6B, 0x33, 0x33, 0x33, 0x38, 0x69, 0x33, 0x33, 0xCD, 0x16};
     u8 rf_test_msg[] = "hello, world!";
     u8 rf_send_len;
-
+    
 #define RF_SEND_BUF         rf_send_buf
 #define RF_SEND_LEN         rf_send_len
-
 #define RF_RECV_BUF         g_rf_param.rx.buf
 #define RF_RECV_LEN         g_rf_param.rx.rx_len
 
-    
     (void)p_arg;
-
     while (DEF_TRUE) {
         OSSemPend(g_sem_rf, 5 * OS_TICKS_PER_SEC, &err);
-
         if(OS_ERR_NONE == err)
         {
             LED_PLC_TOGGLE();
-            
             pc_uart_send(RF_RECV_BUF, RF_RECV_LEN);
         }
         else
         {            
 #if 1
             LED_PLC_TOGGLE();
-
             rf_send_len = GDW_RF_Protocol_2013(rf_read_addr, 0x00, 0x00, 0x00, rf_dl645_read, sizeof(rf_dl645_read), rf_send_buf);
-
             pc_uart_send(RF_SEND_BUF, RF_SEND_LEN); 
 #else
-            /* RF_Tx(rf_test_msg, sizeof(rf_test_msg)); */
+            //RF_Tx(rf_test_msg, sizeof(rf_test_msg));
 #endif
         }
     }
@@ -673,7 +667,6 @@ static  void  App_TaskCreate (void)
 #if (OS_TASK_NAME_EN > 0)
     OSTaskNameSet(APP_CFG_TASK_PLC_PRIO, "PLC", &err);    
 #endif
-
     OSTaskCreateExt((void (*)(void *)) App_TaskRF,
                     (void           *) 0,
                     (OS_STK         *)&App_TaskRFStk[APP_CFG_TASK_RF_STK_SIZE - 1],
@@ -683,9 +676,5 @@ static  void  App_TaskCreate (void)
                     (INT32U          ) APP_CFG_TASK_RF_STK_SIZE,
                     (void           *) 0,
                     (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
-
-#if (OS_TASK_NAME_EN > 0)
-    OSTaskNameSet(APP_CFG_TASK_PLC_PRIO, "RF", &err);    
-#endif
 }
 

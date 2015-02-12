@@ -196,7 +196,7 @@ void GUI_print_recv_buf()
 
             if(g_sys_control.guiState == GUI_PLC_MSG_TEST)
             {
-            //    STM_proc_resp_data();
+                STM_proc_resp_data();
             }
         }
         else if(g_sys_control.guiState == GUI_PLC_MSG_LISTING)
