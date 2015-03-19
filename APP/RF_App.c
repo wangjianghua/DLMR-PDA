@@ -170,7 +170,7 @@ u8	Greate_GDW_App_Sub(u8 type,u8 *data,u8 len,u8 *send_buf)
 	GDW_RF_App_layer_ptr=(GDW_RF_App_layer_C		*)send_buf;
 	GDW_RF_App_layer_ptr->FCD=2;
 
-#if 0    
+#if 1    
 	RF_App_SEQ++;
 	if(!RF_App_SEQ)RF_App_SEQ=1;
 	GDW_RF_App_layer_ptr->SEQ=RF_App_SEQ;
@@ -236,7 +236,7 @@ void  GDW_Greate_MAC_Inf(GDW_RF_MAC_layer_C	*GDW_RF_MAC_layer_ptr,u8 type,u16 Pa
 	GDW_RF_MAC_layer_ptr->Frame_type=type;
 	GDW_RF_MAC_layer_ptr->Safety_EN=0;
 	GDW_RF_MAC_layer_ptr->Pend=0;
-	GDW_RF_MAC_layer_ptr->Pend=0;
+	GDW_RF_MAC_layer_ptr->ASK=0; //ЛЊаж
 	GDW_RF_MAC_layer_ptr->Pan_ID_zip=1;
 	GDW_RF_MAC_layer_ptr->Rev=0;
 	GDW_RF_MAC_layer_ptr->SEQ_zip=1;

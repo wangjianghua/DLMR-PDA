@@ -199,7 +199,7 @@ WM_HWIN g_hWin_TimeBar;  //主页时间
 WM_HWIN g_hWin_Date;     //显示日期
 WM_HWIN g_hWin_Input;    //各种输入小框体
 
-u8 rf_send_buf[20] = {0x23, 0x24, 0x78, 0x1a, 0x39, 0x23, 0x24, 0x78, 0x1a, 0x39, 0x12};
+u8 rf_send_buf[256] = {0x23, 0x24, 0x78, 0x1a, 0x39, 0x23, 0x24, 0x78, 0x1a, 0x39, 0x12};
 u8 rf_int_status[8];
 u8 rf_part_info[8];
 u8 rf_device_state[2];
@@ -471,7 +471,7 @@ static  void  App_TaskRF (void *p_arg)
 #if 1
             LED_PLC_TOGGLE();
             rf_send_len = GDW_RF_Protocol_2013(rf_read_addr, 0x00, 0x00, 0x00, rf_dl645_read, sizeof(rf_dl645_read), rf_send_buf);
-            pc_uart_send(RF_SEND_BUF, RF_SEND_LEN); 
+            pc_uart_send(RF_SEND_BUF, RF_SEND_LEN + 3); 
 #else
             //RF_Tx(rf_test_msg, sizeof(rf_test_msg));
 #endif
