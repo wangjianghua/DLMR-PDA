@@ -461,6 +461,7 @@ static  void  App_TaskRF (void *p_arg)
     (void)p_arg;
     while (DEF_TRUE) {
         OSSemPend(g_sem_rf, 5 * OS_TICKS_PER_SEC, &err);
+        
         if(OS_ERR_NONE == err)
         {
             LED_PLC_TOGGLE();
