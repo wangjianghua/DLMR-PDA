@@ -8,118 +8,13 @@
 **********************************************************************
 */
 #define ID_FRAMEWIN_0  (GUI_ID_USER + 0x00)
-#define ID_LISTBOX_0 (GUI_ID_USER + 0x02)
-#define ID_BUTTON_0  (GUI_ID_USER + 0x03)
-#define ID_BUTTON_1  (GUI_ID_USER + 0x04)
-#define ID_TEXT_0    (GUI_ID_USER + 0x05)
-#define ID_EDIT_0    (GUI_ID_USER + 0x06)
+#define ID_LISTBOX_0   (GUI_ID_USER + 0x02)
+#define ID_BUTTON_0    (GUI_ID_USER + 0x03)
+#define ID_BUTTON_1    (GUI_ID_USER + 0x04)
+#define ID_TEXT_0      (GUI_ID_USER + 0x05)
+#define ID_EDIT_0      (GUI_ID_USER + 0x06)
 
 
-//电力载波
-static const char WaveCarrier[]="\xe7\x94\xb5\xe5\x8a\x9b\xe8\xbd\xbd\xe6\xb3\xa2";
-
-//红外
-static const char Infrared[]="\xe7\xba\xa2\xe5\xa4\x96";
-
-//读设备地址
-static const char GetAddr[]="\xe8\xaf\xbb\xe8\xae\xbe\xe5\xa4\x87\xe5\x9c\xb0\xe5\x9d\x80-13H";
-
-//读数据
-static const char Readdata[]="\xe8\xaf\xbb\xe6\x95\xb0\xe6\x8d\xae-11H";
-
-//写数据
-static const char WriteData[]="\xe5\x86\x99\xe6\x95\xb0\xe6\x8d\xae-14H";
-
-//当前正向有功电能
-static const char Positive[]="\xe5\xbd\x93\xe5\x89\x8d\xe6\xad\xa3\xe5\x90\x91\xe6\x9c\x89\xe5\x8a\x9f\xe7\x94\xb5\xe8\x83\xbd";
-
-
-//当前反向有功电能
-static const char Negative[]="\xe5\xbd\x93\xe5\x89\x8d\xe5\x8f\x8d\xe5\x90\x91\xe6\x9c\x89\xe5\x8a\x9f\xe7\x94\xb5\xe8\x83\xbd";
-
-
-//日冻结正向有功电能
-static const char DayPositive[]="\xe6\x97\xa5\xe5\x86\xbb\xe7\xbb\x93\xe6\xad\xa3\xe5\x90\x91\xe6\x9c\x89\xe5\x8a\x9f\xe7\x94\xb5\xe8\x83\xbd";
-
-
-//日冻结反向有功电能
-static const char DayNegative[]="\xe6\x97\xa5\xe5\x86\xbb\xe7\xbb\x93\xe5\x8f\x8d\xe5\x90\x91\xe6\x9c\x89\xe5\x8a\x9f\xe7\x94\xb5\xe8\x83\xbd";
-
-
-//退出
-static const char Quit[]="\xe9\x80\x80\xe5\x87\xba";
-//保存
-static const char Save[]="\xe4\xbf\x9d\xe5\xad\x98";
-
-//接收数据延时
-static const char RevDataDelay[]="\xe6\x8e\xa5\xe6\x94\xb6\xe6\x95\xb0\xe6\x8d\xae\xe5\xbb\xb6\xe6\x97\xb6";
-//执行间隔时间
-static const char BetweenAct[]="\xe6\x89\xa7\xe8\xa1\x8c\xe9\x97\xb4\xe9\x9a\x94\xe6\x97\xb6\xe9\x97\xb4";
-
-//规约
-static const char Protocal[]="\xe8\xa7\x84  \xe7\xba\xa6:";
-//通道
-static const char Channel[]="\xe9\x80\x9a  \xe9\x81\x93:";
-//波特率
-static const char BaudRate[]="\xe6\xb3\xa2\xe7\x89\xb9\xe7\x8e\x87:";
-//前导符
-static const char Preamble[]="\xe5\x89\x8d\xe5\xaf\xbc\xe7\xac\xa6:";
-//停止位
-static const char StopBit[]="\xe5\x81\x9c\xe6\xad\xa2\xe4\xbd\x8d:";
-//个数
-static const char Number[]="\xe4\xb8\xaa  \xe6\x95\xb0:";
-//密码
-static const char PassWord[]="\xe5\xaf\x86  \xe7\xa0\x81:";
-
-//屏幕超时
-static const char ScrTimeout[]="\xe5\xb1\x8f\xe5\xb9\x95\xe8\xb6\x85\xe6\x97\xb6(\xe7\xa7\x92)";
-
-//1-目标地址
-static const char TarAddr[]="\xe7\x9b\xae\xe6\xa0\x87\xe5\x9c\xb0\xe5\x9d\x80:";
-
-//2-控制字
-static const char CtlCode[]="\xe6\x8e\xa7 \xe5\x88\xb6 \xe5\xad\x97:";
-
-//3-长度
-static const char Length[]="\xe9\x95\xbf    \xe5\xba\xa6:";
-
-//4-数据标识
-static const char DataSign[]="\xe6\x95\xb0\xe6\x8d\xae\xe6\xa0\x87\xe8\xaf\x86:";
-
-//5-数据域
-static const char DataField[]="\xe6\x95\xb0    \xe6\x8d\xae:";
-
-//电表表号
-static const char MeterNum[]="\xe7\x94\xb5\xe8\xa1\xa8\xe8\xa1\xa8\xe5\x8f\xb7";
-
-
-//抄表项目
-static const char ReadMeterSel[]="\xe6\x8a\x84\xe8\xa1\xa8\xe9\xa1\xb9\xe7\x9b\xae";
-
-static const char ConfirmUpdata[]="\xe8\xaf\xb7\xe8\xbe\x93\xe5\x85\xa5\xe5\xaf\x86\xe7\xa0\x81";
-//速率
-static const char Speed[]="\xe9\x80\x9f    \xe7\x8e\x87";
-
-
-static const char Year[]  ="\xe5\xb9\xb4:";
-static const char Month[] ="\xe6\x9c\x88:";
-static const char Day[]   ="\xe6\x97\xa5:";
-static const char Hour[]  ="\xe6\x97\xb6:";
-static const char Minite[]="\xe5\x88\x86:";
-static const char Second[]="\xe7\xa7\x92:";
-
-const char *pTextSpeed[]={
-
-    "\xe8\xae\xbe\xe4\xb8\xba 270 III \xe4\xbb\xa3",
-    "\xe8\xae\xbe\xe4\xb8\xba 270 3.5 \xe4\xbb\xa3",
-    "\xe8\xae\xbe\xe4\xb8\xba 270 II \xe4\xbb\xa3",
-    "\xe8\xae\xbe\xe4\xb8\xba 421 50BPS",
-    "\xe8\xae\xbe\xe4\xb8\xba 421 50BPS",
-    "\xe8\xae\xbe\xe4\xb8\xba 421 100BPS",
-    "\xe8\xae\xbe\xe4\xb8\xba 421 600BPS",
-    "\xe8\xae\xbe\xe4\xb8\xba 421 1200BPS",
-    
-};
 
 static const GUI_WIDGET_CREATE_INFO _aListBoxCreate[] = {
   { FRAMEWIN_CreateIndirect,  "ListBox",  ID_FRAMEWIN_0,  20,  40,  200, 200,  0, 0x0, 0 },
@@ -137,42 +32,13 @@ static const GUI_WIDGET_CREATE_INFO _aEditCreate[] = {
 
 };
 
-const char *Listbox_FrameTitle[]={
-    Protocal,
-    Channel,
-    BaudRate,
-    Preamble,
-    StopBit,
-    CtlCode,
-    ReadMeterSel,
-    Speed,
-};
-
-const char *Edit_FrameTitle[]={
-    ScrTimeout,
-    PassWord,
-    RevDataDelay,
-    BetweenAct,
-    TarAddr,
-    DataSign,
-    Length,
-    DataField,
-    MeterNum,
-    Year,
-    Month,
-    Day,
-    Hour,
-    Minite,
-    Second,
-    ConfirmUpdata
-};
-
+#if 0
 const u8 c_645ctrlDef[2][PLC_CTRL_MAX_NUM] = 
 { 
     //97规约
     {0x05, 0x01, 0x04,  4,5,6,7,8,9,10,11,12,13,14,15,16},
     //07规约
-    {0x13, 0X11, 0X14,  4,5,6,7,8,9,10,11,12,13,14,15,16}
+    {0x13, 0X11, 0X14,  0x19,5,6,7,8,9,10,11,12,13,14,15,16}
 };
 
 
@@ -183,31 +49,57 @@ const u32 c_645DidoDef[2][PLC_CTRL_MAX_NUM] =
     //07规约
     {0x0001ff00,0X0002ff00, 0X0001ff01, 0X0002ff01,4,5,6,7,8,9,10,11,12,13,14,15,}
 };
+#endif
+const u32 c_ValBaudRate[5] = {1200, 1500, 2400, 4800, 9600};
 
+const u8 c_TextBaudRate[5][6] = {"1200","1500","2400","4800","9600"};
 
-
-static void Select_Focus(void)
+void Select_Focus(void)
 {
     
     if(g_hWin_para>0)
     {
         WM_SetFocus(g_hWin_para);
+        CPS_SetFocus();
     }
     
-    if(g_hWin_std>0)
+    if((g_hWin_std > 0)&&(g_hWin_relay <= 0)) 
     {
         WM_SetFocus(g_hWin_std);
+        CPT_SetFocus();
     }
     
     if(g_hWin_ReadMeter>0)
     {
         WM_SetFocus(g_hWin_ReadMeter);
+        RMD_SetFocus();
     }
 
     if(g_hWin_TimeSet>0)
     {
         WM_SetFocus(g_hWin_TimeSet);
+        TMS_SetFocus();
     }
+    if(g_hWin_about>0)
+    {
+        WM_SetFocus(g_hWin_about);
+    }
+    if(g_hWin_AdvanSet > 0)
+    {
+        WM_SetFocus(g_hWin_AdvanSet);
+        ADS_SetFocus();
+    }
+    
+    if(g_hWin_relay > 0)
+    {
+        WM_SetFocus(g_hWin_relay);
+    }
+
+    if(g_hWin_mem > 0)
+    {
+        WM_SetFocus(g_hWin_mem);
+    }
+
     if(g_hWin_about>0)
     {
         WM_SetFocus(g_hWin_about);
@@ -216,43 +108,15 @@ static void Select_Focus(void)
 }
 
 
-#if 1
 
-void PUB_Fill_Zero(u8 *tempbuf)
-{
-    int len;
-    int i;
-    //u8  zerobuf[13];
-    len = strlen(tempbuf);
-    if(len < 12)
-    {
-        for(i = 0; i < len; i++)
-        {
-            tempbuf[GUI_645_ADDR_LENGTH - i-1] = tempbuf[len-i-1];
-        }
-        
-        for(i = 0; i < (GUI_645_ADDR_LENGTH - len); i++)
-        {
-            tempbuf[i] = '0';
-        }
-        tempbuf[12] = '\0';
-    }
-    else if(len > 12)
-    {
-        tempbuf[12] = '\0';
-    }
-         
-    return ;
-}
-
-#endif 
-
-
-
+//在按下绿色保存按钮的时候，调用此函数
 static void Select_Input_Edit(int  EditNum)
 {
     WM_HWIN hItem;
     u8 tmpTextBuf[32];
+    u8 tmpListBuf[32];//中继地址序号
+    int RowCount;
+    int RowSel;
     
     hItem=WM_GetDialogItem(g_hWin_Input,ID_EDIT_0);
     switch(EditNum)
@@ -266,22 +130,25 @@ static void Select_Input_Edit(int  EditNum)
             
         case EDIT_PASSWORD:
             EDIT_GetText(hItem,tmpTextBuf,7);
+            //g_sys_register_para.meterPassword = atoi(tmpTextBuf);
             hItem=CPS_Set_Pwd();
             break;
             
         case EDIT_RECV_DELAY:
             EDIT_GetText(hItem,tmpTextBuf,5);
+            g_sys_register_para.recvDelayTime = atoi(tmpTextBuf);
             hItem=CPS_Set_RevDelay();
             break;
 
         case EDIT_BETWEEN_ACT:
             EDIT_GetText(hItem,tmpTextBuf,5);
+            g_sys_register_para.execInterval = atoi(tmpTextBuf);
             hItem=CPS_Set_BetweenAct();
             break;
 
         case EDIT_ADDR:
             EDIT_GetText(hItem,tmpTextBuf,13);
-            PUB_Fill_Zero(tmpTextBuf);
+            GUI_Fill_Zero(tmpTextBuf);
             GUI_GetMeterAddr(tmpTextBuf, g_sys_control.recentMeterAddr);
             hItem=CPT_Set_Addr();
             break;
@@ -304,7 +171,7 @@ static void Select_Input_Edit(int  EditNum)
 
         case EDIT_METER_NUM:
             EDIT_GetText(hItem,tmpTextBuf,13);
-            PUB_Fill_Zero(tmpTextBuf);
+            GUI_Fill_Zero(tmpTextBuf);
             GUI_GetMeterAddr(tmpTextBuf, g_sys_control.recentMeterAddr);
             hItem=RMD_Get_MeterNum();
             break;
@@ -333,10 +200,38 @@ static void Select_Input_Edit(int  EditNum)
             EDIT_GetText(hItem,tmpTextBuf,3);
             hItem=TMS_Get_Sec();
             break;
-        case EDIT_PWD_CFM:
-            EDIT_GetText(hItem,tmpTextBuf,7);
+        //case EDIT_PWD_CFM:
+            //EDIT_GetText(hItem,tmpTextBuf,7);
+            //hItem = 
+          //  break;
+        case EDIT_OPCODE:
+            EDIT_GetText(hItem,tmpTextBuf,9);
+            hItem = ADS_Get_OpCode();
             break;
 
+        case MODIFY_RELAY_ADDR: //修改中继地址
+            EDIT_GetText(hItem,tmpTextBuf,13);
+            GUI_Fill_Zero(tmpTextBuf);
+            
+            hItem = RLY_GetListAddr();
+            RowSel = LISTVIEW_GetSel(hItem);
+            LISTVIEW_SetItemText(hItem ,1, RowSel, tmpTextBuf);
+            //LISTVIEW_Handle hObj,unsigned Column,unsigned Row,const char * s)
+            hItem = RLY_GetAddr();
+            break;
+
+        case ADD_RELAY_ADDR:  //按#增加,这里耦合性应该挺厉害的
+            EDIT_GetText(hItem,tmpTextBuf,13);
+            GUI_Fill_Zero(tmpTextBuf); 
+            hItem = RLY_GetListAddr();
+            
+            LISTVIEW_AddRow(hItem, NULL);
+            RowCount=LISTVIEW_GetNumRows(hItem);
+            LISTVIEW_SetItemText(hItem, 1, (RowCount-1), tmpTextBuf);//第1列也就是，中继地址列
+            int_to_char((RowCount-1), tmpListBuf, 10);
+            LISTVIEW_SetItemText(hItem, 0, (RowCount-1), tmpListBuf);
+            hItem = WM_GetDialogItem(g_hWin_Input,ID_EDIT_0);
+            break;
             
         default:
             break;
@@ -352,6 +247,7 @@ static void _init_edit(WM_MESSAGE *pMsg,int EditNum)
     u8 tmpTextBuf[32];
     u8 addr_len;
     u8 tmpZero[13];
+    int RowSel;
     int i;
     switch(EditNum)
     {
@@ -394,6 +290,7 @@ static void _init_edit(WM_MESSAGE *pMsg,int EditNum)
         case EDIT_DATA:
             hItem=CPT_Set_Data();
             EDIT_GetText(hItem,tmpTextBuf,13);
+            
             break;
 
         case EDIT_METER_NUM:
@@ -429,6 +326,20 @@ static void _init_edit(WM_MESSAGE *pMsg,int EditNum)
         case EDIT_SEC:
             hItem=TMS_Get_Sec();
             EDIT_GetText(hItem,tmpTextBuf,3);
+            break;
+        case EDIT_OPCODE: //长度需要注意,操作码
+            hItem = ADS_Get_OpCode();
+            EDIT_GetText(hItem,tmpTextBuf,5);
+            break;
+
+        case MODIFY_RELAY_ADDR:
+            hItem = RLY_GetListAddr();
+            RowSel = LISTVIEW_GetSel(hItem);
+            LISTVIEW_GetItemText(hItem,1, RowSel, tmpTextBuf, 13);
+            break;
+
+        case ADD_RELAY_ADDR:
+            memcpy(tmpTextBuf,"\0",1);
             break;
             
         default:
@@ -484,6 +395,7 @@ static void _cbEditDlg(WM_MESSAGE *pMsg)
             {
               case GUI_KEY_YELLOW:
                   WM_DeleteWindow(g_hWin_Input);
+                  g_hWin_Input = HBWIN_NULL;
                   Select_Focus();
                   break;
               case GUI_KEY_GREEN:
@@ -515,8 +427,8 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
     switch(ListBoxNum)
     {
         case LISTBOX_PROTOCOL:
-            LISTBOX_AddString(hItem, "DL-T-07");
-            LISTBOX_AddString(hItem, "DL-T-97");
+            LISTBOX_AddString(hItem, "DLT-07");
+            LISTBOX_AddString(hItem, "DLT-97");
             switch(g_sys_register_para.plcProtocol)
             {
                 case DL_T_07:
@@ -531,7 +443,7 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
         case LISTBOX_CHANNEL:
             //LISTBOX_AddString(hItem, "485");
             LISTBOX_AddString(hItem, WaveCarrier);
-            //LISTBOX_AddString(hItem, Infrared);
+            LISTBOX_AddString(hItem, ChannelWireless);
             break;
 
 
@@ -562,35 +474,6 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
             break;
 
         case LISTBOX_PREAM:
-#if 0
-            LISTBOX_AddString(hItem, "FA");
-            LISTBOX_AddString(hItem, "FB");
-            LISTBOX_AddString(hItem, "FC");
-            LISTBOX_AddString(hItem, "FD");
-            LISTBOX_AddString(hItem, "FE");
-            LISTBOX_AddString(hItem, "FF");
-            switch(g_sys_register_para.preamble)
-            {
-                case 0xFA:
-                    LISTBOX_SetSel(hItem,0);
-                    break;
-                case 0xFB:
-                    LISTBOX_SetSel(hItem,1);
-                    break;
-                case 0xFC:
-                    LISTBOX_SetSel(hItem,2);
-                    break;
-                case 0xFD:
-                    LISTBOX_SetSel(hItem,3);
-                    break;
-                case 0xFE:
-                    LISTBOX_SetSel(hItem,4);
-                    break;
-                case 0xFF:
-                    LISTBOX_SetSel(hItem,5);
-                    break;
-            }
-#endif
             break;
 
         case LISTBOX_STOPBIT:
@@ -612,6 +495,7 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
             LISTBOX_AddString(hItem, GetAddr);
             LISTBOX_AddString(hItem, Readdata);
             LISTBOX_AddString(hItem, WriteData);
+            //LISTBOX_AddString(hItem, ClrDemond);
             break;
 
         case LISTBOX_READ_SEL:
@@ -652,13 +536,15 @@ static void Select_ListBox_Row(int  WidgetNum)
             {
                 case 0:
                     g_sys_register_para.plcProtocol = DL_T_07;
+                    TSK_SetProtocol_07();
                     hWin=CPS_Set_Proto();
-                    EDIT_SetText(hWin,"DL-T-07");
+                    EDIT_SetText(hWin,"DLT-07");
                     break;
                 case 1:
                     g_sys_register_para.plcProtocol = DL_T_97;
+                    TSK_SetProtocol_97();
                     hWin=CPS_Set_Proto();
-                    EDIT_SetText(hWin,"DL-T-97");
+                    EDIT_SetText(hWin,"DLT-97");
                     break;
             }
             break;
@@ -666,94 +552,33 @@ static void Select_ListBox_Row(int  WidgetNum)
         case LISTBOX_CHANNEL:
             switch(SelNum)
             {
-                case 1:
+                case 2:
                    // g_sys_register_para.channel=CHANNEL_485;
                     //hWin=CPS_Set_Channel();
                     //EDIT_SetText(hWin,"485");
                     break;
                     
                 case 0:
-                    g_sys_register_para.channel=CHANNEL_WAVE;
+                    g_sys_register_para.channel=CHANNEL_PLC;
+                    TSK_SetWrlsWhite();
                     hWin=CPS_Set_Channel();
                     EDIT_SetText(hWin,WaveCarrier);
                     break;
-                case 2:
-                    //g_sys_register_para.channel=CHANNEL_INFRD;
-                    //hWin=CPS_Set_Channel();
-                    //EDIT_SetText(hWin,Infrared);
+                case 1:
+                    g_sys_register_para.channel=CHANNEL_WIRELESS;
+                    TSK_SetWrlsGreen();
+                    hWin=CPS_Set_Channel();
+                    EDIT_SetText(hWin,ChannelWireless);
                     break;
             }
             break;
             
         case LISTBOX_BAUDRATE:
-            switch(SelNum)
-            {
-                case 0:
-                    g_sys_register_para.baudrate=1200;
-                    hWin=CPS_Set_BaudRate();
-                    EDIT_SetText(hWin,"1200");
-                    break;
-                case 1:
-                    g_sys_register_para.baudrate=1500;
-                    hWin=CPS_Set_BaudRate();
-                    EDIT_SetText(hWin,"1500");
-                    break;
-                case 2:
-                    g_sys_register_para.baudrate=2400;
-                    hWin=CPS_Set_BaudRate();
-                    EDIT_SetText(hWin,"2400");
-                    break;
-                case 3:
-                    g_sys_register_para.baudrate=4800;
-                    hWin=CPS_Set_BaudRate();
-                    EDIT_SetText(hWin,"4800");
-                    break;
-                case 4:
-                    g_sys_register_para.baudrate=9600;
-                    hWin=CPS_Set_BaudRate();
-                    EDIT_SetText(hWin,"9600");
-                    break;
-            }
+            g_sys_register_para.baudrate = c_ValBaudRate[SelNum];
+            hWin = CPS_Set_BaudRate();
+            EDIT_SetText(hWin,c_TextBaudRate[SelNum]);
             break;
             
-        case LISTBOX_PREAM:
-#if 0
-            switch(SelNum)
-            {
-                case 0:
-                    g_sys_register_para.preamble=0xFA;
-                    hWin=CPS_Set_Pream();
-                    EDIT_SetText(hWin,"FA");
-                    break;
-                case 1:
-                    g_sys_register_para.preamble=0XFB;
-                    hWin=CPS_Set_Pream();
-                    EDIT_SetText(hWin,"FB");
-                    break;
-                case 2:
-                    g_sys_register_para.preamble=0XFC;
-                    hWin=CPS_Set_Pream();
-                    EDIT_SetText(hWin,"FC");
-                    break;
-                case 3:
-                    g_sys_register_para.preamble=0XFD;
-                    hWin=CPS_Set_Pream();
-                    EDIT_SetText(hWin,"FD");
-                    break;
-                case 4:
-                    g_sys_register_para.preamble=0XFE;
-                    hWin=CPS_Set_Pream();
-                    EDIT_SetText(hWin,"FE");
-                    break;
-                case 5:
-                    g_sys_register_para.preamble=0XFF;
-                    hWin=CPS_Set_Pream();
-                    EDIT_SetText(hWin,"FF");
-                    break;
-            }
-#endif
-            break;
-
          case LISTBOX_STOPBIT:
             switch(SelNum)
             {
@@ -770,144 +595,41 @@ static void Select_ListBox_Row(int  WidgetNum)
             }
             break;
 
-//这里还可以再继续优化，先放着
+
          case LISTBOX_CTLCODE:
-            switch(SelNum)
+            if(g_sys_register_para.plcProtocol == DL_T_97)
             {
-                case 0:
-                    
-                    if(g_sys_register_para.plcProtocol == DL_T_97)
-                    {
-                        g_send_para_pkg.ctlCode = c_645ctrlDef[g_sys_register_para.plcProtocol][SelNum]; 
-                    }
-                    else if(g_sys_register_para.plcProtocol == DL_T_07)
-                    {
-                        g_send_para_pkg.ctlCode = c_645ctrlDef[g_sys_register_para.plcProtocol][SelNum]; 
-                    }
-                    hWin=CPT_Set_CtlCode();
-                    EDIT_SetText(hWin,GetAddr);
-                    break;
-                    
-                case 1:
-                    
-                    if(g_sys_register_para.plcProtocol == DL_T_97)
-                    {
-                        g_send_para_pkg.ctlCode = c_645ctrlDef[g_sys_register_para.plcProtocol][SelNum]; 
-                    }
-                    else if(g_sys_register_para.plcProtocol == DL_T_07)
-                    {
-                        g_send_para_pkg.ctlCode = c_645ctrlDef[g_sys_register_para.plcProtocol][SelNum]; 
-                    }
-                    hWin=CPT_Set_CtlCode();
-                    EDIT_SetText(hWin,Readdata);
-                    break;
-                case 2:
-                    
-                    if(g_sys_register_para.plcProtocol == DL_T_97)
-                    {
-                        g_send_para_pkg.ctlCode = c_645ctrlDef[g_sys_register_para.plcProtocol][SelNum]; 
-                    }
-                    else if(g_sys_register_para.plcProtocol == DL_T_07)
-                    {
-                        g_send_para_pkg.ctlCode = c_645ctrlDef[g_sys_register_para.plcProtocol][SelNum]; 
-                    }
-                    hWin=CPT_Set_CtlCode();
-                    EDIT_SetText(hWin,WriteData);
-                    break;
+                g_send_para_pkg.ctlCode = c_645ctrlDef[g_sys_register_para.plcProtocol][SelNum]; 
             }
+            else if(g_sys_register_para.plcProtocol == DL_T_07)
+            {
+                g_send_para_pkg.ctlCode = c_645ctrlDef[g_sys_register_para.plcProtocol][SelNum]; 
+            }
+            hWin=CPT_Set_CtlCode();
+            EDIT_SetText(hWin,pCtlCode[SelNum]);
+
             break;
-
-
-
-//先实现，可以优化
-//把edit中的文本放入到一个字符串数组中，传入selnum
+            
         case LISTBOX_READ_SEL:
-            switch(SelNum)
-            {
-                case 0:
-                    //g_sys_register_para.stopbit=ONE_STOPBIT;
-                    if(g_sys_register_para.plcProtocol==DL_T_07)
-                    {        
-                        memcpy(g_send_para_pkg.dataFlag,
-                            &c_645DidoDef[g_sys_register_para.plcProtocol][SelNum],
-                            4);
-                        g_send_para_pkg.ctlCode=0x11;
-                    }
-                    else if(g_sys_register_para.plcProtocol==DL_T_97)
-                    {
-                        memcpy(g_send_para_pkg.dataFlag,
-                            &c_645DidoDef[g_sys_register_para.plcProtocol][SelNum],
-                            2);
-                        g_send_para_pkg.ctlCode=0x01; 
+            //pReadSel
+            if(g_sys_register_para.plcProtocol==DL_T_07)
+            {        
+                memcpy(g_send_para_pkg.dataFlag,
+                    &c_645DidoDef[g_sys_register_para.plcProtocol][SelNum],
+                    4);
                 
-                    }
-                    hWin=RMD_Get_ReadSel();
-                    EDIT_SetText(hWin,Positive);
-                    break;
-                case 1:
-                    //g_sys_register_para.stopbit=TWO_STOPBIT;
-                    if(g_sys_register_para.plcProtocol==DL_T_07)
-                    {        
-                        memcpy(g_send_para_pkg.dataFlag,
-                            &c_645DidoDef[g_sys_register_para.plcProtocol][SelNum],
-                            4);
-                        
-                        g_send_para_pkg.ctlCode=0x11;
-                    }
-                    else if(g_sys_register_para.plcProtocol==DL_T_97)
-                    {
-                        memcpy(g_send_para_pkg.dataFlag,
-                            &c_645DidoDef[g_sys_register_para.plcProtocol][SelNum],
-                            2);
-                        g_send_para_pkg.ctlCode=0x01; 
-                
-                    }
-                    hWin=RMD_Get_ReadSel();
-                    EDIT_SetText(hWin,Negative);
-                    break;
-                case 2:
-                    //g_sys_register_para.stopbit=TWO_STOPBIT;
-                    if(g_sys_register_para.plcProtocol==DL_T_07)
-                    {        
-                        memcpy(g_send_para_pkg.dataFlag,
-                            &c_645DidoDef[g_sys_register_para.plcProtocol][SelNum],
-                            4);
-                        
-                        g_send_para_pkg.ctlCode=0x11;
-                    }
-                    else if(g_sys_register_para.plcProtocol==DL_T_97)
-                    {
-                        memcpy(g_send_para_pkg.dataFlag,
-                            &c_645DidoDef[g_sys_register_para.plcProtocol][SelNum],
-                            2);
-                        g_send_para_pkg.ctlCode=0x01; 
-                
-                    }
-                    hWin=RMD_Get_ReadSel();
-                    EDIT_SetText(hWin,DayPositive);
-                    break;
-                case 3:
-                    //g_sys_register_para.stopbit=TWO_STOPBIT;
-                    if(g_sys_register_para.plcProtocol==DL_T_07)
-                    {        
-                        memcpy(g_send_para_pkg.dataFlag,
-                            &c_645DidoDef[g_sys_register_para.plcProtocol][SelNum],
-                            4);
-                        
-                        g_send_para_pkg.ctlCode=0x11;
-                    }
-                    else if(g_sys_register_para.plcProtocol==DL_T_97)
-                    {
-                        memcpy(g_send_para_pkg.dataFlag,
-                            &c_645DidoDef[g_sys_register_para.plcProtocol][SelNum],
-                            2);
-                        g_send_para_pkg.ctlCode=0x01; 
-                
-                    }
-                    hWin=RMD_Get_ReadSel();
-                    EDIT_SetText(hWin,DayNegative);
-                    break;
+                g_send_para_pkg.ctlCode=0x11;
             }
+            else if(g_sys_register_para.plcProtocol==DL_T_97)
+            {
+                memcpy(g_send_para_pkg.dataFlag,
+                    &c_645DidoDef[g_sys_register_para.plcProtocol][SelNum],
+                    2);
+                g_send_para_pkg.ctlCode=0x01; 
+        
+            }
+            hWin=RMD_Get_ReadSel();
+            EDIT_SetText(hWin,pReadSel[SelNum]);
             break;
 
         default:

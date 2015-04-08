@@ -21,7 +21,7 @@ u8 g_rtc_time[MAX_RTC_ITEM];
 void RTC_SomeNOP(void)
 {
 
-    unsigned char kk=50;
+    unsigned char kk=100;
 
     while(kk--);
 
@@ -33,7 +33,7 @@ void RTC_SomeNOP(void)
 void RTC_SomeNOP_Short(void)
 {
 
-    unsigned char kk=20;
+    unsigned char kk=40;
     while(kk--);
 
 }//小于100KHz
@@ -404,7 +404,7 @@ void RTC_ReadTime(unsigned char *time)
     time[DATE_POS] &= 0x3f;
     time[MONTH_POS] &= 0x1f;
     
-    time[YEAR_POS] &= 0x7f; //华兄
+    //time[YEAR_POS] &= 0x7f; //华兄
 
 }
 
@@ -424,7 +424,7 @@ void RTC_WriteTime(unsigned char *time)
     time[DATE_POS] &= 0x3f;
     time[MONTH_POS] &= 0x1f;
 
-    time[YEAR_POS] &= 0x7f; //华兄
+    //time[YEAR_POS] &= 0x7f; //华兄
 
     RTC_WriteBuffer(0, time, 7);
 

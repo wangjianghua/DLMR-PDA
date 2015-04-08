@@ -104,8 +104,9 @@
 *                                             PERIPH DEFINES
 *********************************************************************************************************
 */
-#define      LED_UART                     0u
-#define      LED_PLC                      1u
+#define LED_UART                     0u
+#define LED_PWR                      1u
+#define LED_PLC                      2u
 
 /*
 *********************************************************************************************************
@@ -150,6 +151,8 @@
 
 #define SYS_PWR_OFF()       HAL_GPIO_WritePin(GPIOB,GPIO_PIN_5,GPIO_PIN_RESET)
 #define SYS_PWR_ON()       HAL_GPIO_WritePin(GPIOB,GPIO_PIN_5,GPIO_PIN_SET)
+
+#define KEY_LED_OFF()    GPIO_SetBits(GPIOG, GPIO_PIN_7)
 
 /*
 *********************************************************************************************************
@@ -268,8 +271,8 @@ void        BSP_IntClr     (CPU_DATA       int_id);
 void        BSP_IntVectSet (CPU_DATA       int_id,
                             CPU_FNCT_VOID  isr);
 
-void        BSP_LED_On     (CPU_INT08U     led);
-void        BSP_LED_Off    (CPU_INT08U     led);
+void        LED_On     (CPU_INT08U     led);
+void        LED_Off    (CPU_INT08U     led);
 void        BSP_LED_Toggle (CPU_INT08U     led);
 
 CPU_INT32U  BSP_RNG_Read   (void);
@@ -287,8 +290,11 @@ void 		BSP_NVIC_Configuration(void);
 void 		BSP_RCC_Configuration(void);
 
 void        BSP_BEEP(void);
-uint16_t        BSP_ADC_ReadPwr(void);
+CPU_INT32U  BSP_ADC_ReadPwr(void);
 void        BSP_ADC_Init(void);
+CPU_INT32U  BSP_GetLSIFrequency(void);
+void        BSP_IWDG_Init(void);
+
 
 /*
 *********************************************************************************************************
@@ -400,6 +406,8 @@ extern DMA_HandleTypeDef hdma_usart1_rx;
 extern DMA_HandleTypeDef hdma_usart1_tx;
 extern DMA_HandleTypeDef hdma_usart2_rx;
 extern DMA_HandleTypeDef hdma_usart2_tx;
+
+extern IWDG_HandleTypeDef IwdgHandle;
 
 void PLC_PWR_ON(void);
 void PLC_PWR_OFF(void);

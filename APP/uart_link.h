@@ -7,8 +7,8 @@
 
 
 #define LED_UART_EN               0u
-#define LED_UART_ON()     BSP_LED_On(LED_UART)
-#define LED_UART_OFF()    BSP_LED_Off(LED_UART)
+#define LED_UART_ON()     LED_On(LED_UART)
+#define LED_UART_OFF()    LED_Off(LED_UART)
 
 #define PC_COM_PORT                0
 #define RS485_COM_PORT             1

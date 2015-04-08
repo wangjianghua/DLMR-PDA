@@ -137,6 +137,7 @@ typedef __I uint8_t vuc8;   /*!< Read Only */
 #include "rtc.h"
 #include "GUI_public_fun.h"
 #include "lcdconf.h"
+#include "phrase.h"
 
 #define WM_MSG_CLOSE                  (WM_USER + 0x80)
 
@@ -174,6 +175,10 @@ extern WM_HWIN g_hWin_TimeBar;
 extern WM_HWIN g_hWin_Date;
 
 extern WM_HWIN g_hWin_Input;
+extern WM_HWIN g_hWin_speed;
+extern WM_HWIN g_hWin_AdvanSet;
+
+//extern int test_multiedit;
 
 extern int DataSign_value;
 extern char DataSign_Text[TEXT_LEN];//??????????,???????

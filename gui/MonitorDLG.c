@@ -41,63 +41,9 @@
 #define ID_TEXT_0       (GUI_ID_USER + 0x91)
 #define ID_MULTIEDIT_0  (GUI_ID_USER + 0x92)
 
-
-// USER START (Optionally insert additional defines)
-//static int PressCount = 0;  //对按键次数计数
-
-// USER END
-
-/*********************************************************************
-*
-*       Static data
-*
-**********************************************************************
-*/
-
-//设置命令选择
-static const char CmdSel[]="\xe8\xae\xbe\xe7\xbd\xae\xe9\x80\x89\xe6\x8b\xa9";
-
-//发送数据
-//static const char SendData[]="\xe5\x8f\x91\xe9\x80\x81\xe6\x95\xb0\xe6\x8d\xae";
-static const char Data[]="\xe6\x95\xb0\xe6\x8d\xae";
+#define ID_EDIT_0       (GUI_ID_USER + 0x93)
 
 
-//接收数据
-static const char RevData[]="\xe6\x8e\xa5\xe6\x94\xb6\xe6\x95\xb0\xe6\x8d\xae";
-
-//设为监控器状态 
-static const char Monitor[]="\xe8\xae\xbe\xe4\xb8\xba\xe7\x9b\x91\xe6\x8e\xa7\xe5\x99\xa8\xe7\x8a\xb6\xe6\x80\x81";
-
-//设为抄控器状态
-static const char Copy[]="\xe8\xae\xbe\xe4\xb8\xba\xe6\x8a\x84\xe6\x8e\xa7\xe5\x99\xa8\xe7\x8a\xb6\xe6\x80\x81";
-
-//读取模块状态
-static const char ReadModule[]="\xe8\xaf\xbb\xe5\x8f\x96\xe6\xa8\xa1\xe5\x9d\x97\xe7\x8a\xb6\xe6\x80\x81";
-
-//读载波节点
-static const char ReadNope[]="#\xe8\xaf\xbb\xe8\xbd\xbd\xe6\xb3\xa2\xe8\x8a\x82\xe7\x82\xb9";
-
-//设置
-static const char Sel[]="#\xe8\xae\xbe\xe7\xbd\xae";
-
-
-//停止
-static const char Stop[]="F2 \xe5\x81\x9c \xe6\xad\xa2";
-
-//清除
-static const char ClearScr[]="* \xe6\xb8\x85 \xe9\x99\xa4";
-
-//取消
-static const char Cancel[]="\xe5\x8f\x96\xe6\xb6\x88";
-
-//开始
-static const char Start[]="F1 \xe5\xbc\x80 \xe5\xa7\x8b";
-
-//保存
-static const char Save[]="\xe4\xbf\x9d\xe5\xad\x98";
-
-//退出
-static const char Quit[]="\xe9\x80\x80\xe5\x87\xba";
 
 /*********************************************************************
 *
@@ -105,15 +51,20 @@ static const char Quit[]="\xe9\x80\x80\xe5\x87\xba";
 */
 
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
-  { WINDOW_CreateIndirect, NULL, ID_WINDOW_0, 0, 0, 240, 295, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, ReadNope, ID_BUTTON_0, 142, 43, 93, 25, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, ClearScr, ID_BUTTON_1, 8, 43, 90, 25, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, Start, ID_BUTTON_2, 8, 8, 90, 25, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, Quit, ID_BUTTON_3, 182, 265, 55, 25, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, Save, ID_BUTTON_4, 10, 265, 55, 25, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,   Data, ID_TEXT_0, 10, 73, 56, 20, 0, 0x0, 0 },
-  { MULTIEDIT_CreateIndirect, NULL, ID_MULTIEDIT_0, 4, 93, 232, 163, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, Stop, ID_BUTTON_5, 142, 10, 93, 25, 0, 0x0, 0 },
+  { WINDOW_CreateIndirect, NULL,       ID_WINDOW_0,    0,   0,   240, 295, 0,  0x0, 0 },
+    
+  { BUTTON_CreateIndirect, ReadNope,       ID_BUTTON_0,    129, 43,  105, 25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, ClearScr,       ID_BUTTON_1,    8,   43,  105, 25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, SetMonitor,     ID_BUTTON_2,    8,   10,  105, 25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, SetCopy,        ID_BUTTON_5,    129, 10,  105, 25, 0, 0x0, 0 },
+    
+  { BUTTON_CreateIndirect, Quit,           ID_BUTTON_3,    182, 265, 55,  25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, Save,           ID_BUTTON_4,    10,  265, 55,  25, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,   MND_countdown,  ID_TEXT_0,      10,  76,  100, 20, 0, 0x0, 0 },
+  { MULTIEDIT_CreateIndirect, NULL,        ID_MULTIEDIT_0, 4,   103, 232, 153, 0, 0x0, 0 },
+  { EDIT_CreateIndirect,     NULL,         ID_EDIT_0,      129,  73,  105, 25,  EDIT_CF_HCENTER, 0x64, 0 },  
+
+  
 };
 
 
@@ -131,6 +82,23 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
 *                     初始化对话框
 *
 ***************************************************************/
+
+WM_HWIN MNT_GetTime(void)
+{
+    return WM_GetDialogItem(g_hWin_monitor,ID_EDIT_0);
+}
+
+WM_HWIN MNT_GetReadNope(void)
+{
+    return WM_GetDialogItem(g_hWin_monitor,ID_BUTTON_0);
+}
+
+WM_HWIN MNT_Get_MultiEdit()
+{
+    return WM_GetDialogItem(g_hWin_monitor,ID_MULTIEDIT_0);
+}
+
+
 static void _init_dialog(WM_MESSAGE * pMsg)
 {
     WM_HWIN hItem;
@@ -143,6 +111,7 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
 
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_0);
+    //BUTTON_SetBkColor(hItem,0,GUI_CYAN);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
 
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_2);
@@ -152,6 +121,13 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
     
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_5);
+    WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
+
+    hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
+    EDIT_SetFont(hItem, &GUI_Fontdate20);
+    EDIT_SetDecMode(hItem,999,0,999,0 ,0);
+    EDIT_SetValue(hItem,COUNT_VALUE);
+    WM_DisableWindow(hItem);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
     
 
@@ -163,15 +139,12 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     //WM_DisableWindow(hItem);
     MULTIEDIT_SetReadOnly(hItem,1);
     MULTIEDIT_SetWrapWord(hItem);
-
-
-
 }
 
-WM_HWIN MND_Get_MultiEdit()
-{
-    return WM_GetDialogItem(g_hWin_monitor,ID_MULTIEDIT_0);
-}
+
+
+
+
 
 
 /*********************************************************************
@@ -193,21 +166,8 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     //
     GUI_UC_SetEncodeUTF8();
     _init_dialog(pMsg);
-
-    
-   // WM_DisableWindow(hItem);//还要对上下左右键盘有反应，所以不能disable
-   
-    // USER START (Optionally insert additional code for further widget initialization)
-    // USER END
     break;
-  case WM_NOTIFY_PARENT:
-    Id    = WM_GetId(pMsg->hWinSrc);
-    NCode = pMsg->Data.v;
-    switch(Id) 
-    {
-        default:break;
-    }
-    break;
+ 
   case WM_KEY:
     if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==1)//按键释放。
     {
@@ -222,13 +182,24 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
    
                 g_send_para_pkg.cmdType = PLC_CMD_TYPE_L2R;
                 g_sys_control.guiState = GUI_PLC_MSG_IDLE;
+                g_sys_control.sysCtdVal = COUNT_VALUE ;
+                g_sys_control.sysCtdFlag = COUNTDOWN_OFF;
+                //g_sys_control.monitorFlag = PLC_MONITOR_OFF;
                 OSMboxPost(g_sys_control.downMb, (void*)&g_send_para_pkg);
-                
                 break;
-            case '#':
+                
+            case '#': //读载波节点
                 ButtonBlink(pMsg,ID_BUTTON_0);
+                hItem = WM_GetDialogItem(pMsg->hWin,ID_BUTTON_0);
+                BUTTON_SetText(hItem,MND_reading);
+                //hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
+                //EDIT_SetValue(hItem ,240);
+                
                 g_send_para_pkg.cmdType = PLC_CMD_TYPE_NODE;
-                g_sys_control.guiState = GUI_PLC_MSG_LISTING; 
+                g_sys_control.guiState = GUI_PLC_MSG_LISTING;
+                g_sys_control.sysCtdVal = COUNT_VALUE  ;
+                g_sys_control.sysCtdFlag = COUNTDOWN_ON;
+                //g_sys_control.monitorFlag = PLC_MONITOR_ON; //读载波节点也不能关机
                 TSK_Set_Monitor();
                 OSMboxPost(g_sys_control.downMb, (void*)&g_send_para_pkg);
                 break;
@@ -237,19 +208,21 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 hItem=WM_GetDialogItem(pMsg->hWin,ID_MULTIEDIT_0);
                 MULTIEDIT_SetText(hItem,"\0");
                 break;
-            case GUI_KEY_F1:
+            case GUI_KEY_F1: /*监控态*/
                 ButtonBlink(pMsg,ID_BUTTON_2);
                 //TSK_Set_Monitor();
                 g_send_para_pkg.cmdType = PLC_CMD_TYPE_R2L;
-                g_sys_control.guiState = GUI_PLC_MSG_LISTING; 
+                g_sys_control.guiState = GUI_PLC_MSG_LISTING;
+                //g_sys_control.monitorFlag = PLC_MONITOR_ON;//监控态不能关闭电源，标志位
                 TSK_Set_Monitor();
                 OSMboxPost(g_sys_control.downMb, (void*)&g_send_para_pkg);
                 break;
-            case GUI_KEY_F2:
+            case GUI_KEY_F2:/* 抄控态 */
                 ButtonBlink(pMsg,ID_BUTTON_5);
                 //TSK_Close_Monitor();
                 g_send_para_pkg.cmdType = PLC_CMD_TYPE_L2R;
                 g_sys_control.guiState = GUI_PLC_MSG_LISTING;
+                //g_sys_control.monitorFlag = PLC_MONITOR_OFF;
                 TSK_Set_Monitor();
                 OSMboxPost(g_sys_control.downMb, (void*)&g_send_para_pkg);
                 break;

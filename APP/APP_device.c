@@ -100,6 +100,11 @@ unsigned int Get_checksum(unsigned char *buf, unsigned short len)
 
 void DEV_Power_Off()
 {
+    if(g_sys_control.sysUsbVol)
+    {
+        return;
+    }
+    
     SYS_PWR_OFF();
     LCD_BL_OFF();
     LCD_PWR_OFF();
@@ -152,7 +157,7 @@ void DEV_Parameters_Read(void)
                 if(pPara[3] >= g_sys_register_para.versionDate)
                 {
                     APP_memcpy((unsigned char *)&g_sys_register_para, (unsigned char *)pPara, ROM_ADDR_PARA_SIZE);
-                    g_sys_control.paraAddr= (unsigned int)pPara;
+                    g_sys_control.paraAddr = (unsigned int)pPara;
      
                 }
                 else

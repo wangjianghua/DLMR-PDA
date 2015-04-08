@@ -43,6 +43,8 @@
 #define ID_BUTTON_2  (GUI_ID_USER + 0x0A)
 #define ID_PROGBAR_1 (GUI_ID_USER + 0x0B)
 #define ID_TEXT_4    (GUI_ID_USER + 0x0C)
+#define ID_TEXT_5    (GUI_ID_USER + 0x0D)
+#define ID_EDIT_2    (GUI_ID_USER + 0x0E)
 
 
 
@@ -56,18 +58,6 @@
 **********************************************************************
 */
 
-static const char MemSize[]="\xe5\xae\xb9\xe9\x87\x8f";
-static const char MemUsage[]="\xe4\xbd\xbf\xe7\x94\xa8\xe7\x8e\x87";
-static const char FileNum[]="\xe6\x96\x87\xe4\xbb\xb6\xe6\x95\xb0\xe7\x9b\xae";
-static const char FactorySet[]="\xe6\x81\xa2\xe5\xa4\x8d\xe5\x87\xba\xe5\x8e\x82\xe8\xae\xbe\xe7\xbd\xae";
-static const char MemFormat[]="\xe6\xa0\xbc\xe5\xbc\x8f\xe5\x8c\x96";
-static const char MemReturn[]="\xe8\xbf\x94\xe5\x9b\x9e";
-static const char MemConfirm[]="F1\xe7\xa1\xae\xe5\xae\x9a";
-static const char VersionNum[]="\xe7\x89\x88\xe6\x9c\xac\xe5\x8f\xb7:20150127";
-
-//ÍË³ö
-static const char Quit[]="\xe9\x80\x80\xe5\x87\xba";
-
 // USER START (Optionally insert additional static data)
 // USER END
 
@@ -75,23 +65,29 @@ static const char Quit[]="\xe9\x80\x80\xe5\x87\xba";
 *
 *       _aDialogCreate
 */
+
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { WINDOW_CreateIndirect,   "MemManage",  ID_WINDOW_0,  0,   0,   240, 295,0, 0x0,  0 },
-  { TEXT_CreateIndirect,     MemSize,      ID_TEXT_0,    15,  22,  80,  20, 0, 0x0,  0 },
-  { TEXT_CreateIndirect,     MemUsage,     ID_TEXT_1,    15,  111, 80,  20, 0, 0x0,  0 },
-  { TEXT_CreateIndirect,     FileNum,      ID_TEXT_2,    15,  65,  80,  20, 0, 0x0,  0 },
-  { TEXT_CreateIndirect,     FactorySet,   ID_TEXT_3,    15,  155, 108, 20, 0, 0x0,  0 },
-  { TEXT_CreateIndirect,     VersionNum,    ID_TEXT_4,    15,  185, 200, 20, 0, 0x0,  0 },
-  { EDIT_CreateIndirect,     "Edit",       ID_EDIT_0,    120, 21,  110, 20, 0, 0x64, 0 },
-  { EDIT_CreateIndirect,     "Edit",       ID_EDIT_1,    120, 67,  110, 20, 0, 0x64, 0 },
-  { PROGBAR_CreateIndirect,  "Progbar",    ID_PROGBAR_0, 120, 113, 110, 20, 0, 0x0,  0 },
-  { BUTTON_CreateIndirect,   MemConfirm,   ID_BUTTON_0,  120, 152, 110, 25, 0, 0x0,  0 },
+  { TEXT_CreateIndirect,     MemSize,      ID_TEXT_0,    12,  16,  59,  20, 0, 0x0,  0 },
+  { TEXT_CreateIndirect,     MemUsage,     ID_TEXT_1,    12,  79,  80,  20, 0, 0x0,  0 },
+  { TEXT_CreateIndirect,     FileNum,      ID_TEXT_2,    12,  47,  80,  20, 0, 0x0,  0 },
+  { TEXT_CreateIndirect,     FactorySet,   ID_TEXT_3,    12,  148, 108, 20, 0, 0x0,  0 },
+  { TEXT_CreateIndirect,     VersionNum,   ID_TEXT_4,    12,  187, 200, 20, 0, 0x0,  0 },
+  { TEXT_CreateIndirect,     MM_batteryVtg,    ID_TEXT_5,    12,  113, 180, 20, 0, 0x0,  0 },
+  { EDIT_CreateIndirect,     "Edit",       ID_EDIT_0,    120, 12,  115, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect,     "Edit",       ID_EDIT_1,    120, 43,  115, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect,     "Edit",       ID_EDIT_2,    120, 111, 115, 20, 0, 0x64, 0},
+    
+  { PROGBAR_CreateIndirect,  "Progbar",    ID_PROGBAR_0, 120, 77, 115, 20, 0, 0x0,  0 },
+  { BUTTON_CreateIndirect,   "F1",         ID_BUTTON_0,  120, 143, 115, 25, 0, 0x0,  0 },
   { BUTTON_CreateIndirect,   MemFormat,    ID_BUTTON_1,  11,  260, 80,  25, 0, 0x0,  0 },
-  { BUTTON_CreateIndirect,   Quit,    ID_BUTTON_2,  149, 260, 80,  25, 0, 0x0,  0 },
-  { PROGBAR_CreateIndirect,  "Progbar",    ID_PROGBAR_1, 9,   228, 222, 20,  0, 0x0,  0 },
+  { BUTTON_CreateIndirect,   Quit,         ID_BUTTON_2,  149, 260, 80,  25, 0, 0x0,  0 },
+  { PROGBAR_CreateIndirect,  "Progbar",    ID_PROGBAR_1, 9,   228, 222, 20, 0, 0x0,  0 },
+    
   // USER START (Optionally insert additional widgets)
   // USER END
 };
+
 
 /*********************************************************************
 *
@@ -99,7 +95,12 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
 *
 **********************************************************************
 */
-
+#if 1
+WM_HWIN MMD_GetVoltage(void)
+{
+    return WM_GetDialogItem(g_hWin_mem,ID_EDIT_2);
+}
+#endif
 WM_HWIN MMD_Get_PROGBAR()
 {    
      return WM_GetDialogItem(g_hWin_mem, ID_PROGBAR_0);            
@@ -168,8 +169,15 @@ static void _cbDialog(WM_MESSAGE * pMsg)
             EDIT_SetText(hItem, "1");
             //WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
             WM_DisableWindow(hItem);
-
+            
+            hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_2);
+            WM_DisableWindow(hItem);
+            EDIT_SetFloatMode(hItem,((g_sys_control.pwrValue*3.3)/4096),0,99999,2,
+                                     GUI_EDIT_SUPPRESS_LEADING_ZEROES);
+            EDIT_SetFloatValue(hItem,(g_sys_control.pwrValue*3.3)/4096);
+            //WM_CF_SHOW
             hItem = WM_GetDialogItem(pMsg->hWin, ID_PROGBAR_0);
+            PROGBAR_SetBarColor(hItem, 0, GUI_GREEN);
             NCode = (100*g_sys_control.sd_free_capacity)/g_sys_control.sd_total_capacity;
             NCode %= 100;
             NCode = 100-NCode;
@@ -188,14 +196,19 @@ static void _cbDialog(WM_MESSAGE * pMsg)
             BUTTON_SetBkColor(hItem,0,GUI_CYAN);
             WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
 
-            //hItem = WM_GetDialogItem(pMsg->hWin, ID_PROGBAR_1);     
+            //hItem = WM_GetDialogItem(pMsg->hWin,ID_PROGBAR_0);
+
+            hItem = WM_GetDialogItem(pMsg->hWin, ID_PROGBAR_1); 
+            PROGBAR_SetBarColor(hItem, 0, GUI_GREEN);
             //PROGBAR_SetValue(hItem, 100);
             break;
-          case WM_NOTIFY_PARENT:
-            Id    = WM_GetId(pMsg->hWinSrc);
-            NCode = pMsg->Data.v;
-            switch(Id) {}
+#if 0
+          case WM_TIMER:
+            hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_2);
+            EDIT_SetFloatValue(hItem,((g_sys_control.pwrValue*3.3)/2048));
+            WM_RestartTimer(pMsg->Data.v, 1000);
             break;
+#endif
           case WM_KEY:
             
             if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==1)
@@ -238,8 +251,10 @@ static void _cbDialog(WM_MESSAGE * pMsg)
 WM_HWIN CreateMemManage(void);
 WM_HWIN CreateMemManage(void) {
   WM_HWIN hWin;
+  //WM_HWIN hTimer;
 
   hWin = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), _cbDialog, g_hWin_menu, 0, 0);
+  //hTimer = WM_CreateTimer(g_hWin_mem, 0, 2000, 0);
   return hWin;
 }
 

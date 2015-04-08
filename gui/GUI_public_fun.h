@@ -9,19 +9,25 @@
 #define DL_T_07    1
 
 
-#define PLC_CMD_TYPE_R2L          0  //read to listening
-#define PLC_CMD_TYPE_L2R          1  //listening to read
+#define PLC_CMD_TYPE_L2R          0  //read to listening
+#define PLC_CMD_TYPE_R2L          1  //listening to read
 #define PLC_CMD_TYPE_COMMON       2  //
 #define PLC_CMD_TYPE_NODE         3
 #define PLC_CMD_BROAD_READ        4  //广播读表号
+#define PLC_CMD_FREQ_SET          5  //设置速率
+#define PLC_CMD_TYPE_ROUTE        6  //启动路由表
+
+
+#define PLC_ROUTE_OFF             0 
+#define PLC_ROUTE_ON              1
 
 
 #define ICON_FLOW_FLASH_TIMEOUT   60
 
 
-#define CHANNEL_WAVE       0
-#define CHANNEL_485        1
-#define CHANNEL_INFRD      2
+#define CHANNEL_PLC       0
+#define CHANNEL_WIRELESS   1
+#define CHANNEL_485        2
 
 #define ONE_STOPBIT        0
 #define TWO_STOPBIT        1
@@ -46,8 +52,8 @@
 #define GUI_MSBOX_MIN_ERROR        6
 #define GUI_MSBOX_FORMAT_ERROR     7
 
-#define KEY_PRESS_CNT_MIN          0  //按键次数
-#define KEY_PRESS_CNT_MAX          8  //最大按键次数
+//#define KEY_PRESS_CNT_MIN          0  //按键次数
+//#define KEY_PRESS_CNT_MAX          8  //最大按键次数
 
 
 #define LISTBOX_PROTOCOL           0
@@ -77,14 +83,20 @@
 #define EDIT_MIN                   13
 #define EDIT_SEC                   14
 
-#define EDIT_PWD_CFM               15 //升级确认
+//#define EDIT_PWD_CFM               15 //升级确认
 //#define EDIT_SPEED                 16
+#define EDIT_OPCODE                15
+#define EDIT_RELAY_ADDR            16
+#define ADD_RELAY_ADDR             17
+#define MODIFY_RELAY_ADDR          18
 
+//读节点倒计时
+#define   COUNTDOWN_OFF            0
+#define   COUNTDOWN_ON             1
+#define   COUNT_VALUE              240
 
-
-
-
-
+//#define   PLC_MONITOR_OFF          0
+//#define   PLC_MONITOR_ON           1
 
 
 
@@ -104,29 +116,21 @@ typedef struct _sys_parameter_pkg_
     U8  ctlCode;   //控制字
     U8  srcAddr[6]; //电表表号  reserved
     U8  dstAddr[6]; //电表表号  reserved
-    U8  relayAddr[7][6];  //目标地址
+    U8  relayAddr[8][6];  //中继地址,实际是7级中继，在调用组中继帧接口的时候需要把目标地址也写进去,8个
     U16 dataLen;        //长度
     U8  dataFlag[4];      //数据标识
-    U8   dataBuf[256];     //数据
+    U8  dataBuf[256];     //数据
+    //U8  meterPWD[4] = {0x01,0x31,0x41,0x51};      //密码 
     //U16 g_crc;           //校验和
     
 }SEND_PARA_PKG,*P_SEND_PARA_PKG;
 
 extern SEND_PARA_PKG g_send_para_pkg;      //参数包
-//extern SYS_PARA_PKG sys_para_pkg; //参数包指针
 
 extern const char *gc_messageBoxText[];
-extern const char *pTextSpeed[];
+extern const u8 c_645ctrlDef[2][PLC_CTRL_MAX_NUM] ;
 
-//extern const u32 c_645DidoDef[2][PLC_CTRL_MAX_NUM];
-
-
-//SYS_PARA_PKG     g_para_pkg_ptr;
-
-
-
-//extern U8 g_mail_box_info; //邮箱发送的消息结构体
-
+extern const u32 c_645DidoDef[2][PLC_CTRL_MAX_NUM] ;
 
 
 
@@ -144,15 +148,10 @@ void Not_Focus(WM_MESSAGE *pMsg,int Widget_Id);
 
 /*button对按键的反应，闪烁一下*/
 void ButtonBlink(WM_MESSAGE * pMsg,int Id);
+void PUB_InitFreq(WM_MESSAGE *pMsg,int widgetID); //初始化速率设置eidt
 
 
 //存储参数
-
-/*获取edit中的参数*/
-void para_store_edit(WM_MESSAGE * pMsg,int Widget_Id,char *text,int num);
-
-/*获取dropdown中的参数*/
-void para_store(WM_MESSAGE * pMsg);
 
 //把数值转化为字符串
 char *int_to_char(int src,char *pBuff,int radix) ;
@@ -163,7 +162,7 @@ void Data_Download_Yellow(u32 color);
 void GUI_Msg_Proc();
 
 
-WM_HWIN STD_Get_MultiEdit();
+WM_HWIN MSG_Get_MultiEdit();
 WM_HWIN STM_Get_PROGBAR();
 
 
@@ -173,24 +172,50 @@ WM_HWIN TSK_Get_Download_Text();
 
 void Data_State_Judge();
 
-
-void RMD_proc_resp_data();
 u8* GUI_hex2PowerDataStr(u8 * srcBuf, u32 len);
 
-WM_HWIN MND_Get_MultiEdit();
+WM_HWIN MNT_Get_MultiEdit();
 
 u32 GUI_GetMeterAddr(u8 * dbuf, u8 * gbuf);
 
-WM_HWIN RMD_Get_PROGBAR();
-WM_HWIN MMD_Get_PROGBAR();
 WM_HWIN GUI_Get_PROGBAR();
+WM_HWIN MMD_Get_PROGBAR();
+
+
+WM_HWIN RMD_Get_PROGBAR();
 WM_HWIN RMD_Get_MeterNum(void);
 WM_HWIN RMD_Get_ReadSel(void);
+void RMD_proc_resp_data();
+
+
+/**********
+*
+*先实现，看能不能重构成一个函数
+*
+**************/
+void CPS_SetFocus(void);
+void CPS_Color_Change(void);
+
+void TMS_SetFocus(void);
+void TMS_Color_Change(void);
+
+void ADS_SetFocus(void);
+void ADS_Color_Change(void);
+
+void CPT_SetFocus(void);
+void CPT_Color_Change(void);
+
+void RMD_SetFocus(void);
+void RMD_Color_Change(void);
+
+void Select_Focus(void);
 
 
 
 u32 GUI_GetStrDataFlag(u8 * dbuf, u32 pro_ver);
 u8* GUI_hex2MeterAddrStr(u8 * srcBuf, u32 len);
+void GUI_Fill_Zero(u8 *tempbuf); //自动补全零
+
 void CST_Set_DataFlag(u8 * tst);
 void GUI_GetHexDataFlag(u8 * strbuf, u8* dataflag, u8 len);
 void MMD_Format_Disk(void);

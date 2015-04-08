@@ -24,24 +24,14 @@
 #include "DIALOG.h"
 #include "includes.h"
 
-/*********************************************************************
+/************************************************
 *
-*       Defines
+*       
 *
-**********************************************************************
-*/
-/**********************************
-#define ID_WINDOW_0     (GUI_ID_USER + 0xA4)
-#define ID_TEXT_0     (GUI_ID_USER + 0xA5)
-#define ID_EDIT_0     (GUI_ID_USER + 0xA6)
-#define ID_BUTTON_0     (GUI_ID_USER + 0xA7)
-#define ID_BUTTON_1     (GUI_ID_USER + 0xA8)
-#define ID_BUTTON_2     (GUI_ID_USER + 0xA9)
-#define ID_LISTVIEW_0     (GUI_ID_USER + 0xAA)
-#define ID_BUTTON_3     (GUI_ID_USER + 0xAB)
-#define ID_BUTTON_4     (GUI_ID_USER + 0xAC)
-***********************************************/
-
+*       路由表，中继页面
+*
+*
+*************************************************/
 
 #define ID_WINDOW_0 (GUI_ID_USER + 0xA4)
 #define ID_LISTVIEW_0 (GUI_ID_USER + 0xA5)
@@ -58,17 +48,6 @@
 
 
 
-// USER START (Optionally insert additional defines)
-
-//static int PressCount = 0;  //对按键次数计数
-//int     RowNum;   //row's num of listview
-char Modify_LISTVIEW_Text[TEXT_LEN]; //修改中继地址的字符串缓存
-char Add_LISTVIEW_Text[TEXT_LEN];//增加中继地址的字符串缓存
-
-char EDIT_Text[TEXT_LEN];
-
-//int all_row;
-// USER END
 
 /*********************************************************************
 *
@@ -78,57 +57,20 @@ char EDIT_Text[TEXT_LEN];
 */
 
 
-//中继地址
-static const char RelayAddr[]="1-\xe4\xb8\xad\xe7\xbb\xa7\xe5\x9c\xb0\xe5\x9d\x80";
-
-//中继地址。。。
-static const char _RelayAddr[]="\xe4\xb8\xad\xe7\xbb\xa7\xe5\x9c\xb0\xe5\x9d\x80";
-
-//中继序号
-static const char RelayNum[]="\xe4\xb8\xad\xe7\xbb\xa7\xe5\xba\x8f\xe5\x8f\xb7";
-
-//按增加
-static const char Add[]="\xe6\x8c\x89 # \xe5\xa2\x9e\xe5\x8a\xa0";
-
-//删除
-static const char Delete[]="\xe6\x8c\x89 F1 \xe5\x88\xa0\xe9\x99\xa4";
-
-//修改
-static const char Modify[]="\xe6\x8c\x89 F2 \xe4\xbf\xae\xe6\x94\xb9";
-
-//确定
-static const char Confirm[]="\xe7\xa1\xae\xe5\xae\x9a";
-
-//取消
-static const char Cancel[]="\xe5\x8f\x96\xe6\xb6\x88";
-
-//开始
-static const char Start[]="\xe6\x8c\x89 * \xe5\xbc\x80 \xe5\xa7\x8b";
-
-//保存
-static const char Save[]="\xe4\xbf\x9d\xe5\xad\x98";
-
-//退出
-static const char Quit[]="\xe9\x80\x80\xe5\x87\xba";
 
 
-//启动路由
-static const char StartRoute[]="*\xe5\x90\xaf\xe5\x8a\xa8\xe8\xb7\xaf\xe7\x94\xb1";
-
-//路由已启动
-static const char AlreadyStart[]="\xe8\xb7\xaf\xe7\x94\xb1\xe5\x90\xaf\xe5\x8a\xa8";
 
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
-  { WINDOW_CreateIndirect,   NULL,       ID_WINDOW_0,   0,   0,   240, 295, 0, 0x0, 0 },
+  { WINDOW_CreateIndirect,   NULL,       ID_WINDOW_0,   0,   0,   240, 295, 0, 0x0,  0 },
   { EDIT_CreateIndirect,     NULL,       ID_EDIT_0,     86,  15,  144, 20,  0, 0x64, 0 },  
-  { BUTTON_CreateIndirect,   StartRoute, ID_BUTTON_0,   8,   43,  88,  28,  0, 0x0, 0 },
-  { BUTTON_CreateIndirect,   Add,        ID_BUTTON_1,   142, 44,  88,  28,  0, 0x0, 0 },  
-  { TEXT_CreateIndirect,     RelayAddr,  ID_TEXT_0,     5,   18,  76,  20,  0, 0x0, 0 },
-  { BUTTON_CreateIndirect,   Delete,     ID_BUTTON_2,   8,   82,  88,  28,  0, 0x0, 0 },
-  { BUTTON_CreateIndirect,   Modify,     ID_BUTTON_5,   142, 82,  88,  28,  0, 0x0, 0 },
-  { LISTVIEW_CreateIndirect, NULL,       ID_LISTVIEW_0, 8,   116, 224, 144, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect,   Save,       ID_BUTTON_3,   8,   264, 55,  25,  0, 0x0, 0 },
-  { BUTTON_CreateIndirect,   Quit,     ID_BUTTON_4,   167, 264, 55,  25,  0, 0x0, 0 },
+  { BUTTON_CreateIndirect,   StartRoute, ID_BUTTON_0,   8,   43,  95,  28,  0, 0x0,  0 },
+  { BUTTON_CreateIndirect,   Add,        ID_BUTTON_1,   135, 44,  95,  28,  0, 0x0,  0 },  
+  { TEXT_CreateIndirect,     _RelayAddr, ID_TEXT_0,     5,   18,  76,  20,  0, 0x0,  0 },
+  { BUTTON_CreateIndirect,   Delete,     ID_BUTTON_2,   8,   82,  95,  28,  0, 0x0,  0 },
+  { BUTTON_CreateIndirect,   Modify,     ID_BUTTON_5,   135, 82,  95,  28,  0, 0x0,  0 },
+  { LISTVIEW_CreateIndirect, NULL,       ID_LISTVIEW_0, 8,   116, 224, 144, 0, 0x0,  0 },
+  { BUTTON_CreateIndirect,   Save,       ID_BUTTON_3,   8,   264, 55,  25,  0, 0x0,  0 },
+  { BUTTON_CreateIndirect,   Quit,       ID_BUTTON_4,   167, 264, 55,  25,  0, 0x0,  0 },
   
 };
 
@@ -140,14 +82,6 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
 */
 
 
-//赞，在数组里加一个空的元素，并以此作为终止循环的一个变量
-static const char _acItems[][2][20] = {
-     {"1",      "123456"               },
-     {"2",      "234567"               },
-     {"3",      "345678"               },
-     {"4",      "456789"               },
-     {"",               ""             }
-   };
 
 /*********************************************************************
 *
@@ -157,14 +91,19 @@ static const char _acItems[][2][20] = {
 */
 
 
-static void __AddListviewItem(LISTVIEW_Handle hObj, const char* pMake, const char* pModel) {
-  unsigned NumItems;
 
-  NumItems = LISTVIEW_GetNumRows(hObj);
-  LISTVIEW_AddRow(hObj, NULL);
-  LISTVIEW_SetItemText(hObj, 0, NumItems, pMake);
-  LISTVIEW_SetItemText(hObj, 1, NumItems, pModel);
+WM_HWIN RLY_GetAddr(void)
+{
+    return WM_GetDialogItem(g_hWin_relay,ID_EDIT_0);
 }
+
+WM_HWIN RLY_GetListAddr(void)
+{
+    return WM_GetDialogItem(g_hWin_relay,ID_LISTVIEW_0);
+}
+
+
+
 
 /**************************************************************
 *
@@ -175,26 +114,39 @@ static void _init_dialog(WM_MESSAGE * pMsg)
 {
     WM_HWIN hItem;
     int i=0;
+    int NumItems = 0;
+    char RowNum[2]; //缓存行号，用来初始化listview
+    
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_0);
-    EDIT_SetText(hItem, "123");
-
+    EDIT_SetText(hItem, "0");
+    WM_DisableWindow(hItem);
+    
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_0);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
+    if(PLC_ROUTE_ON == g_sys_control.sysUseRoute)
+    {
+        BUTTON_SetText(hItem, AlreadyStart);
+    }
+    else
+    {
+        BUTTON_SetText(hItem, AlreadyClosed);
+    }
 
+    
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_1);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
-
+    
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_2);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
      
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_3);
     BUTTON_SetBkColor(hItem,0,GUI_GREEN);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
-
+    
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_4);
     BUTTON_SetBkColor(hItem,0,GUI_YELLOW);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
-
+    
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_5);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
     //
@@ -206,46 +158,86 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     LISTVIEW_SetGridVis(hItem, 0);
     LISTVIEW_SetHeaderHeight(hItem, 25);
     LISTVIEW_SetAutoScrollV(hItem,1);
-    
-    while (_acItems[i][0][0]) 
+
+    for(i = 0; i < g_sys_control.sysAddrLevel; i++)
     {
-       __AddListviewItem(hItem, _acItems[i][0], _acItems[i][1]);
-       i++;
+        LISTVIEW_AddRow(hItem, NULL);
+        LISTVIEW_SetItemText(hItem, 0, i, int_to_char(i, RowNum, 10));
+        LISTVIEW_SetItemText(hItem, 1, i, (const char*)GUI_hex2MeterAddrStr(g_send_para_pkg.relayAddr[i],6));
     }
-
-    LISTVIEW_SetSel(hItem,0);
-
 }
 
-//修改中继地址
-static void Modify_Relay_Addr(WM_MESSAGE * pMsg)
+//获取各个中继地址
+void RLY_GetParaAddr(WM_MESSAGE *pMsg)
 {
     WM_HWIN hItem;
-    ButtonBlink(pMsg,ID_BUTTON_5);
-    hItem=WM_GetDialogItem(pMsg->hWin,ID_LISTVIEW_0);
-    LISTVIEW_GetItemText(hItem,1,LISTVIEW_GetSel(hItem),Modify_LISTVIEW_Text,TEXT_LEN);
-    hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
-    EDIT_SetText(hItem,Modify_LISTVIEW_Text);
-    WM_SetFocus(hItem);
+    u8 *pBuffer;
+    //int RowNum; 
+    int i ;
+    
+    hItem = WM_GetDialogItem(pMsg->hWin ,ID_LISTVIEW_0);
+    g_sys_control.sysAddrLevel = LISTVIEW_GetNumRows(hItem);
 
+    for(i = 0; i < g_sys_control.sysAddrLevel; i++)
+    {
+        LISTVIEW_GetItemText(hItem, 1, i, pBuffer, 13);
+        GUI_GetMeterAddr(pBuffer,g_send_para_pkg.relayAddr[i]);
+    }    
 }
 
-//增加中继地址
-static void Add_Relay_Addr(WM_MESSAGE * pMsg)
+
+//修改中继地址
+static void RLY_Modify_Addr(WM_MESSAGE * pMsg)
+{
+    WM_HWIN hItem;
+    char tempBuf[12];
+    
+    g_sys_control.selectWidget = MODIFY_RELAY_ADDR;
+    g_hWin_Input = Create_Edit_Set(g_hWin_relay);
+    WM_SetFocus(g_hWin_Input);
+}
+
+//增加中继地址，要补全零
+static void RLY_AddAddr(WM_MESSAGE * pMsg)
 {
     WM_HWIN hItem;
     int RowCount;//listview全部行数
-    ButtonBlink(pMsg,ID_BUTTON_1);
-    hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
-    EDIT_GetText(hItem,EDIT_Text,TEXT_LEN);
+    char tempBuf[16];
+        
     hItem=WM_GetDialogItem(pMsg->hWin,ID_LISTVIEW_0);
     RowCount=LISTVIEW_GetNumRows(hItem);
-    int_to_char(RowCount,Add_LISTVIEW_Text,TEXT_LEN);
     LISTVIEW_AddRow(hItem, NULL);
-    LISTVIEW_SetItemText(hItem, 0, (RowCount-1), Add_LISTVIEW_Text);
-    LISTVIEW_SetItemText(hItem, 1, (RowCount-1), EDIT_Text);
-
+    //放到input_Widget中处理增加的地址，这里只增加第一列的序号
+    LISTVIEW_SetItemText(hItem, 1, RowCount, "\0");//第1列也就是，中继地址列
+    int_to_char((RowCount-1),tempBuf,10); 
+    LISTVIEW_SetItemText(hItem, 0, RowCount, tempBuf);
 }
+
+//删除中继地址
+//删除后，立即重新获取各个中继地址到g_send_para_pkg中，然后再对删除后的地址排序
+static void Del_Relay_Addr(WM_MESSAGE *pMsg)
+{
+    WM_HWIN hItem;
+    int     RowNum;//获取listview单元格行序号
+    char pTextRow[2];
+    int     i;
+    ButtonBlink(pMsg,ID_BUTTON_2);
+    hItem=WM_GetDialogItem(pMsg->hWin,ID_LISTVIEW_0);
+    RowNum=LISTVIEW_GetSel(hItem);
+    LISTVIEW_DeleteRow(hItem,RowNum);
+    LISTVIEW_SetSel(hItem,0);
+    
+    RLY_GetParaAddr(pMsg);  
+    for(i = 0; i < g_sys_control.sysAddrLevel; i++)
+    {
+        //LISTVIEW_AddRow(hItem, NULL);
+        LISTVIEW_SetItemText(hItem, 0, i, int_to_char(i, pTextRow, 10));
+        LISTVIEW_SetItemText(hItem, 1, i, (const char*)GUI_hex2MeterAddrStr(g_send_para_pkg.relayAddr[i],6));
+    }
+}
+
+
+
 
 /*********************************************************************
 *
@@ -255,7 +247,8 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
   WM_HWIN hItem;
   int     NCode;
   int     Id;
-  int     RowNum;//获取listview单元格行序号
+  int     RowNum;
+  
   //int     RowCount;
   // USER START (Optionally insert additional variables)
   // USER END
@@ -270,74 +263,107 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     Id    = WM_GetId(pMsg->hWinSrc);
     NCode = pMsg->Data.v;
   case WM_KEY:
-    if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)//按键释放的时候再处理消息
+    //if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)//按键释放的时候再处理消息
+    Id  = WM_GetId(pMsg->hWinSrc);
+    if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 1)
     {
-        Id  = WM_GetId(pMsg->hWinSrc);
-        if(Id==ID_EDIT_0)
+        if(Id == ID_EDIT_0)
         {
-            switch((((WM_KEY_INFO*)(pMsg->Data.p))->Key))
+            if((((WM_KEY_INFO*)(pMsg->Data.p))->Key) == GUI_KEY_ENTER)
             {
-                case GUI_KEY_ESCAPE:
-                    hItem=WM_GetDialogItem(pMsg->hWin,ID_LISTVIEW_0);   
-                    WM_SetFocus(hItem); 
-                    LISTVIEW_SetSel(hItem,0);
-                    break;
-                /*按下增加键后，添加一个新的数据，然后按保存，好像和修改后保存有冲突?*/
-                case GUI_KEY_GREEN:
-                    //reserved
-                    break;
-               /*把按键处理放这里只是为了方便在edit中也能随时保存*/
-               //不行。edit会先出现一个#然后再做出反应，还是需要用esc
-               /*****************************************************
-                case '#':    
-
-                    hItem=WM_GetDialogItem(pMsg->hWin,ID_LISTVIEW_0);
-                    WM_SetFocus(hItem);
-                    break;
-               *****************************************************/
+                g_sys_control.selectWidget = EDIT_RELAY_ADDR;
+                g_hWin_Input=Create_Edit_Set(g_hWin_relay);
+                WM_SetFocus(g_hWin_Input);
             }
         }
-        else if(Id==ID_LISTVIEW_0)
-        {
-            Disable_Widget(pMsg,ID_EDIT_0);
-        }
-        switch(((WM_KEY_INFO*)(pMsg->Data.p))->Key)
-        {
-            case GUI_KEY_YELLOW:
+
+    }
+    switch(((WM_KEY_INFO*)(pMsg->Data.p))->Key)
+    {
+        case GUI_KEY_YELLOW:
+            if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 1)
+            {
                 WM_DeleteWindow(g_hWin_relay);
                 g_hWin_relay=HBWIN_NULL;
                 WM_SetFocus(g_hWin_std);
-                break;
-                
-            case GUI_KEY_F1: /*删除*/
-                ButtonBlink(pMsg,ID_BUTTON_2);
-                hItem=WM_GetDialogItem(pMsg->hWin,ID_LISTVIEW_0);
-                RowNum=LISTVIEW_GetSel(hItem);
-                LISTVIEW_DeleteRow(hItem,RowNum);
-                LISTVIEW_SetSel(hItem,RowNum-1);
-                LISTVIEW_SetSel(hItem,0);
+                CPT_SetFocus();
+            }
+            break;
 
-                //WM_SetFocus(hItem);
-                break;
+        case GUI_KEY_GREEN:
+            if((((WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt) == 1)
+            {
+                RLY_GetParaAddr(pMsg);
+                //g_sys_register_para.
+                g_send_para_pkg.cmdType = PLC_CMD_TYPE_ROUTE ;
+                //g_sys_control.sysUseRoute = 1;
+                WM_DeleteWindow(g_hWin_relay);
+                g_hWin_relay=HBWIN_NULL;
+                WM_SetFocus(g_hWin_std);
+                CPT_SetFocus();
                 
-           case GUI_KEY_F2: /*修改*/
-                Modify_Relay_Addr(pMsg);
-                break;
-                
-           case '#':      /*增加*/
-                Add_Relay_Addr(pMsg);
-                break;
-                
-           case '*':
-                ButtonBlink(pMsg,ID_BUTTON_0);
-                break;
-                
-           case '1':
-                hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
-                WM_SetFocus(hItem);
-                break;
+            }
+            break;
             
-        }
+        case GUI_KEY_F1: /*删除*/
+            if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 0)
+            {
+                Del_Relay_Addr(pMsg);
+            }
+            //WM_SetFocus(hItem);
+            break;
+            
+       case GUI_KEY_F2: /*修改*/
+            if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 0)
+            {
+                hItem = WM_GetDialogItem(pMsg->hWin,ID_LISTVIEW_0);
+                if(LISTVIEW_GetNumRows(hItem) > 0)
+                {
+                    g_sys_control.selectWidget = MODIFY_RELAY_ADDR;
+                    g_hWin_Input = Create_Edit_Set(g_hWin_relay);
+                    WM_SetFocus(g_hWin_Input);
+                }
+            }
+            break;
+            
+       case '#':      //按下的时候就直接打开了新的编辑框体
+            if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 0)
+            {
+                hItem = WM_GetDialogItem(pMsg->hWin,ID_LISTVIEW_0);
+                g_sys_control.sysAddrLevel = LISTVIEW_GetNumRows(hItem);
+                if(g_sys_control.sysAddrLevel >= 7)
+                {
+                    ERR_NOTE(g_hWin_relay,9);
+                    return ;
+                }
+                g_sys_control.selectWidget = ADD_RELAY_ADDR;
+                //RLY_AddAddr(pMsg);
+                g_hWin_Input = Create_Edit_Set(g_hWin_relay);
+                WM_SetFocus(g_hWin_Input);
+                
+            }
+            break;
+            
+       case '*':
+            if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 0)
+            {
+                //ButtonBlink(pMsg,ID_BUTTON_0);
+                //路由开启，关闭路由需再仔细考虑
+                if(PLC_ROUTE_ON == g_sys_control.sysUseRoute)
+                {
+                    g_sys_control.sysUseRoute = PLC_ROUTE_OFF;//关闭的时候恢复控制字
+                    g_send_para_pkg.ctlCode -= g_sys_control.sysAddrLevel * DL645_RELAY_ADDED_VAL;
+                    hItem = WM_GetDialogItem(pMsg->hWin,ID_BUTTON_0);
+                    BUTTON_SetText(hItem ,AlreadyClosed);
+                }
+                else if(PLC_ROUTE_OFF == g_sys_control.sysUseRoute)
+                {
+                    g_sys_control.sysUseRoute = PLC_ROUTE_ON;
+                    hItem = WM_GetDialogItem(pMsg->hWin,ID_BUTTON_0);
+                    BUTTON_SetText(hItem ,AlreadyStart);
+                }
+            }
+            break;        
     }
     break;
   default:

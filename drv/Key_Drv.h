@@ -30,8 +30,10 @@
 #define KEYBOARD_COL2_CODE         (KEYBOARD_ROW_NUM * 2)//12
 #define KEYBOARD_COL3_CODE         (KEYBOARD_ROW_NUM * 3)//18
 
+#define LED_KEY_ON()                LED_On(LED_UART)
+#define LED_KEY_OFF()               LED_Off(LED_UART)
 
-
+#define LED_KEY_DISP_TIME           2
 
 #if 0
 /*********************************************************

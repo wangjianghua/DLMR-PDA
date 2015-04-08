@@ -5,6 +5,51 @@
 u8 s_prbf[512];
 
 
+const u8 c_645ctrlDef[2][PLC_CTRL_MAX_NUM] = 
+{ 
+    //97规约
+    {0x05, 0x01, 0x04,  4,5,6,7,8,9,10,11,12,13,14,15,16},
+    //07规约
+    {0x13, 0X11, 0X14,  0x19,5,6,7,8,9,10,11,12,13,14,15,16}
+};
+
+
+const u32 c_645DidoDef[2][PLC_CTRL_MAX_NUM] = 
+{ 
+    //97规约
+    {0x901f,    0x902f,     0x9410,     0x9420,5,6,7,8,9,10,11,12,13,14,15,16},
+    //07规约
+    {0x0001ff00,0X0002ff00, 0X0001ff01, 0X0002ff01,4,5,6,7,8,9,10,11,12,13,14,15,}
+};
+
+
+
+void GUI_Fill_Zero(u8 *tempbuf)
+{
+    int len;
+    int i;
+    
+    len = strlen(tempbuf);
+    if(len < 12)
+    {
+        for(i = 0; i < len; i++)
+        {
+            tempbuf[GUI_645_ADDR_LENGTH - i-1] = tempbuf[len-i-1];
+        }
+        
+        for(i = 0; i < (GUI_645_ADDR_LENGTH - len); i++)
+        {
+            tempbuf[i] = '0';
+        }
+        tempbuf[12] = '\0';
+    }
+    else if(len > 12)
+    {
+        tempbuf[12] = '\0';
+    }
+         
+    return ;
+}
 
 
 u8 GUI_Hex2Char(u8 ch)
@@ -67,8 +112,6 @@ u32 GUI_GetMeterAddr(u8 * dbuf, u8 * gbuf)
             //error proc
             return DEV_ERROR;
         }
-        //g_send_para_pkg.dstAddr[5-i] = rmd_ch<<4;
-        //g_sys_control.recentMeterAddr[5-i] = rmd_ch<<4;
         gbuf[5-i] = rmd_ch<<4;
        
         
@@ -77,9 +120,6 @@ u32 GUI_GetMeterAddr(u8 * dbuf, u8 * gbuf)
             //error proc
             return DEV_ERROR;
         }
-        
-        //g_send_para_pkg.dstAddr[5-i] |= rmd_ch;
-        //g_sys_control.recentMeterAddr[5-i] |= rmd_ch;
         gbuf[5-i] |= rmd_ch;
     }
 
@@ -170,6 +210,7 @@ void GUI_print_recv_buf()
     MULTIEDIT_HANDLE hObj;
     u16 i;
     u8 *send_ptr;
+    //int n = 0;
     if(g_plc_prm.recv_len && (g_plc_prm.recv_len < 80))
     {
         send_ptr = s_prbf;
@@ -185,9 +226,10 @@ void GUI_print_recv_buf()
         *send_ptr++ = 0;
 
         if((g_sys_control.guiState == GUI_PLC_MSG_TEST)
-            ||(g_sys_control.guiState == GUI_PLC_MSG_READ) )
+            ||(g_sys_control.guiState == GUI_PLC_MSG_READ)
+            ||(g_sys_control.guiState == GUI_PLC_MSG_FREQ))
         {
-            hObj = STD_Get_MultiEdit();
+            hObj = MSG_Get_MultiEdit();
             MULTIEDIT_AddText(hObj, s_prbf); 
             if(g_sys_control.guiState == GUI_PLC_MSG_READ)
             {
@@ -201,7 +243,12 @@ void GUI_print_recv_buf()
         }
         else if(g_sys_control.guiState == GUI_PLC_MSG_LISTING)
         {
-            hObj = MND_Get_MultiEdit();
+            hObj = MNT_Get_MultiEdit();
+            if(g_sys_control.numMultiedit > 15)
+            {
+                g_sys_control.numMultiedit = 0;
+                MULTIEDIT_SetText(hObj, "\0"); 
+            }
             MULTIEDIT_AddText(hObj, s_prbf); 
         }
     }
@@ -226,7 +273,7 @@ void GUI_print_send_buf()
         }
         *send_ptr++ = '\n';
         *send_ptr++ = 0;
-        hObj = STD_Get_MultiEdit();
+        hObj = MSG_Get_MultiEdit();
         MULTIEDIT_AddText(hObj, s_prbf);        
     }
 }
@@ -252,6 +299,9 @@ WM_HWIN GUI_Get_PROGBAR()
     
 }
 
+#if (EWARM_OPTIMIZATION_EN > 0u)
+#pragma optimize = low
+#endif
 void GUI_Msg_Proc()
 {
     WM_HWIN hItem;
@@ -274,6 +324,9 @@ void GUI_Msg_Proc()
     if((g_plc_prm.result == PLC_RES_FAIL) || (g_plc_prm.result == PLC_RES_TIMEOUT))
     {
         g_plc_prm.result = PLC_RES_NONE;
+        ERR_NOTE(g_hWin_menu, 10);
+        hItem = GUI_Get_PROGBAR();
+        PROGBAR_SetBarColor(hItem, 0, GUI_RED);
         return;
     }
 
@@ -301,10 +354,6 @@ void GUI_Msg_Proc()
     {
         if( g_plc_prm.result == PLC_RES_SUCC )
         {
-            //Data_Download_Yellow();//数据接收图标变色
-            //hItem=TSK_Get_Download_Text();
-            //TEXT_SetTextColor(hItem,GUI_YELLOW);
-            //GUI_Delay(15);
             Data_Download_Yellow(1);
             GUI_print_recv_buf();
 
@@ -317,11 +366,8 @@ void GUI_Msg_Proc()
         }        
         //g_sys_control.guiState = GUI_PLC_MSG_IDLE;
         g_plc_prm.sendStatus = PLC_MSG_IDLE;
+        g_plc_prm.result = PLC_RES_NONE;
     }
-
-    g_plc_prm.result = PLC_RES_NONE;
-
-   
     
 }
 
@@ -358,8 +404,10 @@ char *int_to_char(int src,char *pBuff,int radix)
 	}while(unum); 
 	pBuff[i]='\0'; 
     
-	if(pBuff[0]=='-') k=1; //负数
-	else k=0; 
+	if(pBuff[0]=='-') 
+        k=1;
+	else 
+        k=0; 
 	char temp; 
 	for(j=k;j<=(i-k-1)/2.0;j++) 
 	{ 
@@ -406,6 +454,60 @@ void Not_Focus(WM_MESSAGE *pMsg,int Widget_Id)
 }
 
 
+//初始化速率设置的EDIT
+void PUB_InitFreq(WM_MESSAGE *pMsg,int widgetID)
+{
+   WM_HWIN hItem; 
+   hItem = WM_GetDialogItem(pMsg->hWin, widgetID);
+   switch(g_sys_register_para.preamble)
+   {
+       case 0xFC:
+           EDIT_SetText(hItem, pTextPreamble[0]);
+           break;
+       case 0xFA:
+           EDIT_SetText(hItem, pTextPreamble[1]);
+           break;
+       case 0xFB:
+           EDIT_SetText(hItem, pTextPreamble[2]);
+           break;
+       case 0xFD:
+           EDIT_SetText(hItem, pTextPreamble[3]);
+           break;
+       case 0xFF:
+           EDIT_SetText(hItem, pTextPreamble[4]);
+           break;
+       case 0xFE:
+           switch(g_sys_register_para.freqSel)
+           {
+               
+               case PLC_270_III:
+                   EDIT_SetText(hItem, pTextSpeed[PLC_270_III]);
+                   break;
+               case PLC_270_III_5:
+                   EDIT_SetText(hItem, pTextSpeed[PLC_270_III_5]);
+                   break;
+               case PLC_270_II:
+                   EDIT_SetText(hItem, pTextSpeed[PLC_270_II]);
+                   break;
+               case PLC_421_50BPS:
+                   EDIT_SetText(hItem, pTextSpeed[PLC_421_50BPS]);
+                   break;
+               case PLC_421_100BPS:
+                   EDIT_SetText(hItem, pTextSpeed[PLC_421_100BPS]);
+                   break;
+               case PLC_421_600BPS:
+                   EDIT_SetText(hItem, pTextSpeed[PLC_421_600BPS]);
+                   break;
+               case PLC_421_1200BPS:
+                   EDIT_SetText(hItem, pTextSpeed[PLC_421_1200BPS]);
+                   break;
+           }
+           break;
+       default:
+           break;
+   }
+}
+
 void ButtonBlink(WM_MESSAGE * pMsg,int Id)
 {
     
@@ -416,28 +518,6 @@ void ButtonBlink(WM_MESSAGE * pMsg,int Id)
     BUTTON_SetBkColor(hItem,0,0xC0C0C0);
 }
 
-
-//存储参数
-
-void para_store_edit(WM_MESSAGE * pMsg,int Widget_Id,char *text,int num)
-{
-    WM_HWIN hItem;
-    hItem = WM_GetDialogItem(pMsg->hWin, Widget_Id);
-    EDIT_GetText(hItem, text, 10);//sizeof不行，不会对形参分配空间
-    //g_sys_register_para.para_data[num] = atoi(text);  
-    switch(num)
-    {
-    case 0:
-        g_sys_register_para.meterPassword = atoi(text);
-        break;
-    case 1:
-        g_sys_register_para.recvDelayTime = atoi(text);
-        break;
-    case 2:
-        g_sys_register_para.execInterval = atoi(text);
-        break;
-    }
-}
 
 
 

@@ -74,8 +74,11 @@ void Create_DL645_Frame(u8 *Addr,u8 C,u8 len,DL645_Frame_C *DL645_Frame)
     CS_Pack(&DL645_Frame->Start);
 }
 
-//--------------------------中级645组帧-------------------------------------------------------------------
+//--------------------------中继645组帧-------------------------------------------------------------------
 //返回帧长度
+//leve :中继级数
+//Addr :目标地址
+//
 u8 Create_DL645_LeveFrame(u8 *leve_Addr,u8 leve,u8 *Addr,u8 C,u8 len,u8 *data,u8 *Send_buf)
 {
 	DL645_Frame_C *DL645_Frame;
@@ -90,13 +93,13 @@ u8 Create_DL645_LeveFrame(u8 *leve_Addr,u8 leve,u8 *Addr,u8 C,u8 len,u8 *data,u8
 		{
 			memcpy(DL645_Frame->Data+Point,leve_Addr+Point+6,6);
 			Point+=6;
-			DL645_Frame->C+=0x20;
+			DL645_Frame->C += 0x20;
 		}
-		memcpy(DL645_Frame->Data+Point,Addr,6);
-		Point+=6;
+		//memcpy(DL645_Frame->Data+Point,Addr,6); //HRK
+		//Point+=6; //HRK
 		memcpy(DL645_Frame->Addr,leve_Addr,6);
-		memcpy(DL645_Frame->Data+Point,data,len);
-		Point+=len;
+		//memcpy(DL645_Frame->Data+Point,data,len); /*add on 03.23*/ //HRK
+		//Point+=len; //HRK
 	}
 	else
 	{

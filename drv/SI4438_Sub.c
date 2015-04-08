@@ -120,7 +120,7 @@ void RF_Event_Handle(void)
     if(sta1 & RXPKT_DONE) 
     {//接收数据包完成中断的处理
 
-        //BSP_LED_On(0);
+        //LED_On(0);
 		
         g_rf_param.RSSI = SI_Read_RSSI();
         if (RF_STATE_RX != g_rf_param.rf_state)
@@ -140,7 +140,7 @@ void RF_Event_Handle(void)
         
         RF_Listen();
 
-        //BSP_LED_Off(0);
+        //LED_Off(0);
 
 
 
@@ -194,7 +194,7 @@ void RF_Event_Handle(void)
 //#endif
             RF_Listen();
             g_rf_param.tx.Timeout=0;
-            //BSP_LED_Off(0);
+            //LED_Off(0);
             _sys_plc_reset();
 		}
 	}

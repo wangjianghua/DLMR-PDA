@@ -44,6 +44,7 @@
 #define ID_TEXT_8     (GUI_ID_USER + 0x09) 
 #define ID_LISTVIEW_0 (GUI_ID_USER + 0x0A) 
 #define ID_TEXT_9     (GUI_ID_USER + 0x0B) 
+#define ID_TEXT_10    (GUI_ID_USER + 0x0C)
 //#define ID_TEXT_10    (GUI_ID_USER + 0x0C) 
 
 
@@ -68,72 +69,18 @@ typedef struct {
 } BITMAP_ITEM;
 
 
-//通信参数设置
-static const char CommParaSetText[]="\xe5\x8f\x82\xe6\x95\xb0\xe8\xae\xbe\xe7\xbd\xae";
-
-//通信规约调试
-static const char CommStdTestText[]="\xe8\xa7\x84\xe7\xba\xa6\xe8\xb0\x83\xe8\xaf\x95";
-
-//载波功能设置
-static const char WaveCarrierText[]="\xe8\xbd\xbd\xe6\xb3\xa2\xe8\xae\xbe\xe7\xbd\xae";
-
-//内存管理
-static const char TFcardText[]="\xe5\x86\x85\xe5\xad\x98\xe7\xae\xa1\xe7\x90\x86";
-
-
-
-//智能抄表
-static const char ReadMeterText[]="\xe6\x99\xba\xe8\x83\xbd\xe6\x8a\x84\xe8\xa1\xa8";
-
-//状态监控
-static const char MonitorText[]="\xe7\x8a\xb6\xe6\x80\x81\xe7\x9b\x91\xe6\x8e\xa7";
-
-//帮助说明
-static const char About[]="\xe8\xaf\xb4\xe6\x98\x8e\xe5\xb8\xae\xe5\x8a\xa9";
-
-//上行标志
-
-static const char UploadIcon[]="\xe5\xa3\xb9";
-
-//\xe8\xb4\xb0
-
-//下行标志
-static const char DownloadIcon[]="\xe8\xb4\xb0";
-
-
-
-
-//电池
-static const char Battery_100[]="\xe5\x8d\x81";
-static const char Battery_80[] ="\xe7\x8e\x96";
-static const char Battery_60[] ="\xe6\x8d\x8c";
-static const char Battery_40[] ="\xe6\x9f\x92";
-static const char Battery_20[] ="\xe9\x99\x86";
-static const char Battery_00[] ="\xe4\xbc\x8d";
-
-//监控
-//static const char MonitorIcon[]="\xe8\x82\x86";
-//关闭监控
-//static const char CloseMonitor[]="\xe5\x8f\x81";
-
-//当前规约:DL-T-07
-//static const char Protocol_07[]="\xe8\xa7\x84\xe7\xba\xa6:DLT-07";
-static const char Protocol_07[]="DLT-07";
-
-
-static const char Protocol_97[]="DLT-97";
 
 
 
 //任务栏资源列表
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { WINDOW_CreateIndirect,  NULL,           ID_WINDOW_0,  0,   0, 240, 25, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    "protocol",     ID_TEXT_0,    3,   3, 60,  15, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    "PLC-R" ,       ID_TEXT_1,    70,  3, 60,  15, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    UploadIcon,     ID_TEXT_5,    143, 3, 17,  17, 0, 0x0, 0 }, 
-  { TEXT_CreateIndirect,    DownloadIcon,   ID_TEXT_6,    160, 3, 17,  17, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    Battery_20,     ID_TEXT_7,    190, 3, 42,  17, 0, 0x0, 0 },
-    
+  { TEXT_CreateIndirect,    "protocol",     ID_TEXT_0,    3,   3, 50,  15, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    "PLC-R" ,       ID_TEXT_1,    60,  3, 40,  15, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    "\0",           ID_TEXT_10,   100, 5, 40,  15, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    UploadIcon,     ID_TEXT_5,    149, 3, 17,  17, 0, 0x0, 0 }, 
+  { TEXT_CreateIndirect,    DownloadIcon,   ID_TEXT_6,    166, 3, 17,  17, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    "\0",           ID_TEXT_7,    196, 3, 42,  25, 0, 0x0, 0 },
 };
 
 
@@ -166,6 +113,83 @@ WM_HWIN TSK_Get_Protocol_Text()
     return WM_GetDialogItem(g_hWin_task,ID_TEXT_0);
 }
 
+void TSK_SetProtocol_97(void)
+{
+    WM_HWIN hItem;
+    hItem = WM_GetDialogItem(g_hWin_task,ID_TEXT_0);
+    TEXT_SetText(hItem, "DLT-97");
+}
+
+void TSK_SetProtocol_07(void)
+{
+    WM_HWIN hItem;
+    hItem = WM_GetDialogItem(g_hWin_task,ID_TEXT_0);
+    TEXT_SetText(hItem, "DLT-07");
+}
+
+
+
+#if 0
+WM_HWIN TSK_GetWireless()
+{
+    return WM_GetDialogItem(g_hWin_task,ID_TEXT_10);
+}
+#endif
+
+#if 0
+WM_HWIN TSK_Get_Battery()
+{
+    return WM_GetDialogItem(g_hWin_task,ID_TEXT_7);
+}
+#endif
+
+//无线时候变成绿色
+void TSK_SetWrlsGreen(void)
+{
+    WM_HWIN hItem;
+    hItem = WM_GetDialogItem(g_hWin_task,ID_TEXT_10);
+    TEXT_SetText(hItem, TSK_Wireless);
+    TEXT_SetTextColor(hItem, GUI_GREEN);
+}
+
+
+void TSK_SetWrlsWhite(void)
+{
+    WM_HWIN hItem;
+    hItem = WM_GetDialogItem(g_hWin_task,ID_TEXT_10);
+    TEXT_SetText(hItem, "\0");
+    //TEXT_SetTextColor(hItem, GUI_WHITE);
+}
+
+
+
+void TSK_Battery_Charge(int count)
+{
+    WM_HWIN hItem;
+    hItem = hItem=WM_GetDialogItem(g_hWin_task,ID_TEXT_7);
+    switch(count)
+    {
+        case 2:
+            TEXT_SetText(hItem, Battery_20);
+            break;
+        case 4:
+            TEXT_SetText(hItem, Battery_40);
+            break;
+        case 6:
+            TEXT_SetText(hItem, Battery_60);
+            break;
+        case 8:
+            TEXT_SetText(hItem, Battery_80);
+            break;
+        case 10:
+            TEXT_SetText(hItem, Battery_100);
+            count = 0 ;
+            break;
+        default:
+            break;
+    }
+}
+
 void TSK_Set_Monitor(void)
 {
     WM_HWIN hItem;
@@ -176,7 +200,8 @@ void TSK_Set_Monitor(void)
         TEXT_SetText(hItem,"PLC-L");
         //TEXT_SetBkColor(hItem,GUI_GREEN);
     }
-    else if(g_send_para_pkg.cmdType==PLC_CMD_TYPE_L2R)
+    else if((g_send_para_pkg.cmdType == PLC_CMD_TYPE_L2R)
+           ||(g_send_para_pkg.cmdType == PLC_CMD_TYPE_COMMON))
     {
         TEXT_SetText(hItem,"PLC-R");
         //TEXT_SetBkColor(hItem,GUI_GREEN);
@@ -202,19 +227,6 @@ void TSK_Set_Protocol_Text(void)
     }
 }
 
-
-//void TSK_Set
-
-
-#if 0
-void TSK_Close_Monitor(void)
-{
-    WM_HWIN hItem;
-    hItem=WM_GetDialogItem(g_hWin_task,ID_TEXT_1);
-    TEXT_SetFont(hItem,&GUI_Font_Battery_40);
-    TEXT_SetText(hItem,CloseMonitor);
-}
-#endif
 
 
 /************************************************
@@ -250,9 +262,7 @@ void Data_Upload_Green(u32 color)
         }
     }
         
-    //GUI_Delay(15);
-    //TEXT_SetTextColor(hItem,GUI_WHITE);
-}
+ }
 
 
 /************************************************
@@ -291,39 +301,41 @@ void Data_Download_Yellow(u32 color)
 }
 
 
-void Battery_State(WM_MESSAGE *pMsg ,int pwr_val)
+void Battery_State(int pwr_val)
 {
     WM_HWIN hItem;
-    hItem=WM_GetDialogItem(pMsg->hWin,ID_TEXT_7);
-    if(pwr_val < 2138)
+    hItem=WM_GetDialogItem(g_hWin_task,ID_TEXT_7);
+    TEXT_SetFont(hItem,&GUI_Font_Battery_40);
+    if(pwr_val < 2166)
     {
         TEXT_SetText(hItem,Battery_00);
         TEXT_SetTextColor(hItem,GUI_RED);
     }
     
-    else if((pwr_val > 2140)&&(pwr_val < 2206))
+    else if((pwr_val > 2171)&&(pwr_val < 2229))
     {
         TEXT_SetText(hItem,Battery_20);
         TEXT_SetTextColor(hItem,GUI_RED);
     }
-    else if((pwr_val >= 2208)&&(pwr_val < 2272))
+    else if((pwr_val >= 2234)&&(pwr_val < 2291))
     {
         TEXT_SetText(hItem,Battery_40);
         TEXT_SetTextColor(hItem,GUI_YELLOW);
     }
-    else if((pwr_val >= 2276)&&(pwr_val < 2335))
+    else if((pwr_val >= 2296)&&(pwr_val < 2415))
     {
         TEXT_SetText(hItem,Battery_60);
         TEXT_SetTextColor(hItem,GUI_GREEN);
     }
-    else if((pwr_val >= 2337)&&(pwr_val < 2435))
+    else if((pwr_val >= 2420)&&(pwr_val < 2480))
     {
         TEXT_SetText(hItem,Battery_80);
         TEXT_SetTextColor(hItem,GUI_GREEN);
     }
-    else if(pwr_val >= 2437)
+    else if(pwr_val >= 2485)
     {
         TEXT_SetText(hItem,Battery_100);
+        //TEXT_SetText(hItem,Battery_Charge);
         TEXT_SetTextColor(hItem,GUI_GREEN);
     }
 
@@ -345,11 +357,35 @@ static void _cbTaskDialog(WM_MESSAGE * pMsg)
         GUI_UC_SetEncodeUTF8();
         WINDOW_SetBkColor(pMsg->hWin, GUI_GRAY);
         
-        hItem=WM_GetDialogItem(pMsg->hWin,ID_TEXT_5);
+        hItem = WM_GetDialogItem(pMsg->hWin,ID_TEXT_5);
         TEXT_SetTextColor(hItem,GUI_WHITE);
         
-        hItem=WM_GetDialogItem(pMsg->hWin,ID_TEXT_6);
+        hItem = WM_GetDialogItem(pMsg->hWin,ID_TEXT_6);
         TEXT_SetTextColor(hItem,GUI_WHITE);
+
+        hItem = WM_GetDialogItem(pMsg->hWin,ID_TEXT_10);
+        TEXT_SetFont(hItem,&GUI_Font_Battery_40);
+        if(CHANNEL_WIRELESS == g_sys_register_para.channel)
+        {
+            TEXT_SetText(hItem, TSK_Wireless);
+            TEXT_SetTextColor(hItem,GUI_GREEN);
+        }
+
+        hItem = WM_GetDialogItem(pMsg->hWin,ID_TEXT_1);
+        if(g_send_para_pkg.cmdType==PLC_CMD_TYPE_R2L)
+        {
+            TEXT_SetText(hItem,"PLC-L");
+        }
+        else if((g_send_para_pkg.cmdType == PLC_CMD_TYPE_L2R)
+               ||(g_send_para_pkg.cmdType == PLC_CMD_TYPE_COMMON))
+        {
+            TEXT_SetText(hItem,"PLC-R");
+        }
+        else if(g_send_para_pkg.cmdType==PLC_CMD_TYPE_NODE)
+        {
+            TEXT_SetText(hItem,"PLC-N");
+        }
+        
 #if 1
         //TSK_Set_Protocol_Text();
         hItem=WM_GetDialogItem(pMsg->hWin,ID_TEXT_0);
@@ -363,14 +399,14 @@ static void _cbTaskDialog(WM_MESSAGE * pMsg)
             TEXT_SetText(hItem,Protocol_97);
         }
 #endif       
-        hItem=WM_GetDialogItem(pMsg->hWin,ID_TEXT_7); 
-        TEXT_SetFont(hItem,&GUI_Font_Battery_40);
-        Battery_State(pMsg,g_sys_control.pwrValue);
+        //hItem=WM_GetDialogItem(pMsg->hWin,ID_TEXT_7); 
+        //TEXT_SetFont(hItem,&GUI_Font_Battery_40);
+        //Battery_State(pMsg,g_sys_control.pwrValue);
         break;
-      case WM_TIMER:
-        Battery_State(pMsg,g_sys_control.pwrValue);
-        WM_RestartTimer(pMsg->Data.v, 1000);
-        break;
+     // case WM_TIMER:
+       // Battery_State(pMsg,g_sys_control.pwrValue);
+        //WM_RestartTimer(pMsg->Data.v, 1000);
+        //break;
 
       default:
         WM_DefaultProc(pMsg);
@@ -390,6 +426,7 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
 	int     Id;
 	int IconViewIndex;//索引
 	WM_HWIN hIconView;
+    WM_HWIN hItem;
 	hIconView = g_hWin_menu;
 	IconViewIndex=ICONVIEW_GetSel(hIconView);
 	switch (pMsg->MsgId) 
@@ -416,7 +453,10 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
                             WM_BringToBottom(g_hWin_msg);
                             WM_HideWindow(g_hWin_TimeBar);
                             WM_HideWindow(g_hWin_Date);
-                            WM_SetFocus(g_hWin_para);
+                            //WM_SetFocus(g_hWin_para);
+                            hItem = CPS_Set_Proto();
+                            WM_SetFocus(hItem);
+                            CPS_Color_Change();
 							break;
                             
 						case 2:
@@ -424,7 +464,10 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
                             WM_BringToBottom(g_hWin_msg);
                             WM_HideWindow(g_hWin_TimeBar);
                             WM_HideWindow(g_hWin_Date);
-                            WM_SetFocus(g_hWin_std);
+                            //WM_SetFocus(g_hWin_std);
+                            hItem = CPT_Get_Speed();
+                            WM_SetFocus(hItem);
+                            CPT_Color_Change();
 							break;
 						case 4:
 							g_hWin_mem=CreateMemManage();
@@ -439,7 +482,10 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
                             WM_BringToBottom(g_hWin_msg);
                             WM_HideWindow(g_hWin_TimeBar);
                             WM_HideWindow(g_hWin_Date);
-                            WM_SetFocus(g_hWin_ReadMeter);
+                            //WM_SetFocus(g_hWin_ReadMeter);
+                            hItem = RMD_Get_MeterNum();
+                            WM_SetFocus(hItem);
+                            RMD_Color_Change();
 							break;
                             
 						case 3:
@@ -510,18 +556,11 @@ WM_HWIN CreatePDA_IconMenu(void)
   WM_HWIN hWin;	
   WM_HWIN hText;
   WM_HTIMER hTimer;
-  
-  //int hour=15;
-  //int min=34;
-  //int sec=29;
-  
-  
+    
   WM_SetCreateFlags(WM_CF_MEMDEV);
   GUI_UC_SetEncodeUTF8();
   WIDGET_SetDefaultEffect(&WIDGET_Effect_Simple);
-
-  
-            
+        
   hWin = ICONVIEW_CreateEx(0, 25, 240, 295, 
 							   WM_HBKWIN, WM_CF_SHOW | WM_CF_HASTRANS, 
 							   0, GUI_ID_ICONVIEW0, 65, 75);
@@ -534,9 +573,6 @@ WM_HWIN CreatePDA_IconMenu(void)
 	   ICONVIEW_AddBitmapItem(hWin, _aBitmapItem[i].pBitmap, _aBitmapItem[i].pText);
        ICONVIEW_SetTextColor(hWin,i,GUI_BLACK);
   }
-
-   
-  //CreatHeaderWidget(WM_HWIN hTargetWin);
   
   ICONVIEW_SetBkColor(hWin, ICONVIEW_CI_SEL, GUI_BLUE | 0xC0000000);
   ICONVIEW_SetFrame(hWin,GUI_COORD_X,15);
@@ -552,7 +588,7 @@ WM_HWIN CreatePDA_IconMenu(void)
 
 
   g_hWin_task=GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), _cbTaskDialog, WM_HBKWIN, 0, 0);
-  hTimer = WM_CreateTimer(g_hWin_task, 0, 2000, 0);
+  //hTimer = WM_CreateTimer(g_hWin_task, 0, 2000, 0);
   g_hWin_TimeBar=TimeBarDisp();
   g_hWin_Date=DateBarDisp();
   WM_SetFocus(hWin);

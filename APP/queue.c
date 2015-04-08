@@ -58,7 +58,6 @@ HANDLE dequeue(queue *q)
         }
         else
         {
-
             OS_ENTER_CRITICAL();
             x = q->q[ q->first ];
             q->first = (q->first+1) % (q->maxcount);

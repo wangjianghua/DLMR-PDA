@@ -22,7 +22,7 @@
 // USER END
 
 #include "DIALOG.h"
-
+#include "includes.h"
 /*********************************************************************
 *
 *       Defines
@@ -34,6 +34,8 @@
 #define ID_TEXT_1 (GUI_ID_USER + 0x02)
 #define ID_EDIT_0 (GUI_ID_USER + 0x03)
 #define ID_EDIT_1 (GUI_ID_USER + 0x04)
+#define ID_BUTTON_0 (GUI_ID_USER + 0x05)
+#define ID_BUTTON_1 (GUI_ID_USER + 0x06)
 
 
 // USER START (Optionally insert additional defines)
@@ -47,18 +49,20 @@
 */
 
 // USER START (Optionally insert additional static data)
-// USER END
+// USER ENDconst char OperateCode[]
 
 /*********************************************************************
 *
 *       _aDialogCreate
 */
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
-  { WINDOW_CreateIndirect, "AdvanceSet", ID_WINDOW_0, 0, 0, 240, 295, 0, 0x0, 0 },
-  { TEXT_CreateIndirect, "FE", ID_TEXT_0, 8, 48, 80, 20, 0, 0x0, 0 },
-  { TEXT_CreateIndirect, "AdvanceSet", ID_TEXT_1, 8, 19, 80, 20, 0, 0x0, 0 },
-  { EDIT_CreateIndirect, "Edit", ID_EDIT_0, 125, 14, 80, 20, 0, 0x64, 0 },
-  { EDIT_CreateIndirect, "Edit", ID_EDIT_1, 125, 45, 80, 20, 0, 0x64, 0 },
+  { WINDOW_CreateIndirect, "AdvanceSet",  ID_WINDOW_0, 0,   0,   240, 295, 0, 0x0,  0 },
+  { TEXT_CreateIndirect,   Speed,         ID_TEXT_0,   12,  17,  80,  20,  0, 0x0,  0 },
+  { TEXT_CreateIndirect,   OperateCode,   ID_TEXT_1,   12,  44,  80,  20,  0, 0x0,  0 },
+  { EDIT_CreateIndirect,   "freq",        ID_EDIT_0,   89,  11,  141, 20,  0, 0x64, 0 },
+  { EDIT_CreateIndirect,   "Opcode",      ID_EDIT_1,   89,  42,  141, 20,  0, 0x64, 0 },
+  { BUTTON_CreateIndirect, Save,          ID_BUTTON_0, 12,  259, 55,  25,  0, 0x0,  0 },
+  { BUTTON_CreateIndirect, Quit,          ID_BUTTON_1, 171, 259, 55,  25,  0, 0x0,  0 },
   // USER START (Optionally insert additional widgets)
   // USER END
 };
@@ -77,77 +81,200 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
 *
 *       _cbDialog
 */
+
+static int ads_press_cnt = 0;
+
+WM_HWIN ADS_Get_Speed(void)
+{
+    return WM_GetDialogItem(g_hWin_AdvanSet,ID_EDIT_0);
+}
+
+WM_HWIN ADS_Get_OpCode(void)
+{
+    return WM_GetDialogItem(g_hWin_AdvanSet,ID_EDIT_1);
+}
+
+
+
+//向上选择
+void ADS_SelEdt_Up(WM_MESSAGE * pMsg)
+{
+    WM_HWIN hItem;
+    if(ads_press_cnt == 0)
+    {
+        hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_1);
+        WM_SetFocus(hItem);
+        
+        ads_press_cnt = 1;
+    }
+    else
+    {
+        ads_press_cnt--;
+        hItem=WM_GetDialogItem(pMsg->hWin,(ID_EDIT_0+ads_press_cnt));
+        WM_SetFocus(hItem);
+    }
+
+
+}
+//向下选择
+void ADS_SelEdt_Down(WM_MESSAGE *pMsg)
+{
+    WM_HWIN hItem;
+    if(ads_press_cnt == 1)
+    {
+        hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
+        WM_SetFocus(hItem);
+
+        ads_press_cnt = 0;
+    }
+    else
+    {
+        ads_press_cnt++;
+        hItem=WM_GetDialogItem(pMsg->hWin,(ID_EDIT_0+ads_press_cnt));
+        WM_SetFocus(hItem);
+    }
+
+}
+
+void ADS_Color_Change(void)
+{
+    WM_HWIN hItem;
+    int i;
+    for(i=0;i<2;i++)
+    {
+        hItem=WM_GetDialogItem(g_hWin_AdvanSet,ID_EDIT_0+i);
+        if(WM_HasFocus(hItem)==1)
+        {
+            EDIT_SetBkColor(hItem,0,GUI_GREEN);
+        }
+        else if(WM_HasFocus(hItem)==0)
+        {
+            EDIT_SetBkColor(hItem,0,0xC0C0C0);
+        }
+    }
+}
+
+void ADS_SetFocus(void)
+{
+    WM_HWIN hItem;
+    hItem =  WM_GetDialogItem(g_hWin_AdvanSet,(ID_EDIT_0 + ads_press_cnt));
+    WM_SetFocus(hItem);
+}
+
 static void _cbDialog(WM_MESSAGE * pMsg) {
   WM_HWIN hItem;
   int     NCode;
   int     Id;
+  int     key_num;
+  key_num=((WM_KEY_INFO *)(pMsg->Data.p))->Key;
+
+   
   // USER START (Optionally insert additional variables)
   // USER END
 
-  switch (pMsg->MsgId) {
-  case WM_INIT_DIALOG:
-    //
-    // Initialization of 'Edit'
-    //
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_0);
-    EDIT_SetText(hItem, "123");
-    //
-    // Initialization of 'Edit'
-    //
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_1);
-    EDIT_SetText(hItem, "123");
-    // USER START (Optionally insert additional code for further widget initialization)
-    // USER END
-    break;
-  case WM_NOTIFY_PARENT:
-    Id    = WM_GetId(pMsg->hWinSrc);
-    NCode = pMsg->Data.v;
-    switch(Id) {
-    case ID_EDIT_0: // Notifications sent by 'Edit'
-      switch(NCode) {
-      case WM_NOTIFICATION_CLICKED:
-        // USER START (Optionally insert code for reacting on notification message)
-        // USER END
+  switch (pMsg->MsgId) 
+  {
+      case WM_INIT_DIALOG:
+        //
+        // Initialization of 'freq'
+        //
+        PUB_InitFreq(pMsg,ID_EDIT_0);
+        hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_0);
+        PUB_InitFreq(pMsg, ID_EDIT_0);
+        WM_DisableWindow(hItem);
+
+        hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_1);
+        EDIT_SetText(hItem, "00000000");
+        WM_DisableWindow(hItem);
+
+        hItem = WM_GetDialogItem(pMsg->hWin,ID_BUTTON_0);
+        BUTTON_SetBkColor(hItem,0,GUI_GREEN);
+        WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
+
+        hItem = WM_GetDialogItem(pMsg->hWin,ID_BUTTON_1);
+        BUTTON_SetBkColor(hItem,0,GUI_YELLOW);
+        WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
+
+       //PUB_InitFreq(pMsg,ID_EDIT_1);
+        
         break;
-      case WM_NOTIFICATION_RELEASED:
-        // USER START (Optionally insert code for reacting on notification message)
-        // USER END
-        break;
-      case WM_NOTIFICATION_VALUE_CHANGED:
-        // USER START (Optionally insert code for reacting on notification message)
-        // USER END
-        break;
-      // USER START (Optionally insert additional code for further notification handling)
+      // USER START (Optionally insert additional message handling)
       // USER END
-      }
-      break;
-    case ID_EDIT_1: // Notifications sent by 'Edit'
-      switch(NCode) {
-      case WM_NOTIFICATION_CLICKED:
-        // USER START (Optionally insert code for reacting on notification message)
-        // USER END
+      case WM_KEY:
+        Id = WM_GetId(pMsg->hWinSrc);
+        if(((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt == 1)
+        {
+            
+            switch(Id)
+            {
+                case ID_EDIT_0:
+                   if(key_num == GUI_KEY_ENTER)
+                   {
+                        g_hWin_speed = CreateSpeed(g_hWin_AdvanSet);
+                   }
+                   break;
+                   
+                case ID_EDIT_1:
+                   if(key_num == GUI_KEY_ENTER)
+                   {
+                      g_sys_control.selectWidget=EDIT_OPCODE;
+                      g_hWin_Input=Create_Edit_Set(g_hWin_AdvanSet);
+                      WM_SetFocus(g_hWin_Input);  
+                   }
+                    break;
+            }
+
+        }
+        switch(((WM_KEY_INFO *)(pMsg->Data.p))->Key)
+        {
+            case GUI_KEY_GREEN:
+                if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 0)
+                {
+                   //WM_DeleteWindow(g_hWin_AdvanSet);
+                   //WM_SetFocus(g_hWin_para);
+                   WM_DeleteWindow(g_hWin_AdvanSet);
+                   g_hWin_AdvanSet = HBWIN_NULL;
+                   WM_SetFocus(g_hWin_para);
+                   ads_press_cnt = 0;
+                }
+                break;
+                
+            case GUI_KEY_YELLOW:
+                if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 1)
+                {
+                   WM_DeleteWindow(g_hWin_AdvanSet);
+                   g_hWin_AdvanSet = HBWIN_NULL;
+                   WM_SetFocus(g_hWin_para);
+                   ads_press_cnt = 0;
+                }
+                break;
+            case GUI_KEY_TAB:
+                if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 1)
+                {
+                    ADS_Color_Change();
+                }
+                break;
+
+            case GUI_KEY_UP:
+                if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 1)
+                {
+                    ADS_SelEdt_Up(pMsg);
+                    ADS_Color_Change();
+                }
+                break;
+
+            case GUI_KEY_DOWN:
+               if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 1)
+                {
+                    ADS_SelEdt_Down(pMsg);
+                    ADS_Color_Change();
+                }
+                break;
+        }
         break;
-      case WM_NOTIFICATION_RELEASED:
-        // USER START (Optionally insert code for reacting on notification message)
-        // USER END
+      default:
+        WM_DefaultProc(pMsg);
         break;
-      case WM_NOTIFICATION_VALUE_CHANGED:
-        // USER START (Optionally insert code for reacting on notification message)
-        // USER END
-        break;
-      // USER START (Optionally insert additional code for further notification handling)
-      // USER END
-      }
-      break;
-    // USER START (Optionally insert additional code for further Ids)
-    // USER END
-    }
-    break;
-  // USER START (Optionally insert additional message handling)
-  // USER END
-  default:
-    WM_DefaultProc(pMsg);
-    break;
   }
 }
 
@@ -165,7 +292,7 @@ WM_HWIN CreateAdvanceSet(void);
 WM_HWIN CreateAdvanceSet(void) {
   WM_HWIN hWin;
 
-  hWin = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), _cbDialog, WM_HBKWIN, 0, 0);
+  hWin = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), _cbDialog, g_hWin_para, 0, 0);
   return hWin;
 }
 

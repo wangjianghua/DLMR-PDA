@@ -41,116 +41,33 @@
 #define ID_TEXT_7         (GUI_ID_USER + 0x74)
 #define ID_TEXT_8         (GUI_ID_USER + 0x75)
 
-
 #define ID_EDIT_0     (GUI_ID_USER + 0x76)
 #define ID_EDIT_1     (GUI_ID_USER + 0x77)
 #define ID_EDIT_2     (GUI_ID_USER + 0x78)
 #define ID_EDIT_3     (GUI_ID_USER + 0x79)
 #define ID_EDIT_4     (GUI_ID_USER + 0x7A)
 #define ID_EDIT_5     (GUI_ID_USER + 0x7B)
+#define ID_EDIT_6     (GUI_ID_USER + 0x7C)
+#define ID_EDIT_7     (GUI_ID_USER + 0x7D)
 
-
-#define ID_EDIT_6         (GUI_ID_USER + 0x7C)
-#define ID_EDIT_7         (GUI_ID_USER + 0x7D)
-//#define ID_EDIT_8         (GUI_ID_USER + 0x7E)
-
-
-#define ID_BUTTON_0       (GUI_ID_USER + 0x80)
-#define ID_BUTTON_1       (GUI_ID_USER + 0x81)
-#define ID_BUTTON_2       (GUI_ID_USER + 0x82)
-#define ID_BUTTON_3       (GUI_ID_USER + 0x83)
-#define ID_BUTTON_4       (GUI_ID_USER + 0x84)
-
-
+#define ID_BUTTON_0   (GUI_ID_USER + 0x80)
+#define ID_BUTTON_1   (GUI_ID_USER + 0x81)
+#define ID_BUTTON_2   (GUI_ID_USER + 0x82)
+#define ID_BUTTON_3   (GUI_ID_USER + 0x83)
+#define ID_BUTTON_4   (GUI_ID_USER + 0x84)
 
 #define ID_LISTBOX_0      (GUI_ID_USER + 0x85)
 
+//char Edit0_Text[10]; //edit文本字符串
+//char Edit1_Text[10];
+//char Edit2_Text[10];
 
-
-
-
-char Edit0_Text[10]; //edit文本字符串
-char Edit1_Text[10];
-char Edit2_Text[10];
-
-
-static int key_press_cnt = 1;//按键次数，按上下键盘的时候对应不同的button
-
-/*********************************************************************
-*
-*       Static data
-*
-**********************************************************************
-*/
-    
-//通信参数设置
-static const char CommParaSet[]="\xe9\x80\x9a\xe4\xbf\xa1\xe5\x8f\x82\xe6\x95\xb0\xe8\xae\xbe\xe7\xbd\xae";
-//接收数据延时
-static const char RevDataDelay[]="\xe6\x8e\xa5\xe6\x94\xb6\xe6\x95\xb0\xe6\x8d\xae\xe5\xbb\xb6\xe6\x97\xb6";
-//执行间隔时间
-static const char BetweenAct[]="\xe6\x89\xa7\xe8\xa1\x8c\xe9\x97\xb4\xe9\x9a\x94\xe6\x97\xb6\xe9\x97\xb4";
-//电力载波
-static const char WaveCarrier[]="\xe7\x94\xb5\xe5\x8a\x9b\xe8\xbd\xbd\xe6\xb3\xa2";
-
-//红外
-static const char Infrared[]="\xe7\xba\xa2\xe5\xa4\x96";
-//规约
-static const char Protocal[]="\xe8\xa7\x84  \xe7\xba\xa6:";
-//通道
-static const char Channel[]="\xe9\x80\x9a  \xe9\x81\x93:";
-//波特率
-static const char BaudRate[]="\xe6\xb3\xa2\xe7\x89\xb9\xe7\x8e\x87:";
-//前导符
-static const char Preamble[]="\xe5\x89\x8d\xe5\xaf\xbc\xe7\xac\xa6:";
-//停止位
-static const char StopBit[]="\xe5\x81\x9c\xe6\xad\xa2\xe4\xbd\x8d:";
-//个数
-static const char Number[]="\xe4\xb8\xaa  \xe6\x95\xb0:";
-//密码
-static const char PassWord[]="\xe5\xaf\x86  \xe7\xa0\x81:";
-//保存
-static const char Save[]="\xe4\xbf\x9d\xe5\xad\x98";
-//取消
-static const char Cancel[]="\xe5\x8f\x96\xe6\xb6\x88";
-
-//时间设置
-static const char TimeSet[]="F1\xe6\x97\xb6\xe9\x97\xb4\xe8\xae\xbe\xe7\xbd\xae";
-
-//屏幕超时
-static const char ScrTimeout[]="\xe5\xb1\x8f\xe5\xb9\x95\xe8\xb6\x85\xe6\x97\xb6(\xe7\xa7\x92)";
-
-//退出
-static const char Quit[]="\xe9\x80\x80\xe5\x87\xba";
-
-//高级设置
-static const char AdvanceSet[] = "F2\xe9\xab\x98\xe7\xba\xa7\xe8\xae\xbe\xe7\xbd\xae";
-
-
-static const GUI_ConstString pProtocolText[] = {
-  "DL-T-97", "DL-T-07",NULL
-};
-
-static const GUI_ConstString pChannelText[]={
-    "\xe7\x94\xb5\xe5\x8a\x9b\xe8\xbd\xbd\xe6\xb3\xa2",
-    "485",
-    "\xe7\xba\xa2\xe5\xa4\x96",
-};
-
-
-
-
-
-
-
-
+static int key_press_cnt = 0;//按键次数，按上下键盘的时候对应不同的button
 
 /*********************************************************************
 *
 *       _aDialogCreate
 */
-
-
-
 
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
 
@@ -158,43 +75,26 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { TEXT_CreateIndirect,    Protocal,     ID_TEXT_0,   8,   42,  110, 20, 0, 0x0, 0 },
   { TEXT_CreateIndirect,    Channel,      ID_TEXT_1,   8,   69,  110, 20, 0, 0x0, 0 },
   { TEXT_CreateIndirect,    BaudRate,     ID_TEXT_2,   8,   99,  110, 20, 0, 0x0, 0 },
-  //{ TEXT_CreateIndirect,    Preamble,     ID_TEXT_3,   8,   87,  110, 20, 0, 0x0, 0 },
   { TEXT_CreateIndirect,    StopBit,      ID_TEXT_4,   8,   126, 110, 20, 0, 0x0, 0 },
   { TEXT_CreateIndirect,    ScrTimeout,   ID_TEXT_5,   8,   152, 110, 20, 0, 0x0, 0 },
   { TEXT_CreateIndirect,    PassWord,     ID_TEXT_6,   8,   180, 110, 20, 0, 0x0, 0 },
   { TEXT_CreateIndirect,    RevDataDelay, ID_TEXT_7,   8,   208, 110, 20, 0, 0x0, 0 },
   { TEXT_CreateIndirect,    BetweenAct,   ID_TEXT_8,   8,   236, 110, 20, 0, 0x0, 0 },
 
-  { BUTTON_CreateIndirect,  TimeSet,      ID_BUTTON_2, 8,   10,  92,  25, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect,  AdvanceSet,   ID_BUTTON_3, 128, 10,  103,  25, 0, 0x0, 0 },
-    
-  { BUTTON_CreateIndirect,  Save,         ID_BUTTON_0, 9,   264, 55,  25, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect,  Quit,         ID_BUTTON_1, 172, 263, 55,  25, 0, 0x0, 0 }, 
-  
-  //{ BUTTON_CreateIndirect,  AdvanceSet,   ID_BUTTON_3, 9,   230, 90,  25, 0, 0x0, 0 }, 
-    
+  { BUTTON_CreateIndirect,  TimeSet,      ID_BUTTON_0, 8,   10,  92,  25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect,  AdvanceSet,   ID_BUTTON_1, 128, 10,  103,  25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect,  Save,         ID_BUTTON_2, 9,   264, 55,  25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect,  Quit,         ID_BUTTON_3, 172, 263, 55,  25, 0, 0x0, 0 }, 
+
   { EDIT_CreateIndirect,    NULL,         ID_EDIT_0,   128, 42,  103, 20, 0, 0x64, 0 },
   { EDIT_CreateIndirect,    NULL,         ID_EDIT_1,   128, 67,  103, 20, 0, 0x64, 0 },
   { EDIT_CreateIndirect,    NULL,         ID_EDIT_2,   128, 96,  103, 20, 0, 0x64, 0 },
-  //{ EDIT_CreateIndirect,    NULL,       ID_EDIT_3,   128, 88,  103, 20, 0, 0x64, 0 },
-  { EDIT_CreateIndirect,    NULL,       ID_EDIT_3,   128, 122, 103, 20, 0, 0x64, 0 },
-  { EDIT_CreateIndirect,    NULL,       ID_EDIT_4,   128, 150, 103, 20, 0, 0x64, 0 },
-  { EDIT_CreateIndirect,    NULL,       ID_EDIT_5,   128, 176, 103, 20, 0, 0x64, 0 },
-  { EDIT_CreateIndirect,    NULL,       ID_EDIT_6,   128, 204, 103, 20, 0, 0x64, 0 },
-  { EDIT_CreateIndirect,    NULL,       ID_EDIT_7,   128, 231, 103, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect,    NULL,         ID_EDIT_3,   128, 122, 103, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect,    NULL,         ID_EDIT_4,   128, 150, 103, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect,    NULL,         ID_EDIT_5,   128, 176, 103, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect,    NULL,         ID_EDIT_6,   128, 204, 103, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect,    NULL,         ID_EDIT_7,   128, 231, 103, 20, 0, 0x64, 0 },
 
-};
-
-
-
-
-static const GUI_WIDGET_CREATE_INFO _aListBoxWidget[] = {
-  { WINDOW_CreateIndirect,   "CPS_Protocol_Set",  ID_WINDOW_0,  7,   11, 200, 119, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect,   "Button",            ID_BUTTON_0,  7,   83, 80,  20,  0, 0x0, 0 },
-  { LISTBOX_CreateIndirect,  "Listbox",           ID_LISTBOX_0, 5,   7,  190, 47,  0, 0x0, 0 },
-  { BUTTON_CreateIndirect,   "Button",            ID_BUTTON_1,  109, 82, 80,  20,  0, 0x0, 0 },
-  // USER START (Optionally insert additional widgets)
-  // USER END
 };
 
 
@@ -204,69 +104,52 @@ static const GUI_WIDGET_CREATE_INFO _aListBoxWidget[] = {
 void CPS_SelEdt_Up(WM_MESSAGE * pMsg)
 {
     WM_HWIN hItem;
-    if(key_press_cnt==KEY_PRESS_CNT_MIN)
+    if(key_press_cnt == 0)
     {
-        
-        //WM_SetFocus(hItem);
-        
         hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_7);
-        //EDIT_SetBkColor(hItem,0,GUI_GREEN);
         WM_SetFocus(hItem);
-
-        hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
-        EDIT_SetBkColor(hItem,0,0xC0C0C0);
         
-        key_press_cnt=7;
+        key_press_cnt = 7;
     }
     else
     {
         key_press_cnt--;
         hItem=WM_GetDialogItem(pMsg->hWin,(ID_EDIT_0+key_press_cnt));
-        //EDIT_SetBkColor(hItem,0,GUI_GREEN);
         WM_SetFocus(hItem);
-
-        hItem=WM_GetDialogItem(pMsg->hWin,(ID_EDIT_0+key_press_cnt+1));
-        EDIT_SetBkColor(hItem,0,0xC0C0C0);
     }
-
-
 }
+
+
+
 //向下选择
 void CPS_SelEdt_Down(WM_MESSAGE *pMsg)
 {
     WM_HWIN hItem;
-    if(key_press_cnt==7)
+    if(key_press_cnt == 7)
     {
         hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
-        //EDIT_SetBkColor(hItem,0,GUI_GREEN);
         WM_SetFocus(hItem);
-        
-        hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_7);
-        EDIT_SetBkColor(hItem,0,0xC0C0C0);
-        
-        key_press_cnt=KEY_PRESS_CNT_MIN;
+
+        key_press_cnt = 0;
     }
     else
     {
         key_press_cnt++;
         hItem=WM_GetDialogItem(pMsg->hWin,(ID_EDIT_0+key_press_cnt));
-        //EDIT_SetBkColor(hItem,0,GUI_GREEN);
         WM_SetFocus(hItem);
-        
-        hItem=WM_GetDialogItem(pMsg->hWin,(ID_EDIT_0+key_press_cnt-1));
-        EDIT_SetBkColor(hItem,0,0xC0C0C0);
-
     }
-
 }
 
-void CPS_Color_Change(WM_MESSAGE *pMsg)
+
+
+
+void CPS_Color_Change(void)
 {
     WM_HWIN hItem;
     int i;
     for(i=0;i<9;i++)
     {
-        hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0+i);
+        hItem=WM_GetDialogItem(g_hWin_para,ID_EDIT_0+i);
         if(WM_HasFocus(hItem)==1)
         {
             EDIT_SetBkColor(hItem,0,GUI_GREEN);
@@ -278,6 +161,18 @@ void CPS_Color_Change(WM_MESSAGE *pMsg)
 
     }
 }
+/*********************************************
+*
+*   打开一个新的页面，再返回到当前页面的时候
+*   可以聚焦到之前的的控件上
+**********************************************/
+void CPS_SetFocus(void)
+{
+    WM_HWIN hItem;
+    hItem = WM_GetDialogItem(g_hWin_para,(ID_EDIT_0 + key_press_cnt));
+    WM_SetFocus(hItem);
+}
+
 
 WM_HWIN CPS_Set_Proto(void)
 {
@@ -296,12 +191,6 @@ WM_HWIN CPS_Set_BaudRate(void)
     return  WM_GetDialogItem(g_hWin_para,ID_EDIT_2);
 }
 
-#if 0
-WM_HWIN CPS_Set_Pream(void)
-{
-   return  WM_GetDialogItem(g_hWin_para,ID_EDIT_3);
-}
-#endif
 
 WM_HWIN CPS_Set_StopBit(void)
 {
@@ -330,40 +219,27 @@ WM_HWIN CPS_Set_BetweenAct(void)
 
 
 
-
-
-
-
-
-
-void CPS_Set_Edit_Proto(WM_MESSAGE *pMsg,int WidgetId,unsigned char *pText)
-{
-    WM_HWIN hItem;
-    hItem=WM_GetDialogItem(g_hWin_Input,ID_EDIT_0);
-    EDIT_SetText(hItem,pText);
-}
-
-
 //初始化对话框
 static void _init_dialog(WM_MESSAGE * pMsg)
 {
     WM_HWIN hItem;
     int i;
+    char tmpBuf[30];
     
     hItem = WM_GetDialogItem(pMsg->hWin, ID_BUTTON_0);
-    BUTTON_SetBkColor(hItem,0,GUI_GREEN);
+    BUTTON_SetBkColor(hItem,0,GUI_CYAN);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_BUTTON_1);
-    BUTTON_SetBkColor(hItem,0,GUI_YELLOW);
+    BUTTON_SetBkColor(hItem,0,GUI_CYAN);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_BUTTON_2);
-    BUTTON_SetBkColor(hItem,0,GUI_CYAN);
+    BUTTON_SetBkColor(hItem,0,GUI_GREEN);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_BUTTON_3);
-    BUTTON_SetBkColor(hItem,0,GUI_CYAN);
+    BUTTON_SetBkColor(hItem,0,GUI_YELLOW);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
 
     for(i=0;i<8;i++)
@@ -383,20 +259,18 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_1);
-    //EDIT_SetText(hItem, "channel");
-    g_sys_register_para.channel = 0;
     switch(g_sys_register_para.channel)
     {
         case CHANNEL_485:
             EDIT_SetText(hItem,"485");
             break;
           
-        case CHANNEL_WAVE:
+        case CHANNEL_PLC:
             EDIT_SetText(hItem,WaveCarrier);
             break;
          
-        case CHANNEL_INFRD:
-            EDIT_SetText(hItem,Infrared);
+        case CHANNEL_WIRELESS:
+            EDIT_SetText(hItem,ChannelWireless);
             break;
     }
     //EDIT_SetBkColor(hItem,0,GUI_GREEN);
@@ -422,31 +296,7 @@ static void _init_dialog(WM_MESSAGE * pMsg)
             EDIT_SetText(hItem,"9600");
             break;
     }
-#if 0
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_3);
-    //EDIT_SetText(hItem, "pream");
-    switch(g_sys_register_para.preamble)
-    {
-        case 0xFA:
-            EDIT_SetText(hItem,"FA");
-            break;
-        case 0xFB:
-            EDIT_SetText(hItem,"FB");
-            break;
-        case 0xFC:
-            EDIT_SetText(hItem,"FC");
-            break;
-        case 0xFD:
-            EDIT_SetText(hItem,"FD");
-            break;
-        case 0xFE:
-            EDIT_SetText(hItem,"FE");
-            break;
-        case 0xFF:
-            EDIT_SetText(hItem,"FF");
-            break;
-    }
-#endif
+    
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_3);
     //EDIT_SetText(hItem, "stop");
     switch(g_sys_register_para.stopbit)
@@ -460,19 +310,23 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     }
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_4);
-    int_to_char(g_sys_register_para.scrTimeout,Edit0_Text,sizeof(Edit0_Text));
-    EDIT_SetText(hItem, Edit0_Text);
+    int_to_char(g_sys_register_para.scrTimeout,tmpBuf,10);
+    EDIT_SetText(hItem, tmpBuf);
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_5);
+    //int_to_char(g_sys_register_para.meterPassword,tmpBuf,10);
     EDIT_SetText(hItem, "123456");
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_6);
-    int_to_char(g_sys_register_para.recvDelayTime,Edit1_Text,sizeof(Edit1_Text));
-    EDIT_SetText(hItem, Edit1_Text); 
+    int_to_char(g_sys_register_para.recvDelayTime,tmpBuf,10);
+    EDIT_SetText(hItem, tmpBuf); 
     
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_7);
-    int_to_char(g_sys_register_para.execInterval,Edit2_Text,sizeof(Edit2_Text));
-    EDIT_SetText(hItem, Edit2_Text);
+    int_to_char(g_sys_register_para.execInterval,tmpBuf,10);
+    EDIT_SetText(hItem, tmpBuf);
+
+    //hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
+    //WM_SetFocus(hItem);
 
 }
 
@@ -501,13 +355,10 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
   switch (pMsg->MsgId) {
   case WM_INIT_DIALOG:
     GUI_UC_SetEncodeUTF8();
-    
-    //DEV_Parameters_Read();
-    _init_dialog(pMsg);
-    //CPS_Color_Change(pMsg);
+     _init_dialog(pMsg);
+     //CPS_Color_Change(pMsg);
     break;
-
-    
+     
   case WM_KEY:
     {
         //输入消息消费到edit中
@@ -606,7 +457,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                     WM_SetFocus(g_hWin_menu);
                     WM_ShowWindow(g_hWin_TimeBar);
                     WM_ShowWindow(g_hWin_Date);
-                    key_press_cnt=1;
+                    key_press_cnt=0;
                 }
                 break;
              case GUI_KEY_GREEN:  /*  保存数据  */
@@ -622,19 +473,26 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 {
                     g_hWin_TimeSet=CreateTimeSet();
                     WM_SetFocus(g_hWin_TimeSet);
+                    hItem = TMS_Get_Year();
+                    WM_SetFocus(hItem);
+                    TMS_Color_Change();
                 }
                 break;
              case GUI_KEY_F2:
                 if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
                 {
-                    
+                    g_hWin_AdvanSet= CreateAdvanceSet(g_hWin_para);
+                    WM_SetFocus(g_hWin_AdvanSet);
+                    hItem = ADS_Get_Speed();
+                    ADS_SetFocus();
+                    ADS_Color_Change();
                 }
                 break;
                 
              case GUI_KEY_TAB:
                 if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
                 {
-                    CPS_Color_Change(pMsg);
+                    CPS_Color_Change();
                 }
                 break;
                 
@@ -642,7 +500,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
                 {
                     CPS_SelEdt_Up(pMsg);
-                    CPS_Color_Change(pMsg);
+                    CPS_Color_Change();
                 }
                 
                 break;
@@ -650,7 +508,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
                 {
                     CPS_SelEdt_Down(pMsg);
-                    CPS_Color_Change(pMsg);
+                    CPS_Color_Change();
                 }
                 
              default: break;                                                                  
@@ -678,6 +536,8 @@ WM_HWIN CreateCommParaSet(void) {
   WM_HWIN hWin;
   WM_HWIN hItem;
   hWin = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), _cbDialog, g_hWin_menu, 0, 0);
+  //hItem = WM_GetDialogItem(hWin,ID_EDIT_0);
+  //WM_SetFocus(hItem);
   return hWin;
 }
 

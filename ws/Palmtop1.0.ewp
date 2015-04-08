@@ -2134,6 +2134,9 @@
       <name>$PROJ_DIR$\..\gui\AboutDLG.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\gui\AdvanceSetDLG.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\gui\CommParaSetDLG.c</name>
     </file>
     <file>
@@ -2144,6 +2147,9 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\gui\ErrNoteDLG.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\gui\FreqSetDLG.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\gui\GUI_public_fun.c</name>
@@ -2167,6 +2173,9 @@
       <name>$PROJ_DIR$\..\gui\PDA_IconMenuDLG.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\gui\phrase.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\gui\ReadMeterDLG.c</name>
     </file>
     <file>
@@ -2174,9 +2183,6 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\gui\TimeSet.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\gui\WaveCarriorSetDLG.c</name>
     </file>
   </group>
   <group>

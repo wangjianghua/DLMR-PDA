@@ -46,11 +46,6 @@
 **********************************************************************
 */
 
-static const char Cancel[]="\xe5\x8f\x96\xe6\xb6\x88";
-static const char Confirm[]="\xe7\xa1\xae\xe5\xae\x9a";
-static const char Worning[]="\xe8\xad\xa6\xe5\x91\x8a";
-static const char WrnText[]="\xe7\xa1\xae\xe5\xae\x9a\xe6\xa0\xbc\xe5\xbc\x8f\xe5\x8c\x96\xe5\x86\x85\xe5\xad\x98\xe5\x90\x97\xef\xbc\x9f?";
-
 // USER START (Optionally insert additional static data)
 // USER END
 
@@ -73,7 +68,7 @@ WM_HWIN ERR_Get_Text(void)
     return WM_GetDialogItem(g_hWin_Err,ID_TEXT_0);
 }
 
-
+#if 0
 void ERR_Sel_Win(void)
 {
     if(g_hWin_mem > 0)
@@ -88,7 +83,7 @@ void ERR_Sel_Win(void)
     {
         WM_SetFocus(g_hWin_relay);
     }
-    if(g_hWin_std>0)
+    if((g_hWin_std>0)&&(g_hWin_relay <= 0))
     {
         WM_SetFocus(g_hWin_std);
     }
@@ -96,8 +91,13 @@ void ERR_Sel_Win(void)
     {
         WM_SetFocus(g_hWin_about);
     }
+    if(g_hWin_ReadMeter > 0)
+    {
+        WM_SetFocus(g_hWin_ReadMeter);
+    }
 }
 
+#endif
 
 
 
@@ -146,7 +146,8 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
         {
             case GUI_KEY_YELLOW:
                 WM_DeleteWindow(g_hWin_Err);
-                ERR_Sel_Win();
+                g_hWin_Err = HBWIN_NULL;
+                Select_Focus();
                 break;
             case GUI_KEY_GREEN:
                 WM_DeleteWindow(g_hWin_Err);
@@ -164,7 +165,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                   }
                   DEV_SoftReset();
                 }
-                ERR_Sel_Win();
+                Select_Focus();
                 break;
         }
         break;
@@ -191,7 +192,7 @@ WM_HWIN CreateErrNote(WM_HWIN paraentWin)
 {
   WM_HWIN hWin;
 
-  hWin = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), _cbDialog, g_hWin_mem, 0, 0);
+  hWin = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), _cbDialog, paraentWin, 0, 0);
   return hWin;
 }
 

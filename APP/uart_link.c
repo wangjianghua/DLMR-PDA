@@ -489,9 +489,11 @@ unsigned char End_IsIdle(P_END_OBJ pEndObj)
 *********************************************************************************************************
 */
 void  App_TaskEndTick (void *p_arg)
-{
+{    
+    INT32U key_press_count = 0;
+
+
     (void)p_arg;
-    u32 keyCnt = 0;
     
     while (DEF_TRUE) {    
         End_tick_check();
@@ -499,23 +501,25 @@ void  App_TaskEndTick (void *p_arg)
 #if (LED_UART_EN > 0u)
         LED_UART_OFF();
 #endif
+
+        Data_Upload_Green(0);
+        Data_Download_Yellow(0);
+
         if(GPIO_PIN_RESET == HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_11))
         {
-            keyCnt++;
-            if(keyCnt > 120)
+            key_press_count++;
+            
+            if(key_press_count > 150)
             {
                 DEV_Power_Off();
             }
         }
         else
         {
-            keyCnt = 0;
+            key_press_count = 0;
         }
         
         OSTimeDlyHMSM(0, 0, 0, 20);
-
-        Data_Upload_Green(0);
-        Data_Download_Yellow(0);
     }
 }
 

@@ -30,7 +30,6 @@
 **********************************************************************
 */
 #define ID_WINDOW_0     (GUI_ID_USER + 0x9B)
-//#define ID_TEXT_0     (GUI_ID_USER + 0x9E)
 #define ID_TEXT_1     (GUI_ID_USER + 0xA0)
 #define ID_BUTTON_0     (GUI_ID_USER + 0xA1)
 #define ID_BUTTON_1     (GUI_ID_USER + 0xA2)
@@ -49,57 +48,7 @@ char DataSign_Text[TEXT_LEN]; //listview单元格中的文本内容
 *
 **********************************************************************
 */
-//获取参数
-static const char GetPara[]="\xe8\x8e\xb7\xe5\x8f\x96\xe5\x8f\x82\xe6\x95\xb0";
 
-//电表表号
-static const char MeterNum[]="\xe7\x94\xb5\xe8\xa1\xa8\xe8\xa1\xa8\xe5\x8f\xb7";
-
-
-//抄表项目
-static const char ReadMeterSel[]="\xe6\x8a\x84\xe8\xa1\xa8\xe9\xa1\xb9\xe7\x9b\xae";
-
-
-//当前正向有功电能
-static const char Positive[]="\xe5\xbd\x93\xe5\x89\x8d\xe6\xad\xa3\xe5\x90\x91\xe6\x9c\x89\xe5\x8a\x9f\xe7\x94\xb5\xe8\x83\xbd";
-
-
-//当前反向有功电能
-static const char Negative[]="\xe5\xbd\x93\xe5\x89\x8d\xe5\x8f\x8d\xe5\x90\x91\xe6\x9c\x89\xe5\x8a\x9f\xe7\x94\xb5\xe8\x83\xbd";
-
-
-//日冻结正向有功电能
-static const char DayPositive[]="\xe6\x97\xa5\xe5\x86\xbb\xe7\xbb\x93\xe6\xad\xa3\xe5\x90\x91\xe6\x9c\x89\xe5\x8a\x9f\xe7\x94\xb5\xe8\x83\xbd";
-
-
-//日冻结反向有功电能
-static const char DayNegative[]="\xe6\x97\xa5\xe5\x86\xbb\xe7\xbb\x93\xe5\x8f\x8d\xe5\x90\x91\xe6\x9c\x89\xe5\x8a\x9f\xe7\x94\xb5\xe8\x83\xbd";
-
-//数据标识
-static const char DataSign[]="\xe6\x95\xb0\xe6\x8d\xae\xe6\xa0\x87\xe8\xaf\x86";
-
-//确定
-static const char Confirm[]="\xe7\xa1\xae\xe5\xae\x9a";
-
-//取消
-static const char Cancel[]="\xe5\x8f\x96\xe6\xb6\x88";
-
-//退出
-static const char Quit[]="\xe9\x80\x80\xe5\x87\xba";
-
-
-static const char _acItems[][64] = 
-{
-    //当前正
-    "\xe5\xbd\x93\xe5\x89\x8d\xe6\xad\xa3\xe5\x90\x91\xe6\x9c\x89\xe5\x8a\x9f\xe7\x94\xb5\xe8\x83\xbd",
-    //当前反
-    "\xe5\xbd\x93\xe5\x89\x8d\xe5\x8f\x8d\xe5\x90\x91\xe6\x9c\x89\xe5\x8a\x9f\xe7\x94\xb5\xe8\x83\xbd",
-    //日冻结正
-    "\xe6\x97\xa5\xe5\x86\xbb\xe7\xbb\x93\xe6\xad\xa3\xe5\x90\x91\xe6\x9c\x89\xe5\x8a\x9f\xe7\x94\xb5\xe8\x83\xbd",
-    //日冻结反
-    "\xe6\x97\xa5\xe5\x86\xbb\xe7\xbb\x93\xe5\x8f\x8d\xe5\x90\x91\xe6\x9c\x89\xe5\x8a\x9f\xe7\x94\xb5\xe8\x83\xbd",
-    "",
-};
 
 static const char _acFlagItems[][DL_T_07+1][10] = 
 {
@@ -107,7 +56,7 @@ static const char _acFlagItems[][DL_T_07+1][10] =
     { "9020", "00020000"},
     { "",     "00010001"},
     { "",     "00020001"},
-    { "", ""},
+    { "",     ""},
 };
 
 
@@ -138,7 +87,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
 static void __AddListviewItem(LISTVIEW_Handle hObj, const char* pMake, const char* pModel) {
   unsigned NumItems;
 
-  NumItems = LISTVIEW_GetNumRows(hObj);
+  NumItems = LISTVIEW_GetNumRows(hObj); 
   LISTVIEW_AddRow(hObj, NULL);
   LISTVIEW_SetItemText(hObj, 0, NumItems, pMake);
   LISTVIEW_SetItemText(hObj, 1, NumItems, pModel);
@@ -184,7 +133,7 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     LISTVIEW_SetGridVis(hItem, 0);
     LISTVIEW_SetHeaderHeight(hItem, 20);
     LISTVIEW_SetAutoScrollV(hItem,1);
-    while (_acItems[i][0]) 
+    while (_ReadMeterProj[i][0]) 
     {
         if(g_sys_register_para.plcProtocol >  DL_T_07)
         {
@@ -192,7 +141,7 @@ static void _init_dialog(WM_MESSAGE * pMsg)
         }
         if(_acFlagItems[i][g_sys_register_para.plcProtocol][0])
         {
-            __AddListviewItem(hItem, _acItems[i], _acFlagItems[i][g_sys_register_para.plcProtocol]);
+            __AddListviewItem(hItem, _ReadMeterProj[i], _acFlagItems[i][g_sys_register_para.plcProtocol]);
         }
         i++;
     }
@@ -230,12 +179,14 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 WM_DeleteWindow(g_hWin_DataSign);
                 g_hWin_DataSign=HBWIN_NULL;
                 WM_SetFocus(g_hWin_std);
+                CPT_SetFocus();
                 break;
             case GUI_KEY_GREEN:
                 set_datasign_value(pMsg);
                 WM_DeleteWindow(g_hWin_DataSign);
                 g_hWin_DataSign=HBWIN_NULL;
                 WM_SetFocus(g_hWin_std);
+                CPT_SetFocus();
                 break;
         }
     }

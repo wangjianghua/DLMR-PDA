@@ -62,7 +62,7 @@ static  OS_STK         App_TaskGUIStk[APP_CFG_TASK_GUI_STK_SIZE]; //added on  01
 static  OS_STK         App_TaskKeyStk[APP_CFG_TASK_KEY_STK_SIZE];
 static  OS_STK         App_TaskPLCStk[APP_CFG_TASK_PLC_STK_SIZE];
 static  OS_STK         App_TaskGMPStk[APP_CFG_TASK_GMP_STK_SIZE];
-static  OS_STK         App_TaskRFStk[APP_CFG_TASK_RF_STK_SIZE];
+static  OS_STK         App_TaskPowerStk[APP_CFG_TASK_POWER_STK_SIZE];
 
 
 /*
@@ -74,7 +74,7 @@ static  OS_STK         App_TaskRFStk[APP_CFG_TASK_RF_STK_SIZE];
 static  void           App_TaskStart                (void *p_arg);
 static  void           App_TaskGUI                  (void *p_arg); //GUI任务 added on 01.15
 static  void           App_TaskGMP                  (void *p_arg);
-static  void           App_TaskRF                   (void *p_arg);
+static  void           App_TaskPower                (void *p_arg);
 
 static  void           App_MemAlloc                 (void);
 static  void           App_TaskCreate               (void);
@@ -100,6 +100,7 @@ static void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLN = 240;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 5;
+  
   HAL_RCC_OscConfig(&RCC_OscInitStruct);
   
   /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2 
@@ -198,8 +199,12 @@ WM_HWIN g_hWin_Err;
 WM_HWIN g_hWin_TimeBar;  //主页时间
 WM_HWIN g_hWin_Date;     //显示日期
 WM_HWIN g_hWin_Input;    //各种输入小框体
+WM_HWIN g_hWin_speed;
+WM_HWIN g_hWin_AdvanSet;  //高级设置
 
-u8 rf_send_buf[256] = {0x23, 0x24, 0x78, 0x1a, 0x39, 0x23, 0x24, 0x78, 0x1a, 0x39, 0x12};
+
+//int test_multiedit;
+
 u8 rf_int_status[8];
 u8 rf_part_info[8];
 u8 rf_device_state[2];
@@ -213,28 +218,28 @@ uc16 g_16string [] = {0x53D6, 0x56DE, 0x62,'\r\n',0};
 
 void APP_Shutdown()
 {
-    //if(g_sys_control.sysUsbVol)
-    //    return;
+#if 1
+    if(g_sys_control.sysUsbVol)
+    {
+        return;
+    }
+
     g_sys_control.sysPowerState = SYS_POWER_SHUTDOWN;
-    SYS_PWR_OFF();
+    SYS_PWR_OFF();   //3.27
     LCD_BL_OFF();
-    LCD_PWR_OFF();
+    LCD_PWR_OFF();   //3.27
     LED_UART_OFF();
     LED_PLC_OFF();
+#endif
 }
 
 void APP_Sleep(void)
 {
-#if 0
-    //if(g_sys_control.sysUsbVol)
-    //    return;
-    
+#if 1
     g_sys_control.sysPowerState = SYS_POWER_IDLE;
-    //SYS_PWR_OFF();
     LCD_BL_OFF();
-    LCD_PWR_OFF();
-    //LED_UART_OFF();
-    //LED_PLC_OFF();
+    //LCD_PWR_OFF();
+    LED_On(LED_PWR);
 #endif    
 }
 
@@ -252,6 +257,9 @@ void APP_Wakeup()
 #endif    
 }
 
+#if (EWARM_OPTIMIZATION_EN > 0u)
+#pragma optimize = low
+#endif
 void APP_StartButtonTest()
 {
     u32 keyCnt = 0;;
@@ -264,6 +272,7 @@ void APP_StartButtonTest()
             if(keyCnt > 80)
             {
                 SYS_PWR_ON();
+                //g_sys_control.power_stat = SYS_POWER_ON;
                 OSTimeDly(20);
                 return;                
             }
@@ -271,9 +280,22 @@ void APP_StartButtonTest()
         else
         {
             APP_Shutdown();
+            //g_sys_control.power_stat = SYS_POWER_OFF;
             keyCnt = 0;
-            return;
-            //return;
+
+            if(GET_USB_VOL() == 0)
+            {
+                return;
+            }
+            else
+            {
+                DEBUG_PRINT(("Power error!\n")); //错误处理
+                
+                while(1)
+                {
+                    APP_Shutdown();
+                }
+            }
         }
     }
 }
@@ -295,9 +317,15 @@ void APP_StartButtonTest()
 */
 static  void  App_TaskStart (void *p_arg)
 {
-   (void)p_arg; 
     u8 i = 0, n;
+    u32 count = 0;
 
+
+    (void)p_arg; 
+    
+    //u32 itest = 0; //高低温测试计数
+    INT8U err;  //测试用的
+    
     DEV_Init();
 
     BSP_Init();                                                 /* Init BSP fncts.                                          */
@@ -323,41 +351,21 @@ static  void  App_TaskStart (void *p_arg)
     End_Init();
 
     RF_Init();
-
+    
+    BSP_IWDG_Init();  //4.1
+    
     DEBUG_PRINT(("OS Tasks Run!\n"));
 
     //FatFs_Test();
     //BSP_BEEP();
+    g_sys_control.led_count = 2;
+    while (DEF_TRUE) { 
+        /* Task body, always written as an infinite loop.           */
 
-    while (DEF_TRUE) {                                          /* Task body, always written as an infinite loop.           */
         if(i++ >= 10)
         {
             i = 0;
             RTC_ReadTime(g_rtc_time); 
-            g_sys_control.shutdownTimeout++;
-            if(g_sys_control.shutdownTimeout > (g_sys_register_para.scrTimeout+500))//开大点方便调试
-            {
-                APP_Shutdown();
-                g_sys_control.shutdownTimeout = 0;
-            }
-            
-            g_sys_control.sleepTimeout++;
-            if(g_sys_control.sleepTimeout > g_sys_register_para.scrTimeout)//
-            {
-                APP_Sleep();
-                g_sys_control.sleepTimeout = 0;
-            }
-
-               
-        }
-
-        if(GET_USB_VOL() == 0)
-        {
-            g_sys_control.sysUsbVol = 1;
-        }
-        else
-        {
-            g_sys_control.sysUsbVol = 0;
         }
 
         for(n = 0; n < 32; n++)
@@ -373,9 +381,30 @@ static  void  App_TaskStart (void *p_arg)
                 }
             }
         }
+
+        if(g_sys_control.led_count)
+        {
+            g_sys_control.led_count--;
+
+            if(!g_sys_control.led_count)
+            {
+                LED_KEY_OFF();
+            }
+        }
         
-        g_sys_control.pwrValue = BSP_ADC_ReadPwr();
-        //TEXT_SetText(TSK_Get_Time_Text(),RTC2Text());
+        if(!(count % 5))
+        {
+            if(HAL_IWDG_Refresh(&IwdgHandle) != HAL_OK)
+            {
+                DEBUG_PRINT(("System Reset !\n"));
+            }
+        }
+
+        //g_sys_control.pwrValue = BSP_ADC_ReadPwr();
+        //EDIT_SetFloatValue(MMD_GetVoltage(),g_sys_control.pwrValue
+
+        count++;
+
         OSTimeDlyHMSM(0, 0, 0, 100);
     }
 }
@@ -402,6 +431,10 @@ static  void  App_TaskGUI (void *p_arg)
     unsigned char timebuf[10];
     unsigned char timebuf_nosec[6];
     unsigned char timebuf_date[11];
+    int i = 0;
+    int j = 0;//读取电压值计数
+    u32 val = 0; //电压
+   // int countdown = 240; //读取载波节点倒计时240s
     
 #if OS_CRITICAL_METHOD == 3u
         OS_CPU_SR  cpu_sr = 0u;
@@ -416,13 +449,60 @@ static  void  App_TaskGUI (void *p_arg)
 
     while (DEF_TRUE) {                                          /* Task body, always written as an infinite loop.           */
         GUI_Exec();
-        
+
+        if(g_hWin_monitor > 0)
+        {
+            if(g_sys_control.sysCtdFlag == COUNTDOWN_ON)
+            {
+                if(i++ >= 10)
+                {
+                    i = 0;
+                    hItem = MNT_GetTime();
+                    EDIT_SetValue(hItem,g_sys_control.sysCtdVal--);
+                    if(0 == g_sys_control.sysCtdVal)
+                    {
+                        g_sys_control.sysCtdFlag == COUNTDOWN_OFF;//读载波节点计时标记
+                        EDIT_SetValue(hItem,0);
+                        hItem = MNT_GetReadNope();
+                        BUTTON_SetText(hItem ,ReadNope);
+                    }
+                }
+            }
+        }
+
+        if(j < 10)
+        {
+            val += BSP_ADC_ReadPwr();
+            j++;
+            if(GPIO_PIN_SET == BSP_Charg())
+            {
+                TSK_Battery_Charge(j);
+            }
+            
+        }
+        else if(j >= 10)
+        {
+            G_II = BSP_Charg();
+            g_sys_control.pwrValue = val/10;
+            if(GPIO_PIN_RESET == BSP_Charg())
+            {
+                Battery_State(g_sys_control.pwrValue);
+            }
+            j = 0;
+            val = 0;
+        }
         memcpy(timebuf,RTC2Text(),10);
         TEXT_SetText(g_hWin_TimeBar,timebuf);
         //memcpy(timebuf_nosec,RTC2Text_NoSec(),6);
         //TEXT_SetText(g_hWin_TimeBar,timebuf_nosec);
         memcpy(timebuf_date,RTC2Text_Date(),11);
         TEXT_SetText(g_hWin_Date,timebuf_date);
+
+        //hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_2);
+        if(g_hWin_mem>0)
+        {
+            EDIT_SetFloatValue(MMD_GetVoltage(),((g_sys_control.pwrValue*3.3)/2048));
+        }
         
         OSTimeDlyHMSM(0, 0, 0, 100);     
     }
@@ -430,11 +510,11 @@ static  void  App_TaskGUI (void *p_arg)
 
 /*
 *********************************************************************************************************
-*                                             App_TaskRF()
+*                                             App_TaskPower()
 *
 * Description : This task monitors the state of the push buttons and passes messages to AppTaskUserIF()
 *
-* Argument(s) : p_arg   is the argument passed to 'App_TaskRF()' by 'OSTaskCreateExt()'.
+* Argument(s) : p_arg   is the argument passed to 'App_TaskPower()' by 'OSTaskCreateExt()'.
 *
 * Return(s)  : none.
 *
@@ -443,40 +523,63 @@ static  void  App_TaskGUI (void *p_arg)
 * Note(s)    : none.
 *********************************************************************************************************
 */
-static  void  App_TaskRF (void *p_arg)
+static  void  App_TaskPower (void *p_arg)
 {
-    INT8U err;
-    u8 rf_read_addr[] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x00, 0x36, 0x19, 0x00, 0x00, 0x00};
-    u8 rf_reply_addr[] = {0x00, 0x36, 0x19, 0x00, 0x00, 0x00, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA};
-    u8 rf_dl645_read[] = {0x68, 0x00, 0x36, 0x19, 0x00, 0x00, 0x00, 0x68, 0x11, 0x04, 0x33, 0x32, 0x34, 0x33, 0x00, 0x16};
-    u8 rf_dl645_reply[] = {0xFE, 0xFE, 0xFE, 0xFE, 0x68, 0x00, 0x36, 0x19, 0x00, 0x00, 0x00, 0x68, 0x91, 0x18, 0x33, 0x32, 0x34, 0x33, 0x4C, 0x6C, 0x33, 0x33, 0x89, 0x35, 0x33, 0x33, 0x53, 0x33, 0x33, 0x33, 0x6B, 0x33, 0x33, 0x33, 0x38, 0x69, 0x33, 0x33, 0xCD, 0x16};
-    u8 rf_test_msg[] = "hello, world!";
-    u8 rf_send_len;
-    
-#define RF_SEND_BUF         rf_send_buf
-#define RF_SEND_LEN         rf_send_len
-#define RF_RECV_BUF         g_rf_param.rx.buf
-#define RF_RECV_LEN         g_rf_param.rx.rx_len
-
     (void)p_arg;
+    
+    LED_Off(LED_PWR);
+    
     while (DEF_TRUE) {
-        OSSemPend(g_sem_rf, 5 * OS_TICKS_PER_SEC, &err);
-        
-        if(OS_ERR_NONE == err)
+        if(GPIO_PIN_RESET == HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_11))
         {
-            LED_PLC_TOGGLE();
-            pc_uart_send(RF_RECV_BUF, RF_RECV_LEN);
+            OSTimeDlyHMSM(0, 0, 0, 30);
+
+            if(GPIO_PIN_RESET == HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_11))
+            {
+                while(GPIO_PIN_RESET == HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_11))
+                {
+                    OSTimeDlyHMSM(0, 0, 0, 10);
+                }
+                
+                LCD_BL_OFF();
+                LED_On(LED_PWR);
+            }
+        }
+
+        if(GPIO_PIN_RESET == GET_USB_VOL())
+        {
+            g_sys_control.sysUsbVol = 1;
         }
         else
-        {            
-#if 1
-            LED_PLC_TOGGLE();
-            rf_send_len = GDW_RF_Protocol_2013(rf_read_addr, 0x00, 0x00, 0x00, rf_dl645_read, sizeof(rf_dl645_read), rf_send_buf);
-            pc_uart_send(RF_SEND_BUF, RF_SEND_LEN + 3); 
-#else
-            //RF_Tx(rf_test_msg, sizeof(rf_test_msg));
-#endif
+        {
+            g_sys_control.sysUsbVol = 0;
+        }        
+
+        g_sys_control.shutdownTimeout++;
+        if(g_sys_control.shutdownTimeout > ((g_sys_register_para.scrTimeout + 120) * 100))
+        {
+            if((PLC_CMD_TYPE_NODE == g_send_para_pkg.cmdType) ||
+               (PLC_CMD_TYPE_R2L == g_send_para_pkg.cmdType))
+            {
+                LCD_BL_OFF();
+            }
+            else
+            {
+                APP_Shutdown();
+            }
+            
+            g_sys_control.shutdownTimeout = 0;
         }
+        
+        g_sys_control.sleepTimeout++;
+        if(g_sys_control.sleepTimeout > ((g_sys_register_para.scrTimeout + 30) * 100))
+        {
+            APP_Sleep();
+            
+            g_sys_control.sleepTimeout = 0;
+        }        
+
+        OSTimeDly(10);
     }
 }
 
@@ -504,16 +607,18 @@ static  void  App_TaskGMP (void *p_arg)
     WM_HWIN  wh;
     
     (void)p_arg;
-    
-    while (DEF_TRUE) {           
+    g_sys_control.numMultiedit = 0; //控制消息多行文本的打印次数
+    while (DEF_TRUE) {  
         /* Task body, always written as an infinite loop.           */
         if((g_sys_control.guiState == GUI_PLC_MSG_TEST)
             ||(g_sys_control.guiState == GUI_PLC_MSG_READ)
-            ||(g_sys_control.guiState == GUI_PLC_MSG_LISTING))
+            ||(g_sys_control.guiState == GUI_PLC_MSG_LISTING)
+            ||(g_sys_control.guiState == GUI_PLC_MSG_FREQ))
         {
             OSMboxPend(g_sys_control.upMb, 10, &err);        
             if(OS_ERR_NONE == err)
             {
+                g_sys_control.numMultiedit++;
                 GUI_Msg_Proc();
             }
             else if(OS_ERR_TIMEOUT == err)
@@ -668,13 +773,13 @@ static  void  App_TaskCreate (void)
 #if (OS_TASK_NAME_EN > 0)
     OSTaskNameSet(APP_CFG_TASK_PLC_PRIO, "PLC", &err);    
 #endif
-    OSTaskCreateExt((void (*)(void *)) App_TaskRF,
+    OSTaskCreateExt((void (*)(void *)) App_TaskPower,
                     (void           *) 0,
-                    (OS_STK         *)&App_TaskRFStk[APP_CFG_TASK_RF_STK_SIZE - 1],
-                    (INT8U           ) APP_CFG_TASK_RF_PRIO,
-                    (INT16U          ) APP_CFG_TASK_RF_PRIO,
-                    (OS_STK         *)&App_TaskRFStk[0],
-                    (INT32U          ) APP_CFG_TASK_RF_STK_SIZE,
+                    (OS_STK         *)&App_TaskPowerStk[APP_CFG_TASK_POWER_STK_SIZE - 1],
+                    (INT8U           ) APP_CFG_TASK_POWER_PRIO,
+                    (INT16U          ) APP_CFG_TASK_POWER_PRIO,
+                    (OS_STK         *)&App_TaskPowerStk[0],
+                    (INT32U          ) APP_CFG_TASK_POWER_STK_SIZE,
                     (void           *) 0,
                     (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
 }

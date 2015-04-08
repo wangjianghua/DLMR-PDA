@@ -502,6 +502,9 @@ void  BSP_Init (void)
 	BSP_RCC_Configuration();
 	
     BSP_GPIO_Configuration();
+
+    LED_Off(LED_UART);
+    LED_Off(LED_PWR);    
 	
 	BSP_LCD_init();
 
@@ -512,11 +515,12 @@ void  BSP_Init (void)
     BSP_ADC_Init();
 
     BSP_UART_Init();
-	
-    BSP_LED_Off(LED_UART);
-    BSP_LED_Off(LED_PLC);
+
+    //BSP_IWDG_Init();  //4.1
 
     PLC_PWR_ON();
+
+    KEY_LED_OFF();
 }
 
 void BSP_RCC_Configuration(void)
@@ -564,7 +568,8 @@ void BSP_GPIO_Configuration(void)
     
        
     GPIO_InitStructure.Pin = GPIO_PIN_0 | GPIO_PIN_1; 
-    GPIO_InitStructure.Mode =  GPIO_MODE_OUTPUT_PP;
+    //GPIO_InitStructure.Mode =  GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStructure.Mode =  GPIO_MODE_INPUT;
     GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
     GPIO_InitStructure.Pull  = GPIO_PULLUP;  
     HAL_GPIO_Init(GPIOA, &GPIO_InitStructure);
@@ -786,6 +791,31 @@ void BSP_Keyboard_Init(void)
 }
 
 
+
+IWDG_HandleTypeDef IwdgHandle;
+
+/* IWDG init function */
+void BSP_IWDG_Init(void)
+{
+  /* Enable the LSI oscillator */
+  __HAL_RCC_LSI_ENABLE();
+  
+  /* Wait till LSI is ready */
+  while (__HAL_RCC_GET_FLAG(RCC_FLAG_LSIRDY) == RESET)
+  {
+  }
+  
+  IwdgHandle.Instance = IWDG;
+  IwdgHandle.Init.Prescaler = IWDG_PRESCALER_32;
+  IwdgHandle.Init.Reload = 1000;
+  HAL_IWDG_Init(&IwdgHandle);
+
+  if(HAL_IWDG_Start(&IwdgHandle) != HAL_OK)
+  {
+  }
+}
+
+
 /*
 *********************************************************************************************************
 *                                          BSP_SRAM_Init()
@@ -963,7 +993,7 @@ void BSP_SPI_Init()
 
 ADC_HandleTypeDef AdcHandle;
 ADC_ChannelConfTypeDef sConfig;
-__IO uint16_t uhADCxConvertedValue = 0;//ADC读取的电压值
+__IO CPU_INT32U uhADCxConvertedValue = 0;//ADC读取的电压值
 
 
 void BSP_ADC_Init(void)
@@ -1000,7 +1030,7 @@ void BSP_ADC_Init(void)
     HAL_ADC_ConfigChannel(&AdcHandle, &sConfig);
 }
 
-uint16_t BSP_ADC_ReadPwr(void)
+CPU_INT32U BSP_ADC_ReadPwr(void)
 {
     int i ;
 
@@ -1057,9 +1087,16 @@ void BSP_BEEP(void)
 }
 
 
+
+CPU_INT32U BSP_Charg(void)
+{
+    return HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9);
+}
+
+
 /*
 *********************************************************************************************************
-*                                             BSP_LED_On()
+*                                             LED_On()
 *
 * Description : Turn ON any or all the LEDs on the board.
 *
@@ -1079,7 +1116,7 @@ void BSP_BEEP(void)
 *********************************************************************************************************
 */
 
-void  BSP_LED_On (CPU_INT08U  led)
+void  LED_On (CPU_INT08U  led)
 {
     switch(led)
     {
@@ -1087,6 +1124,7 @@ void  BSP_LED_On (CPU_INT08U  led)
         HAL_GPIO_WritePin(GPIOG, GPIO_PIN_8, GPIO_PIN_RESET);
         break;
 
+    case LED_PWR:
     case LED_PLC:
         HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
         break;
@@ -1098,7 +1136,7 @@ void  BSP_LED_On (CPU_INT08U  led)
 
 /*
 *********************************************************************************************************
-*                                              BSP_LED_Off()
+*                                              LED_Off()
 *
 * Description : Turn OFF any or all the LEDs on the board.
 *
@@ -1118,7 +1156,7 @@ void  BSP_LED_On (CPU_INT08U  led)
 *********************************************************************************************************
 */
 
-void  BSP_LED_Off (CPU_INT08U led)
+void  LED_Off (CPU_INT08U led)
 {   
     switch(led)
     {
@@ -1126,6 +1164,7 @@ void  BSP_LED_Off (CPU_INT08U led)
         HAL_GPIO_WritePin(GPIOG, GPIO_PIN_8, GPIO_PIN_SET);
         break;
 
+    case LED_PWR:
     case LED_PLC:
         HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
         break;

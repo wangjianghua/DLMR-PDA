@@ -11,7 +11,25 @@ const INT8U lPLC_TO_rPLC[] = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68, 0x
 
 const INT8U READ_PLC_NODE[] = {0x68, 0x1E, 0x00, 0x41, 0x04, 0x00, 0x5F, 0x64, 0x04, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x16, 0x01, 0x00, 0x02, 0x02, 0xB4, 0xD8, 0x16};
 
-const INT8U lBroadcast_Read_Meter[] = {0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
+const INT8U lBroadcast_Read_Meter[12] = {0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
+
+
+const INT8U rPLC_270III[]  = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68, 0x04, 0x08, 0x34, 0x34, 0x36, 0x33, 0x33, 0x33, 0x33, 0x33, 0x50, 0x16};
+const INT8U rPLC_270III5[] = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68, 0x04, 0x08, 0x34, 0x34, 0x36, 0x33, 0x33, 0x33, 0x34, 0x33, 0x51, 0x16};
+const INT8U rPLC_270II[]   = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68, 0x04, 0x08, 0x34, 0x34, 0x36, 0x33, 0x33, 0x33, 0x35, 0x33, 0x52, 0x16};
+
+const INT8U rPLC_421_50BPS[]   = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68, 0x04, 0x08, 0x34, 0x34, 0x36, 0x33, 0x33, 0x33, 0x33, 0x34, 0x51, 0x16};
+const INT8U rPLC_421_100BPS[]  = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68, 0x04, 0x08, 0x34, 0x34, 0x36, 0x33, 0x33, 0x33, 0x34, 0x34, 0x52, 0x16};
+const INT8U rPLC_421_600BPS[]  = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68, 0x04, 0x08, 0x34, 0x34, 0x36, 0x33, 0x33, 0x33, 0x35, 0x34, 0x53, 0x16};
+const INT8U rPLC_421_1200BPS[] = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68, 0x04, 0x08, 0x34, 0x34, 0x36, 0x33, 0x33, 0x33, 0x36, 0x34, 0x54, 0x16};
+
+//密码
+const INT8U wPLC_PWD[] = {0x34, 0x64, 0x74, 0x84};
+
+//操作码 87 86 74 78
+const INT8U wPLC_OP_CODE[] = {0x78, 0x74, 0x86, 0x87};
+
+u8 rf_send_buf[256];
 
 OS_EVENT *g_sem_plc;
 OS_EVENT *g_sem_rf;
@@ -210,6 +228,7 @@ unsigned int PLC_postProcess(pvoid h)
     memcpy(&dl645_frame_recv, pBuf, mLen);
     memcpy(g_plc_prm.recv_buf, pBuf, mLen);
     g_plc_prm.recv_len = mLen;
+    
 
     LED_PLC_TOGGLE();
 
@@ -412,6 +431,10 @@ void  App_TaskPLC (void *p_arg)
     INT8U err;
     u8 len;
     WM_HWIN wh;
+    int i;
+    u8 rf_addr[] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x00, 0x36, 0x19, 0x00, 0x00, 0x00};
+    u32 rf_send_len;
+    u8 plc_read_addr[20];
     
     
     (void)p_arg; 
@@ -430,41 +453,92 @@ void  App_TaskPLC (void *p_arg)
             
             switch(g_send_para_pkg.cmdType)
             {
-            case PLC_CMD_BROAD_READ:
-                OSSemAccept(g_sem_plc);
-                
-                plc_uart_send((u8 *)lBroadcast_Read_Meter, sizeof(lBroadcast_Read_Meter));
-
-                g_plc_prm.sendStatus = PLC_MSG_SENDING;
-                
-                OSMboxPost(g_sys_control.upMb, (void *)&g_plc_prm);
-                
-                OSSemPend(g_sem_plc, 5 * OS_TICKS_PER_SEC, &err);
-
-                g_plc_prm.data_len = 0;
-
-                if(OS_ERR_NONE == err)
+            case PLC_CMD_BROAD_READ: //广播命令
+                if(CHANNEL_PLC == g_sys_register_para.channel)
                 {
-                    PRO_Databuf_Proc();
+                    OSSemAccept(g_sem_plc);
+  
+                    memcpy(&plc_read_addr[1], lBroadcast_Read_Meter, sizeof(lBroadcast_Read_Meter));
+
+                    plc_read_addr[0] = g_sys_register_para.preamble;
+                      
+                    plc_uart_send((u8 *)plc_read_addr, sizeof(lBroadcast_Read_Meter) + 1);
+
+                    g_plc_prm.sendStatus = PLC_MSG_SENDING;
+
+                    g_plc_prm.send_len = 12 + 1;
+
+                    memcpy(g_plc_prm.send_buf, plc_read_addr, g_plc_prm.send_len);                    
+
+                    OSMboxPost(g_sys_control.upMb, (void *)&g_plc_prm);
+
+                    OSTimeDly(200);
+                    
+                    OSSemPend(g_sem_plc, g_sys_register_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
+
+                    g_plc_prm.data_len = 0;
+
+                    if(OS_ERR_NONE == err)
+                    {
+                        PRO_Databuf_Proc();
+                    }
+                    else
+                    {
+                        g_plc_prm.result = PLC_RES_TIMEOUT;
+                    }
+
+                    g_plc_prm.sendStatus = PLC_MSG_RECEIVED;
+
+                    OSMboxPost(g_sys_control.upMb, (void *)&g_plc_prm);
                 }
-                else
+                else if(CHANNEL_WIRELESS == g_sys_register_para.channel) //无线
                 {
-                    g_plc_prm.result = PLC_RES_TIMEOUT;
+                    OSSemAccept(g_sem_rf);
+
+                    memset(RF_SEND_BUF, 0, sizeof(RF_SEND_BUF));
+                    
+                    GDW_RF_Protocol_2013(rf_addr, 0x00, 0x00, 0x00, (u8 *)&lBroadcast_Read_Meter, 12, RF_SEND_BUF);
+
+                    g_plc_prm.sendStatus = PLC_MSG_SENDING;
+
+                    g_plc_prm.send_len = 12;
+
+                    memcpy(g_plc_prm.send_buf, lBroadcast_Read_Meter, g_plc_prm.send_len);
+
+                    OSMboxPost(g_sys_control.upMb, (void *)&g_plc_prm);
+
+                    OSTimeDly(200);                    
+
+                    OSSemPend(g_sem_rf, 5 * OS_TICKS_PER_SEC, &err);
+
+                    g_plc_prm.data_len = 0;
+
+                    if(OS_ERR_NONE == err)
+                    {
+                        memcpy(&dl645_frame_recv, &RF_RECV_BUF[RF_RECV_FIX_LEN], RF_RECV_LEN - RF_RECV_FIX_LEN);                                       
+                        memcpy(&g_plc_prm.recv_buf,&RF_RECV_BUF[RF_RECV_FIX_LEN], RF_RECV_LEN - RF_RECV_FIX_LEN);
+                        g_plc_prm.recv_len = RF_RECV_LEN - RF_RECV_FIX_LEN - RF_PRINT_FIX_LEN;
+                        PRO_Databuf_Proc();
+                    }
+                    else
+                    {   
+                         g_plc_prm.result = PLC_RES_TIMEOUT;                                        
+                    }
+                    
+                    g_plc_prm.sendStatus = PLC_MSG_RECEIVED;
+                    
+                    OSMboxPost(g_sys_control.upMb, (void *)&g_plc_prm);
                 }
-
-                g_plc_prm.sendStatus = PLC_MSG_RECEIVED;
-
-                OSMboxPost(g_sys_control.upMb, (void *)&g_plc_prm);
                 break;
                 
-            case PLC_CMD_TYPE_R2L:
+            case PLC_CMD_TYPE_R2L: //切换为监控态
                 OSSemAccept(g_sem_plc);
                 
                 plc_uart_send((u8 *)rPLC_TO_lPLC, sizeof(rPLC_TO_lPLC));
 
                 g_plc_prm.sendStatus = PLC_MSG_SENDING;
                 
-                OSSemPend(g_sem_plc, 5 * OS_TICKS_PER_SEC, &err);
+                OSSemPend(g_sem_plc, g_sys_register_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
 
                 g_plc_prm.data_len = 0;
 
@@ -484,14 +558,14 @@ void  App_TaskPLC (void *p_arg)
                 OSMboxPost(g_sys_control.upMb, (void *)&g_plc_prm);
                 break;
 
-            case PLC_CMD_TYPE_L2R:
+            case PLC_CMD_TYPE_L2R:     //抄控态
                 OSSemAccept(g_sem_plc);
-                
+
                 plc_uart_send((u8 *)lPLC_TO_rPLC, sizeof(lPLC_TO_rPLC));
 
                 g_plc_prm.sendStatus = PLC_MSG_SENDING;
                 
-                OSSemPend(g_sem_plc, 5 * OS_TICKS_PER_SEC, &err);
+                OSSemPend(g_sem_plc, g_sys_register_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
 
                 g_plc_prm.data_len = 0;
 
@@ -509,14 +583,14 @@ void  App_TaskPLC (void *p_arg)
                 OSMboxPost(g_sys_control.upMb, (void *)&g_plc_prm);
                 break;
 
-            case PLC_CMD_TYPE_NODE:
+            case PLC_CMD_TYPE_NODE:  //读载波节点
                 OSSemAccept(g_sem_plc);
                 
                 plc_uart_send((u8 *)READ_PLC_NODE, sizeof(READ_PLC_NODE));
 
                 g_plc_prm.sendStatus = PLC_MSG_SENDING;
                 
-                OSSemPend(g_sem_plc, 5 * OS_TICKS_PER_SEC, &err);
+                OSSemPend(g_sem_plc, g_sys_register_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
 
                 g_plc_prm.data_len = 0;
 
@@ -532,6 +606,57 @@ void  App_TaskPLC (void *p_arg)
                 g_plc_prm.sendStatus = PLC_MSG_RECEIVED;
 
                 OSMboxPost(g_sys_control.upMb, (void *)&g_plc_prm);
+                break;
+
+            case PLC_CMD_FREQ_SET:   //速率设置
+                
+                OSSemAccept(g_sem_plc);
+                
+                switch(g_sys_register_para.freqSel)
+                {
+                    case PLC_270_III:
+                        plc_uart_send((u8 *)rPLC_270III, sizeof(rPLC_270III));
+                        break;
+                    case PLC_270_III_5:
+                        plc_uart_send((u8 *)rPLC_270III5, sizeof(rPLC_270III5));
+                        break;
+                    case PLC_270_II:
+                        plc_uart_send((u8 *)rPLC_270II, sizeof(rPLC_270II));
+                        break;
+                    case PLC_421_50BPS:
+                        plc_uart_send((u8 *)rPLC_421_50BPS, sizeof(rPLC_421_50BPS));
+                        break;
+                    case PLC_421_100BPS:
+                        plc_uart_send((u8 *)rPLC_421_100BPS, sizeof(rPLC_421_100BPS));
+                        break;
+                    case PLC_421_600BPS:
+                        plc_uart_send((u8 *)rPLC_421_600BPS, sizeof(rPLC_421_600BPS));
+                        break;
+                    case PLC_421_1200BPS:
+                        plc_uart_send((u8 *)rPLC_421_1200BPS, sizeof(rPLC_421_1200BPS));
+                        break;
+                    default:
+                        break;
+                }
+
+                g_plc_prm.sendStatus = PLC_MSG_SENDING;
+                
+                OSSemPend(g_sem_plc, g_sys_register_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
+
+                g_plc_prm.data_len = 0;
+
+                if(OS_ERR_NONE == err)
+                {
+                    PRO_DL645_Proc();
+                }
+                else
+                {
+                    g_plc_prm.result = PLC_RES_TIMEOUT;
+                }
+
+                g_plc_prm.sendStatus = PLC_MSG_RECEIVED;
+
+                OSMboxPost(g_sys_control.upMb, (void *)&g_plc_prm);                
                 break;
 
             case PLC_CMD_TYPE_COMMON:
@@ -542,13 +667,17 @@ void  App_TaskPLC (void *p_arg)
                     memcpy(&dl645_frame_send.Data[DL645_97_DATA_ITEM_LEN], g_send_para_pkg.dataBuf, g_send_para_pkg.dataLen);
                     g_send_para_pkg.dataLen += DL645_97_DATA_ITEM_LEN;
                 }
-                else if((FRM_CTRW_07_READ_SLVS_DATA == (g_send_para_pkg.ctlCode & CCTT_CONTROL_CODE_MASK)) ||
-                        (FRM_CTRW_07_WRITE_SLVS_DATA == (g_send_para_pkg.ctlCode & CCTT_CONTROL_CODE_MASK)))
+                else if((FRM_CTRW_07_READ_SLVS_DATA == (g_send_para_pkg.ctlCode & CCTT_CONTROL_CODE_MASK))
+                        ||(FRM_CTRW_07_WRITE_SLVS_DATA == (g_send_para_pkg.ctlCode & CCTT_CONTROL_CODE_MASK)))
                 
-                {   /* 2007读写命令，4个字节数据标识 */
-                    memcpy(dl645_frame_send.Data, g_send_para_pkg.dataFlag, DL645_07_DATA_ITEM_LEN);
-                    memcpy(&dl645_frame_send.Data[DL645_07_DATA_ITEM_LEN], g_send_para_pkg.dataBuf, g_send_para_pkg.dataLen);
-                    g_send_para_pkg.dataLen += DL645_07_DATA_ITEM_LEN;
+                { 
+                    if(FRM_CTRW_07_READ_SLVS_DATA == (g_send_para_pkg.ctlCode & CCTT_CONTROL_CODE_MASK))
+                    {
+                        /* 2007读命令，4个字节数据标识 */
+                        memcpy(dl645_frame_send.Data, g_send_para_pkg.dataFlag, DL645_07_DATA_ITEM_LEN);
+                        memcpy(&dl645_frame_send.Data[DL645_07_DATA_ITEM_LEN], g_send_para_pkg.dataBuf, g_send_para_pkg.dataLen);
+                        g_send_para_pkg.dataLen += DL645_07_DATA_ITEM_LEN;
+                    }
                 }
                 else
                 {   /* 非读写命令，无数据标识 */
@@ -556,6 +685,107 @@ void  App_TaskPLC (void *p_arg)
                 } 
                 
                 Create_DL645_Frame(g_send_para_pkg.dstAddr, g_send_para_pkg.ctlCode, g_send_para_pkg.dataLen, &dl645_frame_send);
+
+                RF_SEND_LEN = g_send_para_pkg.dataLen + DL645_FIX_LEN;
+                
+                if(CHANNEL_WIRELESS == g_sys_register_para.channel)  //无线
+                {
+                    memcpy(&rf_addr[6], g_send_para_pkg.dstAddr, DL645_ADDR_LEN);
+
+                    OSSemAccept(g_sem_rf);
+                    
+                    GDW_RF_Protocol_2013(rf_addr, 0x00, 0x00, 0x00, (u8 *)&dl645_frame_send, RF_SEND_LEN, RF_SEND_BUF);
+
+                    g_plc_prm.sendStatus = PLC_MSG_SENDING;
+
+                    g_plc_prm.send_len = RF_SEND_LEN;
+
+                    memcpy(g_plc_prm.send_buf, (u8 *)&dl645_frame_send, g_plc_prm.send_len);                    
+
+                    OSMboxPost(g_sys_control.upMb, (void *)&g_plc_prm);
+
+                    OSTimeDly(200);                    
+
+                    OSSemPend(g_sem_rf, 5 * OS_TICKS_PER_SEC, &err);
+
+                    g_plc_prm.data_len = 0;
+
+                    if(OS_ERR_NONE == err)
+                    {
+                        memcpy(&dl645_frame_recv, &RF_RECV_BUF[RF_RECV_FIX_LEN], RF_RECV_LEN - RF_RECV_FIX_LEN);                                       
+                        memcpy(&g_plc_prm.recv_buf,&RF_RECV_BUF[RF_RECV_FIX_LEN], RF_RECV_LEN - RF_RECV_FIX_LEN);
+                        g_plc_prm.recv_len = RF_RECV_LEN - RF_RECV_FIX_LEN - RF_PRINT_FIX_LEN;
+                        PRO_Databuf_Proc();
+                    }
+                    else
+                    {   
+                        g_plc_prm.result = PLC_RES_TIMEOUT;                                        
+                    }
+                    
+                    g_plc_prm.sendStatus = PLC_MSG_RECEIVED;
+                    
+                    OSMboxPost(g_sys_control.upMb, (void *)&g_plc_prm);
+                }
+                else if(CHANNEL_PLC == g_sys_register_para.channel)
+                {
+                    g_plc_prm.send_len = RF_SEND_LEN;
+                    
+                    memcpy(&g_plc_prm.send_buf[DL645_INDEX], &dl645_frame_send, g_plc_prm.send_len);
+                    
+                    g_plc_prm.send_buf[FREQ_INDEX] = g_sys_register_para.preamble;
+                    g_plc_prm.send_len += FREQ_LEN;
+                    
+                    OSSemAccept(g_sem_plc);
+                    
+                    plc_uart_send(g_plc_prm.send_buf, g_plc_prm.send_len);
+                    
+                    g_plc_prm.sendStatus = PLC_MSG_SENDING;
+                    
+                    OSMboxPost(g_sys_control.upMb, (void *)&g_plc_prm);
+
+                    OSTimeDly(200);
+                    
+                    OSSemPend(g_sem_plc, g_sys_register_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
+
+                    g_plc_prm.data_len = 0;
+                    
+                    if(OS_ERR_NONE == err)
+                    {
+                        PRO_Databuf_Proc();
+                    }
+                    else
+                    {   
+                        g_plc_prm.result = PLC_RES_TIMEOUT;                                        
+                    }
+                    
+                    g_plc_prm.sendStatus = PLC_MSG_RECEIVED;
+                    
+                    OSMboxPost(g_sys_control.upMb, (void *)&g_plc_prm);
+                }
+                break;
+
+            case PLC_CMD_TYPE_ROUTE: 
+#if 0                
+                //读命令
+                if((FRM_CTRW_07_READ_SLVS_DATA == (g_send_para_pkg.ctlCode & CCTT_CONTROL_CODE_MASK)))
+                {
+                    //中继地址的第一个地址是在帧中的地址项里，而目标地址是在数据项中,所以i+1
+                    for(i = 0; i < (g_sys_control.sysAddrLevel-1); i++)
+                    {
+                        memcpy(&dl645_frame_send.Data[DL645_ADDR_LEN * i], g_send_para_pkg.relayAddr[i+1], DL645_ADDR_LEN);
+                    }
+                    memcpy(&dl645_frame_send.Data[DL645_ADDR_LEN * (g_sys_control.sysAddrLevel-1)],g_send_para_pkg.dstAddr,DL645_ADDR_LEN);
+                    
+                    memcpy(&dl645_frame_send.Data[g_sys_control.sysAddrLevel * DL645_ADDR_LEN], g_send_para_pkg.dataFlag, DL645_07_DATA_ITEM_LEN);
+                    //memcpy(&dl645_frame_send.Data[(g_sys_control.sysAddrLevel * DL645_ADDR_LEN) + DL645_07_DATA_ITEM_LEN], g_send_para_pkg.dataBuf, g_send_para_pkg.dataLen);
+                    g_send_para_pkg.dataLen += (DL645_07_DATA_ITEM_LEN + g_sys_control.sysAddrLevel * DL645_ADDR_LEN);
+                    g_send_para_pkg.ctlCode = c_645ctrlDef[g_sys_register_para.plcProtocol][1]; 
+                    g_send_para_pkg.ctlCode += g_sys_control.sysAddrLevel * DL645_RELAY_ADDED_VAL;
+                    //memcpy(g_send_para_pkg.relayAddr[g_sys_control.sysAddrLevel],g_send_para_pkg.dstAddr,DL645_ADDR_LEN);
+                }
+
+                Create_DL645_Frame(g_send_para_pkg.relayAddr[0], g_send_para_pkg.ctlCode, g_send_para_pkg.dataLen, &dl645_frame_send);
+                //Create_DL645_LeveFrame(u8 * leve_Addr,u8 leve,u8 * Addr,u8 C,u8 len,u8 * data,u8 * Send_buf)();
                 
                 g_plc_prm.send_len = g_send_para_pkg.dataLen + DL645_FIX_LEN;
                 
@@ -574,7 +804,47 @@ void  App_TaskPLC (void *p_arg)
 
                 OSTimeDly(200);
                 
-                OSSemPend(g_sem_plc, 5 * OS_TICKS_PER_SEC, &err);
+                OSSemPend(g_sem_plc, g_sys_register_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
+
+                g_plc_prm.data_len = 0;
+                
+                if(OS_ERR_NONE == err)
+                {
+                    PRO_Databuf_Proc();
+                }
+                else
+                {   
+                    g_plc_prm.result = PLC_RES_TIMEOUT;                                        
+                }
+                
+                g_plc_prm.sendStatus = PLC_MSG_RECEIVED;
+                
+                OSMboxPost(g_sys_control.upMb, (void *)&g_plc_prm);   
+#endif
+
+                memcpy(g_send_para_pkg.relayAddr[g_sys_control.sysAddrLevel], g_send_para_pkg.dstAddr, DL645_ADDR_LEN);
+                g_send_para_pkg.ctlCode = c_645ctrlDef[g_sys_register_para.plcProtocol][1];
+                g_plc_prm.send_len = Create_DL645_LeveFrame(g_send_para_pkg.relayAddr, g_sys_control.sysAddrLevel, g_send_para_pkg.dstAddr,
+                                                            g_send_para_pkg.ctlCode, DL645_07_DATA_ITEM_LEN, g_send_para_pkg.dataFlag, &dl645_frame_send);
+
+                //plc_uart_send(g_plc_prm.send_buf, g_plc_prm.send_len);
+
+                memcpy(&g_plc_prm.send_buf[DL645_INDEX], &dl645_frame_send, g_plc_prm.send_len);
+                
+                g_plc_prm.send_buf[FREQ_INDEX] = g_sys_register_para.preamble;
+                g_plc_prm.send_len += FREQ_LEN;
+                
+                OSSemAccept(g_sem_plc);
+                
+                plc_uart_send(g_plc_prm.send_buf, g_plc_prm.send_len);
+                
+                g_plc_prm.sendStatus = PLC_MSG_SENDING;
+                
+                OSMboxPost(g_sys_control.upMb, (void *)&g_plc_prm);
+
+                OSTimeDly(200);
+                
+                OSSemPend(g_sem_plc, g_sys_register_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
 
                 g_plc_prm.data_len = 0;
                 
@@ -590,6 +860,7 @@ void  App_TaskPLC (void *p_arg)
                 g_plc_prm.sendStatus = PLC_MSG_RECEIVED;
                 
                 OSMboxPost(g_sys_control.upMb, (void *)&g_plc_prm);
+            
                 break;
 
             default:
@@ -598,20 +869,23 @@ void  App_TaskPLC (void *p_arg)
         }
         else
         {
-            OSSemPend(g_sem_plc, 5, &err);
-
-            if(OS_ERR_NONE == err)
+            if(CHANNEL_PLC == g_sys_register_para.channel) 
             {
-                g_plc_prm.result = PLC_RES_SUCC;
+                OSSemPend(g_sem_plc, 5, &err);
 
-                if(FALSE == plc_listen_record())
+                if(OS_ERR_NONE == err)
                 {
-                    DEBUG_PRINT(("PLC listening record error!\n"));
-                }
+                    g_plc_prm.result = PLC_RES_SUCC;
 
-                g_plc_prm.sendStatus = PLC_MSG_RECEIVED;
-                
-                OSMboxPost(g_sys_control.upMb, (void *)&g_plc_prm);                
+                    if(FALSE == plc_listen_record())
+                    {
+                        DEBUG_PRINT(("PLC listening record error!\n"));
+                    }
+
+                    g_plc_prm.sendStatus = PLC_MSG_RECEIVED;
+                    
+                    OSMboxPost(g_sys_control.upMb, (void *)&g_plc_prm);                
+                }
             }
         }
     }

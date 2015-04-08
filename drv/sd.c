@@ -25,7 +25,7 @@ void SD_SPI_SpeedLow(void)
 //SD卡正常工作的时候,可以高速了
 void SD_SPI_SpeedHigh(void)
 {
- 	SPI1_SetSpeed(SPI_BAUDRATEPRESCALER_4);//设置到高速模式	
+ 	SPI1_SetSpeed(SPI_BAUDRATEPRESCALER_32);//设置到高速模式	
 }
 
 //取消选择,释放SPI总线
@@ -521,13 +521,13 @@ void FatFs_Test(void)
         {
         }
 
-        BSP_LED_Off(LED_UART);
+        //LED_Off(LED_UART);
 
         res = f_read(&fp, g_test_buf, SD_SECTOR_SIZE, &br);
 
         if((FR_OK == res) && (0 != br))
         {
-            BSP_LED_On(LED_PLC);
+            //LED_On(LED_PLC);
         }
         else
         {

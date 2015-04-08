@@ -82,7 +82,15 @@ void  App_TaskKey (void *p_arg)
             
 			if(GPIO_PIN_RESET == HAL_GPIO_ReadPin(KEYBOARD_COL_PORT, g_key_control.key_col))
 			{
-			  BSP_LED_Toggle(0);
+              LED_KEY_ON();
+
+              g_sys_control.led_count = LED_KEY_DISP_TIME;
+
+              LCD_BL_ON();
+              //LCD_PWR_ON();
+              LED_Off(LED_PWR);
+              //GUI_Clear();
+
 			  break;
 			}		
   
@@ -125,55 +133,6 @@ void  App_TaskKey (void *p_arg)
 
         if(g_sys_control.sysPowerState == SYS_POWER_IDLE)
             APP_Wakeup();
-
-        
-
-        
-/******************************************************************
-
-        if(key_msg == GUI_KEY_YELLOW)
-        {
-            if(HBWIN_NULL!= g_hWin_DataSign)
-            {                               
-                WM_SendMessageNoPara(g_hWin_DataSign,WM_MSG_DeleteDialog);
-            }
-
-			if(HBWIN_NULL!= g_hWin_relay)
-			{
-			    WM_SendMessageNoPara(g_hWin_relay,WM_MSG_DeleteDialog);
-			}
-			if(HBWIN_NULL!= g_hWin_msg)
-			{
-				WM_SendMessageNoPara(g_hWin_msg,WM_MSG_DeleteDialog);
-			}
-
-			if(HBWIN_NULL!= g_hWin_monitor)
-			{
-				WidgetHandleSel(g_hWin_menu,g_hWin_monitor);
-			}
-
-            if(HBWIN_NULL != g_hWin_std)
-            {
-               WidgetHandleSel(g_hWin_menu,g_hWin_std);
-            }
-        }
-        else
-        {
-*****************************************************************/
-
-            //GUI_SendKeyMsg(key_msg , 0);//松开的时候发送
-        //}
-        
-        //hItem = WM_GetDialogItem(g_hWin, ID_EDIT_0);
-        //EDIT_SetDecMode(EDIT_Handle hEdit,I32 Value,I32 Min,I32 Max,int Shift,U8 Flags)
-        //EDIT_SetUlongMode(hItem,0,0,100);
-        //EDIT_SetValue(hItem, n);
-
-        //hItem = WM_GetDialogItem(g_hWin, ID_EDIT_1);
-        //EDIT_SetUlongMode(hItem,0,0,100);
-        //EDIT_SetValue(hItem, i);
-
-        //WM_Update(g_hWin);
 
 key_proc_end:
         GPIO_ResetBits(KEYBOARD_ROW_PORT, KEYBOARD_ROW);

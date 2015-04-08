@@ -51,32 +51,6 @@
 #define ID_TEXT_7   (GUI_ID_USER + 0x18)
 
 
-// USER START (Optionally insert additional defines)
-// USER END
-
-/*********************************************************************
-*
-*       Static data
-*
-**********************************************************************
-*/
-
-static const char Year[]  ="\xe5\xb9\xb4:";
-static const char Month[] ="\xe6\x9c\x88:";
-static const char Day[]   ="\xe6\x97\xa5:";
-static const char Hour[]  ="\xe6\x97\xb6:";
-static const char Minite[]="\xe5\x88\x86:";
-static const char Second[]="\xe7\xa7\x92:";
-
-static const char Confirm[]="\xe7\xa1\xae\xe5\xae\x9a";
-static const char Cancel[] ="\xe5\x8f\x96\xe6\xb6\x88";
-
-static const char TimeSet[]="\xe6\x97\xb6\xe9\x97\xb4\xe8\xae\xbe\xe7\xbd\xae(24\xe6\x97\xb6\xe5\x88\xb6)";
-static const char TypeDirection[]="24\xe5\xb0\x8f\xe6\x97\xb6\xe6\xa0\xbc\xe5\xbc\x8f";
-//\xe5\xb0\x8f \xe6\xa0\xbc\xe5\xbc\x8f小格式
-
-// USER START (Optionally insert additional static data)
-// USER END
 
 /*********************************************************************
 *
@@ -98,10 +72,8 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { EDIT_CreateIndirect,   "sec",     ID_EDIT_5,   110, 220, 80,  20, 0, 2, 0 },
   { BUTTON_CreateIndirect, Confirm,   ID_BUTTON_0, 10,  259, 80,  25, 0, 0x0, 0 },
   { BUTTON_CreateIndirect, Cancel,    ID_BUTTON_1, 150, 261, 80,  25, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,   TimeSet,   ID_TEXT_6,   60,  12,  150, 20, 0, 0x0, 0 },
- // { TEXT_CreateIndirect,   TimeSet,   ID_TEXT_7,   50,  12, 120,  20, 0, 0x0, 0 }
-  // USER START (Optionally insert additional widgets)
-  // USER END
+  { TEXT_CreateIndirect,   TimeSet_24,ID_TEXT_6,   60,  12,  150, 20, 0, 0x0, 0 },
+ 
 };
 
 /*********************************************************************
@@ -126,38 +98,38 @@ u32 Time_From_Widget(unsigned char *time)
     
     hItem=WM_GetDialogItem(g_hWin_TimeSet,ID_EDIT_4);     
     EDIT_GetText(hItem,TimeBuf,TIME_CH_LEN);
-    if(atoi(TimeBuf)>59)
+    //if(atoi(TimeBuf)>59)
     {
-        ERR_NOTE(g_hWin_para,GUI_MSBOX_MIN_ERROR);
-        WM_SetFocus(hItem);
-        return DEV_ERROR;
+       // ERR_NOTE(g_hWin_TimeSet,GUI_MSBOX_MIN_ERROR);
+        //WM_SetFocus(hItem);
+        //return DEV_ERROR;
     }
-    else
+   // else
     {
         time[1]=Hex2BcdChar(atoi(TimeBuf));
     }    
     hItem=WM_GetDialogItem(g_hWin_TimeSet,ID_EDIT_3);     
     EDIT_GetText(hItem,TimeBuf,TIME_CH_LEN);
-    if(atoi(TimeBuf)>23)
+    //if(atoi(TimeBuf)>23)
     {
-        ERR_NOTE(g_hWin_para,GUI_MSBOX_HOUR_ERROR);
-        WM_SetFocus(hItem);
-        return DEV_ERROR;
+        //ERR_NOTE(g_hWin_TimeSet,GUI_MSBOX_HOUR_ERROR);
+        //WM_SetFocus(hItem);
+        //return DEV_ERROR;
     }
-    else
+    //else
     {
         time[2]=Hex2BcdChar(atoi(TimeBuf));
     }
     
     hItem=WM_GetDialogItem(g_hWin_TimeSet,ID_EDIT_2);     
     EDIT_GetText(hItem,TimeBuf,TIME_CH_LEN);
-    if(atoi(TimeBuf)>31)
+    //if(atoi(TimeBuf)>31)
     {
-        ERR_NOTE(g_hWin_para,GUI_MSBOX_DAY_ERROR);
-        WM_SetFocus(hItem);
-        return DEV_ERROR;
+        //ERR_NOTE(g_hWin_TimeSet,GUI_MSBOX_DAY_ERROR);
+        //WM_SetFocus(hItem);
+       // return DEV_ERROR;
     }
-    else
+    //else
     {
         time[4]=Hex2BcdChar(atoi(TimeBuf));
     }
@@ -166,9 +138,9 @@ u32 Time_From_Widget(unsigned char *time)
     EDIT_GetText(hItem,TimeBuf,TIME_CH_LEN);
     if(atoi(TimeBuf)>12)
     {
-        ERR_NOTE(g_hWin_para,GUI_MSBOX_MONTH_ERROR);
-        WM_SetFocus(hItem);
-        return DEV_ERROR;
+        //ERR_NOTE(g_hWin_TimeSet,GUI_MSBOX_MONTH_ERROR);
+        //WM_SetFocus(hItem);
+       // return DEV_ERROR;
     }
     else
     {
@@ -279,74 +251,52 @@ WM_HWIN TMS_Get_Sec(void)
 }
 
 
-int tms_key_cnt=1;
+static int tms_key_cnt=0;
     
 //向上选择
 void TMS_SelEdt_Up(WM_MESSAGE * pMsg)
 {
     WM_HWIN hItem;
-    if(tms_key_cnt==KEY_PRESS_CNT_MIN)
+    if(tms_key_cnt == 0)
     {
-        
-        //WM_SetFocus(hItem);
-        
         hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_5);
-        ///EDIT_SetBkColor(hItem,0,GUI_GREEN);
         WM_SetFocus(hItem);
 
-        hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
-        EDIT_SetBkColor(hItem,0,0xC0C0C0);
-        
         tms_key_cnt=5;
     }
     else
     {
         tms_key_cnt--;
         hItem=WM_GetDialogItem(pMsg->hWin,(ID_EDIT_0+tms_key_cnt));
-        //EDIT_SetBkColor(hItem,0,GUI_GREEN);
         WM_SetFocus(hItem);
-
-        hItem=WM_GetDialogItem(pMsg->hWin,(ID_EDIT_0+tms_key_cnt+1));
-        EDIT_SetBkColor(hItem,0,0xC0C0C0);
     }
 }
 //向下选择
 void TMS_SelEdt_Down(WM_MESSAGE *pMsg)
 {
     WM_HWIN hItem;
-    if(tms_key_cnt==5)
+    if(tms_key_cnt == 5)
     {
         hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
-        //EDIT_SetBkColor(hItem,0,GUI_GREEN);
         WM_SetFocus(hItem);
-        
-        hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_5);
-        EDIT_SetBkColor(hItem,0,0xC0C0C0);
-        
-        tms_key_cnt=KEY_PRESS_CNT_MIN;
+        tms_key_cnt = 0;
     }
     else
     {
         tms_key_cnt++;
         hItem=WM_GetDialogItem(pMsg->hWin,(ID_EDIT_0+tms_key_cnt));
-        //EDIT_SetBkColor(hItem,0,GUI_GREEN);
         WM_SetFocus(hItem);
-        
-        hItem=WM_GetDialogItem(pMsg->hWin,(ID_EDIT_0+tms_key_cnt-1));
-        EDIT_SetBkColor(hItem,0,0xC0C0C0);
-
     }
-
 }
 
 
-void TMS_Color_Change(WM_MESSAGE *pMsg)
+void TMS_Color_Change(void)
 {
     WM_HWIN hItem;
     int i;
     for(i=0;i<6;i++)
     {
-        hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0+i);
+        hItem=WM_GetDialogItem(g_hWin_TimeSet,ID_EDIT_0+i);
         if(WM_HasFocus(hItem)==1)
         {
             EDIT_SetBkColor(hItem,0,GUI_GREEN);
@@ -355,11 +305,15 @@ void TMS_Color_Change(WM_MESSAGE *pMsg)
         {
             EDIT_SetBkColor(hItem,0,0xC0C0C0);
         }
-
     }
 }
 
-
+void TMS_SetFocus(void)
+{
+    WM_HWIN hItem;
+    hItem = WM_GetDialogItem(g_hWin_TimeSet, (ID_EDIT_0 + tms_key_cnt));
+    WM_SetFocus(hItem);
+}
 
 
 
@@ -386,7 +340,7 @@ static void _cbDialog(WM_MESSAGE * pMsg)
         break;
        
       case WM_KEY:
-        if((((WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt)==0)
+        if((((WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt)==1)
         {
             Id=WM_GetId(pMsg->hWinSrc);
             key_num=((WM_KEY_INFO *)(pMsg->Data.p))->Key;
@@ -449,35 +403,36 @@ static void _cbDialog(WM_MESSAGE * pMsg)
                 
                 case GUI_KEY_UP:
                     TMS_SelEdt_Up(pMsg);
-                    TMS_Color_Change(pMsg);
+                    TMS_Color_Change();
                     break;
                 case GUI_KEY_DOWN:
                     TMS_SelEdt_Down(pMsg);
-                    TMS_Color_Change(pMsg);
+                    TMS_Color_Change();
                     break;
                 case GUI_KEY_GREEN: /*保存重新设置的时间*/
                     if(DEV_OK==Time_From_Widget(g_rtc_time))
                     {
                         RTC_WriteTime(g_rtc_time);
+                        WM_DeleteWindow(g_hWin_TimeSet);
+                        g_hWin_TimeSet=HBWIN_NULL;
+                        tms_key_cnt=0;
+                        WM_SetFocus(g_hWin_para);
                     }
-                    else
+                    else if(DEV_ERROR == Time_From_Widget(g_rtc_time))
                     {
-                        WM_SetFocus(g_hWin_Err);
+                        
                     }
-                    WM_DeleteWindow(g_hWin_TimeSet);
-                    g_hWin_TimeSet=HBWIN_NULL;
-                    WM_SetFocus(g_hWin_para);
                     break;
                 //因为没有在edit中拦截消息，所以在edit中也可以直接删除窗口
                 case GUI_KEY_YELLOW:
                     WM_DeleteWindow(g_hWin_TimeSet);
                     g_hWin_TimeSet=HBWIN_NULL;
                     WM_SetFocus(g_hWin_para);
-                    tms_key_cnt=1;
+                    tms_key_cnt=0;
                     break;   
 
                 case GUI_KEY_TAB:
-                    TMS_Color_Change(pMsg);
+                    TMS_Color_Change();
                     
                     break;
             }

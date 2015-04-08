@@ -46,6 +46,10 @@ Sector 7 0x0806 0000 - 0x0807 FFFF 128 Kbyte
 #define GET_USB_VOL()    HAL_GPIO_ReadPin(GPIOG,GPIO_PIN_13)
 
 
+#define SYS_POWER_ON        0
+#define SYS_POWER_OFF       1
+
+
 typedef struct  __sys_storage_struct__
 {
 unsigned int magic_word;
@@ -54,7 +58,7 @@ unsigned int crc;
 unsigned int versionDate;
 
 
-unsigned int meterPassword;//密码
+unsigned int meterPassword[8];//密码
 unsigned int recvDelayTime;//接受数据延时
 unsigned int execInterval;//执行时间
 unsigned int scrTimeout;           //屏幕超时
@@ -68,9 +72,12 @@ unsigned int preamble; //前导符
 unsigned int stopbit;
 unsigned int number;
 
-//unsigned int pwrValue;//电池电量
+unsigned int freqSel; //速率选择,下面减过了
 
-unsigned int para_data[SRM_PARA_NUMBER-14];
+unsigned int bpsSpeed;             //传输数据等待时间,需要保存，以便下次启动有默认设置
+
+
+unsigned int para_data[SRM_PARA_NUMBER - 23];
 }ROM_PARA, *P_ROM_PARA;
 
 typedef struct __sys_control__
@@ -84,8 +91,16 @@ typedef struct __sys_control__
     u32   sleepTimeout;
     u32   sysPowerState;
     u32   sysUsbVol;
+    u32   sysCtdFlag;  //倒计时标志
+    u32   sysCtdVal;  //倒计时的时间
+    u8    numMultiedit;        //多行文本打印次数
     u32   selectWidget;         //根据此值选择不同的回调函数
+    u32   led_count;          //按键按一次LED亮一次
+    u8    monitorFlag;        //处于监控态的时候，不要关机
     u8    recentMeterAddr[6];   //最近使用的表地址
+    u8    relayAddr[7][6];      //中继地址，保存下，便于下次初始化
+    u8    sysAddrLevel;          //共有几级中继
+    u8    sysUseRoute;          //启动路由标志位
     u8    defaultDataFlag[4];   //最近使用的数据标识
     OS_EVENT *downMb; //邮箱发送的消息
     OS_EVENT *upMb; //邮箱发送的消息
