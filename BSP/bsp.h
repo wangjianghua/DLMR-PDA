@@ -273,7 +273,7 @@ void        BSP_IntVectSet (CPU_DATA       int_id,
 
 void        LED_On     (CPU_INT08U     led);
 void        LED_Off    (CPU_INT08U     led);
-void        BSP_LED_Toggle (CPU_INT08U     led);
+void        LED_Toggle (CPU_INT08U     led);
 
 CPU_INT32U  BSP_RNG_Read   (void);
 

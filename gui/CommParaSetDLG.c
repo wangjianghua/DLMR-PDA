@@ -251,10 +251,10 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     switch(g_sys_register_para.plcProtocol)
     {
         case DL_T_07:
-            EDIT_SetText(hItem, "DL-T-07");
+            EDIT_SetText(hItem, "DLT-07");
             break;
         case DL_T_97:
-            EDIT_SetText(hItem, "DL-T-97");
+            EDIT_SetText(hItem, "DLT-97");
     }
     
 

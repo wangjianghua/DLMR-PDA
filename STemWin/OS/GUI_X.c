@@ -122,13 +122,14 @@ U32 GUI_X_GetTaskId(void)
 
 void GUI_X_Lock(void)
 {
+    U8 err;
 #if 1
   if(g_gui_mutx == NULL)
   {
     GUI_X_InitOS();
   }
-
-  OSSemAccept(g_gui_mutx);
+  OSSemPend(g_gui_mutx,0,&err);
+  //OSSemAccept(g_gui_mutx);
   
 #endif  
 }

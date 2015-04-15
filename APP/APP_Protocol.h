@@ -6,7 +6,7 @@
 #endif
 
 
-#define LED_PLC_TOGGLE()        BSP_LED_Toggle(LED_PLC)
+#define LED_PLC_TOGGLE()        LED_Toggle(LED_PLC)
 #define LED_PLC_OFF()           LED_Off(LED_PLC)
 #define LED_PLC_ON()            LED_On(LED_PLC)
 
@@ -79,6 +79,17 @@
 #define GUI_PLC_MSG_MEMORY      5    //内存管理
 #define GUI_PLC_MSG_FREQ        6    //速率设置
 
+
+#define FILE_NAME_LEN           12
+#define FILE_NUM_LEN             4
+#define FILE_SIZE_LEN            4
+#define MAX_FILE_NUM            10
+#define SEQ_LEN                  1
+
+#define SCAN_FILE_CMD   0xF0000100
+#define READ_FILE_CMD   0xF0010100
+
+
 typedef struct _plc_prm
 {
     u8 send_buf[256]; //DL645发送帧
@@ -98,6 +109,7 @@ typedef struct _plc_prm
 
 extern OS_EVENT *g_sem_plc;
 extern OS_EVENT *g_sem_rf;
+extern OS_EVENT *g_sem_pc;
 extern u8 g_cur_freq;
 extern PLC_PRM g_plc_prm;
 
@@ -111,6 +123,7 @@ unsigned int PC_postProcess(pvoid h);
 unsigned int RS485_postProcess(pvoid h);
 unsigned int PLC_postProcess(pvoid h);
 void App_TaskPLC(void *p_arg);
+void App_TaskPC(void *p_arg);
 
 
 #ifdef __cplusplus

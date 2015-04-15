@@ -288,14 +288,14 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 DEV_Parameters_Write();//±£´æÊý¾Ý
                 
                 WM_DeleteWindow(g_hWin_speed);
-                g_hWin_speed = HBWIN_NULL;
                 FRQ_SetFocus();
+                g_hWin_speed = HBWIN_NULL;
                 break;
 
             case GUI_KEY_YELLOW:
                 WM_DeleteWindow(g_hWin_speed);
-                g_hWin_speed = HBWIN_NULL;
                 FRQ_SetFocus();
+                g_hWin_speed = HBWIN_NULL;
                 break;
         }
     }

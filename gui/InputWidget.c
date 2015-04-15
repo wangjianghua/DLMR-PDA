@@ -402,6 +402,7 @@ static void _cbEditDlg(WM_MESSAGE *pMsg)
                   Select_Input_Edit(g_sys_control.selectWidget);
                   WM_DeleteWindow(g_hWin_Input);
                   Select_Focus();
+                  g_hWin_Input = HBWIN_NULL;
                   break;
             }
         }
@@ -494,7 +495,7 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
         case LISTBOX_CTLCODE:  /*¿ØÖÆ×Ö*/
             LISTBOX_AddString(hItem, GetAddr);
             LISTBOX_AddString(hItem, Readdata);
-            LISTBOX_AddString(hItem, WriteData);
+            //LISTBOX_AddString(hItem, WriteData);
             //LISTBOX_AddString(hItem, ClrDemond);
             break;
 

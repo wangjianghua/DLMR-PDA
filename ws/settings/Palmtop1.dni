@@ -21,7 +21,7 @@ ActionState=1
 Enabled=0
 ShowSource=1
 [DebugChecksum]
-Checksum=-1447704397
+Checksum=-127372194
 [Exceptions]
 StopOnUncaught=_ 0
 StopOnThrow=_ 0
@@ -141,8 +141,9 @@ Bp1=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\drv\SI4438.c}.224.5" 0 0 1 "" 0 "" 0
 Bp2=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\drv\SI4438.c}.370.5" 0 0 1 "" 0 "" 0
 Bp3=_ 0 "EMUL_CODE" "0x080477E4" 0 0 1 "" 0 "" 0
 Bp4=_ 0 "EMUL_CODE" "0x08060362" 0 0 1 "" 0 "" 0
-Bp5=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\APP\APP_Protocol.c}.500.21" 0 0 1 "" 0 "" 0
-Count=6
+Bp5=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\BSP\IAR\cstartup.c}.251.5" 0 0 1 "" 0 "" 0
+Bp6=_ 0 "EMUL_CODE" "0x00000000" 0 0 1 "" 0 "" 0
+Count=7
 [Aliases]
 A0=_ "C:\Users\Administrator\Desktop\PDA_2015.01.19\PDA\APP\app.c" ""
 A1=_ "C:\Users\Administrator\Desktop\PDA_2015.01.19\PDA\drv\SI4438.c" ""

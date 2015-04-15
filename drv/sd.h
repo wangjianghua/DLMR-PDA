@@ -77,6 +77,8 @@
 #define SD_FORMAT  FDISK
 
 extern u8 SD_Type; //SD卡的类型
+extern char SD_FileName[50][16];
+extern unsigned long SD_FileSize[50];
 
 //函数申明区 
 void SD_SPI_SpeedLow(void);
@@ -92,6 +94,7 @@ u8 SD_GetCSD(u8 *csd_data);                     //读SD卡CSD
 uint8_t SD_ReadWriteByte(uint8_t Data);
 u8 SD_ReadBlock(uint8_t *pBuffer, uint32_t ReadAddr, uint32_t NumberOfBlocks);
 u8 SD_WriteBlock(uint8_t *pBuffer, uint32_t WriteAddr, uint32_t NumberOfBlocks);
+void Scan_Files(char *path);
 void FatFs_Test(void);
 
 

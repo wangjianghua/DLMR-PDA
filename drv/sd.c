@@ -448,6 +448,45 @@ u8 get_sd_info(void)
     return (TRUE);
 }
 
+char SD_FileName[50][16] = {0};
+unsigned long SD_FileSize[50] = {0}; 
+#if (EWARM_OPTIMIZATION_EN > 0u)
+#pragma optimize = low
+#endif
+void Scan_Files(char *path)
+{	
+	FILINFO finfo;
+	DIR dirs;
+	int i = 0;
+	char *fname;
+#if _USE_LFN
+#define _DF1S	0x81
+    static char lfn[_MAX_LFN * (_DF1S ? 2 : 1) + 1];
+    finfo.lfname=lfn;
+    finfo.lfsize=sizeof(lfn);
+#endif
+	if(FR_OK == f_opendir(&dirs, path)) 
+	{
+        memset(SD_FileName, 0, sizeof(SD_FileName));
+		while(FR_OK == f_readdir(&dirs, &finfo))
+		{
+#if _USE_LFN
+            fname = (*finfo.lfname) ? (finfo.lfname) : (finfo.fname);
+#else
+            fname = finfo.fname;
+#endif		
+            if((!fname[0]) && (i < 100))
+            {
+            	break;
+            }
+            if(finfo.fattrib & AM_ARC)
+            {
+            	strcpy(SD_FileName[i], fname);
+            	i++;
+            }
+		}
+	}
+}
 // ---------------------------------------------------
 
 #define TEST_SECTOR_COUNT                      2

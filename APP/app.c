@@ -63,6 +63,7 @@ static  OS_STK         App_TaskKeyStk[APP_CFG_TASK_KEY_STK_SIZE];
 static  OS_STK         App_TaskPLCStk[APP_CFG_TASK_PLC_STK_SIZE];
 static  OS_STK         App_TaskGMPStk[APP_CFG_TASK_GMP_STK_SIZE];
 static  OS_STK         App_TaskPowerStk[APP_CFG_TASK_POWER_STK_SIZE];
+static  OS_STK         App_TaskPCStk[APP_CFG_TASK_PC_STK_SIZE];
 
 
 /*
@@ -212,9 +213,9 @@ extern u8 g_get_pro[4];
 
 int G_II;
 
-uc8 g_testString[] = "Hello \xe7\xa1\xae! \n";
+//uc8 g_testString[] = "Hello \xe7\xa1\xae! \n";
 
-uc16 g_16string [] = {0x53D6, 0x56DE, 0x62,'\r\n',0};
+//uc16 g_16string [] = {0x53D6, 0x56DE, 0x62,'\r\n',0};
 
 void APP_Shutdown()
 {
@@ -238,7 +239,6 @@ void APP_Sleep(void)
 #if 1
     g_sys_control.sysPowerState = SYS_POWER_IDLE;
     LCD_BL_OFF();
-    //LCD_PWR_OFF();
     LED_On(LED_PWR);
 #endif    
 }
@@ -323,8 +323,7 @@ static  void  App_TaskStart (void *p_arg)
 
     (void)p_arg; 
     
-    //u32 itest = 0; //高低温测试计数
-    INT8U err;  //测试用的
+    //INT8U err;  //测试用的
     
     DEV_Init();
 
@@ -482,7 +481,7 @@ static  void  App_TaskGUI (void *p_arg)
         }
         else if(j >= 10)
         {
-            G_II = BSP_Charg();
+            //G_II = BSP_Charg();
             g_sys_control.pwrValue = val/10;
             if(GPIO_PIN_RESET == BSP_Charg())
             {
@@ -663,10 +662,11 @@ static  void  App_EventCreate (void)
     g_sem_end = OSSemCreate(0);
     g_sem_plc = OSSemCreate(0);
     g_sem_rf = OSSemCreate(0);
+    g_sem_pc = OSSemCreate(0);
 	g_key_control.key_sem = OSSemCreate(0);    
     
     g_sys_control.downMb = OSMboxCreate(NULL); /*创建消息邮箱用来发送调试参数的结构体*/
-    g_sys_control.upMb = OSMboxCreate(NULL); /*创建消息邮箱用来发送调试参数的结构体*/    
+    g_sys_control.upMb = OSMboxCreate(NULL); /*创建消息邮箱用来发送调试参数的结构体*/        
 }
 
 
@@ -715,7 +715,7 @@ static  void  App_TaskCreate (void)
                     (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
     
 #if (OS_TASK_NAME_EN > 0)
-        OSTaskNameSet(APP_CFG_TASK_GUI_PRIO, "GMP", &err);
+    OSTaskNameSet(APP_CFG_TASK_GMP_PRIO, "GMP", &err);
 #endif
 
     OSTaskCreateExt((void (*)(void *)) App_TaskKey,              
@@ -773,6 +773,7 @@ static  void  App_TaskCreate (void)
 #if (OS_TASK_NAME_EN > 0)
     OSTaskNameSet(APP_CFG_TASK_PLC_PRIO, "PLC", &err);    
 #endif
+
     OSTaskCreateExt((void (*)(void *)) App_TaskPower,
                     (void           *) 0,
                     (OS_STK         *)&App_TaskPowerStk[APP_CFG_TASK_POWER_STK_SIZE - 1],
@@ -782,5 +783,23 @@ static  void  App_TaskCreate (void)
                     (INT32U          ) APP_CFG_TASK_POWER_STK_SIZE,
                     (void           *) 0,
                     (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
+
+#if (OS_TASK_NAME_EN > 0)
+    OSTaskNameSet(APP_CFG_TASK_POWER_PRIO, "Power", &err);    
+#endif
+
+    OSTaskCreateExt((void (*)(void *)) App_TaskPC,
+                    (void           *) 0,
+                    (OS_STK         *)&App_TaskPCStk[APP_CFG_TASK_PC_STK_SIZE - 1],
+                    (INT8U           ) APP_CFG_TASK_PC_PRIO,
+                    (INT16U          ) APP_CFG_TASK_PC_PRIO,
+                    (OS_STK         *)&App_TaskPCStk[0],
+                    (INT32U          ) APP_CFG_TASK_PC_STK_SIZE,
+                    (void           *) 0,
+                    (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
+
+#if (OS_TASK_NAME_EN > 0)
+    OSTaskNameSet(APP_CFG_TASK_PC_PRIO, "PC", &err);    
+#endif
 }
 

@@ -1176,7 +1176,7 @@ void  LED_Off (CPU_INT08U led)
 
 /*
 *********************************************************************************************************
-*                                            BSP_LED_Toggle()
+*                                            LED_Toggle()
 *
 * Description : TOGGLE any or all the LEDs on the board.
 *
@@ -1196,7 +1196,7 @@ void  LED_Off (CPU_INT08U led)
 *********************************************************************************************************
 */
 
-void  BSP_LED_Toggle (CPU_INT08U  led)
+void  LED_Toggle (CPU_INT08U  led)
 {
     switch(led)
     {

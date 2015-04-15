@@ -33,6 +33,7 @@ u8 rf_send_buf[256];
 
 OS_EVENT *g_sem_plc;
 OS_EVENT *g_sem_rf;
+OS_EVENT *g_sem_pc;
 
 u8 g_msg_buf[UART_RECEIVE_BUF_SIZE];
 u16 g_msg_len;
@@ -45,6 +46,9 @@ DL645_Frame_C dl645_frame_send;
 DL645_Frame_C dl645_frame_recv;
 DL645_Frame_Stat_C dl645_frame_stat;
 PLC_PRM g_plc_prm;
+DL645_Frame_C pc_frame_send;
+DL645_Frame_C pc_frame_recv;
+DL645_Frame_Stat_C pc_frame_stat;
 
 u16 pc_uart_send(u8 *buf, u16 len)
 {
@@ -170,14 +174,11 @@ unsigned int PC_postProcess(pvoid h)
 
 
     OS_ENTER_CRITICAL();
-    g_msg_len = 0;
-    memset(g_msg_buf, '\0', sizeof(g_msg_buf));
 
-    g_msg_len = mLen;
-    memcpy(&g_msg_buf[sizeof(P_MSG_HEAD)], pBuf, mLen);
+    memcpy(&pc_frame_recv, pBuf, mLen);
     OS_EXIT_CRITICAL();
 
-    uart_link_reply();
+    OSSemPost(g_sem_pc);
 
     return (TRUE);
 }
@@ -232,7 +233,6 @@ unsigned int PLC_postProcess(pvoid h)
 
     LED_PLC_TOGGLE();
 
-    pc_uart_send(pBuf, mLen);
     OS_EXIT_CRITICAL();
 
     OSSemPost(g_sem_plc);
@@ -318,7 +318,7 @@ u8 plc_listen_record(void)
         return (FALSE);
     }
     
-    res = f_open(&fp, "plc_log.txt", FA_READ | FA_WRITE | FA_OPEN_ALWAYS); //以读写方式打开、创建文件
+    res = f_open(&fp, "plc__log.txt", FA_READ | FA_WRITE | FA_OPEN_ALWAYS); //以读写方式打开、创建文件
 
     if(FR_OK != res)
     {
@@ -433,6 +433,7 @@ void  App_TaskPLC (void *p_arg)
     WM_HWIN wh;
     int i;
     u8 rf_addr[] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x00, 0x36, 0x19, 0x00, 0x00, 0x00};
+    //u8 rf_addr[] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA};
     u32 rf_send_len;
     u8 plc_read_addr[20];
     
@@ -887,6 +888,235 @@ void  App_TaskPLC (void *p_arg)
                     OSMboxPost(g_sys_control.upMb, (void *)&g_plc_prm);                
                 }
             }
+        }
+    }
+}
+
+/*
+*********************************************************************************************************
+*                                             App_TaskPC()
+*
+* Description : This task monitors the state of the push buttons and passes messages to AppTaskUserIF()
+*
+* Argument(s) : p_arg   is the argument passed to 'App_TaskPC()' by 'OSTaskCreateExt()'.
+*
+* Return(s)  : none.
+*
+* Caller(s)  : This is a task.
+*
+* Note(s)    : none.
+*********************************************************************************************************
+*/
+#if (EWARM_OPTIMIZATION_EN > 0u)
+#pragma optimize = low
+#endif
+void  App_TaskPC (void *p_arg)
+{
+    INT8U err, send_file_num, fname[16], buf[128], pc_addr[6] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA};
+    INT16U send_len;
+    INT32U i, j, pc_data_item, sd_file_num;
+    FATFS fs;
+    UINT br;
+    static INT8U seq;
+    static FIL fp;
+    static INT32U fsize, offset;
+    
+
+    
+    (void)p_arg;
+    
+    while (DEF_TRUE) {
+        OSSemPend(g_sem_pc, 0, &err);
+
+        if(OS_ERR_NONE == err)
+        {
+            if(DL645_FRAME_ERROR != Analysis_DL645_Frame(pc_addr, (u8 *)&pc_frame_recv, &pc_frame_stat))
+            {
+                if(0 != pc_frame_stat.Status)
+                {
+                    memcpy(&pc_frame_send, &pc_frame_recv, sizeof(DL645_Frame_C));
+                    
+                    if((FRM_CTRW_07_READ_SLVS_DATA == (pc_frame_stat.C & CCTT_CONTROL_CODE_MASK)) ||
+                       (FRM_CTRW_07_EXT_READ_SLVS_DATA == (pc_frame_stat.C & CCTT_CONTROL_CODE_MASK)))
+                    {
+                        pc_data_item = ((INT32U)pc_frame_recv.Data[3] << 24) | ((INT32U)pc_frame_recv.Data[2] << 16) | ((INT32U)pc_frame_recv.Data[1] << 8) | ((INT32U)pc_frame_recv.Data[0] << 0);
+                    
+                        switch(pc_data_item)
+                        {
+                        case SCAN_FILE_CMD: //扫描根目录
+                            if(FR_OK == f_mount(SD_DRV, &fs))
+                            {
+                                Scan_Files("/");
+
+                                sd_file_num = 0;
+                                while(SD_FileName[sd_file_num][0])
+                                {
+                                    if(FR_OK == f_open(&fp, SD_FileName[sd_file_num], FA_OPEN_EXISTING | FA_READ))
+                                    {
+                                        SD_FileSize[sd_file_num] = fp.fsize;
+                                    }
+
+                                    f_close(&fp);
+
+                                    sd_file_num++;
+                                }
+                                
+                                memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN], &sd_file_num, FILE_NUM_LEN);
+
+                                i = sd_file_num;
+                                j = 0;
+                                while(i && (j < MAX_FILE_NUM))
+                                {
+                                    memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN + FILE_NUM_LEN + FILE_NAME_LEN * j + FILE_SIZE_LEN * j], SD_FileName[j], FILE_NAME_LEN);
+                                    memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN + FILE_NUM_LEN + FILE_NAME_LEN * j + FILE_SIZE_LEN * j + FILE_NAME_LEN], &SD_FileSize[j], FILE_SIZE_LEN);
+
+                                    i--;
+                                    j++;
+                                }
+
+                                send_file_num = j;
+
+                                pc_frame_send.L += FILE_NUM_LEN + FILE_NAME_LEN * send_file_num + FILE_SIZE_LEN * send_file_num;
+
+                                pc_frame_send.C = 0x91;
+
+                                Create_DL645_Frame(pc_addr, pc_frame_send.C, pc_frame_send.L, &pc_frame_send);
+        
+                                send_len = pc_frame_send.L + DL645_FIX_LEN;
+
+                                OSSemAccept(g_sem_pc);
+                            
+                                pc_uart_send((u8 *)&pc_frame_send, send_len);                                    
+                            } 
+
+
+                            f_mount(SD_DRV, NULL);
+                            break;
+
+                        case READ_FILE_CMD: //读指定文件内容
+                            switch(pc_frame_recv.C)
+                            {
+                            case FRM_CTRW_07_READ_SLVS_DATA:
+                                fsize = 0;
+                                offset = 0;
+                                seq = 0;
+                                
+                                memcpy(fname, &pc_frame_recv.Data[DL645_07_DATA_ITEM_LEN], FILE_NAME_LEN);
+                                
+                                fname[FILE_NAME_LEN] = '\0';
+                                
+                                if(FR_OK == f_mount(SD_DRV, &fs))
+                                {
+                                    if(FR_OK == f_open(&fp, fname, FA_OPEN_EXISTING | FA_READ))
+                                    {
+                                        if(FR_OK == f_read(&fp, buf, 128, &br))
+                                        {
+                                            fsize = fp.fsize;
+                                            offset += br;
+
+                                            memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN], fname, FILE_NAME_LEN);
+                                            
+                                            memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN + FILE_NAME_LEN], buf, br);
+                                
+                                            pc_frame_send.L = DL645_07_DATA_ITEM_LEN + FILE_NAME_LEN + br;
+
+                                            if(offset >= fsize)
+                                            {
+                                                pc_frame_send.C = 0x91;
+                                            }
+                                            else
+                                            {
+                                                pc_frame_send.C = 0xB1;
+
+                                                seq++;
+                                            }
+                                
+                                            Create_DL645_Frame(pc_addr, pc_frame_send.C, pc_frame_send.L, &pc_frame_send);
+                                
+                                            send_len = pc_frame_send.L + DL645_FIX_LEN;
+                                
+                                            OSSemAccept(g_sem_pc);
+                                        
+                                            pc_uart_send((u8 *)&pc_frame_send, send_len);                                            
+                                        }    
+                                    }
+
+                                    f_close(&fp);
+                                } 
+
+                                
+                                f_mount(SD_DRV, NULL);
+                                
+                                break;
+
+                            case FRM_CTRW_07_EXT_READ_SLVS_DATA:
+                                memcpy(fname, &pc_frame_recv.Data[DL645_07_DATA_ITEM_LEN], FILE_NAME_LEN);
+                                
+                                fname[FILE_NAME_LEN] = '\0';
+                                
+                                if(FR_OK == f_mount(SD_DRV, &fs))
+                                {
+                                    if(FR_OK == f_open(&fp, fname, FA_OPEN_EXISTING | FA_READ))
+                                    {
+                                        f_lseek(&fp, offset);
+                                        
+                                        if(FR_OK == f_read(&fp, buf, 128, &br))
+                                        {
+                                            offset += br;
+
+                                            memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN], fname, FILE_NAME_LEN);
+                                            
+                                            memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN + FILE_NAME_LEN], buf, br);
+
+                                            memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN + FILE_NAME_LEN + br], seq, SEQ_LEN);
+                                
+                                            pc_frame_send.L = DL645_07_DATA_ITEM_LEN + FILE_NAME_LEN + br + SEQ_LEN;
+
+                                            if(offset >= fsize)
+                                            {
+                                                pc_frame_send.C = 0x92;
+                                            }
+                                            else
+                                            {
+                                                pc_frame_send.C = 0xB2;
+
+                                                seq++;
+                                            }
+                                
+                                            Create_DL645_Frame(pc_addr, pc_frame_send.C, pc_frame_send.L, &pc_frame_send);
+                                
+                                            send_len = pc_frame_send.L + DL645_FIX_LEN;
+                                
+                                            OSSemAccept(g_sem_pc);
+                                        
+                                            pc_uart_send((u8 *)&pc_frame_send, send_len);                                            
+                                        }    
+                                    }
+
+                                    f_close(&fp);
+                                } 
+
+                                
+                                f_mount(SD_DRV, NULL);
+
+                                break;
+                                
+                            default:
+                                break;
+                            }
+                          
+                            break;
+                            
+                        default:
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+
         }
     }
 }

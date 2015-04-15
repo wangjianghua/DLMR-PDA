@@ -166,7 +166,7 @@ void TSK_SetWrlsWhite(void)
 void TSK_Battery_Charge(int count)
 {
     WM_HWIN hItem;
-    hItem = hItem=WM_GetDialogItem(g_hWin_task,ID_TEXT_7);
+    hItem = WM_GetDialogItem(g_hWin_task,ID_TEXT_7);
     switch(count)
     {
         case 2:
@@ -188,6 +188,7 @@ void TSK_Battery_Charge(int count)
         default:
             break;
     }
+    TEXT_SetTextColor(hItem, GUI_GREEN);
 }
 
 void TSK_Set_Monitor(void)

@@ -16,6 +16,7 @@
 #define FRM_CTRW_97_WRITE_SLVS_DATA          0x04 //主机发出命令写数据
 
 #define FRM_CTRW_07_READ_SLVS_DATA           0x11 //主机发出命令读数据
+#define FRM_CTRW_07_EXT_READ_SLVS_DATA       0x12 //华兄
 #define FRM_CTRW_07_WRITE_SLVS_DATA          0x14 //主机发出命令写数据
 
 #define FRM_CTRW_07_BROAD_READ_ADDR          0x13 //广播读地址
