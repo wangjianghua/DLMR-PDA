@@ -545,6 +545,8 @@ void  App_TaskPLC (void *p_arg)
                     OSMboxPost(g_sys_control.upMb, (void *)&g_plc_prm);
 
                     OSTimeDly(200);
+
+                    g_plc_prm.result = PLC_RES_NONE;
                     
                     OSSemPend(g_sem_plc, g_sys_register_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
 

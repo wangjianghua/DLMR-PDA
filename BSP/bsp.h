@@ -393,6 +393,8 @@ void         BSP_IntHandlerHASH_RNG           (void);
 #define DEBUG_PRINT(s)             
 #endif
 
+#define clr_wdt()              HAL_IWDG_Refresh(&IwdgHandle)
+
 extern SPI_HandleTypeDef SpiHandle;
 extern SPI_HandleTypeDef hspi1;
 

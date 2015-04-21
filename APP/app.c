@@ -393,10 +393,7 @@ static  void  App_TaskStart (void *p_arg)
         
         if(!(count % 5))
         {
-            if(HAL_IWDG_Refresh(&IwdgHandle) != HAL_OK)
-            {
-                DEBUG_PRINT(("System Reset !\n"));
-            }
+            clr_wdt();
         }
 
         //g_sys_control.pwrValue = BSP_ADC_ReadPwr();

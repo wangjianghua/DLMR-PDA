@@ -91,6 +91,7 @@
 
 #include "ff.h"			/* FatFs configurations and declarations */
 #include "diskio.h"		/* Declarations of low level disk I/O functions */
+#include "includes.h"
 
 
 /*--------------------------------------------------------------------------
@@ -3723,6 +3724,8 @@ FRESULT f_mkfs (
 		mem_set(tbl, 0, SS(fs));			/* Fill following FAT entries with zero */
 		for (n = 1; n < n_fat; n++) 
         {   
+            clr_wdt();
+            
             /* This loop may take a time on FAT32 volume due to many single sector writes */
             MMD_Set_FD_PROGBAR((n*95)/n_fat);
             OSTimeDly(1);
