@@ -104,7 +104,6 @@ void Select_Focus(void)
     {
         WM_SetFocus(g_hWin_about);
     }
-
 }
 
 

@@ -304,7 +304,10 @@ u8 plc_listen_record(void)
     UINT br;
     DIR dj;
     FRESULT res;
+    u8 fname[16], oldest_file, i;
     u16 bytes;
+    u32 sd_file_num;
+    FILINFO fil_info;
 
 
     res = f_mount(SD_DRV, &fs); //挂载SD卡
@@ -318,7 +321,75 @@ u8 plc_listen_record(void)
         return (FALSE);
     }
     
-    res = f_open(&fp, "plc__log.txt", FA_READ | FA_WRITE | FA_OPEN_ALWAYS); //以读写方式打开、创建文件
+    scan_files("/");
+    
+    sd_file_num = 0;
+    while(SD_FileName[sd_file_num][0])
+    {
+        if(FR_OK == f_stat(SD_FileName[sd_file_num], &fil_info))
+        {
+            SD_FileTimestamp[sd_file_num].date = fil_info.fdate;
+            SD_FileTimestamp[sd_file_num].time = fil_info.ftime;
+        }
+        else
+        {
+            SD_FileTimestamp[sd_file_num].date = 0;
+            SD_FileTimestamp[sd_file_num].time = 0;
+        }
+        
+        sd_file_num++;
+    }    
+    
+    sprintf(fname, "20%02x%02x%02x.txt", g_rtc_time[YEAR_POS], g_rtc_time[MONTH_POS], g_rtc_time[DATE_POS]);
+    fname[FILE_NAME_LEN] = '\0';
+    
+    if(FR_OK != f_open(&fp, fname, FA_OPEN_EXISTING))
+    {
+        if(MAX_FILE_NUM == sd_file_num) //文件数已满，删除最旧的文件
+        {
+            oldest_file = 0;
+            i = 1;
+            
+            while(1)
+            {
+                if(SD_FileTimestamp[oldest_file].date > SD_FileTimestamp[i].date)
+                {
+                    oldest_file = i;
+                }
+                
+                i++;
+                
+                if(i >= sd_file_num)
+                {
+                    break;
+                }                
+            }
+            
+            f_unlink(SD_FileName[oldest_file]);
+        }
+        else if(sd_file_num > MAX_FILE_NUM)//SD卡文件数不符合要求，全部删除
+        {
+            i = 0;
+            
+            while(1)
+            {
+                f_unlink(SD_FileName[i]);
+                
+                i++;
+                
+                if(i >= sd_file_num)
+                {
+                    break;
+                }
+            }
+        }
+        
+        f_open(&fp, fname, FA_OPEN_ALWAYS); //创建新文件
+    }
+    
+    f_close(&fp); //关闭文件
+    
+    res = f_open(&fp, fname, FA_READ | FA_WRITE | FA_OPEN_EXISTING); //以读写方式打开已存在文件
 
     if(FR_OK != res)
     {
@@ -922,7 +993,6 @@ void  App_TaskPC (void *p_arg)
     static INT32U fsize, offset;
     
 
-    
     (void)p_arg;
     
     while (DEF_TRUE) {
@@ -946,14 +1016,14 @@ void  App_TaskPC (void *p_arg)
                         case SCAN_FILE_CMD: //扫描根目录
                             if(FR_OK == f_mount(SD_DRV, &fs))
                             {
-                                Scan_Files("/");
+                                scan_files("/");
 
                                 sd_file_num = 0;
                                 while(SD_FileName[sd_file_num][0])
                                 {
                                     if(FR_OK == f_open(&fp, SD_FileName[sd_file_num], FA_OPEN_EXISTING | FA_READ))
                                     {
-                                        SD_FileSize[sd_file_num] = fp.fsize;
+                                        SD_FileSize[sd_file_num] = f_size(&fp);
                                     }
 
                                     f_close(&fp);
@@ -1011,7 +1081,7 @@ void  App_TaskPC (void *p_arg)
                                     {
                                         if(FR_OK == f_read(&fp, buf, 128, &br))
                                         {
-                                            fsize = fp.fsize;
+                                            fsize = f_size(&fp);
                                             offset += br;
 
                                             memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN], fname, FILE_NAME_LEN);
