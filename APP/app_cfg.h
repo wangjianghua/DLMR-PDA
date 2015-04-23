@@ -60,6 +60,7 @@
 #define  APP_CFG_TASK_GMP_PRIO                           8u
 #define  APP_CFG_TASK_POWER_PRIO                         9u
 #define  APP_CFG_TASK_PC_PRIO                           10u
+#define  APP_CFG_TASK_RS485_PRIO                        11u
 
 #define  OS_TASK_TMR_PRIO                       (OS_LOWEST_PRIO - 2)
 
@@ -80,6 +81,7 @@
 #define  APP_CFG_TASK_GMP_STK_SIZE                      512u
 #define  APP_CFG_TASK_POWER_STK_SIZE                    512u
 #define  APP_CFG_TASK_PC_STK_SIZE                       512u
+#define  APP_CFG_TASK_RS485_STK_SIZE                    512u
 
 /*
 *********************************************************************************************************

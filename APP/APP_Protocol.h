@@ -86,8 +86,9 @@
 #define MAX_FILE_NUM            10
 #define SEQ_LEN                  1
 
-#define SCAN_FILE_CMD   0xF0000100
-#define READ_FILE_CMD   0xF0010100
+#define SHAKE_HANDS_CMD  0xF0000000
+#define SCAN_FILE_CMD    0xF0000100
+#define READ_FILE_CMD    0xF0010100
 
 
 typedef struct _plc_prm
@@ -110,6 +111,7 @@ typedef struct _plc_prm
 extern OS_EVENT *g_sem_plc;
 extern OS_EVENT *g_sem_rf;
 extern OS_EVENT *g_sem_pc;
+extern OS_EVENT *g_sem_rs485;
 extern u8 g_cur_freq;
 extern PLC_PRM g_plc_prm;
 
@@ -117,6 +119,7 @@ extern const INT8U lBroadcast_Read_Meter[12];//∏ﬂµÕŒ¬≤‚ ‘”√
 
 
 u16 pc_uart_send(u8 *buf, u16 len);
+u16 rs485_uart_send(u8 *buf, u16 len);
 u16 plc_uart_send(u8 *buf, u16 len);
 u16 cplc_read_addr(void);
 unsigned int PC_postProcess(pvoid h);
@@ -124,6 +127,7 @@ unsigned int RS485_postProcess(pvoid h);
 unsigned int PLC_postProcess(pvoid h);
 void App_TaskPLC(void *p_arg);
 void App_TaskPC(void *p_arg);
+void App_TaskRS485(void *p_arg);
 
 
 #ifdef __cplusplus

@@ -25,7 +25,7 @@ typedef enum
     MSG_LONG,
     MSG_LARGE,
     MAX_MSG_ITEM
-} MSG_TTYPE;
+} MSG_TYPE;
 
 //用来保存发送，接受消息的相关信息，内容待完善
 typedef struct _msg_header_

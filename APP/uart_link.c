@@ -81,9 +81,9 @@ void End_Init(void)
     unsigned char i;
     
 
-    g_EndObject[PC_COM_PORT] = (pvoid)&PC_HUART;
-    g_EndObject[RS485_COM_PORT] = (pvoid)&RS485_HUART;
-    g_EndObject[PLC_COM_PORT] = (pvoid)&PLC_HUART;
+    g_EndObject[PC_COM_PORT] = (pvoid)&PC_UART;
+    g_EndObject[RS485_COM_PORT] = (pvoid)&RS485_UART;
+    g_EndObject[PLC_COM_PORT] = (pvoid)&PLC_UART;
 
     mem_msg_buffer_init((MSG_INFO *)gShortMsgPool, (P_MSG_INFO *)pShortMsgPool, MAX_MSG_SHORT, sizeof(MSG_SHORT_INFO));
 
@@ -262,15 +262,15 @@ U32 End_uart_send(UCHAR end_id,  UCHAR* txbuf, USHORT    txnum )
     switch(end_id)
     {    
     case PC_COM_PORT:      
-        huart = PC_HUART;
+        huart = PC_UART;
         break; 
         
     case RS485_COM_PORT:      
-        huart= RS485_HUART;
+        huart= RS485_UART;
         break; 
         
     case PLC_COM_PORT:      
-        huart = PLC_HUART;
+        huart = PLC_UART;
         break; 
         
     default:

@@ -34,6 +34,7 @@ u8 rf_send_buf[256];
 OS_EVENT *g_sem_plc;
 OS_EVENT *g_sem_rf;
 OS_EVENT *g_sem_pc;
+OS_EVENT *g_sem_rs485;
 
 u8 g_msg_buf[UART_RECEIVE_BUF_SIZE];
 u16 g_msg_len;
@@ -49,6 +50,9 @@ PLC_PRM g_plc_prm;
 DL645_Frame_C pc_frame_send;
 DL645_Frame_C pc_frame_recv;
 DL645_Frame_Stat_C pc_frame_stat;
+DL645_Frame_C rs485_frame_send;
+DL645_Frame_C rs485_frame_recv;
+DL645_Frame_Stat_C rs485_frame_stat;
 
 u16 pc_uart_send(u8 *buf, u16 len)
 {
@@ -70,6 +74,32 @@ u16 pc_uart_send(u8 *buf, u16 len)
     pMsg->msg_header.msg_len = len;
 
     pMsg->msg_header.end_id = PC_COM_PORT;
+
+    pMsg->msg_header.need_buffer_free = TRUE;
+
+    return End_send(pMsg);
+}
+
+u16 rs485_uart_send(u8 *buf, u16 len)
+{
+    P_MSG_INFO  pMsg = NULL;
+
+
+    if((NULL == buf) || (0 == len))
+    {
+        return (FALSE);
+    }
+
+    if(!(pMsg = (P_MSG_INFO)alloc_send_buffer(MSG_SHORT)))
+    {
+        return (FALSE);
+    }
+
+    memcpy(pMsg->msg_buffer, buf, len);
+
+    pMsg->msg_header.msg_len = len;
+
+    pMsg->msg_header.end_id = RS485_COM_PORT;
 
     pMsg->msg_header.need_buffer_free = TRUE;
     
@@ -185,6 +215,21 @@ unsigned int PC_postProcess(pvoid h)
 
 unsigned int RS485_postProcess(pvoid h)
 {
+    P_MSG_INFO  pMsg = (P_MSG_INFO)h;
+    u8  *pBuf = (UCHAR *)(pMsg->msg_buffer);
+    u16  mLen = pMsg->msg_header.msg_len;
+
+#if OS_CRITICAL_METHOD == 3u
+    OS_CPU_SR  cpu_sr = 0u;
+#endif   
+
+
+    OS_ENTER_CRITICAL();
+    memcpy(&rs485_frame_recv, pBuf, mLen);
+    OS_EXIT_CRITICAL();
+
+    OSSemPost(g_sem_rs485);
+
     return (TRUE);
 }
 
@@ -495,8 +540,9 @@ void  PRO_Databuf_Proc()
 * Note(s)    : none.
 *********************************************************************************************************
 */
+#if (EWARM_OPTIMIZATION_EN > 0u)
 #pragma optimize = low
-
+#endif
 void  App_TaskPLC (void *p_arg)
 {
     INT8U err;
@@ -1015,6 +1061,19 @@ void  App_TaskPC (void *p_arg)
                     
                         switch(pc_data_item)
                         {
+                        case SHAKE_HANDS_CMD:
+                            pc_frame_send.L = DL645_07_DATA_ITEM_LEN;
+                            pc_frame_send.C = 0x91;
+
+                            Create_DL645_Frame(pc_addr, pc_frame_send.C, pc_frame_send.L, &pc_frame_send);
+
+                            send_len = pc_frame_send.L + DL645_FIX_LEN;
+
+                            OSSemAccept(g_sem_pc);
+
+                            pc_uart_send((u8 *)&pc_frame_send, send_len);
+                            break;
+
                         case SCAN_FILE_CMD: //É¨Ãè¸ùÄ¿Â¼
                             if(FR_OK == f_mount(SD_DRV, &fs))
                             {
@@ -1048,7 +1107,7 @@ void  App_TaskPC (void *p_arg)
 
                                 send_file_num = j;
 
-                                pc_frame_send.L += FILE_NUM_LEN + FILE_NAME_LEN * send_file_num + FILE_SIZE_LEN * send_file_num;
+                                pc_frame_send.L = DL645_07_DATA_ITEM_LEN + FILE_NUM_LEN + FILE_NAME_LEN * send_file_num + FILE_SIZE_LEN * send_file_num;
 
                                 pc_frame_send.C = 0x91;
 
@@ -1193,3 +1252,69 @@ void  App_TaskPC (void *p_arg)
     }
 }
 
+/*
+*********************************************************************************************************
+*                                             App_TaskRS485()
+*
+* Description : This task monitors the state of the push buttons and passes messages to AppTaskUserIF()
+*
+* Argument(s) : p_arg   is the argument passed to 'App_TaskRS485()' by 'OSTaskCreateExt()'.
+*
+* Return(s)  : none.
+*
+* Caller(s)  : This is a task.
+*
+* Note(s)    : none.
+*********************************************************************************************************
+*/
+#if (EWARM_OPTIMIZATION_EN > 0u)
+#pragma optimize = low
+#endif
+void  App_TaskRS485 (void *p_arg)
+{
+    INT8U err, send_len, rs485_addr[6] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA};
+    INT32U rs485_data_item;
+
+
+    (void)p_arg;
+
+    while (DEF_TRUE) {
+        OSSemPend(g_sem_rs485, 0, &err);
+
+        if(OS_ERR_NONE == err)
+        {
+            if(DL645_FRAME_ERROR != Analysis_DL645_Frame(rs485_addr, (u8 *)&rs485_frame_recv, &rs485_frame_stat))
+            {
+                if(0 != rs485_frame_stat.Status)
+                {
+                    memcpy(&rs485_frame_send, &rs485_frame_recv, sizeof(DL645_Frame_C));
+
+                    if((FRM_CTRW_07_READ_SLVS_DATA == (rs485_frame_stat.C & CCTT_CONTROL_CODE_MASK)) ||
+                       (FRM_CTRW_07_EXT_READ_SLVS_DATA == (rs485_frame_stat.C & CCTT_CONTROL_CODE_MASK)))
+                    {
+                        rs485_data_item = ((INT32U)rs485_frame_recv.Data[3] << 24) | ((INT32U)rs485_frame_recv.Data[2] << 16) | ((INT32U)rs485_frame_recv.Data[1] << 8) | ((INT32U)rs485_frame_recv.Data[0] << 0);
+
+                        switch(rs485_data_item)
+                        {
+                        case SHAKE_HANDS_CMD:
+                            rs485_frame_send.L = DL645_07_DATA_ITEM_LEN;
+                            rs485_frame_send.C = 0x91;
+
+                            Create_DL645_Frame(rs485_addr, rs485_frame_send.C, rs485_frame_send.L, &rs485_frame_send);
+
+                            send_len = rs485_frame_send.L + DL645_FIX_LEN;
+
+                            OSSemAccept(g_sem_rs485);
+
+                            rs485_uart_send((u8 *)&rs485_frame_send, send_len);
+                            break;
+
+                        default:
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

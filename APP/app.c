@@ -64,7 +64,7 @@ static  OS_STK         App_TaskPLCStk[APP_CFG_TASK_PLC_STK_SIZE];
 static  OS_STK         App_TaskGMPStk[APP_CFG_TASK_GMP_STK_SIZE];
 static  OS_STK         App_TaskPowerStk[APP_CFG_TASK_POWER_STK_SIZE];
 static  OS_STK         App_TaskPCStk[APP_CFG_TASK_PC_STK_SIZE];
-
+static  OS_STK         App_TaskRS485Stk[APP_CFG_TASK_RS485_STK_SIZE];
 
 /*
 *********************************************************************************************************
@@ -660,6 +660,7 @@ static  void  App_EventCreate (void)
     g_sem_plc = OSSemCreate(0);
     g_sem_rf = OSSemCreate(0);
     g_sem_pc = OSSemCreate(0);
+    g_sem_rs485 = OSSemCreate(0);
 	g_key_control.key_sem = OSSemCreate(0);    
     
     g_sys_control.downMb = OSMboxCreate(NULL); /*创建消息邮箱用来发送调试参数的结构体*/
@@ -797,6 +798,20 @@ static  void  App_TaskCreate (void)
 
 #if (OS_TASK_NAME_EN > 0)
     OSTaskNameSet(APP_CFG_TASK_PC_PRIO, "PC", &err);    
+#endif
+
+    OSTaskCreateExt((void (*)(void *)) App_TaskRS485,
+                    (void           *) 0,
+                    (OS_STK         *)&App_TaskRS485Stk[APP_CFG_TASK_RS485_STK_SIZE - 1],
+                    (INT8U           ) APP_CFG_TASK_RS485_PRIO,
+                    (INT16U          ) APP_CFG_TASK_RS485_PRIO,
+                    (OS_STK         *)&App_TaskRS485Stk[0],
+                    (INT32U          ) APP_CFG_TASK_RS485_STK_SIZE,
+                    (void           *) 0,
+                    (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
+
+#if (OS_TASK_NAME_EN > 0)
+    OSTaskNameSet(APP_CFG_TASK_PC_PRIO, "RS485", &err);    
 #endif
 }
 
