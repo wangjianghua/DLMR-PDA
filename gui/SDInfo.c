@@ -34,17 +34,25 @@
 #define ID_TEXT_0    (GUI_ID_USER + 0x01)
 #define ID_TEXT_1    (GUI_ID_USER + 0x02)
 #define ID_TEXT_2    (GUI_ID_USER + 0x03)
-#define ID_TEXT_3    (GUI_ID_USER + 0x04)
-#define ID_EDIT_0    (GUI_ID_USER + 0x05)
-#define ID_EDIT_1    (GUI_ID_USER + 0x06)
-#define ID_PROGBAR_0 (GUI_ID_USER + 0x07)
-#define ID_BUTTON_0  (GUI_ID_USER + 0x08)
-#define ID_BUTTON_1  (GUI_ID_USER + 0x09)
-#define ID_BUTTON_2  (GUI_ID_USER + 0x0A)
-#define ID_PROGBAR_1 (GUI_ID_USER + 0x0B)
-#define ID_TEXT_4    (GUI_ID_USER + 0x0C)
-#define ID_TEXT_5    (GUI_ID_USER + 0x0D)
-#define ID_EDIT_2    (GUI_ID_USER + 0x0E)
+//#define ID_TEXT_3    (GUI_ID_USER + 0x04)
+//#define ID_TEXT_4    (GUI_ID_USER + 0x05)
+//#define ID_TEXT_5    (GUI_ID_USER + 0x06)
+//#define ID_TEXT_6    (GUI_ID_USER + 0x07)
+
+
+#define ID_EDIT_0    (GUI_ID_USER + 0x08)
+#define ID_EDIT_1    (GUI_ID_USER + 0x09)
+//#define ID_EDIT_2    (GUI_ID_USER + 0x0A)
+//#define ID_EDIT_3    (GUI_ID_USER + 0x0B)
+
+//#define ID_BUTTON_0  (GUI_ID_USER + 0x0C)
+#define ID_BUTTON_1  (GUI_ID_USER + 0x0D)
+#define ID_BUTTON_2  (GUI_ID_USER + 0x0E)
+#define ID_BUTTON_3  (GUI_ID_USER + 0x0F)
+
+
+#define ID_PROGBAR_0 (GUI_ID_USER + 0x10)
+#define ID_PROGBAR_1 (GUI_ID_USER + 0x11)
 
 
 
@@ -71,17 +79,19 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { TEXT_CreateIndirect,     MemSize,      ID_TEXT_0,    12,  16,  59,  20, 0, 0x0,  0 },
   { TEXT_CreateIndirect,     MemUsage,     ID_TEXT_1,    12,  79,  80,  20, 0, 0x0,  0 },
   { TEXT_CreateIndirect,     FileNum,      ID_TEXT_2,    12,  47,  80,  20, 0, 0x0,  0 },
-  { TEXT_CreateIndirect,     FactorySet,   ID_TEXT_3,    12,  148, 108, 20, 0, 0x0,  0 },
-  { TEXT_CreateIndirect,     VersionNum,   ID_TEXT_4,    12,  187, 200, 20, 0, 0x0,  0 },
-  { TEXT_CreateIndirect,     MM_batteryVtg,    ID_TEXT_5,    12,  113, 180, 20, 0, 0x0,  0 },
+  //{ TEXT_CreateIndirect,     FactorySet,   ID_TEXT_3,    12,  148, 108, 20, 0, 0x0,  0 },
+  //{ TEXT_CreateIndirect,     VersionNum,   ID_TEXT_4,    12,  187, 200, 20, 0, 0x0,  0 },
+  //{ TEXT_CreateIndirect,     MM_batteryVtg,    ID_TEXT_5,    12,  113, 180, 20, 0, 0x0,  0 },
+  //{ TEXT_CreateIndirect,     "new",        ID_TEXT_5,    12,  187, 200, 20, 0, 0x0,  0 },
+    
   { EDIT_CreateIndirect,     "Edit",       ID_EDIT_0,    120, 12,  115, 20, 0, 0x64, 0 },
   { EDIT_CreateIndirect,     "Edit",       ID_EDIT_1,    120, 43,  115, 20, 0, 0x64, 0 },
-  { EDIT_CreateIndirect,     "Edit",       ID_EDIT_2,    120, 111, 115, 20, 0, 0x64, 0},
+  //{ EDIT_CreateIndirect,     "Edit",       ID_EDIT_2,    120, 111, 115, 20, 0, 0x64, 0},
     
   { PROGBAR_CreateIndirect,  "Progbar",    ID_PROGBAR_0, 120, 77, 115, 20, 0, 0x0,  0 },
-  { BUTTON_CreateIndirect,   "F1",         ID_BUTTON_0,  120, 143, 115, 25, 0, 0x0,  0 },
-  { BUTTON_CreateIndirect,   MemFormat,    ID_BUTTON_1,  11,  260, 80,  25, 0, 0x0,  0 },
-  { BUTTON_CreateIndirect,   Quit,         ID_BUTTON_2,  149, 260, 80,  25, 0, 0x0,  0 },
+  //{ BUTTON_CreateIndirect,   "F1",         ID_BUTTON_0,  120, 143, 115, 25, 0, 0x0,  0 },
+  { BUTTON_CreateIndirect,   MemFormat,    ID_BUTTON_1,  10,  260, 65,  25, 0, 0x0,  0 },
+  { BUTTON_CreateIndirect,   Quit,         ID_BUTTON_2,  165, 260, 65,  25, 0, 0x0,  0 },
   { PROGBAR_CreateIndirect,  "Progbar",    ID_PROGBAR_1, 9,   228, 222, 20, 0, 0x0,  0 },
     
   // USER START (Optionally insert additional widgets)
@@ -95,21 +105,15 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
 *
 **********************************************************************
 */
-#if 1
-WM_HWIN MMD_GetVoltage(void)
-{
-    return WM_GetDialogItem(g_hWin_mem,ID_EDIT_2);
-}
-#endif
 WM_HWIN MMD_Get_PROGBAR()
 {    
-     return WM_GetDialogItem(g_hWin_mem, ID_PROGBAR_0);            
+     return WM_GetDialogItem(g_hWin_SDInfo, ID_PROGBAR_0);            
 }
 
 void MMD_Set_FD_PROGBAR(u32 newVal)
 {
     WM_HWIN hItem;
-    hItem = WM_GetDialogItem(g_hWin_mem, ID_PROGBAR_1);  
+    hItem = WM_GetDialogItem(g_hWin_SDInfo, ID_PROGBAR_1);  
     if(hItem != WM_HWIN_NULL)
     {
         //g_sys_control.testProgBarVal = 100;
@@ -169,13 +173,15 @@ static void _cbDialog(WM_MESSAGE * pMsg)
             EDIT_SetText(hItem, "1");
             //WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
             WM_DisableWindow(hItem);
-            
+
+#if 0
             hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_2);
             WM_DisableWindow(hItem);
             EDIT_SetFloatMode(hItem,((g_sys_control.pwrValue*3.3)/4096),0,99999,2,
                                      GUI_EDIT_SUPPRESS_LEADING_ZEROES);
             EDIT_SetFloatValue(hItem,(g_sys_control.pwrValue*3.3)/4096);
             //WM_CF_SHOW
+#endif
             hItem = WM_GetDialogItem(pMsg->hWin, ID_PROGBAR_0);
             PROGBAR_SetBarColor(hItem, 0, GUI_GREEN);
             NCode = (100*g_sys_control.sd_free_capacity)/g_sys_control.sd_total_capacity;
@@ -191,24 +197,17 @@ static void _cbDialog(WM_MESSAGE * pMsg)
             hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_2);
             BUTTON_SetBkColor(hItem,0,GUI_YELLOW);
             WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
-
+#if 0
             hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_0);
             BUTTON_SetBkColor(hItem,0,GUI_CYAN);
             WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
-
+#endif
             //hItem = WM_GetDialogItem(pMsg->hWin,ID_PROGBAR_0);
 
             hItem = WM_GetDialogItem(pMsg->hWin, ID_PROGBAR_1); 
             PROGBAR_SetBarColor(hItem, 0, GUI_GREEN);
             //PROGBAR_SetValue(hItem, 100);
             break;
-#if 0
-          case WM_TIMER:
-            hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_2);
-            EDIT_SetFloatValue(hItem,((g_sys_control.pwrValue*3.3)/2048));
-            WM_RestartTimer(pMsg->Data.v, 1000);
-            break;
-#endif
           case WM_KEY:
             
             if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==1)
@@ -217,14 +216,12 @@ static void _cbDialog(WM_MESSAGE * pMsg)
                 {
                     case GUI_KEY_GREEN:
                         //SYS_ADD_TASK(SYS_TASK_FORMAT_DISK);
-                        ERR_NOTE(g_hWin_mem, GUI_MSBOX_FORMAT_ERROR);//»∑»œ∏Ò ΩªØÂ
+                        ERR_NOTE(g_hWin_SDInfo, GUI_MSBOX_FORMAT_ERROR);//»∑»œ∏Ò ΩªØÂ
                         break;
                     case GUI_KEY_YELLOW:
-                        WM_DeleteWindow(g_hWin_mem);
-                        g_hWin_mem=0;
-                        WM_ShowWindow(g_hWin_TimeBar);
-                        WM_ShowWindow(g_hWin_Date);
-                        WM_SetFocus(g_hWin_menu);
+                        WM_DeleteWindow(g_hWin_SDInfo);
+                        g_hWin_SDInfo = HBWIN_NULL;
+                        WM_SetFocus(g_hWin_SysInfo);
                         break;
                     case GUI_KEY_F1:
                         break;
@@ -241,19 +238,19 @@ static void _cbDialog(WM_MESSAGE * pMsg)
 /*********************************************************************
 *
 *       Public code
-*
+*SDInfo
 **********************************************************************
 */
 /*********************************************************************
 *
 *       CreateMemManage
 */
-WM_HWIN CreateMemManage(void);
-WM_HWIN CreateMemManage(void) {
+WM_HWIN CreateSDInfo(void);
+WM_HWIN CreateSDInfo(void) {
   WM_HWIN hWin;
   //WM_HWIN hTimer;
 
-  hWin = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), _cbDialog, g_hWin_menu, 0, 0);
+  hWin = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), _cbDialog, g_hWin_SysInfo, 0, 0);
   //hTimer = WM_CreateTimer(g_hWin_mem, 0, 2000, 0);
   return hWin;
 }

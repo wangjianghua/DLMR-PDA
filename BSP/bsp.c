@@ -503,8 +503,8 @@ void  BSP_Init (void)
 	
     BSP_GPIO_Configuration();
 
-    LED_Off(LED_UART);
-    LED_Off(LED_PWR);    
+    LED_Off(LED_RED);
+    LED_Off(LED_GREEN);
 	
 	BSP_LCD_init();
 
@@ -1086,12 +1086,68 @@ void BSP_BEEP(void)
     }
 }
 
-
-
 CPU_INT32U BSP_Charg(void)
 {
     return HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9);
 }
+
+
+static CPU_INT32U lcd_type;
+
+CPU_INT08U BSP_LCD_Check(void)
+{
+    lcd_delay(50); //Delay 50ms
+
+    LCD_PWR_ON();
+    LCD_BL_ON();
+    
+    LCD_RST_LOW(); 
+    GUI_Delay(150); //Delay 
+    LCD_RST_HIGH();
+	//lcd_delay(150); //Delay 
+	GUI_Delay(150); 
+    
+    LCD_WriteReg(0x00, 0x0001);
+	//lcd_delay(150); //Delay 
+	GUI_Delay(150); 
+
+    lcd_type = LCD_ReadReg(0x00);
+       
+       
+       
+   if((lcd_type < 0xFF) || (0xFFFF == lcd_type) || (0x9300 == lcd_type))
+   {       
+       LCD_WriteCmd(0xD3); //ID                  
+       LCD_ReadData(); //Dummy
+       LCD_ReadData(); //0x00
+       lcd_type = LCD_ReadData(); //0x93                              
+       lcd_type <<= 8;
+       lcd_type |= LCD_ReadData(); //0x41              
+   }
+
+   if(0x9341 == lcd_type)
+   {
+        return LCD_OK;
+   }
+   else
+        return LCD_ERR;
+
+}
+
+
+CPU_INT08U BSP_Si4438_Check(void)
+{
+
+
+}
+
+CPU_INT08U BSP_PLC_Check(void)
+{
+
+
+}
+
+
 
 
 /*
@@ -1120,12 +1176,11 @@ void  LED_On (CPU_INT08U  led)
 {
     switch(led)
     {
-    case LED_UART:
+    case LED_RED:
         HAL_GPIO_WritePin(GPIOG, GPIO_PIN_8, GPIO_PIN_RESET);
         break;
 
-    case LED_PWR:
-    case LED_PLC:
+    case LED_GREEN:
         HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
         break;
 
@@ -1160,12 +1215,11 @@ void  LED_Off (CPU_INT08U led)
 {   
     switch(led)
     {
-    case LED_UART:
+    case LED_RED:
         HAL_GPIO_WritePin(GPIOG, GPIO_PIN_8, GPIO_PIN_SET);
         break;
 
-    case LED_PWR:
-    case LED_PLC:
+    case LED_GREEN:
         HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
         break;
 
@@ -1200,11 +1254,11 @@ void  LED_Toggle (CPU_INT08U  led)
 {
     switch(led)
     {
-    case LED_UART:
+    case LED_RED:
         HAL_GPIO_TogglePin(GPIOG, GPIO_PIN_8);
         break;
 
-    case LED_PLC:
+    case LED_GREEN:
         HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
         break;
 

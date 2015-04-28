@@ -102,6 +102,7 @@ typedef struct __sys_control__
     u8    sysAddrLevel;          //共有几级中继
     u8    sysUseRoute;          //启动路由标志位
     u8    defaultDataFlag[4];   //最近使用的数据标识
+    u8    DevCheckCode[9];      //自检密码
     OS_EVENT *downMb; //邮箱发送的消息
     OS_EVENT *upMb; //邮箱发送的消息
     u32 sd_total_capacity; //SD卡总容量

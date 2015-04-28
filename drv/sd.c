@@ -570,13 +570,11 @@ void FatFs_Test(void)
         {
         }
 
-        //LED_Off(LED_UART);
-
         res = f_read(&fp, g_test_buf, SD_SECTOR_SIZE, &br);
 
         if((FR_OK == res) && (0 != br))
         {
-            //LED_On(LED_PLC);
+            
         }
         else
         {

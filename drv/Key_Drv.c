@@ -87,7 +87,7 @@ void  App_TaskKey (void *p_arg)
               g_sys_control.led_count = LED_KEY_DISP_TIME;
 
               LCD_BL_ON();
-              LED_Off(LED_PWR);
+              LED_Off(LED_GREEN);
 
 			  break;
 			}		

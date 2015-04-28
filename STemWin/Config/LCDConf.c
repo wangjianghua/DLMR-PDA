@@ -94,7 +94,6 @@ Purpose     : Display controller configuration (single layer)
 #endif
 
 //#define LCD_TYPE_9328              0x9328
-#define LCD_TYPE              0x9341
 
 
 static uint32_t Lcd_Type;
@@ -278,6 +277,26 @@ void LCD_X_Config(void) {
 *     -1 - Command not handled
 *      0 - Ok
 */
+
+
+int LCD_GetID(void)
+{
+    Lcd_Type = LCD_ReadReg(0x00);
+    if((Lcd_Type < 0xFF) || (0xFFFF == Lcd_Type) || (0x9300 == Lcd_Type))
+    {       
+       LCD_WriteCmd(0xD3); //3бщи║??ивии?ID                  
+       LCD_ReadData(); //Dummy
+       LCD_ReadData(); //0x00
+       Lcd_Type = LCD_ReadData(); //0x93                              
+       Lcd_Type <<= 8;
+       Lcd_Type |= LCD_ReadData(); //0x41 
+       if(LCD_TYPE == Lcd_Type)
+            return 1;
+       else
+            return 0;
+    }
+}
+
 int LCD_X_DisplayDriver(unsigned LayerIndex, unsigned Cmd, void * pData) {
   int r;
   (void) LayerIndex;

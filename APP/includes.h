@@ -79,6 +79,7 @@ typedef __I uint8_t vuc8;   /*!< Read Only */
 
 #include  <stdarg.h>
 #include  <stdio.h>
+#include  <string.h>
 #include  <stdlib.h>
 #include  <math.h>
 
@@ -166,7 +167,7 @@ extern WM_HWIN g_hWin_WaveCarrior; // 载波功能设置
 extern WM_HWIN g_hWin_task;
 extern WM_HWIN g_hWin_about; //关于
 extern WM_HWIN g_hWin_TimeSet; //时间设置
-extern WM_HWIN g_hWin_mem;
+extern WM_HWIN g_hWin_SysInfo;
 extern WM_HWIN g_hWin_Err;
 
 extern WM_HWIN g_hWin_ReadMeterMsg;
@@ -177,10 +178,10 @@ extern WM_HWIN g_hWin_Date;
 extern WM_HWIN g_hWin_Input;
 extern WM_HWIN g_hWin_speed;
 extern WM_HWIN g_hWin_AdvanSet;
-
+extern WM_HWIN g_hWin_SDInfo;   //存储卡信息
 //extern int test_multiedit;
 
-extern int DataSign_value;
+
 extern char DataSign_Text[TEXT_LEN];//??????????,???????
 
 

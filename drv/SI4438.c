@@ -140,6 +140,7 @@ const u8 SI_config_TxINT1[8]={CMD_SET_PROPERTY,PROP_INT_CTL_GROUP,4,PROP_INT_CTL
 const u8 SI_config_TxINT2[8]={CMD_SET_PROPERTY,PROP_INT_CTL_GROUP,4,PROP_INT_CTL_ENABLE,0x01,0x22,0x00,0x00};
 const u8 Si_config_RxINT[8]={CMD_SET_PROPERTY,PROP_INT_CTL_GROUP,4,PROP_INT_CTL_ENABLE,0x01,0x19,0x00,0x00};
 
+const u8 Read_ID_cmd[8] = {CMD_PART_INFO,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
 
 u8 Api_Write[16];			/*写命令数组*/
 
@@ -147,7 +148,7 @@ u8 Api_Write[16];			/*写命令数组*/
 extern rf_param g_rf_param;
 extern u8 g_plc_buf[];
 extern u8 rf_part_info[8];
-
+extern u8 rf_device_id[8];
 extern u8 rf_int_status[8];
 
 
@@ -335,6 +336,23 @@ u8 SI_SendCmd_Noresp(u8 Data_len,const u8 *CmdData)
   return 0;
   //return 0;
 }
+
+
+/***********************************************
+//
+//
+//      获取4438的ID
+//
+//
+************************************************/
+
+u32 SI_Read_ID(void)
+{
+    SI_SendCmd_Resp(4,Read_ID_cmd,8,rf_device_id);
+    return((rf_device_id[1]<<8)|rf_device_id[2]);
+}
+
+
 
 
 /************************************************/

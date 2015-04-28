@@ -6,10 +6,6 @@
 #endif
 
 
-#define LED_PLC_TOGGLE()        LED_Toggle(LED_PLC)
-#define LED_PLC_OFF()           LED_Off(LED_PLC)
-#define LED_PLC_ON()            LED_On(LED_PLC)
-
 //#define PLC_ADDR_SIZE           sizeof(g_send_para_pkg.relayAddr)/sizeof(g_send_para_pkg.relayAddr[0])
 
 //#define PLC_ADDR_SIZE()         LISTVIEW_GetNumRows(RLY_GetListAddr())
@@ -112,11 +108,13 @@ extern OS_EVENT *g_sem_plc;
 extern OS_EVENT *g_sem_rf;
 extern OS_EVENT *g_sem_pc;
 extern OS_EVENT *g_sem_rs485;
+extern OS_EVENT *g_sem_check;
 extern u8 g_cur_freq;
 extern PLC_PRM g_plc_prm;
-
-extern const INT8U lBroadcast_Read_Meter[12];//∏ﬂµÕŒ¬≤‚ ‘”√
-
+extern u8 rf_send_buf[256];
+extern DL645_Frame_C dl645_frame_send;
+extern DL645_Frame_C dl645_frame_recv;
+extern DL645_Frame_Stat_C dl645_frame_stat;
 
 u16 pc_uart_send(u8 *buf, u16 len);
 u16 rs485_uart_send(u8 *buf, u16 len);

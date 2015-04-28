@@ -43,6 +43,8 @@
 #define _sys_plc_stop() 
 #define _sys_plc_reset()
 
+#define SI_TYPE     0x4438
+
 enum
 {
 	RF_STATE_IDLE,	//…‰∆µø’œ–◊¥Ã¨

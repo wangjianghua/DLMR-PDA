@@ -109,7 +109,7 @@ void DEV_Power_Off()
     LCD_BL_OFF();
     LCD_PWR_OFF();
     LED_UART_OFF();
-    LED_PLC_OFF();
+    LED_PWR_OFF();
 }
 
 //确定存储空间是空的

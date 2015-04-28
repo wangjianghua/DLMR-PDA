@@ -92,7 +92,7 @@ static const BITMAP_ITEM _aBitmapItem[] =
   {&bmmeter,      ReadMeterText    },  //常用抄表 
   {&bmprotocal,   CommStdTestText  },  //通信规约调试
   {&_bmmonitor,   MonitorText      },  //监控
-  {&bmTFcard,     TFcardText       },  //内存管理 
+  {&bmTFcard,     SysInfo          },  //系统信息
   {&bmabout,      About            }
 
 };
@@ -471,11 +471,11 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
                             CPT_Color_Change();
 							break;
 						case 4:
-							g_hWin_mem=CreateMemManage();
+							g_hWin_SysInfo=CreateSysInfo();
                             WM_BringToBottom(g_hWin_msg);
                             WM_HideWindow(g_hWin_TimeBar);
                             WM_HideWindow(g_hWin_Date);
-                            WM_SetFocus(g_hWin_mem);
+                            WM_SetFocus(g_hWin_SysInfo);
 							break;
                             
                         case 1:

@@ -2,6 +2,11 @@
 #define __GUI_PUBLIC_FUN__
 
 
+
+#define SOFTWARE_VERSION         20
+#define HARDWARE_VERSION         20
+
+
 #define GUI_645_ADDR_LENGTH 12
 
 /*dropdown中下拉列表中的量，备用*/
@@ -132,7 +137,7 @@ extern const u8 c_645ctrlDef[2][PLC_CTRL_MAX_NUM] ;
 
 extern const u32 c_645DidoDef[2][PLC_CTRL_MAX_NUM] ;
 
-
+extern const u8 g_self_check_pwd[];
 
 //启用小工具
 void Enable_Widget(WM_MESSAGE * pMsg,int Widget_Id);

@@ -2158,9 +2158,6 @@
       <name>$PROJ_DIR$\..\gui\InputWidget.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\gui\MemManageDLG.c</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\..\gui\MessageDLG.c</name>
     </file>
     <file>
@@ -2180,6 +2177,12 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\gui\RelayAddrDLG.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\gui\SDInfo.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\gui\SysInfoDLG.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\gui\TimeSet.c</name>

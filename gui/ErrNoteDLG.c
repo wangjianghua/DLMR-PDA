@@ -151,7 +151,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 break;
             case GUI_KEY_GREEN:
                 WM_DeleteWindow(g_hWin_Err);
-                if(g_hWin_mem>0)
+                if(g_hWin_SDInfo > 0 )
                 {
                     SYS_ADD_TASK(SYS_TASK_FORMAT_DISK);
                 }

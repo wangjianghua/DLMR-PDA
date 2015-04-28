@@ -35,6 +35,7 @@ OS_EVENT *g_sem_plc;
 OS_EVENT *g_sem_rf;
 OS_EVENT *g_sem_pc;
 OS_EVENT *g_sem_rs485;
+OS_EVENT *g_sem_check;
 
 u8 g_msg_buf[UART_RECEIVE_BUF_SIZE];
 u16 g_msg_len;
@@ -274,10 +275,6 @@ unsigned int PLC_postProcess(pvoid h)
     memcpy(&dl645_frame_recv, pBuf, mLen);
     memcpy(g_plc_prm.recv_buf, pBuf, mLen);
     g_plc_prm.recv_len = mLen;
-    
-
-    LED_PLC_TOGGLE();
-
     OS_EXIT_CRITICAL();
 
     OSSemPost(g_sem_plc);
@@ -1199,7 +1196,7 @@ void  App_TaskPC (void *p_arg)
                                             
                                             memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN + FILE_NAME_LEN], buf, br);
 
-                                            memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN + FILE_NAME_LEN + br], seq, SEQ_LEN);
+                                            memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN + FILE_NAME_LEN + br], &seq, SEQ_LEN);
                                 
                                             pc_frame_send.L = DL645_07_DATA_ITEM_LEN + FILE_NAME_LEN + br + SEQ_LEN;
 

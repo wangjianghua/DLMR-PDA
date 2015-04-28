@@ -104,9 +104,8 @@
 *                                             PERIPH DEFINES
 *********************************************************************************************************
 */
-#define LED_UART                     0u
-#define LED_PWR                      1u
-#define LED_PLC                      2u
+#define LED_RED                     0u
+#define LED_GREEN                   1u
 
 /*
 *********************************************************************************************************
@@ -395,6 +394,10 @@ void         BSP_IntHandlerHASH_RNG           (void);
 
 #define clr_wdt()              HAL_IWDG_Refresh(&IwdgHandle)
 
+#define LED_PWR_ON()            LED_On(LED_GREEN)
+#define LED_PWR_OFF()           LED_Off(LED_GREEN)
+#define LED_PWR_TOGGLE()        LED_Toggle(LED_GREEN)
+
 extern SPI_HandleTypeDef SpiHandle;
 extern SPI_HandleTypeDef hspi1;
 
@@ -419,6 +422,11 @@ void GPIO_ResetBits(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin);
 void BSP_SPI_Init(void);
 void SPI1_Init(void);
 void UART4_Init(void);
+
+
+CPU_INT08U BSP_LCD_Check(void);
+#define LCD_OK      1
+#define LCD_ERR     0
 
 
 #endif

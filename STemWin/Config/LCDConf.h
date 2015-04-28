@@ -55,6 +55,7 @@ Purpose     : Display driver configuration file
 #define LCDCONF_H
 
 
+#define LCD_TYPE              0x9341
 /** 
   * @brief  LCD Registers  
   */ 
@@ -178,6 +179,7 @@ Purpose     : Display driver configuration file
 
 #define LCD_RST_HIGH()        GPIO_SetBits(GPIOC, GPIO_PIN_9)
 #define LCD_RST_LOW()         GPIO_ResetBits(GPIOC, GPIO_PIN_9)
+int LCD_GetID(void);
 
 
 

@@ -22,7 +22,7 @@ const u32 c_645DidoDef[2][PLC_CTRL_MAX_NUM] =
     {0x0001ff00,0X0002ff00, 0X0001ff01, 0X0002ff01,4,5,6,7,8,9,10,11,12,13,14,15,}
 };
 
-
+const u8 g_self_check_pwd[] = {'2', '2', '8', '8', '4', '4', '6', '6', '\0'}; 
 
 void GUI_Fill_Zero(u8 *tempbuf)
 {

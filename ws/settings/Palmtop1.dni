@@ -21,7 +21,7 @@ ActionState=1
 Enabled=0
 ShowSource=1
 [DebugChecksum]
-Checksum=1047419249
+Checksum=-994814682
 [Exceptions]
 StopOnUncaught=_ 0
 StopOnThrow=_ 0
@@ -136,9 +136,9 @@ Exclusions=
 [Disassemble mode]
 mode=0
 [Breakpoints2]
-Bp0=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\drv\SI4438.c}.303.3" 0 0 1 "" 0 "" 0
-Bp1=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\drv\SI4438.c}.224.5" 0 0 1 "" 0 "" 0
-Bp2=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\drv\SI4438.c}.370.5" 0 0 1 "" 0 "" 0
+Bp0=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\drv\SI4438.c}.304.3" 0 0 1 "" 0 "" 0
+Bp1=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\drv\SI4438.c}.225.5" 0 0 1 "" 0 "" 0
+Bp2=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\drv\SI4438.c}.382.5" 0 0 1 "" 0 "" 0
 Bp3=_ 0 "EMUL_CODE" "0x080477E4" 0 0 1 "" 0 "" 0
 Bp4=_ 0 "EMUL_CODE" "0x08060362" 0 0 1 "" 0 "" 0
 Bp5=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\BSP\IAR\cstartup.c}.251.5" 0 0 1 "" 0 "" 0

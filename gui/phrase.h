@@ -125,7 +125,7 @@ extern const char MemFormat[];
 extern const char MemReturn[];
 //extern const char MemConfirm[];
 extern const char VersionNum[];
-extern const char MM_batteryVtg[];
+extern const char MM_Vtg[];
 
 
 //ËµÃ÷°ïÖú
@@ -164,6 +164,8 @@ extern const char Battery_00[];
 extern const char Protocol_07[];
 extern const char Protocol_97[];
 
+extern const char SysInfo[];
+
 extern const char TSK_Wireless[];
 
 extern const char Clear[];
@@ -174,9 +176,15 @@ extern const char Log[];
 extern const char FreqSet[];
 
 
-
-
-
+extern const char LCDModule[];
+extern const char PLCModule[];
+extern const char SiModule[];
+extern const char HardVersion[];
+extern const char SotfVersion[];
+extern const char SDInfo[];
+extern const char HardCheck[];
+extern const char HardwareOK[];
+extern const char HardwareErr[];
 
 #endif /*__PHRASE_H__*/
 

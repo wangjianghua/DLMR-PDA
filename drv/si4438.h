@@ -352,4 +352,7 @@ u8 SI_Read_Fifo(u8 Tx_Len,u8 *Tx_Data);
 u8  SI4438_FIFO_Send(u8 leng,u8 *buf);
 u8 SI_Send_Packet(u8 bLength, u8 *abPayload);
 void SI_Enter_Rx(void);
+
+u32 SI_Read_ID(void);
+
 #endif /* RADIO_CONFIG_H_ */

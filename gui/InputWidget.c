@@ -95,9 +95,9 @@ void Select_Focus(void)
         WM_SetFocus(g_hWin_relay);
     }
 
-    if(g_hWin_mem > 0)
+    if(g_hWin_SDInfo > 0)
     {
-        WM_SetFocus(g_hWin_mem);
+        WM_SetFocus(g_hWin_SDInfo);
     }
 
     if(g_hWin_about>0)
