@@ -136,7 +136,7 @@ WM_HWIN TSK_GetWireless()
 }
 #endif
 
-#if 0
+#if 1
 WM_HWIN TSK_Get_Battery()
 {
     return WM_GetDialogItem(g_hWin_task,ID_TEXT_7);
@@ -167,23 +167,23 @@ void TSK_Battery_Charge(int count)
 {
     WM_HWIN hItem;
     hItem = WM_GetDialogItem(g_hWin_task,ID_TEXT_7);
+    TEXT_SetFont(hItem,&GUI_Font_Battery_40);
     switch(count)
     {
-        case 2:
+        case 0:
             TEXT_SetText(hItem, Battery_20);
             break;
-        case 4:
+        case 2:
             TEXT_SetText(hItem, Battery_40);
             break;
-        case 6:
+        case 4:
             TEXT_SetText(hItem, Battery_60);
             break;
-        case 8:
+        case 6:
             TEXT_SetText(hItem, Battery_80);
             break;
-        case 10:
+        case 8:
             TEXT_SetText(hItem, Battery_100);
-            count = 0 ;
             break;
         default:
             break;

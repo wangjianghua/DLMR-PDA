@@ -50,7 +50,7 @@ const u32 c_645DidoDef[2][PLC_CTRL_MAX_NUM] =
     {0x0001ff00,0X0002ff00, 0X0001ff01, 0X0002ff01,4,5,6,7,8,9,10,11,12,13,14,15,}
 };
 #endif
-const u32 c_ValBaudRate[5] = {1200, 1500, 2400, 4800, 9600};
+const u32 c_ValBaudRate[5] = {BAUD_RATE_1200, BAUD_RATE_1500, BAUD_RATE_2400, BAUD_RATE_4800, BAUD_RATE_9600};
 
 const u8 c_TextBaudRate[5][6] = {"1200","1500","2400","4800","9600"};
 
@@ -121,7 +121,7 @@ static void Select_Input_Edit(int  EditNum)
     switch(EditNum)
     {
         case EDIT_SCR_OUTTIME:
-            EDIT_GetText(hItem,tmpTextBuf,3);
+            EDIT_GetText(hItem,tmpTextBuf,4);
             g_sys_register_para.scrTimeout=atoi(tmpTextBuf);
             hItem=CPS_Set_ScrOutTime();
             

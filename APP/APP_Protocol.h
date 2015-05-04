@@ -109,6 +109,8 @@ extern OS_EVENT *g_sem_rf;
 extern OS_EVENT *g_sem_pc;
 extern OS_EVENT *g_sem_rs485;
 extern OS_EVENT *g_sem_check;
+extern OS_EVENT *g_sem_chk_plc;
+extern OS_EVENT *g_sem_chk_rf;
 extern u8 g_cur_freq;
 extern PLC_PRM g_plc_prm;
 extern u8 rf_send_buf[256];

@@ -37,6 +37,13 @@
 #define ONE_STOPBIT        0
 #define TWO_STOPBIT        1
 
+#define BAUD_RATE_1200      0
+#define BAUD_RATE_1500      1   
+#define BAUD_RATE_2400      2
+#define BAUD_RATE_4800      3
+#define BAUD_RATE_9600      4
+
+
 
 #define PLC_READ_DEVADDR_0     0
 #define PLC_READ_DATA_1        1

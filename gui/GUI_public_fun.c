@@ -461,6 +461,11 @@ void PUB_InitFreq(WM_MESSAGE *pMsg,int widgetID)
    hItem = WM_GetDialogItem(pMsg->hWin, widgetID);
    switch(g_sys_register_para.preamble)
    {
+       case 0: /*第一次初始化的时候或者flash中没有内容,默认为270III代*/
+           EDIT_SetText(hItem, pTextPreamble[0]);
+           g_sys_register_para.freqSel = PLC_270_III;
+           g_sys_register_para.bpsSpeed = PLC_BPS_MIDDLE;
+           break;
        case 0xFC:
            EDIT_SetText(hItem, pTextPreamble[0]);
            break;

@@ -36,6 +36,8 @@ OS_EVENT *g_sem_rf;
 OS_EVENT *g_sem_pc;
 OS_EVENT *g_sem_rs485;
 OS_EVENT *g_sem_check;
+OS_EVENT *g_sem_chk_plc;
+OS_EVENT *g_sem_chk_rf;
 
 u8 g_msg_buf[UART_RECEIVE_BUF_SIZE];
 u16 g_msg_len;
@@ -261,6 +263,9 @@ u32 PRO_DL645_Proc()
     return g_plc_prm.result;
 }
 
+#if (EWARM_OPTIMIZATION_EN > 0u)
+#pragma optimize = low
+#endif
 unsigned int PLC_postProcess(pvoid h)
 {
     P_MSG_INFO  pMsg = (P_MSG_INFO)h;
@@ -278,6 +283,7 @@ unsigned int PLC_postProcess(pvoid h)
     OS_EXIT_CRITICAL();
 
     OSSemPost(g_sem_plc);
+    OSSemPost(g_sem_chk_plc);
 
     return (TRUE);
 }

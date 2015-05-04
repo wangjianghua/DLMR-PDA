@@ -44,7 +44,7 @@ Sector 7 0x0806 0000 - 0x0807 FFFF 128 Kbyte
 
 
 #define GET_USB_VOL()    HAL_GPIO_ReadPin(GPIOG,GPIO_PIN_13)
-
+#define GET_CHARG_CHK()  HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_2)
 
 #define SYS_POWER_ON        0
 #define SYS_POWER_OFF       1

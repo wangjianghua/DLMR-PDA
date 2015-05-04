@@ -14,6 +14,7 @@
 #endif
 
 u8 g_rtc_time[MAX_RTC_ITEM];
+u8 g_rtc_check[MAX_RTC_ITEM] = {0x00,0x00,0x00,0x01,0x01,0x01,0x01};
 
 #if (EWARM_OPTIMIZATION_EN > 0u)
 #pragma optimize = low
@@ -428,6 +429,21 @@ void RTC_WriteTime(unsigned char *time)
 
     RTC_WriteBuffer(0, time, 7);
 
+}
+
+void RTC_CheckTime(unsigned char *time)
+{
+    if(time == 0)
+        return;
+    if(((time[SEC_POS] &= 0x7f) > 0x59)
+        ||((time[MIN_POS] &= 0x7f) > 0x59)
+        ||((time[HOUR_POS] &= 0x3f) > 0x23)
+        ||((time[DAY_POS] &= 0x07) > 0x7)
+        ||((time[DATE_POS] &= 0x3f) > 0x31)
+        ||((time[MONTH_POS] &= 0x1f) > 0x12))
+    {
+        RTC_WriteTime(g_rtc_check);
+    }
 }
 
 /* ÊäÈë:  BCD CHAR    Êä³ö: ·µ»ØHex UCHAR */

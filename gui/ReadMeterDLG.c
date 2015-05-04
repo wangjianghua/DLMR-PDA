@@ -411,8 +411,16 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
 
 
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_1);
-    BUTTON_SetBkColor(hItem,0,GUI_CYAN);
+    
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
+    if(CHANNEL_WIRELESS == g_sys_register_para.channel)
+    {
+        BUTTON_SetBkColor(hItem,0,0xC0C0C0);
+    }
+    else
+    {
+        BUTTON_SetBkColor(hItem,0,GUI_CYAN);
+    }
     
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_0);
     BUTTON_SetBkColor(hItem,0,GUI_CYAN);
@@ -529,9 +537,12 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
         case GUI_KEY_F1: /*»ñÈ¡±íºÅ*/
             if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
             {
-                g_send_para_pkg.cmdType = PLC_CMD_BROAD_READ;
-                g_sys_control.guiState = GUI_PLC_MSG_READ;                        
-                OSMboxPost(g_sys_control.downMb, (void*)&g_send_para_pkg);
+                if(CHANNEL_PLC == g_sys_register_para.channel)
+                {
+                    g_send_para_pkg.cmdType = PLC_CMD_BROAD_READ;
+                    g_sys_control.guiState = GUI_PLC_MSG_READ;                        
+                    OSMboxPost(g_sys_control.downMb, (void*)&g_send_para_pkg);
+                }
             }
             break;
             

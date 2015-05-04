@@ -148,6 +148,7 @@ void RF_Event_Handle(void)
         g_rf_param.rx.Timeout=0;
 		//_sys_plc_reset();
         OSSemPost(g_sem_rf); //ЛЊаж
+        OSSemPost(g_sem_chk_rf); //ЛЊаж
 	}
 	 else if (sta1 & RXFF_AF) 
 	{   

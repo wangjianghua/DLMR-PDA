@@ -21,7 +21,7 @@ ActionState=1
 Enabled=0
 ShowSource=1
 [DebugChecksum]
-Checksum=-994814682
+Checksum=-2027832404
 [Exceptions]
 StopOnUncaught=_ 0
 StopOnThrow=_ 0
@@ -49,10 +49,12 @@ ITMportsTermIO=0
 ITMportsLogFile=0
 ITMlogFile=$PROJ_DIR$\ITM.log
 [struct_types]
-Fmt0=ROM_PARA-magic_word	4	0
-Fmt1=ROM_PARA-preamble	4	0
-Fmt2=SEND_PARA_PKG-cmdType	4	0
-Fmt3=SPI_TypeDef-CR1	4	0
+Fmt0=ROM_PARA-bootFlag	4	0
+Fmt1=ROM_PARA-magic_word	4	0
+Fmt2=ROM_PARA-preamble	4	0
+Fmt3=SEND_PARA_PKG-cmdType	4	0
+Fmt4=SPI_TypeDef-CR1	4	0
+Fmt5=SYS_CONTROL-paraAddr	4	0
 [array_types]
 Fmt0=u8[100]	4	0
 Fmt1=u8[256]	4	0
@@ -141,9 +143,10 @@ Bp1=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\drv\SI4438.c}.225.5" 0 0 1 "" 0 "" 0
 Bp2=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\drv\SI4438.c}.382.5" 0 0 1 "" 0 "" 0
 Bp3=_ 0 "EMUL_CODE" "0x080477E4" 0 0 1 "" 0 "" 0
 Bp4=_ 0 "EMUL_CODE" "0x08060362" 0 0 1 "" 0 "" 0
-Bp5=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\BSP\IAR\cstartup.c}.251.5" 0 0 1 "" 0 "" 0
-Bp6=_ 0 "EMUL_CODE" "0x00000000" 0 0 1 "" 0 "" 0
-Count=7
+Bp5=_ 0 "EMUL_CODE" "{$PROJ_DIR$}.251.5" 0 0 1 "" 0 "" 0
+Bp6=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\drv\Src\stm32f2xx_hal_flash.c}.616.1" 0 0 1 "" 0 "" 0
+Bp7=_ 1 "EMUL_DATA" "0x20011B59" 0 0 0 0 4294967295
+Count=8
 [Aliases]
 A0=_ "C:\Users\Administrator\Desktop\PDA_2015.01.19\PDA\APP\app.c" ""
 A1=_ "C:\Users\Administrator\Desktop\PDA_2015.01.19\PDA\drv\SI4438.c" ""

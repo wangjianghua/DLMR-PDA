@@ -84,8 +84,8 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   //{ TEXT_CreateIndirect,     MM_batteryVtg,    ID_TEXT_5,    12,  113, 180, 20, 0, 0x0,  0 },
   //{ TEXT_CreateIndirect,     "new",        ID_TEXT_5,    12,  187, 200, 20, 0, 0x0,  0 },
     
-  { EDIT_CreateIndirect,     "Edit",       ID_EDIT_0,    120, 12,  115, 20, 0, 0x64, 0 },
-  { EDIT_CreateIndirect,     "Edit",       ID_EDIT_1,    120, 43,  115, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect,     "Edit",       ID_EDIT_0,    120, 12,  115, 20, EDIT_CF_HCENTER, 0x64, 0 },
+  { EDIT_CreateIndirect,     "Edit",       ID_EDIT_1,    120, 43,  115, 20, EDIT_CF_HCENTER, 0x64, 0 },
   //{ EDIT_CreateIndirect,     "Edit",       ID_EDIT_2,    120, 111, 115, 20, 0, 0x64, 0},
     
   { PROGBAR_CreateIndirect,  "Progbar",    ID_PROGBAR_0, 120, 77, 115, 20, 0, 0x0,  0 },
@@ -170,7 +170,10 @@ static void _cbDialog(WM_MESSAGE * pMsg)
             WM_DisableWindow(hItem);
             
             hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_1);
-            EDIT_SetText(hItem, "1");
+            EDIT_SetText(hItem,"1");
+            //scan_files("/");
+            //EDIT_SetDecMode(hItem,g_sys_control.FileNumber,0,9999,0,0);
+            //EDIT_SetValue(hItem,g_sys_control.FileNumber);
             //WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
             WM_DisableWindow(hItem);
 

@@ -343,9 +343,11 @@ static  void  App_TaskStart (void *p_arg)
     
     App_EventCreate();                                          /* Create Application Events                                */
 
-    App_TaskCreate();                                           /* Create application Tasks                                 */ 
-   
-  	GUI_Init();                                                 /* Init the STemWin GUI Library */
+    App_TaskCreate();/* Create application Tasks                                 */ 
+
+    BSP_IWDG_Init();  //4.1
+
+    GUI_Init();                                                 /* Init the STemWin GUI Library */
 
 	KEY_Init();
 
@@ -353,12 +355,12 @@ static  void  App_TaskStart (void *p_arg)
 
     RF_Init();
     
-    BSP_IWDG_Init();  //4.1
-    
     DEBUG_PRINT(("OS Tasks Run!\n"));
 
     //FatFs_Test();
     //BSP_BEEP();
+    RTC_ReadTime(g_rtc_time); 
+    RTC_CheckTime(g_rtc_time);
     g_sys_control.led_count = 2;
     while (DEF_TRUE) { 
         /* Task body, always written as an infinite loop.           */
@@ -393,11 +395,6 @@ static  void  App_TaskStart (void *p_arg)
             }
         }
         
-
-        //g_sys_control.pwrValue = BSP_ADC_ReadPwr();
-        //EDIT_SetFloatValue(MMD_GetVoltage(),g_sys_control.pwrValue
-
-
         OSTimeDlyHMSM(0, 0, 0, 100);
     }
 }
@@ -427,8 +424,6 @@ static  void  App_TaskGUI (void *p_arg)
     int i = 0;
     int j = 0;//读取电压值计数
     u32 val = 0; //电压
-   // int countdown = 240; //读取载波节点倒计时240s
-    
 #if OS_CRITICAL_METHOD == 3u
         OS_CPU_SR  cpu_sr = 0u;
 #endif  
@@ -466,36 +461,41 @@ static  void  App_TaskGUI (void *p_arg)
         if(j < 10)
         {
             val += BSP_ADC_ReadPwr();
-            j++;
-            if(GPIO_PIN_SET == BSP_Charg())
+            //检测到USB并且电没有充满的时候，充电标志闪烁,
+            if((GPIO_PIN_RESET == GET_USB_VOL())&&(GPIO_PIN_SET == GET_CHARG_CHK()))
             {
                 TSK_Battery_Charge(j);
             }
-            
+            j++;
         }
         else if(j >= 10)
         {
-            //G_II = BSP_Charg();
             g_sys_control.pwrValue = val/10;
-            if(GPIO_PIN_RESET == BSP_Charg())
+            if((GPIO_PIN_SET == GET_USB_VOL())||(GPIO_PIN_RESET == GET_CHARG_CHK()))
             {
                 Battery_State(g_sys_control.pwrValue);
             }
             j = 0;
             val = 0;
+            
+            if(g_hWin_SysInfo >0)
+            {
+                EDIT_SetFloatValue(SID_GetVoltage(),(g_sys_control.pwrValue*3.3)/2048);
+            }
+           
+            if((g_sys_control.pwrValue*3.3)/2048 <= 3.0)
+            {
+                ERR_NOTE(g_hWin_menu,11);
+                APP_Shutdown();
+            }
+            
         }
         memcpy(timebuf,RTC2Text(),10);
         TEXT_SetText(g_hWin_TimeBar,timebuf);
-        //memcpy(timebuf_nosec,RTC2Text_NoSec(),6);
-        //TEXT_SetText(g_hWin_TimeBar,timebuf_nosec);
+
         memcpy(timebuf_date,RTC2Text_Date(),11);
         TEXT_SetText(g_hWin_Date,timebuf_date);
-
-        //hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_2);
-        if(g_hWin_SysInfo >0)
-        {
-            EDIT_SetFloatValue(SID_GetVoltage(),((g_sys_control.pwrValue*3.3)/2048));
-        }
+        
         
         OSTimeDlyHMSM(0, 0, 0, 100);     
     }
@@ -565,7 +565,7 @@ static  void  App_TaskPower (void *p_arg)
         }
         
         g_sys_control.sleepTimeout++;
-        if(g_sys_control.sleepTimeout > ((g_sys_register_para.scrTimeout + 30) * 100))
+        if(g_sys_control.sleepTimeout > ((g_sys_register_para.scrTimeout +60) * 100))
         {
             APP_Sleep();
             
@@ -793,7 +793,7 @@ static  void  App_TaskCheck (void *p_arg)
 
     /* 检测LCD */
     GUI_DispStringAt(g_check_info[CHECK_INFO_LCD], g_check_info_pos[CHECK_INFO_LCD].x, g_check_info_pos[CHECK_INFO_LCD].y);
-    sprintf(buf, "ili%x", LCD_TYPE);
+    sprintf(buf, "ILI%x", LCD_TYPE);
     GUI_DispStringAt(buf, g_check_info_pos[CHECK_INFO_LCD].x1, g_check_info_pos[CHECK_INFO_LCD].y);
     sprintf(buf, "OK");
     GUI_DispStringAt(buf, CHECK_INFO_OK_POS, g_check_info_pos[CHECK_INFO_LCD].y);  
@@ -825,9 +825,9 @@ static  void  App_TaskCheck (void *p_arg)
     }
 
     /* 检测载波 */
-    OSSemAccept(g_sem_plc);
+    OSSemAccept(g_sem_chk_plc);
     plc_uart_send((INT8U *)plc_read_addr, sizeof(plc_read_addr));
-    OSSemPend(g_sem_plc, 2 * OS_TICKS_PER_SEC, &err);
+    OSSemPend(g_sem_chk_plc, 2 * OS_TICKS_PER_SEC, &err);
     if(OS_ERR_NONE == err)
     {
         if(DL645_FRAME_OK == Analysis_DL645_Frame( g_send_para_pkg.dstAddr, 
@@ -853,9 +853,9 @@ static  void  App_TaskCheck (void *p_arg)
     }
 
     /* 检测无线 */
-    OSSemAccept(g_sem_rf);
+    OSSemAccept(g_sem_chk_rf);
     rf_send_len = GDW_RF_Protocol_2013((INT8U *)rf_addr, 0x00, 0x00, 0x00, (INT8U *)rf_dl645_read, sizeof(rf_dl645_read), RF_SEND_BUF);
-    OSSemPend(g_sem_rf, 2 * OS_TICKS_PER_SEC, &err);
+    OSSemPend(g_sem_chk_rf, 2 * OS_TICKS_PER_SEC, &err);
     if(OS_ERR_NONE == err)
     {
         memcpy(&dl645_frame_recv, &RF_RECV_BUF[RF_RECV_FIX_LEN], RF_RECV_LEN - RF_RECV_FIX_LEN);                                       
@@ -929,6 +929,8 @@ static  void  App_EventCreate (void)
     g_sem_pc = OSSemCreate(0);
     g_sem_rs485 = OSSemCreate(0);
 	g_sem_check = OSSemCreate(0);
+    g_sem_chk_plc = OSSemCreate(0);
+    g_sem_chk_rf = OSSemCreate(0);
 	g_key_control.key_sem = OSSemCreate(0);    
     
     g_sys_control.downMb = OSMboxCreate(NULL); /*创建消息邮箱用来发送调试参数的结构体*/

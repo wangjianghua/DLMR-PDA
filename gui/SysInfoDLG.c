@@ -71,13 +71,13 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { TEXT_CreateIndirect, SDInfo,        ID_TEXT_7,   12,   222, 120, 20, 0, 0x0, 0 },
     
   { EDIT_CreateIndirect, "vtg",         ID_EDIT_0,   125,  10,  100, 20, 0, 0x64, 0 },
-  { EDIT_CreateIndirect, "lcd",         ID_EDIT_1,   125,  40,  100, 20, 0, 0x64, 0 },
-  { EDIT_CreateIndirect, "plc",         ID_EDIT_2,   125,  70,  100, 20, 0, 0x64, 0 },
-  { EDIT_CreateIndirect, "si4438",      ID_EDIT_3,   125,  100, 100, 20, 0, 0x64, 0 },
-  { EDIT_CreateIndirect, "pcb",         ID_EDIT_4,   125,  130, 100, 20, 0, 0x64, 0 },
-  { EDIT_CreateIndirect, "soft",        ID_EDIT_5,   125,  160, 100, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect, "lcd",         ID_EDIT_1,   125,  40,  100, 20, EDIT_CF_HCENTER, 0x64, 0 },
+  { EDIT_CreateIndirect, "plc",         ID_EDIT_2,   125,  70,  100, 20, EDIT_CF_HCENTER, 0x64, 0 },
+  { EDIT_CreateIndirect, "si4438",      ID_EDIT_3,   125,  100, 100, 20, EDIT_CF_HCENTER, 0x64, 0 },
+  { EDIT_CreateIndirect, "pcb",         ID_EDIT_4,   125,  130, 100, 20, EDIT_CF_HCENTER, 0x64, 0 },
+  { EDIT_CreateIndirect, "soft",        ID_EDIT_5,   125,  160, 100, 20, EDIT_CF_HCENTER, 0x64, 0 },
     
-  { BUTTON_CreateIndirect, HardCheck,   ID_BUTTON_0, 10,   263, 80, 25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, Cancel,        ID_BUTTON_0, 10,   263, 80, 25, 0, 0x0, 0 },
   { BUTTON_CreateIndirect, Quit,        ID_BUTTON_1, 147,  262, 80, 25, 0, 0x0, 0 },
   { BUTTON_CreateIndirect, "F1",        ID_BUTTON_2, 145,  190, 80, 20, 0, 0x0, 0 },
   { BUTTON_CreateIndirect, "F2",        ID_BUTTON_3, 145,  220, 80, 20, 0, 0x0, 0 },
@@ -93,6 +93,8 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
 **********************************************************************
 */
 
+
+
 // USER START (Optionally insert additional static code)
 // USER END
 static void _init_SysInfoDLg(WM_MESSAGE *pMsg)
@@ -104,42 +106,48 @@ static void _init_SysInfoDLg(WM_MESSAGE *pMsg)
     WM_DisableWindow(hItem);
     EDIT_SetFloatMode(hItem,((g_sys_control.pwrValue*3.3)/2048),0,99999,2,
                              GUI_EDIT_SUPPRESS_LEADING_ZEROES);
-    //EDIT_SetFloatValue(hItem,(g_sys_control.pwrValue*3.3)/2048);
+    //WIDGET_SetEffect(hItem,&WIDGET_Effect_None);
+    
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_1);
     if(1 == LCD_GetID())
     {
-        EDIT_SetText(hItem, HardwareOK);
+        EDIT_SetText(hItem, "ILI9341");
     }
     else
     {
         EDIT_SetText(hItem, HardwareErr);
     }
+    //WIDGET_SetEffect(hItem,&WIDGET_Effect_None);
     WM_DisableWindow(hItem);
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_2);
     EDIT_SetText(hItem, HardwareOK);
+    //WIDGET_SetEffect(hItem,&WIDGET_Effect_None);
     WM_DisableWindow(hItem);
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_3);
     if(SI_TYPE == SI_Read_ID())
     {
-        EDIT_SetText(hItem, HardwareOK);
+        EDIT_SetText(hItem, "SI4438");
     }
     else
     {
         EDIT_SetText(hItem, HardwareErr);
     }
+    //WIDGET_SetEffect(hItem,&WIDGET_Effect_None);
     WM_DisableWindow(hItem);
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_4);
-    sprintf(tmpbuf,"V%d.0",HARDWARE_VERSION);
+    sprintf(tmpbuf, "V%d.%d", HARDWARE_VERSION / 10, HARDWARE_VERSION % 10);
     EDIT_SetText(hItem, tmpbuf);
+    //WIDGET_SetEffect(hItem,&WIDGET_Effect_None);
     WM_DisableWindow(hItem);
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_5);
-    sprintf(tmpbuf,"V%d.0",SOFTWARE_VERSION);
+    sprintf(tmpbuf, "V%d.%d", SOFTWARE_VERSION / 10, SOFTWARE_VERSION % 10);
     EDIT_SetText(hItem, tmpbuf);
+    //WIDGET_SetEffect(hItem,&WIDGET_Effect_None);
     WM_DisableWindow(hItem);
 
 
@@ -181,6 +189,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
 
   switch (pMsg->MsgId) {
   case WM_INIT_DIALOG:
+    //WIDGET_SetDefaultEffect(&WIDGET_Effect_None);
     _init_SysInfoDLg(pMsg);
     memset(g_sys_control.DevCheckCode,0,sizeof(g_sys_control.DevCheckCode));
     break;
@@ -209,8 +218,8 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
         switch(((WM_KEY_INFO *)(pMsg->Data.p))->Key)
         {
             case GUI_KEY_GREEN:
-                //memset(g_sys_control.DevCheckCode,0,sizeof(g_sys_control.DevCheckCode));
-                //SID_DelHandle();
+                memset(g_sys_control.DevCheckCode,0,sizeof(g_sys_control.DevCheckCode));
+                SID_DelHandle();
                 break;
             case GUI_KEY_YELLOW:
                 memset(g_sys_control.DevCheckCode,0,sizeof(g_sys_control.DevCheckCode));

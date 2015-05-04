@@ -23,7 +23,6 @@
 
 #define TIME_CH_LEN                       3
 
-
 typedef struct _sys_time
 {
     char year;
@@ -36,6 +35,7 @@ typedef struct _sys_time
 } SYS_TIME, *P_SYS_TIME;
 
 extern u8 g_rtc_time[MAX_RTC_ITEM];
+extern u8 g_rtc_check[MAX_RTC_ITEM];
 
 void RTC_ReadTime(unsigned char *time);
 void RTC_WriteTime(unsigned char *time);
@@ -45,7 +45,7 @@ void RtcTimeToSysTime(SYS_TIME *Time);
 unsigned char *RTC2Text(void);
 unsigned char *RTC2Text_Date(void);
 
-
+void RTC_CheckTime(unsigned char * time);
 
 #ifdef __cplusplus
 }

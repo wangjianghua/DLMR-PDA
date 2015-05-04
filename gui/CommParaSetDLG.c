@@ -280,19 +280,19 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     //EDIT_SetText(hItem, "115200");
     switch(g_sys_register_para.baudrate)
     {
-        case 1200:
+        case BAUD_RATE_1200:
             EDIT_SetText(hItem,"1200");
             break;
-        case 1500:
+        case BAUD_RATE_1500:
             EDIT_SetText(hItem,"1500");
             break;
-        case 2400:
+        case BAUD_RATE_2400:
             EDIT_SetText(hItem,"2400");
             break;
-        case 4800:
+        case BAUD_RATE_4800:
             EDIT_SetText(hItem,"4800");
             break;
-        case 9600:
+        case BAUD_RATE_9600:
             EDIT_SetText(hItem,"9600");
             break;
     }

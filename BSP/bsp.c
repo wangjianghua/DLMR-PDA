@@ -1071,12 +1071,14 @@ CPU_INT32U BSP_ADC_ReadPwr(void)
 //·äÃùÆ÷
 void BSP_BEEP(void)
 {
+    int i = 50;
     GPIO_InitTypeDef GPIO_InitStructure;
     GPIO_InitStructure.Pin = GPIO_PIN_1;
     GPIO_InitStructure.Speed = GPIO_SPEED_FAST;
     GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
-    while(1)
+    
+    while(i--)
     {
         GPIO_SetBits(GPIOB, GPIO_PIN_1);
         OSTimeDlyHMSM(0, 0, 0, 1);            
