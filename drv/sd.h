@@ -106,7 +106,7 @@ u8 SD_ReadBlock(uint8_t *pBuffer, uint32_t ReadAddr, uint32_t NumberOfBlocks);
 u8 SD_WriteBlock(uint8_t *pBuffer, uint32_t WriteAddr, uint32_t NumberOfBlocks);
 void scan_files(char *path);
 void FatFs_Test(void);
-
+u32 Get_Files_Number(void);
 
 #ifdef __cplusplus
 }

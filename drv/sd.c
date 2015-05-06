@@ -497,6 +497,30 @@ void scan_files(char *path)
 	}
 }
 
+/******************************
+//
+//    获取文件数目
+//
+*******************************/
+u32 Get_Files_Number(void)
+{
+    u32 sd_file_num;
+    FATFS fs;
+    if(FR_OK == f_mount(SD_DRV, &fs))
+    {
+        scan_files("/");
+
+        sd_file_num = 0;
+        while(SD_FileName[sd_file_num][0])
+        {
+            sd_file_num++;
+        }
+    }
+    f_mount(SD_DRV,NULL);
+    return sd_file_num;
+
+}
+
 // ---------------------------------------------------
 
 #define TEST_SECTOR_COUNT                      2

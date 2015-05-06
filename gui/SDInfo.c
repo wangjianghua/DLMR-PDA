@@ -170,7 +170,10 @@ static void _cbDialog(WM_MESSAGE * pMsg)
             WM_DisableWindow(hItem);
             
             hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_1);
-            EDIT_SetText(hItem,"1");
+            g_sys_control.sysFileNum = Get_Files_Number();
+            sprintf(sbuf, "%d", g_sys_control.sysFileNum);
+            EDIT_SetText(hItem, sbuf);
+            //EDIT_SetText(hItem,"1");
             //scan_files("/");
             //EDIT_SetDecMode(hItem,g_sys_control.FileNumber,0,9999,0,0);
             //EDIT_SetValue(hItem,g_sys_control.FileNumber);
