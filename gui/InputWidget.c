@@ -104,9 +104,12 @@ void Select_Focus(void)
     {
         WM_SetFocus(g_hWin_about);
     }
+
+    if(g_hWin_monitor > 0)
+    {
+        WM_SetFocus(g_hWin_monitor);
+    }
 }
-
-
 
 //在按下绿色保存按钮的时候，调用此函数
 static void Select_Input_Edit(int  EditNum)
@@ -123,6 +126,7 @@ static void Select_Input_Edit(int  EditNum)
         case EDIT_SCR_OUTTIME:
             EDIT_GetText(hItem,tmpTextBuf,4);
             g_sys_register_para.scrTimeout=atoi(tmpTextBuf);
+            g_sys_control.sleepTimeout = 0;
             hItem=CPS_Set_ScrOutTime();
             
             break;

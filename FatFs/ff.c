@@ -3104,6 +3104,8 @@ FRESULT f_getfree (
 				sect = (*fatfs)->fatbase;
 				i = 0; p = 0;
 				do {
+                    clr_wdt(); //ЛЊаж
+                    
 					if (!i) {
 						res = move_window(*fatfs, sect++);
 						if (res != FR_OK) break;

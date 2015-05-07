@@ -565,14 +565,14 @@ static  void  App_TaskPower (void *p_arg)
         }
         
         g_sys_control.sleepTimeout++;
-        if(g_sys_control.sleepTimeout > ((g_sys_register_para.scrTimeout +60) * 100))
+        if(g_sys_control.sleepTimeout > ((g_sys_register_para.scrTimeout + 30) * 100))
         {
             APP_Sleep();
             
             g_sys_control.sleepTimeout = 0;
         }        
 
-        OSTimeDly(10);
+        OSTimeDlyHMSM(0, 0, 0, 10);
     }
 }
 

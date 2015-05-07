@@ -3,8 +3,8 @@
 
 
 
-#define SOFTWARE_VERSION         21
-#define HARDWARE_VERSION         21
+#define SOFTWARE_VERSION         22
+#define HARDWARE_VERSION         20
 
 
 #define GUI_645_ADDR_LENGTH 12
