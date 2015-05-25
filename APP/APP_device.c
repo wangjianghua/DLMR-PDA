@@ -8,15 +8,14 @@ ROM_PARA g_sys_register_para =
     TAG_WORD_TABLE_MAP,
     0xffffbb00,         //unsigned int bootFlag;      //启动标志，不能改动
     0,              //0:  checksum
-    0x20141101,      //version
+    0x20150525,      //version
 
-    
-    0xffffffff,         //unsigned int meterPassword;//密码
+    30,                 //屏保时间
     4000,               //unsigned int recvDelayTime;//接受数据延时
     1000,               //unsigned int execInterval;//执行时间
     DL_T_07,            //unsigned int plcProtocol; //规约
     0,                  //unsigned int channel; //通道
-    9600,               //unsigned int baudrate; //波特率
+    4,               //unsigned int baudrate; //波特率
     0xFA,               //unsigned int preamble; //前导符
     1,                  //unsigned int stopbit;
     0,                  //unsigned int number;

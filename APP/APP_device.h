@@ -58,19 +58,20 @@ unsigned int crc;
 unsigned int versionDate;
 
 
-unsigned int meterPassword[8];//密码
+unsigned int scrTimeout;           //屏幕超时
 unsigned int recvDelayTime;//接受数据延时
 unsigned int execInterval;//执行时间
-unsigned int scrTimeout;           //屏幕超时
-
 unsigned int plcProtocol; //规约
 unsigned int channel; //通道
 unsigned int baudrate; //波特率
+
 //before ************10******************
 
 unsigned int preamble; //前导符
 unsigned int stopbit;
 unsigned int number;
+unsigned int meterPassword[8];//密码
+
 
 unsigned int freqSel; //速率选择,下面减过了
 

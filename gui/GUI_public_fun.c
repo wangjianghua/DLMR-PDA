@@ -244,7 +244,7 @@ void GUI_print_recv_buf()
         else if(g_sys_control.guiState == GUI_PLC_MSG_LISTING)
         {
             hObj = MNT_Get_MultiEdit();
-            if(g_sys_control.numMultiedit > 15)
+            if(g_sys_control.numMultiedit > 25)
             {
                 g_sys_control.numMultiedit = 0;
                 MULTIEDIT_SetText(hObj, "\0"); 
@@ -292,11 +292,32 @@ WM_HWIN GUI_Get_PROGBAR()
     case  GUI_PLC_MSG_MEMORY:
         return MMD_Get_PROGBAR();
         break;
-
     }
-
+    
     return WM_HWIN_NULL;
     
+}
+
+void GUI_FailRecvProc(void)
+{
+    if((g_sys_control.guiState == GUI_PLC_MSG_READ)&&(g_send_para_pkg.cmdType == PLC_CMD_TYPE_COMMON))
+    {
+        RMD_ReadErr();
+    }
+
+}
+
+
+void GUI_ClearData(void)
+{
+    if((g_sys_control.guiState == GUI_PLC_MSG_READ)&&(g_send_para_pkg.cmdType == PLC_CMD_TYPE_COMMON))
+    {
+        RMD_ClearData();
+    }
+    if((g_sys_control.guiState == GUI_PLC_MSG_TEST)&&(g_send_para_pkg.cmdType == PLC_CMD_TYPE_COMMON))
+    {
+        CPT_ClearData();
+    }
 }
 
 #if (EWARM_OPTIMIZATION_EN > 0u)
@@ -305,8 +326,6 @@ WM_HWIN GUI_Get_PROGBAR()
 void GUI_Msg_Proc()
 {
     WM_HWIN hItem;
-
-    
 
     if(g_plc_prm.sendStatus == PLC_MSG_SENDING)    
     {        
@@ -324,6 +343,7 @@ void GUI_Msg_Proc()
     if((g_plc_prm.result == PLC_RES_FAIL) || (g_plc_prm.result == PLC_RES_TIMEOUT))
     {
         g_plc_prm.result = PLC_RES_NONE;
+        GUI_FailRecvProc();
         ERR_NOTE(g_hWin_menu, 10);
         hItem = GUI_Get_PROGBAR();
         PROGBAR_SetBarColor(hItem, 0, GUI_RED);
@@ -355,6 +375,8 @@ void GUI_Msg_Proc()
         if( g_plc_prm.result == PLC_RES_SUCC )
         {
             Data_Download_Yellow(1);
+            GUI_ClearData();
+            GUI_Delay(10);
             GUI_print_recv_buf();
 
             hItem = GUI_Get_PROGBAR();
@@ -420,38 +442,7 @@ char *int_to_char(int src,char *pBuff,int radix)
 
 
 
-//启用小工具
-void Enable_Widget(WM_MESSAGE * pMsg,int Widget_Id)
-{
 
-    WM_HWIN hItem;
-    hItem=WM_GetDialogItem(pMsg->hWin,Widget_Id);
-    WM_EnableWindow(hItem);
-}
-
-//禁用小工具
-void Disable_Widget(WM_MESSAGE * pMsg,int Widget_Id)
-{
-    WM_HWIN hItem;
-    hItem=WM_GetDialogItem(pMsg->hWin,Widget_Id);
-    WM_DisableWindow(hItem);
-}
-
-//聚焦小工具
-void Focus_Widget(WM_MESSAGE * pMsg,int Widget_Id) 
-{
-    WM_HWIN hItem;
-    hItem=WM_GetDialogItem(pMsg->hWin,Widget_Id);
-    WM_SetFocus(hItem);
-}
-
-//小工具不能被选中
-void Not_Focus(WM_MESSAGE *pMsg,int Widget_Id)
-{
-    WM_HWIN hItem;
-    hItem=WM_GetDialogItem(pMsg->hWin,Widget_Id); 
-    WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
-}
 
 
 //初始化速率设置的EDIT

@@ -323,6 +323,7 @@ void APP_StartButtonTest()
 static  void  App_TaskStart (void *p_arg)
 {
     u8 i = 0, n;
+    u8 t_rtc;
 
 
     (void)p_arg; 
@@ -359,8 +360,11 @@ static  void  App_TaskStart (void *p_arg)
 
     //FatFs_Test();
     //BSP_BEEP();
-    RTC_ReadTime(g_rtc_time); 
-    RTC_CheckTime(g_rtc_time);
+    for(t_rtc = 0; t_rtc < 3;t_rtc++)
+    {
+        RTC_ReadTime(g_rtc_time); 
+        RTC_CheckTime(g_rtc_time);
+    }
     g_sys_control.led_count = 2;
     while (DEF_TRUE) { 
         /* Task body, always written as an infinite loop.           */
@@ -520,7 +524,10 @@ static  void  App_TaskPower (void *p_arg)
 {
     (void)p_arg;
     
-    LED_Off(LED_GREEN);
+    while(GPIO_PIN_RESET == HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_11))
+    {
+        OSTimeDlyHMSM(0, 0, 0, 10);
+    }
     
     while (DEF_TRUE) {
         if(GPIO_PIN_RESET == HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_11))
@@ -549,7 +556,7 @@ static  void  App_TaskPower (void *p_arg)
         }        
 
         g_sys_control.shutdownTimeout++;
-        if(g_sys_control.shutdownTimeout > ((g_sys_register_para.scrTimeout + 120) * 100))
+        if(g_sys_control.shutdownTimeout > ((g_sys_register_para.scrTimeout + 150) * 100))
         {
             if((PLC_CMD_TYPE_NODE == g_send_para_pkg.cmdType) ||
                (PLC_CMD_TYPE_R2L == g_send_para_pkg.cmdType))
@@ -565,7 +572,7 @@ static  void  App_TaskPower (void *p_arg)
         }
         
         g_sys_control.sleepTimeout++;
-        if(g_sys_control.sleepTimeout > ((g_sys_register_para.scrTimeout + 30) * 100))
+        if(g_sys_control.sleepTimeout > (g_sys_register_para.scrTimeout * 100))
         {
             APP_Sleep();
             
@@ -825,7 +832,7 @@ static  void  App_TaskCheck (void *p_arg)
     }
 
     /* ºÏ≤‚‘ÿ≤® */
-    OSSemAccept(g_sem_chk_plc);
+    while(OSSemAccept(g_sem_chk_plc));
     plc_uart_send((INT8U *)plc_read_addr, sizeof(plc_read_addr));
     OSSemPend(g_sem_chk_plc, 2 * OS_TICKS_PER_SEC, &err);
     if(OS_ERR_NONE == err)
@@ -853,7 +860,7 @@ static  void  App_TaskCheck (void *p_arg)
     }
 
     /* ºÏ≤‚Œﬁœﬂ */
-    OSSemAccept(g_sem_chk_rf);
+    while(OSSemAccept(g_sem_chk_rf));
     rf_send_len = GDW_RF_Protocol_2013((INT8U *)rf_addr, 0x00, 0x00, 0x00, (INT8U *)rf_dl645_read, sizeof(rf_dl645_read), RF_SEND_BUF);
     OSSemPend(g_sem_chk_rf, 2 * OS_TICKS_PER_SEC, &err);
     if(OS_ERR_NONE == err)

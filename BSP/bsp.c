@@ -662,7 +662,6 @@ void BSP_GPIO_Configuration(void)
     GPIO_InitStructure.Pull  = GPIO_PULLUP; 
     HAL_GPIO_Init(GPIOE, &GPIO_InitStructure);     
 
-
 }
 
 

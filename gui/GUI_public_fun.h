@@ -3,7 +3,7 @@
 
 
 
-#define SOFTWARE_VERSION         22
+#define SOFTWARE_VERSION         24
 #define HARDWARE_VERSION         20
 
 
@@ -146,17 +146,7 @@ extern const u32 c_645DidoDef[2][PLC_CTRL_MAX_NUM] ;
 
 extern const u8 g_self_check_pwd[];
 
-//启用小工具
-void Enable_Widget(WM_MESSAGE * pMsg,int Widget_Id);
 
-//禁用小工具
-void Disable_Widget(WM_MESSAGE * pMsg,int Widget_Id);
-
-//聚焦小工具
-void Focus_Widget(WM_MESSAGE * pMsg,int Widget_Id);
-
-//小工具不能被选中
-void Not_Focus(WM_MESSAGE *pMsg,int Widget_Id);
 
 /*button对按键的反应，闪烁一下*/
 void ButtonBlink(WM_MESSAGE * pMsg,int Id);
@@ -197,6 +187,9 @@ WM_HWIN MMD_Get_PROGBAR();
 WM_HWIN RMD_Get_PROGBAR();
 WM_HWIN RMD_Get_MeterNum(void);
 WM_HWIN RMD_Get_ReadSel(void);
+WM_HWIN RMD_ReadErr(void);
+WM_HWIN RMD_BroadErr(void);
+WM_HWIN RMD_ClearData(void);
 void RMD_proc_resp_data();
 
 
@@ -221,6 +214,8 @@ void RMD_SetFocus(void);
 void RMD_Color_Change(void);
 
 void Select_Focus(void);
+
+void CPT_ClearData(void);
 
 
 

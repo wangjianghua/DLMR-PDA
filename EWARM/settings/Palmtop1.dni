@@ -21,7 +21,7 @@ ActionState=1
 Enabled=0
 ShowSource=1
 [DebugChecksum]
-Checksum=-1063913553
+Checksum=905562711
 [Exceptions]
 StopOnUncaught=_ 0
 StopOnThrow=_ 0
@@ -138,15 +138,7 @@ Exclusions=
 [Disassemble mode]
 mode=0
 [Breakpoints2]
-Bp0=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\drv\SI4438.c}.304.3" 0 0 1 "" 0 "" 0
-Bp1=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\drv\SI4438.c}.225.5" 0 0 1 "" 0 "" 0
-Bp2=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\drv\SI4438.c}.382.5" 0 0 1 "" 0 "" 0
-Bp3=_ 0 "EMUL_CODE" "0x080477E4" 0 0 1 "" 0 "" 0
-Bp4=_ 0 "EMUL_CODE" "0x08060362" 0 0 1 "" 0 "" 0
-Bp5=_ 0 "EMUL_CODE" "{$PROJ_DIR$}.251.5" 0 0 1 "" 0 "" 0
-Bp6=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\drv\Src\stm32f2xx_hal_flash.c}.616.1" 0 0 1 "" 0 "" 0
-Bp7=_ 1 "EMUL_DATA" "0x20011B59" 0 0 0 0 4294967295
-Count=8
+Count=0
 [Aliases]
 A0=_ "C:\Users\Administrator\Desktop\PDA_2015.01.19\PDA\APP\app.c" ""
 A1=_ "C:\Users\Administrator\Desktop\PDA_2015.01.19\PDA\drv\SI4438.c" ""

@@ -151,7 +151,36 @@ WM_HWIN RMD_Get_Speed(void)
     return WM_GetDialogItem(g_hWin_ReadMeter,ID_EDIT_2);
 }
 
-static int RMD_key_cnt = 0;
+/*******************************************************
+*
+*   超时，或者没有接收数据的时候，在edit框体中填充EE.EE
+*
+*********************************************************/
+WM_HWIN RMD_ReadErr(void)
+{
+    WM_HWIN hItem;
+    int i;
+    for(i = 0;i < 5;i++)
+    {
+        hItem = WM_GetDialogItem(g_hWin_ReadMeter, (ID_EDIT_3 + i));
+        EDIT_SetText(hItem, "EE.EE");
+    }
+    return HBWIN_NULL;
+}
+
+WM_HWIN RMD_ClearData(void)
+{
+    WM_HWIN hItem;
+    int i;
+    for(i = 0;i < 5;i++)
+    {
+        hItem = WM_GetDialogItem(g_hWin_ReadMeter, (ID_EDIT_3 + i));
+        EDIT_SetText(hItem, "0");
+    }
+    return HBWIN_NULL;
+}
+
+static int RMD_key_cnt = 0;     //对按键次数进行计数
 
 
 //向上选择
@@ -427,13 +456,8 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
     
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_0);
-    //EDIT_SetText(hItem, "0");
     WM_DisableWindow(hItem);
     EDIT_SetText(hItem, (const char *)GUI_hex2MeterAddrStr(g_sys_control.recentMeterAddr, 6));
-    //WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
-    //
-    // Initialization of 'Edit'
-    //
 
     for(i = 0;i < 5; i++)
     {
@@ -446,9 +470,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     PUB_InitFreq(pMsg,ID_EDIT_2);
     hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_2);
     WM_DisableWindow(hItem);
-
     
-
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_1);
     EDIT_SetText(hItem, Positive);
     if(g_sys_register_para.plcProtocol==DL_T_07)
@@ -467,13 +489,10 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
         g_send_para_pkg.ctlCode=0x01; 
 
     }
-    
-    //EDIT_SetBkColor(hItem,0,GUI_GREEN);
     WM_DisableWindow(hItem);
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_PROGBAR_0);
     PROGBAR_SetBarColor(hItem,0,GUI_GREEN);
-
    
     break;
 

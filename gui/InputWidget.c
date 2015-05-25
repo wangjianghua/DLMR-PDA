@@ -125,10 +125,14 @@ static void Select_Input_Edit(int  EditNum)
     {
         case EDIT_SCR_OUTTIME:
             EDIT_GetText(hItem,tmpTextBuf,4);
-            g_sys_register_para.scrTimeout=atoi(tmpTextBuf);
-            g_sys_control.sleepTimeout = 0;
+            g_sys_register_para.scrTimeout = atoi(tmpTextBuf);
+            if(g_sys_register_para.scrTimeout < 30)
+            {
+                g_sys_register_para.scrTimeout = 30;
+
+                sprintf(tmpTextBuf, "%d", g_sys_register_para.scrTimeout);
+            }
             hItem=CPS_Set_ScrOutTime();
-            
             break;
             
         case EDIT_PASSWORD:

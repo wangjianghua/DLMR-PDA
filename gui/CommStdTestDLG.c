@@ -348,6 +348,12 @@ void CST_Set_DataFlag(u8 * tst)
     EDIT_SetText(hItem, tst); 
 }
 
+void CPT_ClearData(void)
+{
+    WM_HWIN hItem;
+    hItem = WM_GetDialogItem(g_hWin_std, ID_EDIT_5);
+    EDIT_SetText(hItem, "00000000");
+}
 
 WM_HWIN CPT_Get_Speed(void)
 {
