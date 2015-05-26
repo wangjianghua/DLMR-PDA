@@ -329,13 +329,10 @@ void GUI_Msg_Proc()
 
     if(g_plc_prm.sendStatus == PLC_MSG_SENDING)    
     {        
-        //g_plc_prm.send_buf
-        //Data_Upload_Green();//数据发送图标变色
-        //hItem=TSK_Get_Upload_Text();
-        //TEXT_SetTextColor(hItem,GUI_GREEN);
-        //GUI_Delay(15);
-        Data_Upload_Green(1);
+        GUI_Msg_Upload(ON);
+        
         GUI_print_send_buf();
+        
         return;
        
     }
@@ -352,8 +349,8 @@ void GUI_Msg_Proc()
 
     if(g_plc_prm.result == PLC_RES_ERROR_FRAME)
     {
-       
-        Data_Download_Yellow(1);
+        GUI_Msg_Download(ON);
+        
         GUI_print_recv_buf();
 
         hItem = GUI_Get_PROGBAR();
@@ -374,9 +371,10 @@ void GUI_Msg_Proc()
     {
         if( g_plc_prm.result == PLC_RES_SUCC )
         {
-            Data_Download_Yellow(1);
+            GUI_Msg_Download(ON);
+            
             GUI_ClearData();
-            GUI_Delay(10);
+            OSTimeDlyHMSM(0, 0, 0, 20);
             GUI_print_recv_buf();
 
             hItem = GUI_Get_PROGBAR();

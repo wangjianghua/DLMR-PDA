@@ -75,12 +75,12 @@ typedef struct {
 //任务栏资源列表
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { WINDOW_CreateIndirect,  NULL,           ID_WINDOW_0,  0,   0, 240, 25, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    "protocol",     ID_TEXT_0,    3,   3, 50,  15, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    "PLC-R" ,       ID_TEXT_1,    60,  3, 40,  15, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    "\0",           ID_TEXT_10,   100, 5, 40,  15, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    UploadIcon,     ID_TEXT_5,    149, 3, 17,  17, 0, 0x0, 0 }, 
-  { TEXT_CreateIndirect,    DownloadIcon,   ID_TEXT_6,    166, 3, 17,  17, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    "\0",           ID_TEXT_7,    196, 3, 42,  25, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    " ",            ID_TEXT_0,    3,   3, 50,  15, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    "PLC-R" ,       ID_TEXT_1,    67,  3, 40,  15, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    " ",            ID_TEXT_10,   112, 5, 40,  15, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    DownloadIcon,   ID_TEXT_5,    156, 3, 17,  17, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    UploadIcon,     ID_TEXT_6,    166, 3, 17,  17, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    " ",            ID_TEXT_7,    196, 3, 42,  25, 0, 0x0, 0 }, 
 };
 
 
@@ -229,21 +229,17 @@ void TSK_Set_Protocol_Text(void)
 }
 
 
-
-/************************************************
-数据上行
-************************************************/
-void Data_Upload_Green(u32 color)
+void GUI_Msg_Download(u16 sw)
 {
     WM_HWIN hItem;
     static u32 i = 0;
     /*数据发送*/
     
-    if(color)
+    if(ON == sw)
     {
         i = ICON_FLOW_FLASH_TIMEOUT;
         hItem = WM_GetDialogItem(g_hWin_task, ID_TEXT_5);
-        TEXT_SetTextColor(hItem, GUI_GREEN );//GUI_GREEN);
+        TEXT_SetTextColor(hItem, GUI_YELLOW);
     }
     else
     {
@@ -258,7 +254,7 @@ void Data_Upload_Green(u32 color)
         else
         {
             hItem = WM_GetDialogItem(g_hWin_task, ID_TEXT_5);
-            TEXT_SetTextColor(hItem, GUI_WHITE );//GUI_GREEN);
+            TEXT_SetTextColor(hItem, GUI_WHITE);//GUI_GREEN);
             i = 0xffffffff;
         }
     }
@@ -266,20 +262,16 @@ void Data_Upload_Green(u32 color)
  }
 
 
-/************************************************
-数据下行
-************************************************/
-
-void Data_Download_Yellow(u32 color)
+void GUI_Msg_Upload(u16 sw)
 {
     WM_HWIN hItem;
     static u32 i;
     
-    if(color)
+    if(ON == sw)
     {
         i = ICON_FLOW_FLASH_TIMEOUT;
         hItem=WM_GetDialogItem(g_hWin_task,ID_TEXT_6);
-        TEXT_SetTextColor(hItem, GUI_YELLOW);  //GUI_YELLOW);
+        TEXT_SetTextColor(hItem, GUI_GREEN);
     }
     else
     {

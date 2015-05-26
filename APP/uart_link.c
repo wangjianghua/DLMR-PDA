@@ -502,8 +502,8 @@ void  App_TaskEndTick (void *p_arg)
         LED_UART_OFF();
 #endif
 
-        Data_Upload_Green(0);
-        Data_Download_Yellow(0);
+        GUI_Msg_Upload(OFF);
+        GUI_Msg_Download(OFF);
 
         if(GPIO_PIN_RESET == HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_11))
         {

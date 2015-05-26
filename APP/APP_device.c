@@ -5,24 +5,24 @@
 
 ROM_PARA g_sys_register_para = 
 {
-    TAG_WORD_TABLE_MAP,
-    0xffffbb00,         //unsigned int bootFlag;      //启动标志，不能改动
-    0,              //0:  checksum
-    0x20150525,      //version
+    TAG_WORD_TABLE_MAP, //标签
+    0xffffbb00,         //升级标志，不能改动
+    0,                  //校验和
+    VERSION_DATE,       //版本日期
 
     30,                 //屏保时间
-    4000,               //unsigned int recvDelayTime;//接受数据延时
-    1000,               //unsigned int execInterval;//执行时间
-    DL_T_07,            //unsigned int plcProtocol; //规约
-    0,                  //unsigned int channel; //通道
-    4,               //unsigned int baudrate; //波特率
-    0xFA,               //unsigned int preamble; //前导符
-    1,                  //unsigned int stopbit;
-    0,                  //unsigned int number;
+    4000,               //接受数据延时
+    1000,               //执行时间
+    DL_T_07,            //规约
+    CHANNEL_PLC,        //通道
+    BAUD_RATE_9600,     //波特率
+    0xFA,               //前导符
+    ONE_STOPBIT,        //停止位
+    PLC_421_1200BPS,    //速率
+    PLC_BPS_MIDDLE,     //通讯时延
     
-    //PARAMETER SECTOR
     {
-        0,               //reserved
+        0,              //保留
     }
 };
 

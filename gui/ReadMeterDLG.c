@@ -156,19 +156,18 @@ WM_HWIN RMD_Get_Speed(void)
 *   超时，或者没有接收数据的时候，在edit框体中填充EE.EE
 *
 *********************************************************/
-WM_HWIN RMD_ReadErr(void)
+void RMD_ReadErr(void)
 {
     WM_HWIN hItem;
     int i;
     for(i = 0;i < 5;i++)
     {
         hItem = WM_GetDialogItem(g_hWin_ReadMeter, (ID_EDIT_3 + i));
-        EDIT_SetText(hItem, "EE.EE");
+        EDIT_SetText(hItem, "EEEEEEEE.EE");
     }
-    return HBWIN_NULL;
 }
 
-WM_HWIN RMD_ClearData(void)
+void RMD_ClearData(void)
 {
     WM_HWIN hItem;
     int i;
@@ -177,7 +176,6 @@ WM_HWIN RMD_ClearData(void)
         hItem = WM_GetDialogItem(g_hWin_ReadMeter, (ID_EDIT_3 + i));
         EDIT_SetText(hItem, "0");
     }
-    return HBWIN_NULL;
 }
 
 static int RMD_key_cnt = 0;     //对按键次数进行计数

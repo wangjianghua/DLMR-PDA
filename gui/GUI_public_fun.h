@@ -2,10 +2,10 @@
 #define __GUI_PUBLIC_FUN__
 
 
-
-#define SOFTWARE_VERSION         24
+#define SOFTWARE_VERSION         25
 #define HARDWARE_VERSION         20
 
+#define VERSION_DATE     0x20150526
 
 #define GUI_645_ADDR_LENGTH 12
 
@@ -114,6 +114,8 @@
 
 
 
+#define ON                         0
+#define OFF                        1
 
 
 
@@ -158,10 +160,9 @@ void PUB_InitFreq(WM_MESSAGE *pMsg,int widgetID); //初始化速率设置eidt
 //把数值转化为字符串
 char *int_to_char(int src,char *pBuff,int radix) ;
 
-void Data_Upload_Green(u32 color);
-void Data_Download_Yellow(u32 color);
-
-void GUI_Msg_Proc();
+void GUI_Msg_Upload(u16 sw);
+void GUI_Msg_Download(u16 sw);
+void GUI_Msg_Proc(void);
 
 
 WM_HWIN MSG_Get_MultiEdit();
@@ -187,9 +188,9 @@ WM_HWIN MMD_Get_PROGBAR();
 WM_HWIN RMD_Get_PROGBAR();
 WM_HWIN RMD_Get_MeterNum(void);
 WM_HWIN RMD_Get_ReadSel(void);
-WM_HWIN RMD_ReadErr(void);
+void RMD_ReadErr(void);
 WM_HWIN RMD_BroadErr(void);
-WM_HWIN RMD_ClearData(void);
+void RMD_ClearData(void);
 void RMD_proc_resp_data();
 
 

@@ -57,26 +57,20 @@ unsigned int bootFlag;      //启动标志，不能改动
 unsigned int crc;
 unsigned int versionDate;
 
-
 unsigned int scrTimeout;           //屏幕超时
 unsigned int recvDelayTime;//接受数据延时
 unsigned int execInterval;//执行时间
 unsigned int plcProtocol; //规约
 unsigned int channel; //通道
 unsigned int baudrate; //波特率
-
-//before ************10******************
-
 unsigned int preamble; //前导符
 unsigned int stopbit;
-unsigned int number;
-unsigned int meterPassword[8];//密码
-
-
 unsigned int freqSel; //速率选择,下面减过了
-
 unsigned int bpsSpeed;             //传输数据等待时间,需要保存，以便下次启动有默认设置
 
+unsigned int meterPassword[8];//密码
+
+unsigned int number;
 
 unsigned int para_data[SRM_PARA_NUMBER - 23];
 }ROM_PARA, *P_ROM_PARA;

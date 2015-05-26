@@ -5136,7 +5136,8 @@ GUI_CONST_STORAGE unsigned char acGUI_Fontns16_8BF4[ 32] = { /* code 8BF4 */
     
 //用其他的汉字的编码来代替这两个符号
 //用->上传数据 和 贰->接收数据
-    
+  
+
 GUI_CONST_STORAGE unsigned char acGUI_Fontns16_58F9[32]={
     ________,________,
     ________,X_______,
@@ -5145,28 +5146,28 @@ GUI_CONST_STORAGE unsigned char acGUI_Fontns16_58F9[32]={
     _____XXX,XXXX____,
     ____XXXX,XXXXX___,
     ___XXXXX,XXXXXX__,
-    __XXXXXX,XXXXXXX_,
-    ______XX,XXX_____,
-    ______XX,XXX_____,
-    ______XX,XXX_____,
-    ______XX,XXX_____,
-    ______XX,XXX_____,
-    ______XX,XXX_____,
-    ______XX,XXX_____,
-    ______XX,XXX_____
+    _______X,XX______,
+    _______X,XX______,
+    _______X,XX______,
+    _______X,XX______,
+    _______X,XX______,
+    _______X,XX______,
+    _______X,XX______,
+    _______X,XX______,
+    _______X,XX______
 };
 
 GUI_CONST_STORAGE unsigned char acGUI_Fontns16_8D30[32]={
     ________,________,
-    ____XXXX,X_______,
-    ____XXXX,X_______,
-    ____XXXX,X_______,
-    ____XXXX,X_______,
-    ____XXXX,X_______,
-    ____XXXX,X_______,
-    ____XXXX,X_______,
-    ____XXXX,X_______,
-    XXXXXXXX,XXXXX___,
+    _____XXX,________,
+    _____XXX,________,
+    _____XXX,________,
+    _____XXX,________,
+    _____XXX,________,
+    _____XXX,________,
+    _____XXX,________,
+    _____XXX,________,
+    _____XXX,________,
     _XXXXXXX,XXXX____,
     __XXXXXX,XXX_____,
     ___XXXXX,XX______,
@@ -5175,7 +5176,7 @@ GUI_CONST_STORAGE unsigned char acGUI_Fontns16_8D30[32]={
     ______X_,________
 };
 
-
+  
 GUI_CONST_STORAGE unsigned char acGUI_Fontns16_5206[ 32] = { /* code 5206 */
   ________,_X______,
   _____X__,_X______,
@@ -8926,16 +8927,16 @@ GUI_CONST_STORAGE unsigned char acGUI_Battery_5341[80]={
     ________,________,________,________,________,
     ________,________,________,________,________,
     XXXXXXXX,XXXXXXXX,XXXXXXXX,XXXXXXXX,XX______,
-    XX______,________,________,________,__XX____,
-    XX__XXXX,__XXXX__,XXXX__XX,XX__XXXX,__XX____,
-    XX__XXXX,__XXXX__,XXXX__XX,XX__XXXX,__XX____,
-    XX__XXXX,__XXXX__,XXXX__XX,XX__XXXX,__XX____,
-    XX__XXXX,__XXXX__,XXXX__XX,XX__XXXX,__XX____,
-    XX__XXXX,__XXXX__,XXXX__XX,XX__XXXX,__XX____,
-    XX__XXXX,__XXXX__,XXXX__XX,XX__XXXX,__XX____,
-    XX__XXXX,__XXXX__,XXXX__XX,XX__XXXX,__XX____,
-    XX__XXXX,__XXXX__,XXXX__XX,XX__XXXX,__XX____,
-    XX______,________,________,________,__XX____,
+    XX______,________,________,________,__X_____,
+    XX__XXXX,__XXXX__,XXXX__XX,XX__XXXX,__XXX___,
+    XX__XXXX,__XXXX__,XXXX__XX,XX__XXXX,__XXX___,
+    XX__XXXX,__XXXX__,XXXX__XX,XX__XXXX,__XXX___,
+    XX__XXXX,__XXXX__,XXXX__XX,XX__XXXX,__XXX___,
+    XX__XXXX,__XXXX__,XXXX__XX,XX__XXXX,__XXX___,
+    XX__XXXX,__XXXX__,XXXX__XX,XX__XXXX,__XXX___,
+    XX__XXXX,__XXXX__,XXXX__XX,XX__XXXX,__XXX___,
+    XX__XXXX,__XXXX__,XXXX__XX,XX__XXXX,__XXX___,
+    XX______,________,________,________,__X_____,
     XXXXXXXX,XXXXXXXX,XXXXXXXX,XXXXXXXX,XX______,
     ________,________,________,________,________,
     ________,________,________,________,________
@@ -8948,16 +8949,16 @@ GUI_CONST_STORAGE unsigned char acGUI_Battery_7396[80]={
     ________,________,________,________,________,
     ________,________,________,________,________,
     XXXXXXXX,XXXXXXXX,XXXXXXXX,XXXXXXXX,XX______,
-    XX______,________,________,________,__XX____,
-    XX__XXXX,__XXXX__,XXXX__XX,XX______,__XX____,
-    XX__XXXX,__XXXX__,XXXX__XX,XX______,__XX____,
-    XX__XXXX,__XXXX__,XXXX__XX,XX______,__XX____,
-    XX__XXXX,__XXXX__,XXXX__XX,XX______,__XX____,
-    XX__XXXX,__XXXX__,XXXX__XX,XX______,__XX____,
-    XX__XXXX,__XXXX__,XXXX__XX,XX______,__XX____,
-    XX__XXXX,__XXXX__,XXXX__XX,XX______,__XX____,
-    XX__XXXX,__XXXX__,XXXX__XX,XX______,__XX____,
-    XX______,________,________,________,__XX____,
+    XX______,________,________,________,__X_____,
+    XX__XXXX,__XXXX__,XXXX__XX,XX______,__XXX___,
+    XX__XXXX,__XXXX__,XXXX__XX,XX______,__XXX___,
+    XX__XXXX,__XXXX__,XXXX__XX,XX______,__XXX___,
+    XX__XXXX,__XXXX__,XXXX__XX,XX______,__XXX___,
+    XX__XXXX,__XXXX__,XXXX__XX,XX______,__XXX___,
+    XX__XXXX,__XXXX__,XXXX__XX,XX______,__XXX___,
+    XX__XXXX,__XXXX__,XXXX__XX,XX______,__XXX___,
+    XX__XXXX,__XXXX__,XXXX__XX,XX______,__XXX___,
+    XX______,________,________,________,__X_____,
     XXXXXXXX,XXXXXXXX,XXXXXXXX,XXXXXXXX,XX______,
     ________,________,________,________,________,
     ________,________,________,________,________
@@ -8972,16 +8973,16 @@ GUI_CONST_STORAGE unsigned char acGUI_Battery_634C[80]={
     ________,________,________,________,________,
     ________,________,________,________,________,
     XXXXXXXX,XXXXXXXX,XXXXXXXX,XXXXXXXX,XX______,
-    XX______,________,________,________,__XX____,
-    XX__XXXX,__XXXX__,XXXX____,________,__XX____,
-    XX__XXXX,__XXXX__,XXXX____,________,__XX____,
-    XX__XXXX,__XXXX__,XXXX____,________,__XX____,
-    XX__XXXX,__XXXX__,XXXX____,________,__XX____,
-    XX__XXXX,__XXXX__,XXXX____,________,__XX____,
-    XX__XXXX,__XXXX__,XXXX____,________,__XX____,
-    XX__XXXX,__XXXX__,XXXX____,________,__XX____,
-    XX__XXXX,__XXXX__,XXXX____,________,__XX____,
-    XX______,________,________,________,__XX____,
+    XX______,________,________,________,__X_____,
+    XX__XXXX,__XXXX__,XXXX____,________,__XXX___,
+    XX__XXXX,__XXXX__,XXXX____,________,__XXX___,
+    XX__XXXX,__XXXX__,XXXX____,________,__XXX___,
+    XX__XXXX,__XXXX__,XXXX____,________,__XXX___,
+    XX__XXXX,__XXXX__,XXXX____,________,__XXX___,
+    XX__XXXX,__XXXX__,XXXX____,________,__XXX___,
+    XX__XXXX,__XXXX__,XXXX____,________,__XXX___,
+    XX__XXXX,__XXXX__,XXXX____,________,__XXX___,
+    XX______,________,________,________,__X_____,
     XXXXXXXX,XXXXXXXX,XXXXXXXX,XXXXXXXX,XX______,
     ________,________,________,________,________,
     ________,________,________,________,________
@@ -8993,16 +8994,16 @@ GUI_CONST_STORAGE unsigned char acGUI_Battery_67D2[80]={
     ________,________,________,________,________,
     ________,________,________,________,________,
     XXXXXXXX,XXXXXXXX,XXXXXXXX,XXXXXXXX,XX______,
-    XX______,________,________,________,__XX____,
-    XX__XXXX,__XXXX__,________,________,__XX____,
-    XX__XXXX,__XXXX__,________,________,__XX____,
-    XX__XXXX,__XXXX__,________,________,__XX____,
-    XX__XXXX,__XXXX__,________,________,__XX____,
-    XX__XXXX,__XXXX__,________,________,__XX____,
-    XX__XXXX,__XXXX__,________,________,__XX____,
-    XX__XXXX,__XXXX__,________,________,__XX____,
-    XX__XXXX,__XXXX__,________,________,__XX____,
-    XX______,________,________,________,__XX____,
+    XX______,________,________,________,__X_____,
+    XX__XXXX,__XXXX__,________,________,__XXX___,
+    XX__XXXX,__XXXX__,________,________,__XXX___,
+    XX__XXXX,__XXXX__,________,________,__XXX___,
+    XX__XXXX,__XXXX__,________,________,__XXX___,
+    XX__XXXX,__XXXX__,________,________,__XXX___,
+    XX__XXXX,__XXXX__,________,________,__XXX___,
+    XX__XXXX,__XXXX__,________,________,__XXX___,
+    XX__XXXX,__XXXX__,________,________,__XXX___,
+    XX______,________,________,________,__X_____,
     XXXXXXXX,XXXXXXXX,XXXXXXXX,XXXXXXXX,XX______,
     ________,________,________,________,________,
     ________,________,________,________,________
@@ -9015,16 +9016,16 @@ GUI_CONST_STORAGE unsigned char acGUI_Battery_9646[80]={
     ________,________,________,________,________,
     ________,________,________,________,________,
     XXXXXXXX,XXXXXXXX,XXXXXXXX,XXXXXXXX,XX______,
-    XX______,________,________,________,__XX____,
-    XX__XXXX,________,________,________,__XX____,
-    XX__XXXX,________,________,________,__XX____,
-    XX__XXXX,________,________,________,__XX____,
-    XX__XXXX,________,________,________,__XX____,
-    XX__XXXX,________,________,________,__XX____,
-    XX__XXXX,________,________,________,__XX____,
-    XX__XXXX,________,________,________,__XX____,
-    XX__XXXX,________,________,________,__XX____,
-    XX______,________,________,________,__XX____,
+    XX______,________,________,________,__X_____,
+    XX__XXXX,________,________,________,__XXX___,
+    XX__XXXX,________,________,________,__XXX___,
+    XX__XXXX,________,________,________,__XXX___,
+    XX__XXXX,________,________,________,__XXX___,
+    XX__XXXX,________,________,________,__XXX___,
+    XX__XXXX,________,________,________,__XXX___,
+    XX__XXXX,________,________,________,__XXX___,
+    XX__XXXX,________,________,________,__XXX___,
+    XX______,________,________,________,__X_____,
     XXXXXXXX,XXXXXXXX,XXXXXXXX,XXXXXXXX,XX______,
     ________,________,________,________,________,
     ________,________,________,________,________
@@ -9037,16 +9038,16 @@ GUI_CONST_STORAGE unsigned char acGUI_Battery_4F0D[80]={
     ________,________,________,________,________,
     ________,________,________,________,________,
     XXXXXXXX,XXXXXXXX,XXXXXXXX,XXXXXXXX,XX______,
-    XXX_____,________,________,________,__XX____,
-    XXX_____,________,________,________,__XX____,
-    XXX_____,________,________,________,__XX____,
-    XXX_____,________,________,________,__XX____,
-    XXX_____,________,________,________,__XX____,
-    XXX_____,________,________,________,__XX____,
-    XXX_____,________,________,________,__XX____,
-    XXX_____,________,________,________,__XX____,
-    XXX_____,________,________,________,__XX____,
-    XXX_____,________,________,________,__XX____,
+    XXX_____,________,________,________,__X_____,
+    XXX_____,________,________,________,__XXX___,
+    XXX_____,________,________,________,__XXX___,
+    XXX_____,________,________,________,__XXX___,
+    XXX_____,________,________,________,__XXX___,
+    XXX_____,________,________,________,__XXX___,
+    XXX_____,________,________,________,__XXX___,
+    XXX_____,________,________,________,__XXX___,
+    XXX_____,________,________,________,__XXX___,
+    XXX_____,________,________,________,__X_____,
     XXXXXXXX,XXXXXXXX,XXXXXXXX,XXXXXXXX,XX______,
     ________,________,________,________,________,
     ________,________,________,________,________
@@ -9080,13 +9081,13 @@ GUI_CONST_STORAGE unsigned char acGUI_Battery_8086[80]={
 
 
 GUI_CONST_STORAGE GUI_CHARINFO GUI_Battery_CharInfo[7] = {
-   {  35,  35,  5, acGUI_Battery_4F0D } /* code 4F0D */
-  ,{  35,  35,  5, acGUI_Battery_5341 } /* code 5341 */
-  ,{  35,  35,  5, acGUI_Battery_634C } /* code 634C */
-  ,{  35,  35,  5, acGUI_Battery_67D2 } /* code 67D2 */
-  ,{  35,  35,  5, acGUI_Battery_7396 } /* code 7396 */
-  ,{  35,  35,  5, acGUI_Battery_9646 } /* code 9646 */
-  ,{  35,  35,  5, acGUI_Battery_8086 } /* code 8086 */
+   {  40,  40,  5, acGUI_Battery_4F0D } /* code 4F0D */
+  ,{  40,  40,  5, acGUI_Battery_5341 } /* code 5341 */
+  ,{  40,  40,  5, acGUI_Battery_634C } /* code 634C */
+  ,{  40,  40,  5, acGUI_Battery_67D2 } /* code 67D2 */
+  ,{  40,  40,  5, acGUI_Battery_7396 } /* code 7396 */
+  ,{  40,  40,  5, acGUI_Battery_9646 } /* code 9646 */
+  ,{  40,  40,  5, acGUI_Battery_8086 } /* code 8086 */
 };
 
 #if 1
