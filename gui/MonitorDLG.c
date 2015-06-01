@@ -59,7 +59,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { BUTTON_CreateIndirect, SetCopy,        ID_BUTTON_5,    129, 10,  105, 25, 0, 0x0, 0 },
     
   { BUTTON_CreateIndirect, Quit,           ID_BUTTON_3,    182, 265, 55,  25, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, Save,           ID_BUTTON_4,    10,  265, 55,  25, 0, 0x0, 0 },
+  //{ BUTTON_CreateIndirect, Save,           ID_BUTTON_4,    10,  265, 55,  25, 0, 0x0, 0 },
   { TEXT_CreateIndirect,   MND_countdown,  ID_TEXT_0,      10,  76,  100, 20, 0, 0x0, 0 },
   { MULTIEDIT_CreateIndirect, NULL,        ID_MULTIEDIT_0, 4,   103, 232, 153, 0, 0x0, 0 },
   { EDIT_CreateIndirect,     NULL,         ID_EDIT_0,      129,  73,  105, 25,  EDIT_CF_HCENTER, 0x64, 0 },  
@@ -102,10 +102,13 @@ WM_HWIN MNT_Get_MultiEdit()
 static void _init_dialog(WM_MESSAGE * pMsg)
 {
     WM_HWIN hItem;
+
+#if 0    
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_4);
     BUTTON_SetBkColor(hItem,0,GUI_GREEN);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
-     
+#endif
+
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_3);
     BUTTON_SetBkColor(hItem,0,GUI_YELLOW);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);

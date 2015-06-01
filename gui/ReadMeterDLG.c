@@ -107,7 +107,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
     { EDIT_CreateIndirect, NULL,            ID_EDIT_7,   89,  214, 106, 20, 0, 0x64, 0 },    
     { TEXT_CreateIndirect, "kWh",           ID_TEXT_11,  199, 214, 35, 20, 0, 0x0, 0 },
        
-    { BUTTON_CreateIndirect, Save,          ID_BUTTON_2, 8, 264, 55, 25, 0, 0x0, 0 },
+    //{ BUTTON_CreateIndirect, Save,          ID_BUTTON_2, 8, 264, 55, 25, 0, 0x0, 0 },
     { BUTTON_CreateIndirect, Msg,           ID_BUTTON_4, 74, 264, 90, 25, 0, 0x0, 0 },
     { BUTTON_CreateIndirect, Quit,        ID_BUTTON_3, 175, 264, 55, 25, 0, 0x0, 0},
     { PROGBAR_CreateIndirect, NULL,         ID_PROGBAR_0, 8, 239, 220, 20, 0, 0x0, 0},
@@ -423,11 +423,13 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     // Initialization of 'Edit'
     //
     GUI_UC_SetEncodeUTF8();
-   
+
+#if 0   
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_2);
     BUTTON_SetBkColor(hItem,0,GUI_GREEN);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
-    
+#endif
+
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_3);
     BUTTON_SetBkColor(hItem,0,GUI_YELLOW);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);

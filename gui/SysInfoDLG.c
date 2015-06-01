@@ -77,7 +77,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { EDIT_CreateIndirect, "pcb",         ID_EDIT_4,   125,  130, 100, 20, EDIT_CF_HCENTER, 0x64, 0 },
   { EDIT_CreateIndirect, "soft",        ID_EDIT_5,   125,  160, 100, 20, EDIT_CF_HCENTER, 0x64, 0 },
     
-  { BUTTON_CreateIndirect, Cancel,        ID_BUTTON_0, 10,   263, 80, 25, 0, 0x0, 0 },
+  //{ BUTTON_CreateIndirect, Cancel,        ID_BUTTON_0, 10,   263, 80, 25, 0, 0x0, 0 },
   { BUTTON_CreateIndirect, Quit,        ID_BUTTON_1, 147,  262, 80, 25, 0, 0x0, 0 },
   { BUTTON_CreateIndirect, "F1",        ID_BUTTON_2, 145,  190, 80, 20, 0, 0x0, 0 },
   { BUTTON_CreateIndirect, "F2",        ID_BUTTON_3, 145,  220, 80, 20, 0, 0x0, 0 },
@@ -150,10 +150,11 @@ static void _init_SysInfoDLg(WM_MESSAGE *pMsg)
     //WIDGET_SetEffect(hItem,&WIDGET_Effect_None);
     WM_DisableWindow(hItem);
 
-
+#if 0
     hItem = WM_GetDialogItem(pMsg->hWin,ID_BUTTON_0);
     BUTTON_SetBkColor(hItem, 0, GUI_GREEN);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
+#endif
 
     hItem = WM_GetDialogItem(pMsg->hWin,ID_BUTTON_1);
     BUTTON_SetBkColor(hItem, 0, GUI_YELLOW);
@@ -218,8 +219,8 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
         switch(((WM_KEY_INFO *)(pMsg->Data.p))->Key)
         {
             case GUI_KEY_GREEN:
-                memset(g_sys_ctrl.DevCheckCode,0,sizeof(g_sys_ctrl.DevCheckCode));
-                SID_DelHandle();
+                //memset(g_sys_ctrl.DevCheckCode,0,sizeof(g_sys_ctrl.DevCheckCode));
+                //SID_DelHandle();
                 break;
             case GUI_KEY_YELLOW:
                 memset(g_sys_ctrl.DevCheckCode,0,sizeof(g_sys_ctrl.DevCheckCode));
