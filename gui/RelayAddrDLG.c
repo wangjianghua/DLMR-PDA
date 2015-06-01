@@ -123,7 +123,7 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_0);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
-    if(PLC_ROUTE_ON == g_sys_control.sysUseRoute)
+    if(PLC_ROUTE_ON == g_sys_ctrl.sysUseRoute)
     {
         BUTTON_SetText(hItem, AlreadyStart);
     }
@@ -159,11 +159,11 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     LISTVIEW_SetHeaderHeight(hItem, 25);
     LISTVIEW_SetAutoScrollV(hItem,1);
 
-    for(i = 0; i < g_sys_control.sysAddrLevel; i++)
+    for(i = 0; i < g_sys_ctrl.sysAddrLevel; i++)
     {
         LISTVIEW_AddRow(hItem, NULL);
         LISTVIEW_SetItemText(hItem, 0, i, int_to_char(i, RowNum, 10));
-        LISTVIEW_SetItemText(hItem, 1, i, (const char*)GUI_hex2MeterAddrStr(g_send_para_pkg.relayAddr[i],6));
+        LISTVIEW_SetItemText(hItem, 1, i, (const char*)GUI_hex2MeterAddrStr(g_gui_para.relayAddr[i],6));
     }
 }
 
@@ -176,12 +176,12 @@ void RLY_GetParaAddr(WM_MESSAGE *pMsg)
     int i ;
     
     hItem = WM_GetDialogItem(pMsg->hWin ,ID_LISTVIEW_0);
-    g_sys_control.sysAddrLevel = LISTVIEW_GetNumRows(hItem);
+    g_sys_ctrl.sysAddrLevel = LISTVIEW_GetNumRows(hItem);
 
-    for(i = 0; i < g_sys_control.sysAddrLevel; i++)
+    for(i = 0; i < g_sys_ctrl.sysAddrLevel; i++)
     {
         LISTVIEW_GetItemText(hItem, 1, i, pBuffer, 13);
-        GUI_GetMeterAddr(pBuffer,g_send_para_pkg.relayAddr[i]);
+        GUI_GetMeterAddr(pBuffer,g_gui_para.relayAddr[i]);
     }    
 }
 
@@ -192,7 +192,7 @@ static void RLY_Modify_Addr(WM_MESSAGE * pMsg)
     WM_HWIN hItem;
     char tempBuf[12];
     
-    g_sys_control.selectWidget = MODIFY_RELAY_ADDR;
+    g_sys_ctrl.selectWidget = MODIFY_RELAY_ADDR;
     g_hWin_Input = Create_Edit_Set(g_hWin_relay);
     WM_SetFocus(g_hWin_Input);
 }
@@ -214,7 +214,7 @@ static void RLY_AddAddr(WM_MESSAGE * pMsg)
 }
 
 //删除中继地址
-//删除后，立即重新获取各个中继地址到g_send_para_pkg中，然后再对删除后的地址排序
+//删除后，立即重新获取各个中继地址到g_gui_para中，然后再对删除后的地址排序
 static void Del_Relay_Addr(WM_MESSAGE *pMsg)
 {
     WM_HWIN hItem;
@@ -228,11 +228,11 @@ static void Del_Relay_Addr(WM_MESSAGE *pMsg)
     LISTVIEW_SetSel(hItem,0);
     
     RLY_GetParaAddr(pMsg);  
-    for(i = 0; i < g_sys_control.sysAddrLevel; i++)
+    for(i = 0; i < g_sys_ctrl.sysAddrLevel; i++)
     {
         //LISTVIEW_AddRow(hItem, NULL);
         LISTVIEW_SetItemText(hItem, 0, i, int_to_char(i, pTextRow, 10));
-        LISTVIEW_SetItemText(hItem, 1, i, (const char*)GUI_hex2MeterAddrStr(g_send_para_pkg.relayAddr[i],6));
+        LISTVIEW_SetItemText(hItem, 1, i, (const char*)GUI_hex2MeterAddrStr(g_gui_para.relayAddr[i],6));
     }
 }
 
@@ -271,7 +271,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
         {
             if((((WM_KEY_INFO*)(pMsg->Data.p))->Key) == GUI_KEY_ENTER)
             {
-                g_sys_control.selectWidget = EDIT_RELAY_ADDR;
+                g_sys_ctrl.selectWidget = EDIT_RELAY_ADDR;
                 g_hWin_Input=Create_Edit_Set(g_hWin_relay);
                 WM_SetFocus(g_hWin_Input);
             }
@@ -294,9 +294,9 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             if((((WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt) == 1)
             {
                 RLY_GetParaAddr(pMsg);
-                //g_sys_register_para.
-                g_send_para_pkg.cmdType = PLC_CMD_TYPE_ROUTE ;
-                //g_sys_control.sysUseRoute = 1;
+                //g_rom_para.
+                g_gui_para.cmdType = PLC_CMD_TYPE_ROUTE ;
+                //g_sys_ctrl.sysUseRoute = 1;
                 WM_DeleteWindow(g_hWin_relay);
                 g_hWin_relay=HBWIN_NULL;
                 WM_SetFocus(g_hWin_std);
@@ -319,7 +319,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 hItem = WM_GetDialogItem(pMsg->hWin,ID_LISTVIEW_0);
                 if(LISTVIEW_GetNumRows(hItem) > 0)
                 {
-                    g_sys_control.selectWidget = MODIFY_RELAY_ADDR;
+                    g_sys_ctrl.selectWidget = MODIFY_RELAY_ADDR;
                     g_hWin_Input = Create_Edit_Set(g_hWin_relay);
                     WM_SetFocus(g_hWin_Input);
                 }
@@ -330,13 +330,13 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 0)
             {
                 hItem = WM_GetDialogItem(pMsg->hWin,ID_LISTVIEW_0);
-                g_sys_control.sysAddrLevel = LISTVIEW_GetNumRows(hItem);
-                if(g_sys_control.sysAddrLevel >= 7)
+                g_sys_ctrl.sysAddrLevel = LISTVIEW_GetNumRows(hItem);
+                if(g_sys_ctrl.sysAddrLevel >= 7)
                 {
                     ERR_NOTE(g_hWin_relay,9);
                     return ;
                 }
-                g_sys_control.selectWidget = ADD_RELAY_ADDR;
+                g_sys_ctrl.selectWidget = ADD_RELAY_ADDR;
                 //RLY_AddAddr(pMsg);
                 g_hWin_Input = Create_Edit_Set(g_hWin_relay);
                 WM_SetFocus(g_hWin_Input);
@@ -349,16 +349,16 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             {
                 //ButtonBlink(pMsg,ID_BUTTON_0);
                 //路由开启，关闭路由需再仔细考虑
-                if(PLC_ROUTE_ON == g_sys_control.sysUseRoute)
+                if(PLC_ROUTE_ON == g_sys_ctrl.sysUseRoute)
                 {
-                    g_sys_control.sysUseRoute = PLC_ROUTE_OFF;//关闭的时候恢复控制字
-                    g_send_para_pkg.ctlCode -= g_sys_control.sysAddrLevel * DL645_RELAY_ADDED_VAL;
+                    g_sys_ctrl.sysUseRoute = PLC_ROUTE_OFF;//关闭的时候恢复控制字
+                    g_gui_para.ctlCode -= g_sys_ctrl.sysAddrLevel * DL645_RELAY_ADDED_VAL;
                     hItem = WM_GetDialogItem(pMsg->hWin,ID_BUTTON_0);
                     BUTTON_SetText(hItem ,AlreadyClosed);
                 }
-                else if(PLC_ROUTE_OFF == g_sys_control.sysUseRoute)
+                else if(PLC_ROUTE_OFF == g_sys_ctrl.sysUseRoute)
                 {
-                    g_sys_control.sysUseRoute = PLC_ROUTE_ON;
+                    g_sys_ctrl.sysUseRoute = PLC_ROUTE_ON;
                     hItem = WM_GetDialogItem(pMsg->hWin,ID_BUTTON_0);
                     BUTTON_SetText(hItem ,AlreadyStart);
                 }

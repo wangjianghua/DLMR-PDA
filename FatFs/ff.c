@@ -3724,13 +3724,14 @@ FRESULT f_mkfs (
 		if (disk_write(drv, tbl, wsect++, 1) != RES_OK)
 			return FR_DISK_ERR;
 		mem_set(tbl, 0, SS(fs));			/* Fill following FAT entries with zero */
-		for (n = 1; n < n_fat; n++) 
+		for (n = 1; n < n_fat; n++)         /* This loop may take a time on FAT32 volume due to many single sector writes */
         {   
-            clr_wdt();
+            clr_wdt(); //ЛЊаж
             
-            /* This loop may take a time on FAT32 volume due to many single sector writes */
-            MMD_Set_FD_PROGBAR((n*95)/n_fat);
+            GUI_Set_FD_PROGBAR((n * 95) / n_fat);
+            
             OSTimeDly(1);
+            
 			if (disk_write(drv, tbl, wsect++, 1) != RES_OK)
 				return FR_DISK_ERR;
 		}

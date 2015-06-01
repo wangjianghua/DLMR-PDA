@@ -1,9 +1,7 @@
 #include "includes.h"
 
 
-
-
-ROM_PARA g_sys_register_para = 
+ROM_PARA g_rom_para = 
 {
     TAG_WORD_TABLE_MAP, //标签
     0xffffbb00,         //升级标志，不能改动
@@ -26,7 +24,30 @@ ROM_PARA g_sys_register_para =
     }
 };
 
-SYS_CONTROL g_sys_control;
+const ROM_PARA g_rom_para_default = 
+{
+    TAG_WORD_TABLE_MAP, //标签
+    0xffffbb00,         //升级标志，不能改动
+    0,                  //校验和
+    VERSION_DATE,       //版本日期
+
+    30,                 //屏保时间
+    4000,               //接受数据延时
+    1000,               //执行时间
+    DL_T_07,            //规约
+    CHANNEL_PLC,        //通道
+    BAUD_RATE_9600,     //波特率
+    0xFA,               //前导符
+    ONE_STOPBIT,        //停止位
+    PLC_421_1200BPS,    //速率
+    PLC_BPS_MIDDLE,     //通讯时延
+    
+    {
+        0,              //保留
+    }
+};
+
+SYS_CTRL g_sys_ctrl;
 
 
 /**
@@ -99,7 +120,7 @@ unsigned int Get_checksum(unsigned char *buf, unsigned short len)
 
 void DEV_Power_Off()
 {
-    if(g_sys_control.sysUsbVol)
+    if(g_sys_ctrl.sysUsbVol)
     {
         return;
     }
@@ -107,8 +128,8 @@ void DEV_Power_Off()
     SYS_PWR_OFF();
     LCD_BL_OFF();
     LCD_PWR_OFF();
-    LED_UART_OFF();
-    LED_PWR_OFF();
+    LED_KEY_OFF();
+    LED_SLEEP_OFF();
 }
 
 //确定存储空间是空的
@@ -153,10 +174,10 @@ void DEV_Parameters_Read(void)
             if(crcr == pPara[2])
             {
                 //版本检查
-                if(pPara[3] >= g_sys_register_para.versionDate)
+                if(pPara[3] >= g_rom_para.versionDate)
                 {
-                    APP_memcpy((unsigned char *)&g_sys_register_para, (unsigned char *)pPara, ROM_ADDR_PARA_SIZE);
-                    g_sys_control.paraAddr = (unsigned int)pPara;
+                    APP_memcpy((unsigned char *)&g_rom_para, (unsigned char *)pPara, ROM_ADDR_PARA_SIZE);
+                    g_sys_ctrl.paraAddr = (unsigned int)pPara;
      
                 }
                 else
@@ -185,16 +206,16 @@ unsigned int DEV_Parameters_Write(void)
 
     HAL_FLASH_Unlock();
 
-    g_sys_register_para.crc = Get_checksum((unsigned char *)&g_sys_register_para.versionDate, ROM_ADDR_PARA_SIZE - 12);
+    g_rom_para.crc = Get_checksum((unsigned char *)&g_rom_para.versionDate, ROM_ADDR_PARA_SIZE - 12);
     
     while(n < (ROM_PARA_WRITE_TIMES))
     {        
         pPara = (unsigned int *)((unsigned int)ROM_ADDR_SYS_PARA + n * ROM_ADDR_PARA_SIZE);
         if(DEV_verify_blank(pPara, ROM_ADDR_PARA_SIZE/4) == DEV_TRUE)
         {
-            g_sys_control.paraAddr= (unsigned int)pPara;  //added on 2014.12.30
+            g_sys_ctrl.paraAddr= (unsigned int)pPara;  //added on 2014.12.30
             addr = (unsigned int)pPara;
-            s_addr = (unsigned int *)&g_sys_register_para;
+            s_addr = (unsigned int *)&g_rom_para;
             for(i = 0; i < ROM_ADDR_PARA_SIZE/4; i++)
             {
                 //Flash002_WritePage(addr, s_addr);
@@ -214,7 +235,7 @@ unsigned int DEV_Parameters_Write(void)
     pPara = (unsigned int *)(ROM_ADDR_SYS_PARA);
     
     addr = (unsigned int)pPara;
-    s_addr = (unsigned int *)&g_sys_register_para;
+    s_addr = (unsigned int *)&g_rom_para;
    
     for(i = 0; i < ROM_ADDR_PARA_SIZE/4; i++)
     {            
@@ -235,26 +256,33 @@ const u8 c_97_dataflag[4] = {0x90,0x10, 0x00, 0x00};
 
 void DEV_Init(void)
 {
-    //unsigned char err;   
     DEV_Parameters_Read();  
 
-    memcpy(g_sys_control.recentMeterAddr, c_test_addr, 6);
+    memcpy(g_sys_ctrl.recentMeterAddr, c_test_addr, 6);
 
-    if(g_sys_register_para.plcProtocol==DL_T_07)
+    if(DL_T_07 == g_rom_para.plcProtocol)
     {
-        memcpy(g_sys_control.defaultDataFlag, c_default_dataflag, 4);
+        memcpy(g_sys_ctrl.defaultDataFlag, c_default_dataflag, 4);
     }
-    else if(g_sys_register_para.plcProtocol==DL_T_97)
+    else if(DL_T_97 == g_rom_para.plcProtocol)
     {
-        memcpy(g_sys_control.defaultDataFlag, c_97_dataflag, 4);
+        memcpy(g_sys_ctrl.defaultDataFlag, c_97_dataflag, 4);
     }
-    g_sys_control.shutdownTimeout = 0;
+    
+    g_sys_ctrl.shutdownTimeout = 0;
 
-    g_sys_control.sleepTimeout = 0;
+    g_sys_ctrl.sleepTimeout = 0;
 
-    g_sys_control.sysPowerState = SYS_POWER_WAKEUP;
+    g_sys_ctrl.sysPowerState = SYS_POWER_WAKEUP;
     
 }
 
+void Rom_Para_Recover(void)
+{
+    memcpy(&g_rom_para, &g_rom_para_default, sizeof(ROM_PARA));
 
+    DEV_Parameters_Write();
+
+    DEV_Init();
+}
 

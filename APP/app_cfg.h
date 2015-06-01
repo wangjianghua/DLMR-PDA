@@ -56,7 +56,7 @@
 #define  APP_CFG_TASK_KEY_PRIO                           4u
 #define  APP_CFG_TASK_GUI_PRIO                           5u
 #define  APP_CFG_TASK_END_PROC_PRIO                      6u
-#define  APP_CFG_TASK_PLC_PRIO                           7u
+#define  APP_CFG_TASK_PROTO_PRIO                         7u
 #define  APP_CFG_TASK_GMP_PRIO                           8u
 #define  APP_CFG_TASK_POWER_PRIO                         9u
 #define  APP_CFG_TASK_PC_PRIO                           10u
@@ -74,12 +74,12 @@
 *********************************************************************************************************
 */
 
-#define  APP_CFG_TASK_START_STK_SIZE                    600u
+#define  APP_CFG_TASK_START_STK_SIZE                    512u
 #define  APP_CFG_TASK_KEY_STK_SIZE                      512u
 #define  APP_CFG_TASK_END_TICK_STK_SIZE                 512u
 #define  APP_CFG_TASK_END_PROC_STK_SIZE                 512u
 #define  APP_CFG_TASK_GUI_STK_SIZE                     1024u   
-#define  APP_CFG_TASK_PLC_STK_SIZE                      512u
+#define  APP_CFG_TASK_PROTO_STK_SIZE                   1024u
 #define  APP_CFG_TASK_GMP_STK_SIZE                      512u
 #define  APP_CFG_TASK_POWER_STK_SIZE                    512u
 #define  APP_CFG_TASK_PC_STK_SIZE                       512u

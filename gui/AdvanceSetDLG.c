@@ -67,15 +67,6 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   // USER END
 };
 
-/*********************************************************************
-*
-*       Static code
-*
-**********************************************************************
-*/
-
-// USER START (Optionally insert additional static code)
-// USER END
 
 /*********************************************************************
 *
@@ -217,7 +208,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 case ID_EDIT_1:
                    if(key_num == GUI_KEY_ENTER)
                    {
-                      g_sys_control.selectWidget=EDIT_OPCODE;
+                      g_sys_ctrl.selectWidget=EDIT_OPCODE;
                       g_hWin_Input=Create_Edit_Set(g_hWin_AdvanSet);
                       WM_SetFocus(g_hWin_Input);  
                    }

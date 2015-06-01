@@ -19,14 +19,14 @@
 static const GUI_WIDGET_CREATE_INFO _aListBoxCreate[] = {
   { FRAMEWIN_CreateIndirect,  "ListBox",  ID_FRAMEWIN_0,  20,  40,  200, 200,  0, 0x0, 0 },
   { LISTBOX_CreateIndirect,   "Listbox",  ID_LISTBOX_0,   5,   7,   182, 120,  0, 0x0, 0 },
-  { BUTTON_CreateIndirect,    Save,       ID_BUTTON_0,    5,   140, 55,  25,   0, 0x0, 0 },
-  { BUTTON_CreateIndirect,    Quit,       ID_BUTTON_1,    138, 140, 55,  25,   0, 0x0, 0 },
+  { BUTTON_CreateIndirect,    Confirm,    ID_BUTTON_0,    5,   140, 55,  25,   0, 0x0, 0 },
+  { BUTTON_CreateIndirect,    Cancel,       ID_BUTTON_1,    138, 140, 55,  25,   0, 0x0, 0 },
 };
 
 static const GUI_WIDGET_CREATE_INFO _aEditCreate[] = {
   { FRAMEWIN_CreateIndirect, "Edit",  ID_FRAMEWIN_0, 20,  60, 200, 160, 0, 0x0,  0 },
-  { BUTTON_CreateIndirect,   Save,    ID_BUTTON_0,   5,   82, 55,  25,  0, 0x0,  0 },
-  { BUTTON_CreateIndirect,   Quit,    ID_BUTTON_1,   138, 82, 55,  25,  0, 0x0,  0 },
+  { BUTTON_CreateIndirect,   Confirm, ID_BUTTON_0,   5,   82, 55,  25,  0, 0x0,  0 },
+  { BUTTON_CreateIndirect,   Cancel,    ID_BUTTON_1,   138, 82, 55,  25,  0, 0x0,  0 },
   { EDIT_CreateIndirect,     "Edit",  ID_EDIT_0,     14,  38, 165, 25,  0, 0x64, 0 },
   //{ TEXT_CreateIndirect,   "Text",    ID_TEXT_0,   14,  16, 165, 20,  0, 0x0,  0 },
 
@@ -125,45 +125,45 @@ static void Select_Input_Edit(int  EditNum)
     {
         case EDIT_SCR_OUTTIME:
             EDIT_GetText(hItem,tmpTextBuf,4);
-            g_sys_register_para.scrTimeout = atoi(tmpTextBuf);
-            if(g_sys_register_para.scrTimeout < 30)
+            g_rom_para.scrTimeout = atoi(tmpTextBuf);
+            if(g_rom_para.scrTimeout < 30)
             {
-                g_sys_register_para.scrTimeout = 30;
+                g_rom_para.scrTimeout = 30;
 
-                sprintf(tmpTextBuf, "%d", g_sys_register_para.scrTimeout);
+                sprintf(tmpTextBuf, "%d", g_rom_para.scrTimeout);
             }
             hItem=CPS_Set_ScrOutTime();
             break;
             
         case EDIT_PASSWORD:
             EDIT_GetText(hItem,tmpTextBuf,7);
-            //g_sys_register_para.meterPassword = atoi(tmpTextBuf);
+            //g_rom_para.meterPassword = atoi(tmpTextBuf);
             hItem=CPS_Set_Pwd();
             break;
             
         case EDIT_RECV_DELAY:
             EDIT_GetText(hItem,tmpTextBuf,5);
-            g_sys_register_para.recvDelayTime = atoi(tmpTextBuf);
+            g_rom_para.recvDelayTime = atoi(tmpTextBuf);
             hItem=CPS_Set_RevDelay();
             break;
 
         case EDIT_BETWEEN_ACT:
             EDIT_GetText(hItem,tmpTextBuf,5);
-            g_sys_register_para.execInterval = atoi(tmpTextBuf);
+            g_rom_para.execInterval = atoi(tmpTextBuf);
             hItem=CPS_Set_BetweenAct();
             break;
 
         case EDIT_ADDR:
             EDIT_GetText(hItem,tmpTextBuf,13);
             GUI_Fill_Zero(tmpTextBuf);
-            GUI_GetMeterAddr(tmpTextBuf, g_sys_control.recentMeterAddr);
+            GUI_GetMeterAddr(tmpTextBuf, g_sys_ctrl.recentMeterAddr);
             hItem=CPT_Set_Addr();
             break;
 
         case EDIT_DATA_FLAG:
             EDIT_GetText(hItem,tmpTextBuf,9);
             hItem=CPT_Set_DataFlag();
-            GUI_GetStrDataFlag(tmpTextBuf, g_sys_register_para.plcProtocol);
+            GUI_GetStrDataFlag(tmpTextBuf, g_rom_para.plcProtocol);
             break;
 
         case EDIT_LENGTH:
@@ -179,7 +179,7 @@ static void Select_Input_Edit(int  EditNum)
         case EDIT_METER_NUM:
             EDIT_GetText(hItem,tmpTextBuf,13);
             GUI_Fill_Zero(tmpTextBuf);
-            GUI_GetMeterAddr(tmpTextBuf, g_sys_control.recentMeterAddr);
+            GUI_GetMeterAddr(tmpTextBuf, g_sys_ctrl.recentMeterAddr);
             hItem=RMD_Get_MeterNum();
             break;
             
@@ -392,7 +392,7 @@ static void _cbEditDlg(WM_MESSAGE *pMsg)
       case WM_INIT_DIALOG:
         FRAMEWIN_SetTitleHeight(pMsg->hWin,25);
         Button_Color_Set(pMsg);
-        _init_edit(pMsg,g_sys_control.selectWidget);
+        _init_edit(pMsg,g_sys_ctrl.selectWidget);
         break;
         
       case WM_KEY:
@@ -406,7 +406,7 @@ static void _cbEditDlg(WM_MESSAGE *pMsg)
                   Select_Focus();
                   break;
               case GUI_KEY_GREEN:
-                  Select_Input_Edit(g_sys_control.selectWidget);
+                  Select_Input_Edit(g_sys_ctrl.selectWidget);
                   WM_DeleteWindow(g_hWin_Input);
                   Select_Focus();
                   g_hWin_Input = HBWIN_NULL;
@@ -437,7 +437,7 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
         case LISTBOX_PROTOCOL:
             LISTBOX_AddString(hItem, "DLT-07");
             LISTBOX_AddString(hItem, "DLT-97");
-            switch(g_sys_register_para.plcProtocol)
+            switch(g_rom_para.plcProtocol)
             {
                 case DL_T_07:
                     LISTBOX_SetSel(hItem,0);
@@ -461,7 +461,7 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
             LISTBOX_AddString(hItem, "2400");
             LISTBOX_AddString(hItem, "4800");
             LISTBOX_AddString(hItem, "9600");
-            switch(g_sys_register_para.baudrate)
+            switch(g_rom_para.baudrate)
             {
                 case 1200:
                     LISTBOX_SetSel(hItem,0);
@@ -487,7 +487,7 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
         case LISTBOX_STOPBIT:
             LISTBOX_AddString(hItem, "1");
             LISTBOX_AddString(hItem, "2");
-            switch(g_sys_register_para.stopbit)
+            switch(g_rom_para.stopbit)
             {
                 case ONE_STOPBIT:
                     LISTBOX_SetSel(hItem, 0);
@@ -543,13 +543,13 @@ static void Select_ListBox_Row(int  WidgetNum)
             switch(SelNum) 
             {
                 case 0:
-                    g_sys_register_para.plcProtocol = DL_T_07;
+                    g_rom_para.plcProtocol = DL_T_07;
                     TSK_SetProtocol_07();
                     hWin=CPS_Set_Proto();
                     EDIT_SetText(hWin,"DLT-07");
                     break;
                 case 1:
-                    g_sys_register_para.plcProtocol = DL_T_97;
+                    g_rom_para.plcProtocol = DL_T_97;
                     TSK_SetProtocol_97();
                     hWin=CPS_Set_Proto();
                     EDIT_SetText(hWin,"DLT-97");
@@ -561,20 +561,18 @@ static void Select_ListBox_Row(int  WidgetNum)
             switch(SelNum)
             {
                 case 2:
-                   // g_sys_register_para.channel=CHANNEL_485;
+                   // g_rom_para.channel=CHANNEL_485;
                     //hWin=CPS_Set_Channel();
                     //EDIT_SetText(hWin,"485");
                     break;
                     
                 case 0:
-                    g_sys_register_para.channel=CHANNEL_PLC;
-                    TSK_SetWrlsWhite();
+                    g_rom_para.channel=CHANNEL_PLC;
                     hWin=CPS_Set_Channel();
                     EDIT_SetText(hWin,WaveCarrier);
                     break;
                 case 1:
-                    g_sys_register_para.channel=CHANNEL_WIRELESS;
-                    TSK_SetWrlsGreen();
+                    g_rom_para.channel=CHANNEL_WIRELESS;
                     hWin=CPS_Set_Channel();
                     EDIT_SetText(hWin,ChannelWireless);
                     break;
@@ -582,7 +580,7 @@ static void Select_ListBox_Row(int  WidgetNum)
             break;
             
         case LISTBOX_BAUDRATE:
-            g_sys_register_para.baudrate = c_ValBaudRate[SelNum];
+            g_rom_para.baudrate = c_ValBaudRate[SelNum];
             hWin = CPS_Set_BaudRate();
             EDIT_SetText(hWin,c_TextBaudRate[SelNum]);
             break;
@@ -591,12 +589,12 @@ static void Select_ListBox_Row(int  WidgetNum)
             switch(SelNum)
             {
                 case 0:
-                    g_sys_register_para.stopbit=ONE_STOPBIT;
+                    g_rom_para.stopbit=ONE_STOPBIT;
                     hWin=CPS_Set_StopBit();
                     EDIT_SetText(hWin,"1");
                     break;
                 case 1:
-                    g_sys_register_para.stopbit=TWO_STOPBIT;
+                    g_rom_para.stopbit=TWO_STOPBIT;
                     hWin=CPS_Set_StopBit();
                     EDIT_SetText(hWin,"2");
                     break;
@@ -605,13 +603,13 @@ static void Select_ListBox_Row(int  WidgetNum)
 
 
          case LISTBOX_CTLCODE:
-            if(g_sys_register_para.plcProtocol == DL_T_97)
+            if(g_rom_para.plcProtocol == DL_T_97)
             {
-                g_send_para_pkg.ctlCode = c_645ctrlDef[g_sys_register_para.plcProtocol][SelNum]; 
+                g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.plcProtocol][SelNum]; 
             }
-            else if(g_sys_register_para.plcProtocol == DL_T_07)
+            else if(g_rom_para.plcProtocol == DL_T_07)
             {
-                g_send_para_pkg.ctlCode = c_645ctrlDef[g_sys_register_para.plcProtocol][SelNum]; 
+                g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.plcProtocol][SelNum]; 
             }
             hWin=CPT_Set_CtlCode();
             EDIT_SetText(hWin,pCtlCode[SelNum]);
@@ -620,20 +618,20 @@ static void Select_ListBox_Row(int  WidgetNum)
             
         case LISTBOX_READ_SEL:
             //pReadSel
-            if(g_sys_register_para.plcProtocol==DL_T_07)
+            if(g_rom_para.plcProtocol==DL_T_07)
             {        
-                memcpy(g_send_para_pkg.dataFlag,
-                    &c_645DidoDef[g_sys_register_para.plcProtocol][SelNum],
+                memcpy(g_gui_para.dataFlag,
+                    &c_645DidoDef[g_rom_para.plcProtocol][SelNum],
                     4);
                 
-                g_send_para_pkg.ctlCode=0x11;
+                g_gui_para.ctlCode=0x11;
             }
-            else if(g_sys_register_para.plcProtocol==DL_T_97)
+            else if(g_rom_para.plcProtocol==DL_T_97)
             {
-                memcpy(g_send_para_pkg.dataFlag,
-                    &c_645DidoDef[g_sys_register_para.plcProtocol][SelNum],
+                memcpy(g_gui_para.dataFlag,
+                    &c_645DidoDef[g_rom_para.plcProtocol][SelNum],
                     2);
-                g_send_para_pkg.ctlCode=0x01; 
+                g_gui_para.ctlCode=0x01; 
         
             }
             hWin=RMD_Get_ReadSel();
@@ -661,7 +659,7 @@ static void _cbListBoxDlg(WM_MESSAGE *pMsg)
           FRAMEWIN_SetTitleHeight(pMsg->hWin,25);
           //WINDOW_SetBkColor(pMsg->hWin,GUI_WHITE);
           //hItem = WM_GetDialogItem(pMsg->hWin, ID_LISTBOX_0);
-          _Init_ListBox(pMsg,g_sys_control.selectWidget);
+          _Init_ListBox(pMsg,g_sys_ctrl.selectWidget);
           Button_Color_Set(pMsg);
           
           break;
@@ -677,7 +675,7 @@ static void _cbListBoxDlg(WM_MESSAGE *pMsg)
                     Select_Focus();
                     break;
                 case GUI_KEY_GREEN:
-                    Select_ListBox_Row(g_sys_control.selectWidget);
+                    Select_ListBox_Row(g_sys_ctrl.selectWidget);
                     WM_DeleteWindow(g_hWin_Input);
                     Select_Focus();
                     break;

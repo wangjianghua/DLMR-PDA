@@ -105,42 +105,20 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
 *
 **********************************************************************
 */
-WM_HWIN MMD_Get_PROGBAR()
+WM_HWIN GUI_Get_FD_Item()
 {    
      return WM_GetDialogItem(g_hWin_SDInfo, ID_PROGBAR_0);            
 }
 
-void MMD_Set_FD_PROGBAR(u32 newVal)
+void GUI_Set_FD_PROGBAR(u32 newVal)
 {
     WM_HWIN hItem;
     hItem = WM_GetDialogItem(g_hWin_SDInfo, ID_PROGBAR_1);  
     if(hItem != WM_HWIN_NULL)
     {
-        //g_sys_control.testProgBarVal = 100;
+        //g_sys_ctrl.testProgBarVal = 100;
         PROGBAR_SetValue(hItem, newVal);              
     }
-}
-
-void MMD_Format_Disk(void)
-{
-    
-    FRESULT res;
-    FATFS fs;
-
-    res = f_mount(SD_DRV, &fs);
-
-    if(FR_OK == res)
-    {
-        res = f_mkfs(SD_DRV, SD_FORMAT, _MAX_SS);
-
-        if(FR_OK == res)
-        {
-            //DEBUG_PRINT(("SD format ok!\n"));
-            MMD_Set_FD_PROGBAR(100);
-            
-        }                        
-    }
-    f_mount(SD_DRV, NULL);
 }
 
 // USER START (Optionally insert additional static code)
@@ -163,38 +141,38 @@ static void _cbDialog(WM_MESSAGE * pMsg)
             get_sd_info();
             
             hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_0);
-            sprintf(sbuf, "%dMB", (g_sys_control.sd_total_capacity/1024));
+            sprintf(sbuf, "%dMB", (g_sys_ctrl.sd_total_capacity/1024));
             EDIT_SetText(hItem, sbuf);
             
             //WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
             WM_DisableWindow(hItem);
             
             hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_1);
-            g_sys_control.sysFileNum = Get_Files_Number();
-            sprintf(sbuf, "%d", g_sys_control.sysFileNum);
+            g_sys_ctrl.sysFileNum = get_file_num();
+            sprintf(sbuf, "%d", g_sys_ctrl.sysFileNum);
             EDIT_SetText(hItem, sbuf);
             //EDIT_SetText(hItem,"1");
             //scan_files("/");
-            //EDIT_SetDecMode(hItem,g_sys_control.FileNumber,0,9999,0,0);
-            //EDIT_SetValue(hItem,g_sys_control.FileNumber);
+            //EDIT_SetDecMode(hItem,g_sys_ctrl.FileNumber,0,9999,0,0);
+            //EDIT_SetValue(hItem,g_sys_ctrl.FileNumber);
             //WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
             WM_DisableWindow(hItem);
 
 #if 0
             hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_2);
             WM_DisableWindow(hItem);
-            EDIT_SetFloatMode(hItem,((g_sys_control.pwrValue*3.3)/4096),0,99999,2,
+            EDIT_SetFloatMode(hItem,((g_sys_ctrl.pwrValue*3.3)/4096),0,99999,2,
                                      GUI_EDIT_SUPPRESS_LEADING_ZEROES);
-            EDIT_SetFloatValue(hItem,(g_sys_control.pwrValue*3.3)/4096);
+            EDIT_SetFloatValue(hItem,(g_sys_ctrl.pwrValue*3.3)/4096);
             //WM_CF_SHOW
 #endif
             hItem = WM_GetDialogItem(pMsg->hWin, ID_PROGBAR_0);
             PROGBAR_SetBarColor(hItem, 0, GUI_GREEN);
-            NCode = (100*g_sys_control.sd_free_capacity)/g_sys_control.sd_total_capacity;
+            NCode = (100*g_sys_ctrl.sd_free_capacity)/g_sys_ctrl.sd_total_capacity;
             NCode %= 100;
             NCode = 100-NCode;
             PROGBAR_SetValue(hItem, NCode);
-            //sprintf(sbuf, "%dMbytes", (g_sys_control.sd_total_capacity/1024));
+            //sprintf(sbuf, "%dMbytes", (g_sys_ctrl.sd_total_capacity/1024));
             
             hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_1);
             BUTTON_SetBkColor(hItem,0,GUI_GREEN);

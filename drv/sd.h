@@ -68,27 +68,9 @@
 #define PAout(n)   BIT_ADDR(GPIOA_ODR_Addr,n)  //输出 
 #define PAin(n)    BIT_ADDR(GPIOA_IDR_Addr,n)  //输入 
  							   						 	 
-#define	SD_CS      PAout(4) //SD卡片选引脚		
+#define	SD_CS      PAout(4) //SD卡片选引脚	
 
-#define FDISK      0
-#define SFD        1
-
-#define SD_DRV     0
-#define SD_FORMAT  FDISK
-
-#define MAX_SD_FILE_NUM  50
-#define MAX_SD_FILE_NAME_LEN  16
-
-typedef struct file_timestamp
-{
-    u32 date;
-    u32 time;
-} FIL_TIMESTAMP;
-
-extern u8 SD_Type; //SD卡的类型
-extern char SD_FileName[MAX_SD_FILE_NUM][MAX_SD_FILE_NAME_LEN];
-extern unsigned long SD_FileSize[MAX_SD_FILE_NUM];
-extern FIL_TIMESTAMP SD_FileTimestamp[MAX_SD_FILE_NUM];
+extern u8 SD_Type;
 
 //函数申明区 
 void SD_SPI_SpeedLow(void);
@@ -104,9 +86,7 @@ u8 SD_GetCSD(u8 *csd_data);                     //读SD卡CSD
 uint8_t SD_ReadWriteByte(uint8_t Data);
 u8 SD_ReadBlock(uint8_t *pBuffer, uint32_t ReadAddr, uint32_t NumberOfBlocks);
 u8 SD_WriteBlock(uint8_t *pBuffer, uint32_t WriteAddr, uint32_t NumberOfBlocks);
-void scan_files(char *path);
-void FatFs_Test(void);
-u32 Get_Files_Number(void);
+
 
 #ifdef __cplusplus
 }

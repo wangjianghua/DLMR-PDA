@@ -149,8 +149,8 @@ void STM_proc_resp_data(void)
     u8 * pbuf, temb[32];
     u32 len;
 
-    pbuf = g_plc_prm.data_buf;
-    len = g_plc_prm.data_len;
+    pbuf = g_proto_para.data_buf;
+    len = g_proto_para.data_len;
 
     if(g_hWin_std != WM_HWIN_NULL)
     {   
@@ -201,23 +201,23 @@ static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
         return DEV_ERROR;
     }
     
-    //if(0x13 == g_send_para_pkg.ctlCode)
+    //if(0x13 == g_gui_para.ctlCode)
     //{
-      //  memcpy(g_send_para_pkg.dstAddr, addr, sizeof(addr));
+      //  memcpy(g_gui_para.dstAddr, addr, sizeof(addr));
     //}
-    if(DEV_OK != GUI_GetMeterAddr(tb, g_send_para_pkg.dstAddr))
+    if(DEV_OK != GUI_GetMeterAddr(tb, g_gui_para.dstAddr))
     {
         ERR_NOTE(g_hWin_std,GUI_MSBOX_ADDR_ERROR);
         return DEV_ERROR;
     }    
-    //g_sys_register_para.plcProtocol = DL_T_07;
+    //g_rom_para.plcProtocol = DL_T_07;
 
 
     hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_3);
-    //g_send_para_pkg.g_datasign = EDIT_GetValue(pMsg->hWin);
+    //g_gui_para.g_datasign = EDIT_GetValue(pMsg->hWin);
     EDIT_GetText(hItem, tb, 8 + 1);
 
-    if(g_sys_register_para.plcProtocol == DL_T_07)
+    if(g_rom_para.plcProtocol == DL_T_07)
         len = DL645_07_DATA_ITEM_LEN;
     else
         len = DL645_97_DATA_ITEM_LEN;
@@ -230,7 +230,7 @@ static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
         return DEV_ERROR;
     }
 
-    if(DEV_OK != GUI_GetStrDataFlag(tb, g_sys_register_para.plcProtocol ))
+    if(DEV_OK != GUI_GetStrDataFlag(tb, g_rom_para.plcProtocol ))
     {
         ERR_NOTE(g_hWin_std,GUI_MSBOX_DIDO_ERROR);
         
@@ -242,30 +242,30 @@ static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
     hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_4);/*长度*/
     EDIT_GetText(hItem,tb,4);
 
-    //if(0x13 == g_send_para_pkg.ctlCode)
+    //if(0x13 == g_gui_para.ctlCode)
     //{
-        //g_send_para_pkg.dataLen = 0;
+        //g_gui_para.dataLen = 0;
     //}
     //else
     //{
-    g_send_para_pkg.dataLen = atoi(tb);
+    g_gui_para.dataLen = atoi(tb);
     //}
   
     hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_5);/*数据*/
     EDIT_GetText(hItem, tb, 20);
 
-    if(PLC_ROUTE_ON == g_sys_control.sysUseRoute)
+    if(PLC_ROUTE_ON == g_sys_ctrl.sysUseRoute)
     {
-        g_send_para_pkg.cmdType = PLC_CMD_TYPE_ROUTE;
+        g_gui_para.cmdType = PLC_CMD_TYPE_ROUTE;
     }
     else 
     {
-        if(0x13 == g_send_para_pkg.ctlCode)
+        if(0x13 == g_gui_para.ctlCode)
         {
-            g_send_para_pkg.cmdType = PLC_CMD_BROAD_READ;
+            g_gui_para.cmdType = PLC_CMD_BROAD_READ;
         }
         else
-            g_send_para_pkg.cmdType = PLC_CMD_TYPE_COMMON;
+            g_gui_para.cmdType = PLC_CMD_TYPE_COMMON;
     }
     
 
@@ -424,28 +424,28 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     PUB_InitFreq(pMsg,ID_EDIT_0);//根据保存的参数初始化速率设置项
     
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_1);    
-    EDIT_SetText(hItem, GUI_hex2MeterAddrStr(g_sys_control.recentMeterAddr, 6));
+    EDIT_SetText(hItem, GUI_hex2MeterAddrStr(g_sys_ctrl.recentMeterAddr, 6));
     //
     // Initialization of 'Dropdown'
     //
     
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_2);
     EDIT_SetText(hItem, Readdata);
-     if(g_sys_register_para.plcProtocol == DL_T_07)
+     if(g_rom_para.plcProtocol == DL_T_07)
     {
-        g_send_para_pkg.ctlCode = c_645ctrlDef[g_sys_register_para.plcProtocol][1]; 
+        g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.plcProtocol][1]; 
     }
-    else if(g_sys_register_para.plcProtocol == DL_T_97)
+    else if(g_rom_para.plcProtocol == DL_T_97)
     {
-        g_send_para_pkg.ctlCode = c_645ctrlDef[g_sys_register_para.plcProtocol][1]; 
+        g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.plcProtocol][1]; 
     }
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_3);
-    GUI_GetHexDataFlag(tempbuf, g_sys_control.defaultDataFlag, 4);
+    GUI_GetHexDataFlag(tempbuf, g_sys_ctrl.defaultDataFlag, 4);
     EDIT_SetText(hItem, tempbuf);
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_4);
-    //GUI_GetHexDataFlag(tempbuf, g_sys_control.defaultDataFlag, 4);
+    //GUI_GetHexDataFlag(tempbuf, g_sys_ctrl.defaultDataFlag, 4);
     EDIT_SetText(hItem, "0");
     
     
@@ -493,7 +493,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
               case ID_EDIT_1:
                 if(key_num==GUI_KEY_ENTER)
                 {
-                  g_sys_control.selectWidget=EDIT_ADDR;
+                  g_sys_ctrl.selectWidget=EDIT_ADDR;
                   g_hWin_Input=Create_Edit_Set(g_hWin_std);
                   
                   WM_SetFocus(g_hWin_Input);
@@ -502,7 +502,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
               case ID_EDIT_2:
                 if(key_num==GUI_KEY_ENTER)
                 {
-                  g_sys_control.selectWidget=LISTBOX_CTLCODE;
+                  g_sys_ctrl.selectWidget=LISTBOX_CTLCODE;
                   g_hWin_Input=Create_ListBox_Set(g_hWin_std);
                   WM_SetFocus(g_hWin_Input);
                 }
@@ -510,7 +510,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
               case ID_EDIT_3:
                 if(key_num==GUI_KEY_ENTER)
                 {
-                  g_sys_control.selectWidget=EDIT_DATA_FLAG;
+                  g_sys_ctrl.selectWidget=EDIT_DATA_FLAG;
                   g_hWin_Input=Create_Edit_Set(g_hWin_std);
                   WM_SetFocus(g_hWin_Input);
                 }
@@ -518,7 +518,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
               case ID_EDIT_4:
                 if(key_num==GUI_KEY_ENTER)
                 {
-                  g_sys_control.selectWidget=EDIT_LENGTH;
+                  g_sys_ctrl.selectWidget=EDIT_LENGTH;
                   g_hWin_Input=Create_Edit_Set(g_hWin_std);
                   WM_SetFocus(g_hWin_Input);
                 }
@@ -526,7 +526,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
               case ID_EDIT_5:
                 if(key_num==GUI_KEY_ENTER)
                 {
-                  g_sys_control.selectWidget=EDIT_DATA;
+                  g_sys_ctrl.selectWidget=EDIT_DATA;
                   g_hWin_Input=Create_Edit_Set(g_hWin_std);
                   WM_SetFocus(g_hWin_Input);
                 }
@@ -546,7 +546,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                     WM_ShowWindow(g_hWin_TimeBar);
                     WM_ShowWindow(g_hWin_Date);
                     WM_SetFocus(g_hWin_menu); 
-                    g_sys_control.guiState = GUI_PLC_MSG_IDLE;
+                    g_sys_ctrl.guiState = GUI_PLC_MSG_IDLE;
                     cpt_key_press_cnt=0;
                 }
                 break;
@@ -556,8 +556,8 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 {
                     if(DEV_OK == Get_Para_From_Widget(pMsg))//获取参数数据
                     {
-                        g_sys_control.guiState = GUI_PLC_MSG_TEST;
-                        OSMboxPost(g_sys_control.downMb,(void*)&g_send_para_pkg);
+                        g_sys_ctrl.guiState = GUI_PLC_MSG_TEST;
+                        OSMboxPost(g_sys_ctrl.up_mbox,(void*)&g_gui_para);
                     }  
                 }
                 break;

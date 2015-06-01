@@ -518,6 +518,16 @@ void  App_TaskEndTick (void *p_arg)
         {
             key_press_count = 0;
         }
+
+        if(g_sys_ctrl.led_count)
+        {
+            g_sys_ctrl.led_count--;
+
+            if(!g_sys_ctrl.led_count)
+            {
+                LED_KEY_OFF();
+            }
+        }        
         
         OSTimeDlyHMSM(0, 0, 0, 20);
     }

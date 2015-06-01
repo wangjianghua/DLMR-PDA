@@ -199,7 +199,7 @@ unsigned char RTC_Write8Bit(unsigned char data)
 
     while(HAL_GPIO_ReadPin(RTC_SDA_PORT, RTC_SDA_PIN))
     {
-        if(wait++ > 5000)
+        if(wait++ > MAX_RTC_TIMEOUT)
         {
             ErrIndication=1;
             break;
@@ -231,8 +231,9 @@ unsigned char RTC_ReadByte(unsigned short addr)
     do
     {
         //CLR_WatchDog();
+        clr_wdt();
 
-        if(j++ > 1000)
+        if(j++ > MAX_RTC_TIMEOUT)
         {
             return ERROR;
 
@@ -271,7 +272,7 @@ void RTC_WriteByte(unsigned short addr,unsigned char nContent)
 
     do
     {
-        if(j++ > 1000)
+        if(j++ > MAX_RTC_TIMEOUT)
         {
             return;
         }
@@ -308,8 +309,9 @@ void RTC_ReadBuffer(unsigned short addr,unsigned char *data,unsigned char len)
 
 
         //CLR_WatchDog();
+        clr_wdt();
 
-        if(j++ > 1000)
+        if(j++ > MAX_RTC_TIMEOUT)
         {
             return;
 
@@ -365,7 +367,7 @@ void RTC_WriteBuffer(unsigned short addr,unsigned char *data,unsigned char len)
    
     do
     {
-        if(j++ > 1000)
+        if(j++ > MAX_RTC_TIMEOUT)
         {
             //E2P_WP_SET();
             return;

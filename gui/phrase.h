@@ -186,6 +186,8 @@ extern const char HardCheck[];
 extern const char HardwareOK[];
 extern const char HardwareErr[];
 
+extern const char CmpName[] ;
+
 #endif /*__PHRASE_H__*/
 
 

@@ -12,6 +12,8 @@
 #define RTC_SDA_SET()       HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_SET)
 #define RTC_SDA_RST()       HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_RESET)
 
+#define MAX_RTC_TIMEOUT                  10
+
 #define SEC_POS                           0
 #define MIN_POS                           1
 #define HOUR_POS                          2

@@ -1,5 +1,5 @@
-#ifndef __KEY_DRV__H__
-#define  __KEY_DRV__H__
+#ifndef __KEY_DRV_H__
+#define __KEY_DRV_H__
 
 
 #define KEYBOARD_ROW_PORT           GPIOC
@@ -23,6 +23,7 @@
 #define KEYBOARD_ROW               (KEYBOARD_ROW_0 | KEYBOARD_ROW_1 | KEYBOARD_ROW_2 | KEYBOARD_ROW_3 | KEYBOARD_ROW_4 | KEYBOARD_ROW_5)
 #define KEYBOARD_COL               (KEYBOARD_COL_0 | KEYBOARD_COL_1 | KEYBOARD_COL_2 | KEYBOARD_COL_3)
 
+#define KEYBOARD_COL_NUM            4
 #define KEYBOARD_ROW_NUM            6
 
 #define KEYBOARD_COL0_CODE          0
@@ -33,7 +34,7 @@
 #define LED_KEY_ON()                LED_On(LED_RED)
 #define LED_KEY_OFF()               LED_Off(LED_RED)
 
-#define LED_KEY_DISP_TIME           2
+#define LED_KEY_DISP_TIME           5
 
 #if 0
 /*********************************************************
@@ -84,14 +85,15 @@
 
 #endif 
 
-typedef struct __key_con_block__
+typedef struct _key_ctrl_
 {
 	uint32_t key_col;
 	uint32_t key_row;
 	OS_EVENT *key_sem;
-}KEY_CON, *P_KEY_CON;
+} KEY_CTRL, *P_KEY_CTRL;
 
-extern KEY_CON g_key_control;
+extern KEY_CTRL g_key_ctrl;
+extern OS_EVENT *g_key_mbox;
 //extern int g_key_press_count;//added on 2014.12.31
 
 

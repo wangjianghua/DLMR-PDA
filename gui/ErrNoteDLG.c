@@ -160,9 +160,9 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 if(g_hWin_about>0)
                 {
                   
-                  if(g_sys_register_para.bootFlag != BOOT_REQUEST_ACT)
+                  if(g_rom_para.bootFlag != BOOT_REQUEST_ACT)
                   {
-                      g_sys_register_para.bootFlag = BOOT_REQUEST_ACT;
+                      g_rom_para.bootFlag = BOOT_REQUEST_ACT;
                       DEV_Parameters_Write();
                   }
                   DEV_SoftReset();

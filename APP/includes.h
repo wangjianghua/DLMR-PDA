@@ -135,6 +135,7 @@ typedef __I uint8_t vuc8;   /*!< Read Only */
 #include "uart_link.h"
 #include "sd.h"
 #include "ff.h"
+#include "FM.h" //»ªĞÖ
 #include "rtc.h"
 #include "GUI_public_fun.h"
 #include "lcdconf.h"
@@ -180,6 +181,8 @@ extern WM_HWIN g_hWin_speed;
 extern WM_HWIN g_hWin_AdvanSet;
 extern WM_HWIN g_hWin_SDInfo;   //´æ´¢¿¨ĞÅÏ¢
 //extern int test_multiedit;
+//extern const unsigned char _aclogo[4515UL + 1];//jpegÍ¼Æ¬
+
 
 
 extern char DataSign_Text[TEXT_LEN];//??????????,???????

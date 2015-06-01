@@ -9931,6 +9931,370 @@ GUI_CONST_STORAGE GUI_FONT GUI_Fontdate20 = {
 
 
 
+/**************************************************************
+//
+//  芯珑电子科技有限公司,18号字体，用在开机界面显示
+//
+//
+**************************************************************/
+
+
+/* The following line needs to be included in any file selecting the
+   font.
+*/
+
+/* Start of unicode area <CJK Unified Ideographs> */
+GUI_CONST_STORAGE unsigned char acGUI_Fontns18_516C[ 54] = { /* code 516C */
+  ________,________,________,
+  _______X,__X_____,________,
+  ______X_,__X_____,________,
+  ______X_,___X____,________,
+  _____X__,___X____,________,
+  _____X__,____X___,________,
+  ____X___,____XX__,________,
+  ___X____,XX___XX_,________,
+  __X_____,X_____XX,X_______,
+  _X_____X,X_______,________,
+  _______X,________,________,
+  ______X_,__X_____,________,
+  _____X__,___XX___,________,
+  ____X___,____XX__,________,
+  ___XXXXX,XXXXXX__,________,
+  ____X___,_____XX_,________,
+  ________,________,________,
+  ________,________,________};
+
+GUI_CONST_STORAGE unsigned char acGUI_Fontns18_53F8[ 54] = { /* code 53F8 */
+  ________,________,________,
+  ________,______X_,________,
+  ____XXXX,XXXXXXX_,________,
+  ________,______X_,________,
+  ________,___X__X_,________,
+  __XXXXXX,XXX___X_,________,
+  ________,______X_,________,
+  ____X___,_XX___X_,________,
+  ____XXXX,XX____X_,________,
+  ____X___,_X____X_,________,
+  ____X___,_X____X_,________,
+  ____XXXX,XX____X_,________,
+  ____X___,_X____X_,________,
+  ________,______X_,________,
+  ________,______X_,________,
+  ________,____XXX_,________,
+  ________,_____X__,________,
+  ________,________,________};
+
+GUI_CONST_STORAGE unsigned char acGUI_Fontns18_5733[ 54] = { /* code 5733 */
+  ________,________,________,
+  ____X___,XX_____X,X_______,
+  ____X___,X___X__X,________,
+  ____X___,X___X__X,________,
+  ____X___,X___X__X,________,
+  ____X_X_,X___X__X,________,
+  __XXXX_X,X___X__X,________,
+  ____X___,X___X__X,________,
+  ____X___,X___X__X,________,
+  ____X___,X___X__X,________,
+  ____X___,X___X__X,________,
+  ____X_XX,X___X__X,________,
+  __XXXX_X,____X__X,________,
+  _XX____X,____X__X,________,
+  ______X_,____X__X,________,
+  _____X__,_______X,________,
+  ____X___,________,________,
+  ________,________,________};
+
+GUI_CONST_STORAGE unsigned char acGUI_Fontns18_5B50[ 54] = { /* code 5B50 */
+  ________,________,________,
+  ________,_____XX_,________,
+  ____XXXX,XXXXXXX_,________,
+  ________,____X___,________,
+  ________,__XX____,________,
+  ________,_X______,________,
+  ________,_X______,________,
+  ________,_X_____X,X_______,
+  __XXXXXX,XXXXXXX_,________,
+  ________,_X______,________,
+  ________,_X______,________,
+  ________,_X______,________,
+  ________,_X______,________,
+  ________,_X______,________,
+  ________,_X______,________,
+  ______XX,X_______,________,
+  ________,________,________,
+  ________,________,________};
+
+GUI_CONST_STORAGE unsigned char acGUI_Fontns18_6280[ 54] = { /* code 6280 */
+  ____X___,___X____,________,
+  ____X___,___X____,________,
+  ____X___,___X____,________,
+  ____X___,___X____,________,
+  _XXXXXXX,XXXXXXXX,X_______,
+  ____X___,___X____,________,
+  ____X___,___X____,________,
+  ____X__X,___X__X_,________,
+  ____XXX_,XXX_XXX_,________,
+  _XXXX___,_X____X_,________,
+  ____X___,_X___X__,________,
+  ____X___,__X__X__,________,
+  ____X___,___XX___,________,
+  ____X___,___XX___,________,
+  ____X___,_XX_XX__,________,
+  __XXX___,X_____XX,X_______,
+  _____XXX,________,________,
+  ________,________,________};
+
+GUI_CONST_STORAGE unsigned char acGUI_Fontns18_6709[ 54] = { /* code 6709 */
+  ________,X_______,________,
+  ________,X_______,________,
+  _______X,X______X,________,
+  _XXXXXXX,XXXXXXXX,X_______,
+  ______XX,________,________,
+  ______X_,________,________,
+  _____X_X,XXXXXX__,________,
+  ____XX__,_____X__,________,
+  ___X_X__,_____X__,________,
+  __X__XXX,XXXXXX__,________,
+  _X___X__,_____X__,________,
+  _____X__,_____X__,________,
+  _____XXX,XXXXXX__,________,
+  _____X__,_____X__,________,
+  _____X__,_____X__,________,
+  _____X__,___XXX__,________,
+  _____X__,____X___,________,
+  ________,________,________};
+
+GUI_CONST_STORAGE unsigned char acGUI_Fontns18_672F[ 54] = { /* code 672F */
+  ________,X_______,________,
+  ________,XX_X____,________,
+  ________,XX__XX__,________,
+  ________,XX___X__,________,
+  ________,XX_____X,________,
+  _XXXXXXX,XXXXXXXX,X_______,
+  _______X,XX______,________,
+  _______X,XXX_____,________,
+  ______X_,XXX_____,________,
+  ______X_,XX_X____,________,
+  _____X__,XX__X___,________,
+  ____X___,XX__XX__,________,
+  ___X____,XX___XXX,________,
+  __X_____,XX____XX,________,
+  _X______,XX______,________,
+  ________,XX______,________,
+  ________,X_______,________,
+  ________,________,________};
+
+GUI_CONST_STORAGE unsigned char acGUI_Fontns18_6DF1[ 54] = { /* code 6DF1 */
+  ________,________,________,
+  __X____X,________,________,
+  ___XX__X,XXXXXXXX,________,
+  ____X__X,______X_,________,
+  _____XX_,_X___X__,________,
+  _X__X___,X_____X_,________,
+  __X_X__X,___X____,________,
+  __X_X_X_,___X____,________,
+  ____X___,___X___X,________,
+  ___X___X,XXXXXXX_,________,
+  ___X____,_X_XX___,________,
+  __XX____,X__X_X__,________,
+  _XXX____,X__X_XX_,________,
+  __X____X,___X__XX,________,
+  __X__XX_,___X___X,________,
+  __X_____,___X____,________,
+  ________,________,________,
+  ________,________,________};
+
+GUI_CONST_STORAGE unsigned char acGUI_Fontns18_73D1[ 54] = { /* code 73D1 */
+  ________,________,________,
+  ________,_X__X___,________,
+  _XXXXXX_,_X___X__,________,
+  ___X____,_X______,________,
+  ___X____,_X_____X,________,
+  ___X___X,XXXXXXX_,________,
+  ___X____,_X_X____,________,
+  _XXXXXX_,_X_X___X,________,
+  ___X____,_X_X__X_,________,
+  ___X____,X__X_X__,________,
+  ___X____,X__X_X__,________,
+  ___X____,X__XX___,________,
+  ___XXXXX,___X____,________,
+  _XXX___X,__XX___X,________,
+  _X____X_,XX_X____,X_______,
+  _____X__,____XXXX,X_______,
+  ____X___,________,________,
+  ________,________,________};
+
+GUI_CONST_STORAGE unsigned char acGUI_Fontns18_7535[ 54] = { /* code 7535 */
+  ________,________,________,
+  ________,X_______,________,
+  ________,X_______,________,
+  ________,X_______,________,
+  ___XXXXX,XXXXXXX_,________,
+  ___X____,X____X__,________,
+  ___X____,X____X__,________,
+  ___XXXXX,XXXXXX__,________,
+  ___X____,X____X__,________,
+  ___X____,X____X__,________,
+  ___X____,X____X__,________,
+  ___XXXXX,XXXXXX__,________,
+  ___X____,X_______,________,
+  ________,X______X,________,
+  ________,X______X,________,
+  ________,XXXXXXXX,X_______,
+  ________,________,________,
+  ________,________,________};
+
+GUI_CONST_STORAGE unsigned char acGUI_Fontns18_82AF[ 54] = { /* code 82AF */
+  ________,________,________,
+  ______XX,___X____,________,
+  ______X_,___X___X,________,
+  __XXXXXX,XXXXXXX_,________,
+  ______X_,___X____,________,
+  ______X_,___X____,________,
+  ________,X_______,________,
+  _____X__,_X______,________,
+  _____X__,_XX_____,________,
+  ___X_X__,______X_,________,
+  ___X_X__,_______X,________,
+  __XX_X__,_______X,X_______,
+  _XX__X__,____X___,________,
+  _____X__,_____X__,________,
+  _____XXX,XXXXXX__,________,
+  ________,________,________,
+  ________,________,________,
+  ________,________,________};
+
+GUI_CONST_STORAGE unsigned char acGUI_Fontns18_9650[ 54] = { /* code 9650 */
+  ________,________,________,
+  __X__XX_,X_____X_,________,
+  __XXXX__,XXXXXXX_,________,
+  __X__X__,X_____X_,________,
+  __X_X___,X_____X_,________,
+  __X_X___,XXXXXXX_,________,
+  __X_X___,X_____X_,________,
+  __X__X__,X_____X_,________,
+  __X__X__,XXXXXXX_,________,
+  __X___X_,X_X___XX,________,
+  __X___X_,X__X_XX_,________,
+  __XX_XX_,X__XX___,________,
+  __X_XX__,X___X___,________,
+  __X_____,X__XXX__,________,
+  __X_____,XXX__XXX,________,
+  __X_____,X______X,________,
+  __X_____,________,________,
+  ________,________,________};
+
+GUI_CONST_STORAGE GUI_CHARINFO GUI_Fontns18_CharInfo[12] = {
+   {  18,  18,  3, acGUI_Fontns18_516C } /* code 516C */
+  ,{  18,  18,  3, acGUI_Fontns18_53F8 } /* code 53F8 */
+  ,{  18,  18,  3, acGUI_Fontns18_5733 } /* code 5733 */
+  ,{  18,  18,  3, acGUI_Fontns18_5B50 } /* code 5B50 */
+  ,{  18,  18,  3, acGUI_Fontns18_6280 } /* code 6280 */
+  ,{  18,  18,  3, acGUI_Fontns18_6709 } /* code 6709 */
+  ,{  18,  18,  3, acGUI_Fontns18_672F } /* code 672F */
+  ,{  18,  18,  3, acGUI_Fontns18_6DF1 } /* code 6DF1 */
+  ,{  18,  18,  3, acGUI_Fontns18_73D1 } /* code 73D1 */
+  ,{  18,  18,  3, acGUI_Fontns18_7535 } /* code 7535 */
+  ,{  18,  18,  3, acGUI_Fontns18_82AF } /* code 82AF */
+  ,{  18,  18,  3, acGUI_Fontns18_9650 } /* code 9650 */
+};
+
+GUI_CONST_STORAGE GUI_FONT_PROP GUI_Fontns18_Prop12 = {
+   0x9650 /* first character */
+  ,0x9650 /* last character  */
+  ,&GUI_Fontns18_CharInfo[ 11] /* address of first character */
+  ,(GUI_CONST_STORAGE GUI_FONT_PROP *)0 /* pointer to next GUI_FONT_PROP */
+};
+
+GUI_CONST_STORAGE GUI_FONT_PROP GUI_Fontns18_Prop11 = {
+   0x82AF /* first character */
+  ,0x82AF /* last character  */
+  ,&GUI_Fontns18_CharInfo[ 10] /* address of first character */
+  ,&GUI_Fontns18_Prop12 /* pointer to next GUI_FONT_PROP */
+};
+
+GUI_CONST_STORAGE GUI_FONT_PROP GUI_Fontns18_Prop10 = {
+   0x7535 /* first character */
+  ,0x7535 /* last character  */
+  ,&GUI_Fontns18_CharInfo[  9] /* address of first character */
+  ,&GUI_Fontns18_Prop11 /* pointer to next GUI_FONT_PROP */
+};
+
+GUI_CONST_STORAGE GUI_FONT_PROP GUI_Fontns18_Prop9 = {
+   0x73D1 /* first character */
+  ,0x73D1 /* last character  */
+  ,&GUI_Fontns18_CharInfo[  8] /* address of first character */
+  ,&GUI_Fontns18_Prop10 /* pointer to next GUI_FONT_PROP */
+};
+
+GUI_CONST_STORAGE GUI_FONT_PROP GUI_Fontns18_Prop8 = {
+   0x6DF1 /* first character */
+  ,0x6DF1 /* last character  */
+  ,&GUI_Fontns18_CharInfo[  7] /* address of first character */
+  ,&GUI_Fontns18_Prop9 /* pointer to next GUI_FONT_PROP */
+};
+
+GUI_CONST_STORAGE GUI_FONT_PROP GUI_Fontns18_Prop7 = {
+   0x672F /* first character */
+  ,0x672F /* last character  */
+  ,&GUI_Fontns18_CharInfo[  6] /* address of first character */
+  ,&GUI_Fontns18_Prop8 /* pointer to next GUI_FONT_PROP */
+};
+
+GUI_CONST_STORAGE GUI_FONT_PROP GUI_Fontns18_Prop6 = {
+   0x6709 /* first character */
+  ,0x6709 /* last character  */
+  ,&GUI_Fontns18_CharInfo[  5] /* address of first character */
+  ,&GUI_Fontns18_Prop7 /* pointer to next GUI_FONT_PROP */
+};
+
+GUI_CONST_STORAGE GUI_FONT_PROP GUI_Fontns18_Prop5 = {
+   0x6280 /* first character */
+  ,0x6280 /* last character  */
+  ,&GUI_Fontns18_CharInfo[  4] /* address of first character */
+  ,&GUI_Fontns18_Prop6 /* pointer to next GUI_FONT_PROP */
+};
+
+GUI_CONST_STORAGE GUI_FONT_PROP GUI_Fontns18_Prop4 = {
+   0x5B50 /* first character */
+  ,0x5B50 /* last character  */
+  ,&GUI_Fontns18_CharInfo[  3] /* address of first character */
+  ,&GUI_Fontns18_Prop5 /* pointer to next GUI_FONT_PROP */
+};
+
+GUI_CONST_STORAGE GUI_FONT_PROP GUI_Fontns18_Prop3 = {
+   0x5733 /* first character */
+  ,0x5733 /* last character  */
+  ,&GUI_Fontns18_CharInfo[  2] /* address of first character */
+  ,&GUI_Fontns18_Prop4 /* pointer to next GUI_FONT_PROP */
+};
+
+GUI_CONST_STORAGE GUI_FONT_PROP GUI_Fontns18_Prop2 = {
+   0x53F8 /* first character */
+  ,0x53F8 /* last character  */
+  ,&GUI_Fontns18_CharInfo[  1] /* address of first character */
+  ,&GUI_Fontns18_Prop3 /* pointer to next GUI_FONT_PROP */
+};
+
+GUI_CONST_STORAGE GUI_FONT_PROP GUI_Fontns18_Prop1 = {
+   0x516C /* first character */
+  ,0x516C /* last character  */
+  ,&GUI_Fontns18_CharInfo[  0] /* address of first character */
+  ,&GUI_Fontns18_Prop2 /* pointer to next GUI_FONT_PROP */
+};
+
+GUI_CONST_STORAGE GUI_FONT GUI_Fontns18 = {
+   GUI_FONTTYPE_PROP /* type of font    */
+  ,18 /* height of font  */
+  ,18 /* space of font y */
+  ,1 /* magnification x */
+  ,1 /* magnification y */
+  ,{&GUI_Fontns18_Prop1}
+  ,15 /* Baseline */
+  ,8 /* Height of lowercase characters */
+  ,12 /* Height of capital characters */
+};
+
 
 
 

@@ -104,7 +104,7 @@ static void _init_SysInfoDLg(WM_MESSAGE *pMsg)
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_0);
     //EDIT_SetText(hItem, "123");
     WM_DisableWindow(hItem);
-    EDIT_SetFloatMode(hItem,((g_sys_control.pwrValue*3.3)/2048),0,99999,2,
+    EDIT_SetFloatMode(hItem,((g_sys_ctrl.pwrValue*3.3)/2048),0,99999,2,
                              GUI_EDIT_SUPPRESS_LEADING_ZEROES);
     //WIDGET_SetEffect(hItem,&WIDGET_Effect_None);
     
@@ -191,7 +191,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
   case WM_INIT_DIALOG:
     //WIDGET_SetDefaultEffect(&WIDGET_Effect_None);
     _init_SysInfoDLg(pMsg);
-    memset(g_sys_control.DevCheckCode,0,sizeof(g_sys_control.DevCheckCode));
+    memset(g_sys_ctrl.DevCheckCode,0,sizeof(g_sys_ctrl.DevCheckCode));
     break;
   case WM_NOTIFY_PARENT:
     Id    = WM_GetId(pMsg->hWinSrc);
@@ -200,17 +200,17 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     break;
   case WM_KEY:
     Id    = WM_GetId(pMsg->hWinSrc);
-    //g_sys_control.xx_len= strlen(g_sys_control.DevCheckCode);
-    if( strlen(g_sys_control.DevCheckCode) == 8)
+    //g_sys_ctrl.xx_len= strlen(g_sys_ctrl.DevCheckCode);
+    if( strlen(g_sys_ctrl.DevCheckCode) == 8)
     {
-        g_sys_control.DevCheckCode[8] = '\0';
+        g_sys_ctrl.DevCheckCode[8] = '\0';
             
-        if(0 == strcmp(g_sys_control.DevCheckCode, g_self_check_pwd))
+        if(0 == strcmp(g_sys_ctrl.DevCheckCode, g_self_check_pwd))
         {
             OSSemPost(g_sem_check);  
             /*next action reserved*/
         }
-        memset(g_sys_control.DevCheckCode,0,sizeof(g_sys_control.DevCheckCode));
+        memset(g_sys_ctrl.DevCheckCode,0,sizeof(g_sys_ctrl.DevCheckCode));
     }
     
     if(1 == ((WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt)
@@ -218,11 +218,11 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
         switch(((WM_KEY_INFO *)(pMsg->Data.p))->Key)
         {
             case GUI_KEY_GREEN:
-                memset(g_sys_control.DevCheckCode,0,sizeof(g_sys_control.DevCheckCode));
+                memset(g_sys_ctrl.DevCheckCode,0,sizeof(g_sys_ctrl.DevCheckCode));
                 SID_DelHandle();
                 break;
             case GUI_KEY_YELLOW:
-                memset(g_sys_control.DevCheckCode,0,sizeof(g_sys_control.DevCheckCode));
+                memset(g_sys_ctrl.DevCheckCode,0,sizeof(g_sys_ctrl.DevCheckCode));
                 SID_DelHandle();
                 break;
             case GUI_KEY_F2:
@@ -233,34 +233,34 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             case GUI_KEY_F1:
                 break;
             case '0':
-                g_sys_control.DevCheckCode[strlen(g_sys_control.DevCheckCode)] = '0';
+                g_sys_ctrl.DevCheckCode[strlen(g_sys_ctrl.DevCheckCode)] = '0';
                 break;
             case '1':
-                g_sys_control.DevCheckCode[strlen(g_sys_control.DevCheckCode)] = '1';
+                g_sys_ctrl.DevCheckCode[strlen(g_sys_ctrl.DevCheckCode)] = '1';
                 break;
             case '2':
-                g_sys_control.DevCheckCode[strlen(g_sys_control.DevCheckCode)] = '2';
+                g_sys_ctrl.DevCheckCode[strlen(g_sys_ctrl.DevCheckCode)] = '2';
                 break;
             case '3':
-                g_sys_control.DevCheckCode[strlen(g_sys_control.DevCheckCode)] = '3';
+                g_sys_ctrl.DevCheckCode[strlen(g_sys_ctrl.DevCheckCode)] = '3';
                 break;
             case '4':
-                g_sys_control.DevCheckCode[strlen(g_sys_control.DevCheckCode)] = '4';
+                g_sys_ctrl.DevCheckCode[strlen(g_sys_ctrl.DevCheckCode)] = '4';
                 break;
             case '5':
-                g_sys_control.DevCheckCode[strlen(g_sys_control.DevCheckCode)] = '5';
+                g_sys_ctrl.DevCheckCode[strlen(g_sys_ctrl.DevCheckCode)] = '5';
                 break;
             case '6':
-                g_sys_control.DevCheckCode[strlen(g_sys_control.DevCheckCode)] = '6';
+                g_sys_ctrl.DevCheckCode[strlen(g_sys_ctrl.DevCheckCode)] = '6';
                 break;
             case '7':
-                g_sys_control.DevCheckCode[strlen(g_sys_control.DevCheckCode)] = '7';
+                g_sys_ctrl.DevCheckCode[strlen(g_sys_ctrl.DevCheckCode)] = '7';
                 break;
             case '8':
-                g_sys_control.DevCheckCode[strlen(g_sys_control.DevCheckCode)] = '8';
+                g_sys_ctrl.DevCheckCode[strlen(g_sys_ctrl.DevCheckCode)] = '8';
                 break;
             case '9':
-                g_sys_control.DevCheckCode[strlen(g_sys_control.DevCheckCode)] = '9';
+                g_sys_ctrl.DevCheckCode[strlen(g_sys_ctrl.DevCheckCode)] = '9';
                 break;
         }
     }

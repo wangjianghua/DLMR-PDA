@@ -160,8 +160,8 @@ u32 GUI_GetStrDataFlag(u8 * dbuf, u32 pro_ver)
             //error proc
             return DEV_ERROR;
         }
-        g_send_para_pkg.dataFlag[len-1-i] = rmd_ch<<4;
-        g_sys_control.defaultDataFlag[len-1-i] = rmd_ch<<4;
+        g_gui_para.dataFlag[len-1-i] = rmd_ch<<4;
+        g_sys_ctrl.defaultDataFlag[len-1-i] = rmd_ch<<4;
         
         if(((rmd_ch = GUI_char2hex(dbuf[(i<<1)+1])) == 0xff))
         {
@@ -169,8 +169,8 @@ u32 GUI_GetStrDataFlag(u8 * dbuf, u32 pro_ver)
             return DEV_ERROR;
         }
         
-        g_send_para_pkg.dataFlag[len-1-i] |= rmd_ch;
-        g_sys_control.defaultDataFlag[len-1-i] |= rmd_ch;
+        g_gui_para.dataFlag[len-1-i] |= rmd_ch;
+        g_sys_ctrl.defaultDataFlag[len-1-i] |= rmd_ch;
     }
 
     return DEV_OK;
@@ -211,42 +211,42 @@ void GUI_print_recv_buf()
     u16 i;
     u8 *send_ptr;
     //int n = 0;
-    if(g_plc_prm.recv_len && (g_plc_prm.recv_len < 80))
+    if(g_proto_para.recv_len && (g_proto_para.recv_len < 80))
     {
         send_ptr = s_prbf;
         *send_ptr++ = 'R';
         *send_ptr++ = ':';
-        for(i = 0; i < g_plc_prm.recv_len; i++)
+        for(i = 0; i < g_proto_para.recv_len; i++)
         {
-            *send_ptr++ = GUI_Hex2Char( g_plc_prm.recv_buf[i]>>4);
-            *send_ptr++ = GUI_Hex2Char( g_plc_prm.recv_buf[i]&0x0f);
+            *send_ptr++ = GUI_Hex2Char( g_proto_para.recv_buf[i]>>4);
+            *send_ptr++ = GUI_Hex2Char( g_proto_para.recv_buf[i]&0x0f);
             *send_ptr++ = ' ';
         }
         *send_ptr++ = '\n';
         *send_ptr++ = 0;
 
-        if((g_sys_control.guiState == GUI_PLC_MSG_TEST)
-            ||(g_sys_control.guiState == GUI_PLC_MSG_READ)
-            ||(g_sys_control.guiState == GUI_PLC_MSG_FREQ))
+        if((g_sys_ctrl.guiState == GUI_PLC_MSG_TEST)
+            ||(g_sys_ctrl.guiState == GUI_PLC_MSG_READ)
+            ||(g_sys_ctrl.guiState == GUI_PLC_MSG_FREQ))
         {
             hObj = MSG_Get_MultiEdit();
             MULTIEDIT_AddText(hObj, s_prbf); 
-            if(g_sys_control.guiState == GUI_PLC_MSG_READ)
+            if(g_sys_ctrl.guiState == GUI_PLC_MSG_READ)
             {
                 RMD_proc_resp_data();
             }
 
-            if(g_sys_control.guiState == GUI_PLC_MSG_TEST)
+            if(g_sys_ctrl.guiState == GUI_PLC_MSG_TEST)
             {
                 STM_proc_resp_data();
             }
         }
-        else if(g_sys_control.guiState == GUI_PLC_MSG_LISTING)
+        else if(g_sys_ctrl.guiState == GUI_PLC_MSG_LISTING)
         {
             hObj = MNT_Get_MultiEdit();
-            if(g_sys_control.numMultiedit > 25)
+            if(g_sys_ctrl.numMultiedit > 25)
             {
-                g_sys_control.numMultiedit = 0;
+                g_sys_ctrl.numMultiedit = 0;
                 MULTIEDIT_SetText(hObj, "\0"); 
             }
             MULTIEDIT_AddText(hObj, s_prbf); 
@@ -260,15 +260,15 @@ void GUI_print_send_buf()
     u16 i;
     u8 *send_ptr;
     
-    if(g_plc_prm.send_len && (g_plc_prm.send_len < 80))
+    if(g_proto_para.send_len && (g_proto_para.send_len < 80))
     {        
         send_ptr = s_prbf;
         *send_ptr++ = 'S';
         *send_ptr++ = ':';
-        for(i = 0; i < g_plc_prm.send_len; i++)
+        for(i = 0; i < g_proto_para.send_len; i++)
         {
-            *send_ptr++ = GUI_Hex2Char( g_plc_prm.send_buf[i]>>4);
-            *send_ptr++ = GUI_Hex2Char( g_plc_prm.send_buf[i]&0x0f);
+            *send_ptr++ = GUI_Hex2Char( g_proto_para.send_buf[i]>>4);
+            *send_ptr++ = GUI_Hex2Char( g_proto_para.send_buf[i]&0x0f);
             *send_ptr++ = ' ';
         }
         *send_ptr++ = '\n';
@@ -281,7 +281,7 @@ void GUI_print_send_buf()
 
 WM_HWIN GUI_Get_PROGBAR()
 {
-    switch(g_sys_control.guiState )
+    switch(g_sys_ctrl.guiState )
     {
     case  GUI_PLC_MSG_TEST:
         return STM_Get_PROGBAR();
@@ -290,7 +290,7 @@ WM_HWIN GUI_Get_PROGBAR()
         return RMD_Get_PROGBAR();
         break;
     case  GUI_PLC_MSG_MEMORY:
-        return MMD_Get_PROGBAR();
+        return GUI_Get_FD_Item();
         break;
     }
     
@@ -300,7 +300,7 @@ WM_HWIN GUI_Get_PROGBAR()
 
 void GUI_FailRecvProc(void)
 {
-    if((g_sys_control.guiState == GUI_PLC_MSG_READ)&&(g_send_para_pkg.cmdType == PLC_CMD_TYPE_COMMON))
+    if((g_sys_ctrl.guiState == GUI_PLC_MSG_READ)&&(g_gui_para.cmdType == PLC_CMD_TYPE_COMMON))
     {
         RMD_ReadErr();
     }
@@ -310,11 +310,11 @@ void GUI_FailRecvProc(void)
 
 void GUI_ClearData(void)
 {
-    if((g_sys_control.guiState == GUI_PLC_MSG_READ)&&(g_send_para_pkg.cmdType == PLC_CMD_TYPE_COMMON))
+    if((g_sys_ctrl.guiState == GUI_PLC_MSG_READ)&&(g_gui_para.cmdType == PLC_CMD_TYPE_COMMON))
     {
         RMD_ClearData();
     }
-    if((g_sys_control.guiState == GUI_PLC_MSG_TEST)&&(g_send_para_pkg.cmdType == PLC_CMD_TYPE_COMMON))
+    if((g_sys_ctrl.guiState == GUI_PLC_MSG_TEST)&&(g_gui_para.cmdType == PLC_CMD_TYPE_COMMON))
     {
         CPT_ClearData();
     }
@@ -327,7 +327,7 @@ void GUI_Msg_Proc()
 {
     WM_HWIN hItem;
 
-    if(g_plc_prm.sendStatus == PLC_MSG_SENDING)    
+    if(g_proto_para.sendStatus == PLC_MSG_SENDING)    
     {        
         GUI_Msg_Upload(ON);
         
@@ -337,9 +337,9 @@ void GUI_Msg_Proc()
        
     }
 
-    if((g_plc_prm.result == PLC_RES_FAIL) || (g_plc_prm.result == PLC_RES_TIMEOUT))
+    if((g_proto_para.result == PLC_RES_FAIL) || (g_proto_para.result == PLC_RES_TIMEOUT))
     {
-        g_plc_prm.result = PLC_RES_NONE;
+        g_proto_para.result = PLC_RES_NONE;
         GUI_FailRecvProc();
         ERR_NOTE(g_hWin_menu, 10);
         hItem = GUI_Get_PROGBAR();
@@ -347,7 +347,7 @@ void GUI_Msg_Proc()
         return;
     }
 
-    if(g_plc_prm.result == PLC_RES_ERROR_FRAME)
+    if(g_proto_para.result == PLC_RES_ERROR_FRAME)
     {
         GUI_Msg_Download(ON);
         
@@ -357,19 +357,19 @@ void GUI_Msg_Proc()
         if(hItem != WM_HWIN_NULL)
         {
             PROGBAR_SetBarColor(hItem, 0, GUI_RED);
-            g_sys_control.testProgBarVal = 100;
-            PROGBAR_SetValue(hItem, g_sys_control.testProgBarVal);              
+            g_sys_ctrl.testProgBarVal = 100;
+            PROGBAR_SetValue(hItem, g_sys_ctrl.testProgBarVal);              
         }
            
-        //g_sys_control.guiState = GUI_PLC_MSG_IDLE;
-        g_plc_prm.sendStatus = PLC_MSG_IDLE; 
-        g_plc_prm.result = PLC_RES_NONE;
+        //g_sys_ctrl.guiState = GUI_PLC_MSG_IDLE;
+        g_proto_para.sendStatus = PLC_MSG_IDLE; 
+        g_proto_para.result = PLC_RES_NONE;
         return;
     }
 
-    if((g_plc_prm.sendStatus == PLC_MSG_RECEIVED) )
+    if((g_proto_para.sendStatus == PLC_MSG_RECEIVED) )
     {
-        if( g_plc_prm.result == PLC_RES_SUCC )
+        if( g_proto_para.result == PLC_RES_SUCC )
         {
             GUI_Msg_Download(ON);
             
@@ -380,19 +380,19 @@ void GUI_Msg_Proc()
             hItem = GUI_Get_PROGBAR();
             if(hItem != WM_HWIN_NULL)
             {
-                g_sys_control.testProgBarVal = 100;
-                PROGBAR_SetValue(hItem, g_sys_control.testProgBarVal);              
+                g_sys_ctrl.testProgBarVal = 100;
+                PROGBAR_SetValue(hItem, g_sys_ctrl.testProgBarVal);              
             }
         }        
-        //g_sys_control.guiState = GUI_PLC_MSG_IDLE;
-        g_plc_prm.sendStatus = PLC_MSG_IDLE;
-        g_plc_prm.result = PLC_RES_NONE;
+        //g_sys_ctrl.guiState = GUI_PLC_MSG_IDLE;
+        g_proto_para.sendStatus = PLC_MSG_IDLE;
+        g_proto_para.result = PLC_RES_NONE;
     }
     
 }
 
 
-SEND_PARA_PKG g_send_para_pkg;      //参数包
+GUI_PARA g_gui_para;      //参数包
 
 
 //MBOX_SEND_INFO g_mail_box_info; //邮箱发送的消息
@@ -448,12 +448,12 @@ void PUB_InitFreq(WM_MESSAGE *pMsg,int widgetID)
 {
    WM_HWIN hItem; 
    hItem = WM_GetDialogItem(pMsg->hWin, widgetID);
-   switch(g_sys_register_para.preamble)
+   switch(g_rom_para.preamble)
    {
        case 0: /*第一次初始化的时候或者flash中没有内容,默认为270III代*/
            EDIT_SetText(hItem, pTextPreamble[0]);
-           g_sys_register_para.freqSel = PLC_270_III;
-           g_sys_register_para.bpsSpeed = PLC_BPS_MIDDLE;
+           g_rom_para.freqSel = PLC_270_III;
+           g_rom_para.bpsSpeed = PLC_BPS_MIDDLE;
            break;
        case 0xFC:
            EDIT_SetText(hItem, pTextPreamble[0]);
@@ -471,7 +471,7 @@ void PUB_InitFreq(WM_MESSAGE *pMsg,int widgetID)
            EDIT_SetText(hItem, pTextPreamble[4]);
            break;
        case 0xFE:
-           switch(g_sys_register_para.freqSel)
+           switch(g_rom_para.freqSel)
            {
                
                case PLC_270_III:
@@ -501,6 +501,47 @@ void PUB_InitFreq(WM_MESSAGE *pMsg,int widgetID)
            break;
    }
 }
+
+extern GUI_CONST_STORAGE GUI_BITMAP bmlogo_1;
+
+void GUI_StartSys(void)
+{
+    //GUI_Init();
+    int i;
+    GUI_SetBkColor(GUI_BLACK);
+    GUI_SetColor(GUI_WHITE);
+    GUI_SetFont(&GUI_Fontns18);
+    GUI_UC_SetEncodeUTF8();
+    WM_SetFocus(WM_HBKWIN);
+
+#if 0
+    GUI_DrawBitmap(&bmlogo_1, 20, 100);
+    for(i = 0;i < 10;i++)
+    {
+        GUI_DispStringAt(CmpName, (233 - 22*(i+1)), 228);
+        OSTimeDlyHMSM(0, 0, 0, 300);
+        if(i == 9)
+        {
+            OSTimeDlyHMSM(0, 0, 0, 1500);
+        }
+        GUI_ClearRect(0, 228, 240, 258);
+    }
+#endif
+    for(i = 0;i < 10;i++)
+    {
+        GUI_DrawBitmap(&bmlogo, 58, 0 + (i * 14));
+        GUI_DrawBitmap(&bmlogo, 58, 252 - (i * 14));
+        OSTimeDlyHMSM(0, 0, 0, 50);
+        GUI_ClearRect(50, 0, 190, 320);
+        if(9 == i)
+        {
+            GUI_DrawBitmap(&bmlogo_1, 20, 100);
+        }
+    }
+    GUI_DispStringAt(CmpName, 13, 228);
+    OSTimeDlyHMSM(0, 0, 3, 0);
+}
+
 
 void ButtonBlink(WM_MESSAGE * pMsg,int Id)
 {

@@ -74,33 +74,33 @@ void FRQ_FreqSel(WM_MESSAGE *pMsg)
     switch(SelNum)
     {
         case 0:
-            g_sys_register_para.freqSel = PLC_270_III;
-            g_sys_register_para.bpsSpeed = PLC_BPS_MIDDLE;
+            g_rom_para.freqSel = PLC_270_III;
+            g_rom_para.bpsSpeed = PLC_BPS_MIDDLE;
             break;
             
         case 1:
-            g_sys_register_para.freqSel = PLC_270_III_5;
-            g_sys_register_para.bpsSpeed = PLC_BPS_SLOW;
+            g_rom_para.freqSel = PLC_270_III_5;
+            g_rom_para.bpsSpeed = PLC_BPS_SLOW;
             break;
         case 2:
-            g_sys_register_para.freqSel = PLC_270_II;
-            g_sys_register_para.bpsSpeed = PLC_BPS_MIDDLE;
+            g_rom_para.freqSel = PLC_270_II;
+            g_rom_para.bpsSpeed = PLC_BPS_MIDDLE;
             break;
         case 3:
-            g_sys_register_para.freqSel = PLC_421_50BPS;
-            g_sys_register_para.bpsSpeed = PLC_BPS_SNAIL;
+            g_rom_para.freqSel = PLC_421_50BPS;
+            g_rom_para.bpsSpeed = PLC_BPS_SNAIL;
             break;
         case 4:
-            g_sys_register_para.freqSel = PLC_421_100BPS;
-            g_sys_register_para.bpsSpeed = PLC_BSP_100;
+            g_rom_para.freqSel = PLC_421_100BPS;
+            g_rom_para.bpsSpeed = PLC_BSP_100;
             break;
         case 5:
-            g_sys_register_para.freqSel = PLC_421_600BPS;
-            g_sys_register_para.bpsSpeed = PLC_BPS_MIDDLE;
+            g_rom_para.freqSel = PLC_421_600BPS;
+            g_rom_para.bpsSpeed = PLC_BPS_MIDDLE;
             break;
         case 6:
-            g_sys_register_para.freqSel = PLC_421_1200BPS;
-            g_sys_register_para.bpsSpeed = PLC_BPS_MIDDLE;
+            g_rom_para.freqSel = PLC_421_1200BPS;
+            g_rom_para.bpsSpeed = PLC_BPS_MIDDLE;
             break;
     }
 }
@@ -117,29 +117,29 @@ void FRQ_PreamSel(WM_MESSAGE *pMsg)
     switch(SelNum)
     {
         case 0:
-            g_sys_register_para.preamble = 0xFC;
-            g_sys_register_para.bpsSpeed = PLC_BPS_SLOW;
+            g_rom_para.preamble = 0xFC;
+            g_rom_para.bpsSpeed = PLC_BPS_SLOW;
             break;
         case 1:
-            g_sys_register_para.preamble = 0xFA;
-            g_sys_register_para.bpsSpeed = PLC_BPS_MIDDLE;
+            g_rom_para.preamble = 0xFA;
+            g_rom_para.bpsSpeed = PLC_BPS_MIDDLE;
             break;
         case 2:
-            g_sys_register_para.preamble = 0xFB;
-            g_sys_register_para.bpsSpeed = PLC_BPS_MIDDLE;
+            g_rom_para.preamble = 0xFB;
+            g_rom_para.bpsSpeed = PLC_BPS_MIDDLE;
             break;
         case 3:
-            g_sys_register_para.preamble = 0xFD;
-            g_sys_register_para.bpsSpeed = PLC_BSP_100;
+            g_rom_para.preamble = 0xFD;
+            g_rom_para.bpsSpeed = PLC_BSP_100;
             break;
         case 4:
-            g_sys_register_para.preamble = 0xFF;
-            g_sys_register_para.bpsSpeed = PLC_BPS_SNAIL;
+            g_rom_para.preamble = 0xFF;
+            g_rom_para.bpsSpeed = PLC_BPS_SNAIL;
             break;
         case 5:
-            g_sys_register_para.preamble = 0xFE;
+            g_rom_para.preamble = 0xFE;
             //FRQ_FreqSel(pMsg);
-            //g_send_para_pkg.cmdType = PLC_CMD_FREQ_SET;
+            //g_gui_para.cmdType = PLC_CMD_FREQ_SET;
             break;
         default:
             break;
@@ -168,7 +168,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     {
         LISTBOX_AddString(hItem, pTextPreamble[i]);
     }
-    switch(g_sys_register_para.preamble)
+    switch(g_rom_para.preamble)
     {
         case 0xFC:
             LISTBOX_SetSel(hItem,0);
@@ -197,7 +197,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     {
         LISTBOX_AddString(hItem, pTextSpeed[i]);
     }
-    switch(g_sys_register_para.freqSel)
+    switch(g_rom_para.freqSel)
     {
         case PLC_270_III:
             LISTBOX_SetSel(hItem,0);
@@ -278,12 +278,12 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                     //保留
                 }
                 FRQ_PreamSel(pMsg);
-                if(0xFE == g_sys_register_para.preamble)
+                if(0xFE == g_rom_para.preamble)
                 {
                     FRQ_FreqSel(pMsg);
-                    g_send_para_pkg.cmdType = PLC_CMD_FREQ_SET;
-                    g_sys_control.guiState = GUI_PLC_MSG_FREQ;
-                    OSMboxPost(g_sys_control.downMb, (void*)&g_send_para_pkg);
+                    g_gui_para.cmdType = PLC_CMD_FREQ_SET;
+                    g_sys_ctrl.guiState = GUI_PLC_MSG_FREQ;
+                    OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
                 }
                 DEV_Parameters_Write();//保存数据
                 

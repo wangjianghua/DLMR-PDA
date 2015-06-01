@@ -2,11 +2,6 @@
 #define __GUI_PUBLIC_FUN__
 
 
-#define SOFTWARE_VERSION         25
-#define HARDWARE_VERSION         20
-
-#define VERSION_DATE     0x20150526
-
 #define GUI_645_ADDR_LENGTH 12
 
 /*dropdown中下拉列表中的量，备用*/
@@ -123,7 +118,7 @@
 //#define ERROR_BOX(error_no)     MESSAGEBOX_Create(&gc_messageBoxText[error_no][0],"Error",0)
 
 
-typedef struct _sys_parameter_pkg_
+typedef struct _GUI_PARA_
 {
     //U16 g_protocal;      //规约
     U8  cmdType;      
@@ -137,9 +132,9 @@ typedef struct _sys_parameter_pkg_
     //U8  meterPWD[4] = {0x01,0x31,0x41,0x51};      //密码 
     //U16 g_crc;           //校验和
     
-}SEND_PARA_PKG,*P_SEND_PARA_PKG;
+} GUI_PARA, *P_GUI_PARA;
 
-extern SEND_PARA_PKG g_send_para_pkg;      //参数包
+extern GUI_PARA g_gui_para;      //参数包
 
 extern const char *gc_messageBoxText[];
 extern const u8 c_645ctrlDef[2][PLC_CTRL_MAX_NUM] ;
@@ -182,7 +177,7 @@ WM_HWIN MNT_Get_MultiEdit();
 u32 GUI_GetMeterAddr(u8 * dbuf, u8 * gbuf);
 
 WM_HWIN GUI_Get_PROGBAR();
-WM_HWIN MMD_Get_PROGBAR();
+WM_HWIN GUI_Get_FD_Item();
 
 
 WM_HWIN RMD_Get_PROGBAR();
@@ -218,6 +213,10 @@ void Select_Focus(void);
 
 void CPT_ClearData(void);
 
+void GUI_StartSys(void);
+
+extern GUI_CONST_STORAGE GUI_BITMAP bmlogo;
+
 
 
 u32 GUI_GetStrDataFlag(u8 * dbuf, u32 pro_ver);
@@ -226,10 +225,7 @@ void GUI_Fill_Zero(u8 *tempbuf); //自动补全零
 
 void CST_Set_DataFlag(u8 * tst);
 void GUI_GetHexDataFlag(u8 * strbuf, u8* dataflag, u8 len);
-void MMD_Format_Disk(void);
-void MMD_Set_FD_PROGBAR(u32 newVal);
+void GUI_Set_FD_PROGBAR(u32 newVal);
+
 
 #endif /*__GUI_PUBLIC_FUN__*/
-
-
-

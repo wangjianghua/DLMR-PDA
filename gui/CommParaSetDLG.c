@@ -248,7 +248,7 @@ static void _init_dialog(WM_MESSAGE * pMsg)
         WM_DisableWindow(hItem);
     }
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_0);
-    switch(g_sys_register_para.plcProtocol)
+    switch(g_rom_para.plcProtocol)
     {
         case DL_T_07:
             EDIT_SetText(hItem, "DLT-07");
@@ -259,7 +259,7 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_1);
-    switch(g_sys_register_para.channel)
+    switch(g_rom_para.channel)
     {
         case CHANNEL_485:
             EDIT_SetText(hItem,"485");
@@ -278,7 +278,7 @@ static void _init_dialog(WM_MESSAGE * pMsg)
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_2);
     //EDIT_SetText(hItem, "115200");
-    switch(g_sys_register_para.baudrate)
+    switch(g_rom_para.baudrate)
     {
         case BAUD_RATE_1200:
             EDIT_SetText(hItem,"1200");
@@ -299,7 +299,7 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_3);
     //EDIT_SetText(hItem, "stop");
-    switch(g_sys_register_para.stopbit)
+    switch(g_rom_para.stopbit)
     {
         case ONE_STOPBIT:
             EDIT_SetText(hItem, "1");
@@ -310,19 +310,19 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     }
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_4);
-    int_to_char(g_sys_register_para.scrTimeout,tmpBuf,10);
+    int_to_char(g_rom_para.scrTimeout,tmpBuf,10);
     EDIT_SetText(hItem, tmpBuf);
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_5);
-    //int_to_char(g_sys_register_para.meterPassword,tmpBuf,10);
+    //int_to_char(g_rom_para.meterPassword,tmpBuf,10);
     EDIT_SetText(hItem, "123456");
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_6);
-    int_to_char(g_sys_register_para.recvDelayTime,tmpBuf,10);
+    int_to_char(g_rom_para.recvDelayTime,tmpBuf,10);
     EDIT_SetText(hItem, tmpBuf); 
     
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_7);
-    int_to_char(g_sys_register_para.execInterval,tmpBuf,10);
+    int_to_char(g_rom_para.execInterval,tmpBuf,10);
     EDIT_SetText(hItem, tmpBuf);
 
     //hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
@@ -370,7 +370,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
               case ID_EDIT_0:
                 if(key_num==GUI_KEY_ENTER)
                 {
-                  g_sys_control.selectWidget=LISTBOX_PROTOCOL;
+                  g_sys_ctrl.selectWidget=LISTBOX_PROTOCOL;
                   g_hWin_Input=Create_ListBox_Set(g_hWin_para);                   
                   WM_SetFocus(g_hWin_Input);
                 }
@@ -378,7 +378,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
               case ID_EDIT_1:
                 if(key_num==GUI_KEY_ENTER)
                 {
-                  g_sys_control.selectWidget=LISTBOX_CHANNEL;
+                  g_sys_ctrl.selectWidget=LISTBOX_CHANNEL;
                   g_hWin_Input=Create_ListBox_Set(g_hWin_para);
                   WM_SetFocus(g_hWin_Input);
                 }
@@ -386,7 +386,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
               case ID_EDIT_2:
                 if(key_num==GUI_KEY_ENTER)
                 {
-                  g_sys_control.selectWidget=LISTBOX_BAUDRATE;
+                  g_sys_ctrl.selectWidget=LISTBOX_BAUDRATE;
                   g_hWin_Input=Create_ListBox_Set(g_hWin_para);
                   WM_SetFocus(g_hWin_Input);
                 }
@@ -395,7 +395,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
               case ID_EDIT_3:
                 if(key_num==GUI_KEY_ENTER)
                 {
-                  g_sys_control.selectWidget=LISTBOX_PREAM;
+                  g_sys_ctrl.selectWidget=LISTBOX_PREAM;
                   g_hWin_Input=Create_ListBox_Set(g_hWin_para);
                   WM_SetFocus(g_hWin_Input);
                 }
@@ -404,7 +404,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
               case ID_EDIT_3:
                 if(key_num==GUI_KEY_ENTER)
                 {
-                  g_sys_control.selectWidget=LISTBOX_STOPBIT;
+                  g_sys_ctrl.selectWidget=LISTBOX_STOPBIT;
                   g_hWin_Input=Create_ListBox_Set(g_hWin_para);
                   WM_SetFocus(g_hWin_Input);
                 }
@@ -412,7 +412,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
               case ID_EDIT_4:
                 if(key_num==GUI_KEY_ENTER)
                 {
-                  g_sys_control.selectWidget=EDIT_SCR_OUTTIME;
+                  g_sys_ctrl.selectWidget=EDIT_SCR_OUTTIME;
                   g_hWin_Input=Create_Edit_Set(g_hWin_para);
                   WM_SetFocus(g_hWin_Input);
                 }
@@ -420,7 +420,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
               case ID_EDIT_5:
                 if(key_num==GUI_KEY_ENTER)
                 {
-                  g_sys_control.selectWidget=EDIT_PASSWORD;
+                  g_sys_ctrl.selectWidget=EDIT_PASSWORD;
                   g_hWin_Input=Create_Edit_Set(g_hWin_para);
                   
                   WM_SetFocus(g_hWin_Input);
@@ -429,7 +429,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
               case ID_EDIT_6:
                 if(key_num==GUI_KEY_ENTER)
                 {
-                  g_sys_control.selectWidget=EDIT_RECV_DELAY;
+                  g_sys_ctrl.selectWidget=EDIT_RECV_DELAY;
                   g_hWin_Input=Create_Edit_Set(g_hWin_para);
                   WM_SetFocus(g_hWin_Input);
                 }
@@ -437,7 +437,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
               case ID_EDIT_7:
                 if(key_num==GUI_KEY_ENTER)
                 {
-                  g_sys_control.selectWidget=EDIT_BETWEEN_ACT;
+                  g_sys_ctrl.selectWidget=EDIT_BETWEEN_ACT;
                   g_hWin_Input=Create_Edit_Set(g_hWin_para);
                   WM_SetFocus(g_hWin_Input);
                 }

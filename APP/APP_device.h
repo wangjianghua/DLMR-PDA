@@ -2,6 +2,10 @@
 #define __APP_STORAGE_H__
 
 
+#define HARDWARE_VERSION         20
+#define SOFTWARE_VERSION         26
+#define VERSION_DATE     0x20150601
+
 #define BOOT_REQUEST_ACT   0xffffbbcc
 #define BOOT_FINISH_ACT    0xffff0000
 
@@ -50,32 +54,32 @@ Sector 7 0x0806 0000 - 0x0807 FFFF 128 Kbyte
 #define SYS_POWER_OFF       1
 
 
-typedef struct  __sys_storage_struct__
+typedef struct _rom_para_
 {
-unsigned int magic_word;
-unsigned int bootFlag;      //启动标志，不能改动
-unsigned int crc;
-unsigned int versionDate;
+    unsigned int magic_word;
+    unsigned int bootFlag;      //启动标志，不能改动
+    unsigned int crc;
+    unsigned int versionDate;
 
-unsigned int scrTimeout;           //屏幕超时
-unsigned int recvDelayTime;//接受数据延时
-unsigned int execInterval;//执行时间
-unsigned int plcProtocol; //规约
-unsigned int channel; //通道
-unsigned int baudrate; //波特率
-unsigned int preamble; //前导符
-unsigned int stopbit;
-unsigned int freqSel; //速率选择,下面减过了
-unsigned int bpsSpeed;             //传输数据等待时间,需要保存，以便下次启动有默认设置
+    unsigned int scrTimeout;           //屏幕超时
+    unsigned int recvDelayTime;//接受数据延时
+    unsigned int execInterval;//执行时间
+    unsigned int plcProtocol; //规约
+    unsigned int channel; //通道
+    unsigned int baudrate; //波特率
+    unsigned int preamble; //前导符
+    unsigned int stopbit;
+    unsigned int freqSel; //速率选择,下面减过了
+    unsigned int bpsSpeed;             //传输数据等待时间,需要保存，以便下次启动有默认设置
 
-unsigned int meterPassword[8];//密码
+    unsigned int meterPassword[8];//密码
 
-unsigned int number;
+    unsigned int number;
 
-unsigned int para_data[SRM_PARA_NUMBER - 23];
-}ROM_PARA, *P_ROM_PARA;
+    unsigned int para_data[SRM_PARA_NUMBER - 23];
+} ROM_PARA, *P_ROM_PARA;
 
-typedef struct __sys_control__
+typedef struct _sys_ctrl_
 {
     unsigned int paraAddr;
     u32   guiState;
@@ -99,20 +103,22 @@ typedef struct __sys_control__
     u8    defaultDataFlag[4];   //最近使用的数据标识
     u8    DevCheckCode[9];      //自检密码
     u32   sysFileNum;           //文件数量
-    OS_EVENT *downMb; //邮箱发送的消息
-    OS_EVENT *upMb; //邮箱发送的消息
+    OS_EVENT *up_mbox; //邮箱发送的消息
+    OS_EVENT *down_mbox; //邮箱发送的消息
     u32 sd_total_capacity; //SD卡总容量
     u32 sd_free_capacity; //SD卡剩余容量
-}SYS_CONTROL, *P_SYS_CONTROL;
+    u8 self_check;
+} SYS_CTRL, *P_SYS_CTRL;
 
-#define SYS_ADD_TASK(tn)        g_sys_control.procTask|=tn
-#define SYS_DEL_TASK(tn)        g_sys_control.procTask&=(~tn)
-#define SYS_IS_TASK(tn)         g_sys_control.procTask&tn
+#define SYS_ADD_TASK(tn)        g_sys_ctrl.procTask|=tn
+#define SYS_DEL_TASK(tn)        g_sys_ctrl.procTask&=(~tn)
+#define SYS_IS_TASK(tn)         g_sys_ctrl.procTask&tn
  
-extern ROM_PARA     g_sys_register_para;
-extern SYS_CONTROL  g_sys_control;
+extern ROM_PARA g_rom_para;
+extern SYS_CTRL g_sys_ctrl;
 
 void DEV_Init(void);
+void Rom_Para_Recover(void);
 
 unsigned int DEV_Parameters_Write(void);
 void DEV_Parameters_Read(void);

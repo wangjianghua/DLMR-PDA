@@ -270,7 +270,7 @@ static u8 RMD_Get_Para(WM_MESSAGE *pMsg)
         return DEV_ERROR;
     }
 
-    if(DEV_OK != GUI_GetMeterAddr(rmd, g_send_para_pkg.dstAddr))
+    if(DEV_OK != GUI_GetMeterAddr(rmd, g_gui_para.dstAddr))
     {
         return DEV_ERROR;
     }
@@ -279,20 +279,20 @@ static u8 RMD_Get_Para(WM_MESSAGE *pMsg)
     //hItem=WM_GetDialogItem(pMsg->hWin,ID_DROPDOWN_0);
     //dropdown_selnum=DROPDOWN_GetSel(hItem);  
     
-    if(g_sys_register_para.plcProtocol==DL_T_07)
+    if(g_rom_para.plcProtocol==DL_T_07)
     {        
-        memcpy(g_send_para_pkg.dataFlag,
-            &c_645DidoDef[g_sys_register_para.plcProtocol][dropdown_selnum],
+        memcpy(g_gui_para.dataFlag,
+            &c_645DidoDef[g_rom_para.plcProtocol][dropdown_selnum],
             4);
         
-        g_send_para_pkg.ctlCode=0x11;
+        g_gui_para.ctlCode=0x11;
     }
-    else if(g_sys_register_para.plcProtocol==DL_T_97)
+    else if(g_rom_para.plcProtocol==DL_T_97)
     {
-        memcpy(g_send_para_pkg.dataFlag,
-            &c_645DidoDef[g_sys_register_para.plcProtocol][dropdown_selnum],
+        memcpy(g_gui_para.dataFlag,
+            &c_645DidoDef[g_rom_para.plcProtocol][dropdown_selnum],
             2);
-        g_send_para_pkg.ctlCode=0x01; 
+        g_gui_para.ctlCode=0x01; 
 
     }
     else
@@ -301,9 +301,9 @@ static u8 RMD_Get_Para(WM_MESSAGE *pMsg)
     }
 
 #endif
-    g_send_para_pkg.dataLen = 0;
+    g_gui_para.dataLen = 0;
 
-    g_send_para_pkg.cmdType = PLC_CMD_TYPE_COMMON;
+    g_gui_para.cmdType = PLC_CMD_TYPE_COMMON;
     
     return DEV_OK;
 
@@ -319,12 +319,12 @@ void RMD_proc_resp_data(void)
     u32 len;
 
 
-    pbuf = g_plc_prm.data_buf;
-    len = g_plc_prm.data_len;
+    pbuf = g_proto_para.data_buf;
+    len = g_proto_para.data_len;
 
     if(g_hWin_ReadMeter != WM_HWIN_NULL)
     {
-        if(g_send_para_pkg.cmdType == PLC_CMD_BROAD_READ)
+        if(g_gui_para.cmdType == PLC_CMD_BROAD_READ)
         {
             if(len == 6)
             {
@@ -336,7 +336,7 @@ void RMD_proc_resp_data(void)
         }
        
         //SWITCH(DATA FLAG)
-        if(g_plc_prm.data_len >= 4)
+        if(g_proto_para.data_len >= 4)
         {
             hItem = WM_GetDialogItem(g_hWin_ReadMeter, ID_EDIT_3);
             EDIT_SetText(hItem, 
@@ -349,7 +349,7 @@ void RMD_proc_resp_data(void)
             return;
         }
 
-        if(g_plc_prm.data_len >= 4)
+        if(g_proto_para.data_len >= 4)
         {
             hItem = WM_GetDialogItem(g_hWin_ReadMeter, ID_EDIT_4);
             EDIT_SetText(hItem, 
@@ -362,7 +362,7 @@ void RMD_proc_resp_data(void)
             return;
         }
 
-        if(g_plc_prm.data_len >= 4)
+        if(g_proto_para.data_len >= 4)
         {
             hItem = WM_GetDialogItem(g_hWin_ReadMeter, ID_EDIT_5);
             EDIT_SetText(hItem, 
@@ -375,7 +375,7 @@ void RMD_proc_resp_data(void)
             return;
         }
 
-        if(g_plc_prm.data_len >= 4)
+        if(g_proto_para.data_len >= 4)
         {
             hItem = WM_GetDialogItem(g_hWin_ReadMeter, ID_EDIT_6);
             EDIT_SetText(hItem, 
@@ -388,7 +388,7 @@ void RMD_proc_resp_data(void)
             return;
         }
 
-        if(g_plc_prm.data_len >= 4)
+        if(g_proto_para.data_len >= 4)
         {
             hItem = WM_GetDialogItem(g_hWin_ReadMeter, ID_EDIT_7);
             EDIT_SetText(hItem, 
@@ -440,7 +440,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_1);
     
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
-    if(CHANNEL_WIRELESS == g_sys_register_para.channel)
+    if(CHANNEL_WIRELESS == g_rom_para.channel)
     {
         BUTTON_SetBkColor(hItem,0,0xC0C0C0);
     }
@@ -455,7 +455,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_0);
     WM_DisableWindow(hItem);
-    EDIT_SetText(hItem, (const char *)GUI_hex2MeterAddrStr(g_sys_control.recentMeterAddr, 6));
+    EDIT_SetText(hItem, (const char *)GUI_hex2MeterAddrStr(g_sys_ctrl.recentMeterAddr, 6));
 
     for(i = 0;i < 5; i++)
     {
@@ -471,20 +471,20 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_1);
     EDIT_SetText(hItem, Positive);
-    if(g_sys_register_para.plcProtocol==DL_T_07)
+    if(g_rom_para.plcProtocol==DL_T_07)
     {        
-        memcpy(g_send_para_pkg.dataFlag,
-            &c_645DidoDef[g_sys_register_para.plcProtocol][0],
+        memcpy(g_gui_para.dataFlag,
+            &c_645DidoDef[g_rom_para.plcProtocol][0],
             4);
         
-        g_send_para_pkg.ctlCode=0x11;
+        g_gui_para.ctlCode=0x11;
     }
-    else if(g_sys_register_para.plcProtocol==DL_T_97)
+    else if(g_rom_para.plcProtocol==DL_T_97)
     {
-        memcpy(g_send_para_pkg.dataFlag,
-            &c_645DidoDef[g_sys_register_para.plcProtocol][0],
+        memcpy(g_gui_para.dataFlag,
+            &c_645DidoDef[g_rom_para.plcProtocol][0],
             2);
-        g_send_para_pkg.ctlCode=0x01; 
+        g_gui_para.ctlCode=0x01; 
 
     }
     WM_DisableWindow(hItem);
@@ -506,7 +506,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
           case ID_EDIT_0:
             if(key_num==GUI_KEY_ENTER)
             {
-              g_sys_control.selectWidget=EDIT_METER_NUM;
+              g_sys_ctrl.selectWidget=EDIT_METER_NUM;
               g_hWin_Input=Create_Edit_Set(g_hWin_ReadMeter);
               WM_SetFocus(g_hWin_Input);
             }
@@ -514,7 +514,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
           case ID_EDIT_1:
             if(key_num==GUI_KEY_ENTER)
             {
-              g_sys_control.selectWidget=LISTBOX_READ_SEL;
+              g_sys_ctrl.selectWidget=LISTBOX_READ_SEL;
               g_hWin_Input=Create_ListBox_Set(g_hWin_ReadMeter);
               WM_SetFocus(g_hWin_Input);
             }
@@ -523,7 +523,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
           case ID_EDIT_2:
             if(key_num==GUI_KEY_ENTER)
             {
-              //g_sys_control.selectWidget=LISTBOX_SPEED;
+              //g_sys_ctrl.selectWidget=LISTBOX_SPEED;
               //g_hWin_Input=Create_ListBox_Set(g_hWin_ReadMeter);
               //WM_SetFocus(g_hWin_Input);
               g_hWin_speed = CreateSpeed(g_hWin_ReadMeter);
@@ -547,18 +547,18 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 WM_ShowWindow(g_hWin_Date);
                 WM_SetFocus(g_hWin_menu);
                 RMD_key_cnt = 0;
-                g_sys_control.guiState = GUI_PLC_MSG_IDLE;
+                g_sys_ctrl.guiState = GUI_PLC_MSG_IDLE;
             }
             break;
             
         case GUI_KEY_F1: /*获取表号*/
             if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
             {
-                if(CHANNEL_PLC == g_sys_register_para.channel)
+                if(CHANNEL_PLC == g_rom_para.channel)
                 {
-                    g_send_para_pkg.cmdType = PLC_CMD_BROAD_READ;
-                    g_sys_control.guiState = GUI_PLC_MSG_READ;                        
-                    OSMboxPost(g_sys_control.downMb, (void*)&g_send_para_pkg);
+                    g_gui_para.cmdType = PLC_CMD_BROAD_READ;
+                    g_sys_ctrl.guiState = GUI_PLC_MSG_READ;                        
+                    OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
                 }
             }
             break;
@@ -577,8 +577,8 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             {
                 if(DEV_OK == RMD_Get_Para(pMsg))//获取参数数据
                 {
-                    g_sys_control.guiState = GUI_PLC_MSG_READ;
-                    OSMboxPost(g_sys_control.downMb, (void*)&g_send_para_pkg);
+                    g_sys_ctrl.guiState = GUI_PLC_MSG_READ;
+                    OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
                 }
             }
        

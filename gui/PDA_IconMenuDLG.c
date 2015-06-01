@@ -143,24 +143,36 @@ WM_HWIN TSK_Get_Battery()
 }
 #endif
 
-//无线时候变成绿色
 void TSK_SetWrlsGreen(void)
 {
     WM_HWIN hItem;
-    hItem = WM_GetDialogItem(g_hWin_task,ID_TEXT_10);
-    TEXT_SetText(hItem, TSK_Wireless);
+
+    
+    hItem = WM_GetDialogItem(g_hWin_task, ID_TEXT_10);
     TEXT_SetTextColor(hItem, GUI_GREEN);
+    TEXT_SetText(hItem, TSK_Wireless);
 }
 
 
 void TSK_SetWrlsWhite(void)
 {
     WM_HWIN hItem;
-    hItem = WM_GetDialogItem(g_hWin_task,ID_TEXT_10);
-    TEXT_SetText(hItem, "\0");
-    //TEXT_SetTextColor(hItem, GUI_WHITE);
+
+    
+    hItem = WM_GetDialogItem(g_hWin_task, ID_TEXT_10);
+    TEXT_SetTextColor(hItem, GUI_WHITE);
+    TEXT_SetText(hItem, TSK_Wireless);
 }
 
+void TSK_SetWrlsNull(void)
+{
+    WM_HWIN hItem;
+
+    
+    hItem = WM_GetDialogItem(g_hWin_task, ID_TEXT_10);
+    TEXT_SetTextColor(hItem, GUI_WHITE);
+    TEXT_SetText(hItem, " ");
+}
 
 
 void TSK_Battery_Charge(int count)
@@ -196,18 +208,18 @@ void TSK_Set_Monitor(void)
     WM_HWIN hItem;
     hItem=WM_GetDialogItem(g_hWin_task,ID_TEXT_1);
     //TEXT_SetFont(hItem,&GUI_Font_Battery_40);
-    if(g_send_para_pkg.cmdType==PLC_CMD_TYPE_R2L)
+    if(g_gui_para.cmdType==PLC_CMD_TYPE_R2L)
     {
         TEXT_SetText(hItem,"PLC-L");
         //TEXT_SetBkColor(hItem,GUI_GREEN);
     }
-    else if((g_send_para_pkg.cmdType == PLC_CMD_TYPE_L2R)
-           ||(g_send_para_pkg.cmdType == PLC_CMD_TYPE_COMMON))
+    else if((g_gui_para.cmdType == PLC_CMD_TYPE_L2R)
+           ||(g_gui_para.cmdType == PLC_CMD_TYPE_COMMON))
     {
         TEXT_SetText(hItem,"PLC-R");
         //TEXT_SetBkColor(hItem,GUI_GREEN);
     }
-    else if(g_send_para_pkg.cmdType==PLC_CMD_TYPE_NODE)
+    else if(g_gui_para.cmdType==PLC_CMD_TYPE_NODE)
     {
         TEXT_SetText(hItem,"PLC-N");
         //TEXT_SetBkColor(hItem,GUI_GREEN);
@@ -218,11 +230,11 @@ void TSK_Set_Protocol_Text(void)
 {
     WM_HWIN hItem;
     hItem=WM_GetDialogItem(g_hWin_task,ID_TEXT_0);
-    if(g_sys_register_para.plcProtocol==DL_T_07)
+    if(g_rom_para.plcProtocol==DL_T_07)
     {
         TEXT_SetText(hItem,Protocol_07);
     }
-    else if(g_sys_register_para.plcProtocol==DL_T_97)
+    else if(g_rom_para.plcProtocol==DL_T_97)
     {
         TEXT_SetText(hItem,Protocol_97);
     }
@@ -358,23 +370,28 @@ static void _cbTaskDialog(WM_MESSAGE * pMsg)
 
         hItem = WM_GetDialogItem(pMsg->hWin,ID_TEXT_10);
         TEXT_SetFont(hItem,&GUI_Font_Battery_40);
-        if(CHANNEL_WIRELESS == g_sys_register_para.channel)
+        TEXT_SetTextColor(hItem, GUI_WHITE);
+        
+        if(CHANNEL_WIRELESS == g_rom_para.channel)
         {
             TEXT_SetText(hItem, TSK_Wireless);
-            TEXT_SetTextColor(hItem,GUI_GREEN);
+        }
+        else
+        {
+            TEXT_SetText(hItem, " ");
         }
 
         hItem = WM_GetDialogItem(pMsg->hWin,ID_TEXT_1);
-        if(g_send_para_pkg.cmdType==PLC_CMD_TYPE_R2L)
+        if(g_gui_para.cmdType==PLC_CMD_TYPE_R2L)
         {
             TEXT_SetText(hItem,"PLC-L");
         }
-        else if((g_send_para_pkg.cmdType == PLC_CMD_TYPE_L2R)
-               ||(g_send_para_pkg.cmdType == PLC_CMD_TYPE_COMMON))
+        else if((g_gui_para.cmdType == PLC_CMD_TYPE_L2R)
+               ||(g_gui_para.cmdType == PLC_CMD_TYPE_COMMON))
         {
             TEXT_SetText(hItem,"PLC-R");
         }
-        else if(g_send_para_pkg.cmdType==PLC_CMD_TYPE_NODE)
+        else if(g_gui_para.cmdType==PLC_CMD_TYPE_NODE)
         {
             TEXT_SetText(hItem,"PLC-N");
         }
@@ -383,21 +400,21 @@ static void _cbTaskDialog(WM_MESSAGE * pMsg)
         //TSK_Set_Protocol_Text();
         hItem=WM_GetDialogItem(pMsg->hWin,ID_TEXT_0);
 
-        if(g_sys_register_para.plcProtocol==DL_T_07)
+        if(g_rom_para.plcProtocol==DL_T_07)
         {
             TEXT_SetText(hItem,Protocol_07);
         }
-        else if(g_sys_register_para.plcProtocol==DL_T_97)
+        else if(g_rom_para.plcProtocol==DL_T_97)
         {
             TEXT_SetText(hItem,Protocol_97);
         }
 #endif       
         //hItem=WM_GetDialogItem(pMsg->hWin,ID_TEXT_7); 
         //TEXT_SetFont(hItem,&GUI_Font_Battery_40);
-        //Battery_State(pMsg,g_sys_control.pwrValue);
+        //Battery_State(pMsg,g_sys_ctrl.pwrValue);
         break;
      // case WM_TIMER:
-       // Battery_State(pMsg,g_sys_control.pwrValue);
+       // Battery_State(pMsg,g_sys_ctrl.pwrValue);
         //WM_RestartTimer(pMsg->Data.v, 1000);
         //break;
 

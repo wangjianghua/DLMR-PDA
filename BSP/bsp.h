@@ -384,7 +384,7 @@ void         BSP_IntHandlerCRYP               (void);
 void         BSP_IntHandlerHASH_RNG           (void);
 
 
-#define DEBUG_INFO_PRINT_EN            1u
+#define DEBUG_INFO_PRINT_EN            0u
 
 #if (DEBUG_INFO_PRINT_EN > 0u)
 #define DEBUG_PRINT(s)         printf s
@@ -394,9 +394,8 @@ void         BSP_IntHandlerHASH_RNG           (void);
 
 #define clr_wdt()              HAL_IWDG_Refresh(&IwdgHandle)
 
-#define LED_PWR_ON()            LED_On(LED_GREEN)
-#define LED_PWR_OFF()           LED_Off(LED_GREEN)
-#define LED_PWR_TOGGLE()        LED_Toggle(LED_GREEN)
+#define LED_SLEEP_ON()         LED_On(LED_GREEN)
+#define LED_SLEEP_OFF()        LED_Off(LED_GREEN)
 
 extern SPI_HandleTypeDef SpiHandle;
 extern SPI_HandleTypeDef hspi1;
