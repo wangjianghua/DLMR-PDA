@@ -49,7 +49,7 @@ char DataSign_Text[TEXT_LEN]; //listview单元格中的文本内容
 */
 
 
-static const char _acFlagItems[][DL_T_07+1][10] = 
+static const char _acFlagItems[][DL645_07+1][10] = 
 {
     { "9010", "00010000"},
     { "9020", "00020000"},
@@ -101,7 +101,7 @@ static void set_datasign_value(WM_MESSAGE *pMsg)
     LISTVIEW_GetItemText(hItem,1,LISTVIEW_GetSel(hItem),DataSign_Text,TEXT_LEN);
     //g_rom_para.para_data[9]=atoi(DataSign_Text);
     CST_Set_DataFlag(DataSign_Text);
-    GUI_GetStrDataFlag(DataSign_Text, g_rom_para.plcProtocol);
+    GUI_GetStrDataFlag(DataSign_Text, g_rom_para.protocol);
     //CST_Set_DataFlag();
        
 }
@@ -134,13 +134,13 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     LISTVIEW_SetAutoScrollV(hItem,1);
     while (_ReadMeterProj[i][0]) 
     {
-        if(g_rom_para.plcProtocol >  DL_T_07)
+        if(g_rom_para.protocol >  DL645_07)
         {
-            g_rom_para.plcProtocol =  DL_T_07;
+            g_rom_para.protocol =  DL645_07;
         }
-        if(_acFlagItems[i][g_rom_para.plcProtocol][0])
+        if(_acFlagItems[i][g_rom_para.protocol][0])
         {
-            __AddListviewItem(hItem, _ReadMeterProj[i], _acFlagItems[i][g_rom_para.plcProtocol]);
+            __AddListviewItem(hItem, _ReadMeterProj[i], _acFlagItems[i][g_rom_para.protocol]);
         }
         i++;
     }

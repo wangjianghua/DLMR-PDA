@@ -148,7 +148,7 @@ u32 GUI_GetStrDataFlag(u8 * dbuf, u32 pro_ver)
     u8 i;
     u8 len;
 
-    if(pro_ver == DL_T_07)
+    if(pro_ver == DL645_07)
         len = DL645_07_DATA_ITEM_LEN;
     else
         len = DL645_97_DATA_ITEM_LEN;

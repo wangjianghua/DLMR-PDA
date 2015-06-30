@@ -75,9 +75,9 @@ typedef struct {
 //任务栏资源列表
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { WINDOW_CreateIndirect,  NULL,           ID_WINDOW_0,  0,   0, 240, 25, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    " ",            ID_TEXT_0,    3,   3, 62,  15, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    "PLC-R" ,       ID_TEXT_1,    75,  3, 40,  15, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    " ",            ID_TEXT_10,   125, 3, 40,  15, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    " ",            ID_TEXT_0,    3,   3, 65,  15, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    " " ,           ID_TEXT_1,    80,  3, 40,  15, 0, 0x0, 0 },
+  //{ TEXT_CreateIndirect,    " ",            ID_TEXT_10,   125, 3, 40,  15, 0, 0x0, 0 },
   { TEXT_CreateIndirect,    DownloadIcon,   ID_TEXT_5,    156, 3, 17,  17, 0, 0x0, 0 },
   { TEXT_CreateIndirect,    UploadIcon,     ID_TEXT_6,    166, 3, 17,  17, 0, 0x0, 0 },
   { TEXT_CreateIndirect,    " ",            ID_TEXT_7,    196, 3, 42,  25, 0, 0x0, 0 }, 
@@ -142,45 +142,29 @@ WM_HWIN TSK_Get_Battery()
     return WM_GetDialogItem(g_hWin_task,ID_TEXT_7);
 }
 
-
-void TSK_SetWrlsGreen(void)
+void TSK_Disp_RF(void)
 {
     WM_HWIN hItem;
     
-    hItem = WM_GetDialogItem(g_hWin_task, ID_TEXT_10);
-    //TEXT_SetTextColor(hItem, GUI_GREEN);
-    TEXT_SetText(hItem, TSK_Wireless);
+    hItem = WM_GetDialogItem(g_hWin_task, ID_TEXT_1);
+    TEXT_SetText(hItem, TSK_RF);
 }
 
-
-void TSK_SetWrlsWhite(void)
+void TSK_Disp_IR(void)
 {
     WM_HWIN hItem;
     
-    hItem = WM_GetDialogItem(g_hWin_task, ID_TEXT_10);
-    //TEXT_SetTextColor(hItem, GUI_WHITE);
-    TEXT_SetText(hItem, TSK_Wireless);
-}
-
-void TSK_SetIR(void)
-{
-    WM_HWIN hItem;
-    
-    hItem = WM_GetDialogItem(g_hWin_task, ID_TEXT_10);
-    //TEXT_SetTextColor(hItem, GUI_WHITE);
+    hItem = WM_GetDialogItem(g_hWin_task, ID_TEXT_1);
     TEXT_SetText(hItem, TSK_IR);
 }
 
-void TSK_SetWrlsNull(void)
+void TSK_Disp_NULL(void)
 {
     WM_HWIN hItem;
-
     
-    hItem = WM_GetDialogItem(g_hWin_task, ID_TEXT_10);
-    //TEXT_SetTextColor(hItem, GUI_WHITE);
-    TEXT_SetText(hItem, " ");
+    hItem = WM_GetDialogItem(g_hWin_task, ID_TEXT_1);
+    TEXT_SetText(hItem, "");
 }
-
 
 void TSK_Battery_Charge(int count)
 {
@@ -210,7 +194,7 @@ void TSK_Battery_Charge(int count)
     TEXT_SetTextColor(hItem, GUI_GREEN);
 }
 
-void TSK_Set_Monitor(void)
+void TSK_Disp_PLC(void)
 {
     WM_HWIN hItem;
     hItem=WM_GetDialogItem(g_hWin_task,ID_TEXT_1);
@@ -233,20 +217,42 @@ void TSK_Set_Monitor(void)
     }
 }
 
-void TSK_Set_Protocol_Text(void)
+void TSK_Disp_Protocol(void)
 {
     WM_HWIN hItem;
+
+    
     hItem=WM_GetDialogItem(g_hWin_task,ID_TEXT_0);
-    if(g_rom_para.plcProtocol==DL_T_07)
+    
+    if(DL645_07 == g_rom_para.protocol)
     {
         TEXT_SetText(hItem,Protocol_07);
     }
-    else if(g_rom_para.plcProtocol==DL_T_97)
+    else if(DL645_97 == g_rom_para.protocol)
     {
         TEXT_SetText(hItem,Protocol_97);
     }
 }
 
+void TSK_Disp_Channel(void)
+{
+    if(CHANNEL_RF == g_rom_para.channel)
+    {
+        TSK_Disp_RF();
+    }
+    else if(CHANNEL_IR == g_rom_para.channel)
+    {
+        TSK_Disp_IR();
+    }
+    else if(CHANNEL_PLC == g_rom_para.channel)
+    {
+        TSK_Disp_PLC();
+    }
+    else
+    {
+        TSK_Disp_NULL();
+    }
+}
 
 void GUI_Msg_Download(u16 sw)
 {
@@ -379,9 +385,9 @@ static void _cbTaskDialog(WM_MESSAGE * pMsg)
         //TEXT_SetFont(hItem,&GUI_Font_Battery_40);
         //TEXT_SetTextColor(hItem, GUI_WHITE);
         
-        if(CHANNEL_WIRELESS == g_rom_para.channel)
+        if(CHANNEL_RF == g_rom_para.channel)
         {
-            TEXT_SetText(hItem, TSK_Wireless);
+            TEXT_SetText(hItem, TSK_RF);
         }
         else if(CHANNEL_IR == g_rom_para.channel)
         {
@@ -409,14 +415,14 @@ static void _cbTaskDialog(WM_MESSAGE * pMsg)
         }
         
 #if 1
-        //TSK_Set_Protocol_Text();
+        //TSK_Disp_Protocol();
         hItem=WM_GetDialogItem(pMsg->hWin,ID_TEXT_0);
 
-        if(g_rom_para.plcProtocol==DL_T_07)
+        if(g_rom_para.protocol==DL645_07)
         {
             TEXT_SetText(hItem,Protocol_07);
         }
-        else if(g_rom_para.plcProtocol==DL_T_97)
+        else if(g_rom_para.protocol==DL645_97)
         {
             TEXT_SetText(hItem,Protocol_97);
         }

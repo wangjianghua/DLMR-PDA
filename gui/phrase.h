@@ -7,8 +7,8 @@
 extern const char CommParaSet[];
 extern const char RevDataDelay[];
 extern const char BetweenAct[];
-extern const char WaveCarrier[];
-extern const char Infrared[];
+extern const char ChannelPLC[];
+extern const char ChannelIR[];
 extern const char Protocal[];
 extern const char Channel[];
 extern const char BaudRate[];
@@ -25,8 +25,7 @@ extern const char AdvanceSet[];
 extern const GUI_ConstString pProtocolText[]; 
 extern const GUI_ConstString pChannelText[]; 
 extern const char OperateCode[];
-extern const char ChannelWireless[];
-extern const char TSK_IR[];
+extern const char ChannelRF[];
 extern const char ShutDownTime[];
 extern const char FE_Speed[];
 
@@ -148,7 +147,7 @@ extern const char *pTextPreamble[];
 //Ö÷½çÃæ
 extern const char CommParaSetText[];
 extern const char CommStdTestText[];
-extern const char WaveCarrierText[];
+extern const char ChannelPLCText[];
 extern const char TFcardText[];
 extern const char ReadMeterText[];
 extern const char MonitorText[];
@@ -167,7 +166,9 @@ extern const char Protocol_97[];
 
 extern const char SysInfo[];
 
-extern const char TSK_Wireless[];
+extern const char TSK_PLC[];
+extern const char TSK_RF[];
+extern const char TSK_IR[];
 
 extern const char Clear[];
 extern const char Back[];

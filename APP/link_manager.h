@@ -6,7 +6,7 @@
 #endif
 
 
-#define UART_RECEIVE_BUF_SIZE              256u
+#define UART_RECV_BUF_SIZE                 256u
 
 #define MAX_MSG_SHORT                         9
 #define MAX_MSG_LONG                          4
@@ -55,21 +55,21 @@ typedef struct _msg_info_
 typedef struct _large_msg_info_
 {
     MSG_HEADER msg_header;
-    unsigned char  msg_buffer[UART_RECEIVE_BUF_SIZE];
+    unsigned char  msg_buffer[UART_RECV_BUF_SIZE];
 } MSG_LARGE_INFO, *P_LARGE_MSG_INFO;
 
 //内存中消息队列的消息结构体
 typedef struct _long_msg_info_
 {
     MSG_HEADER msg_header;
-    unsigned char  msg_buffer[UART_RECEIVE_BUF_SIZE];
+    unsigned char  msg_buffer[UART_RECV_BUF_SIZE];
 } MSG_LONG_INFO, *P_LONG_MSG_INFO;
 
 //下行消息队列的消息结构体
 typedef struct _short_msg_info_
 {
     MSG_HEADER msg_header;
-    unsigned char  msg_buffer[UART_RECEIVE_BUF_SIZE];
+    unsigned char  msg_buffer[UART_RECV_BUF_SIZE];
 } MSG_SHORT_INFO, *P_SHORT_MSG_INFO;
 
 extern MSG_SHORT_INFO gShortMsgPool[MAX_MSG_SHORT];

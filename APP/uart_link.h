@@ -13,7 +13,8 @@
 #define PC_COM_PORT                0
 #define RS485_COM_PORT             1
 #define PLC_COM_PORT               2
-#define MAX_COM_PORT               3
+#define IR_COM_PORT                3
+#define MAX_COM_PORT               4
 #define START_COM_PORT        PC_COM_PORT
 
 #define END_OBJECT_NUM        MAX_COM_PORT
@@ -21,6 +22,7 @@
 #define PC_UART               huart4
 #define RS485_UART            huart1
 #define PLC_UART              huart2
+#define IR_UART               huart3
 
 #define END_TX_QUEUE_SIZE          5
 #define END_RX_QUEUE_SIZE          5 
@@ -129,10 +131,11 @@ unsigned short End_tick_check(void);
 U32 UART_ReceiveData(U8 end_id, UCHAR* rxbuf, USHORT rxnum);
 void App_TaskEndTick(void *p_arg);
 void App_TaskEndProc(void *p_arg);
-void USART_IRQProc(UART_CCB *uccb, UART_HandleTypeDef *huart);
+void UART_IRQProc(UART_CCB *uccb, UART_HandleTypeDef *UARTx);
 void UART4_IRQHandler(void);
 void USART2_IRQHandler(void);   
 void USART1_IRQHandler(void);
+void USART3_IRQHandler(void);
 
 
 #ifdef __cplusplus

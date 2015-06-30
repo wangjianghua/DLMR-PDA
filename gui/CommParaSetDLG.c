@@ -249,12 +249,12 @@ static void _init_dialog(WM_MESSAGE * pMsg)
         WM_DisableWindow(hItem);
     }
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_0);
-    switch(g_rom_para.plcProtocol)
+    switch(g_rom_para.protocol)
     {
-        case DL_T_07:
+        case DL645_07:
             EDIT_SetText(hItem, "DL645-07");
             break;
-        case DL_T_97:
+        case DL645_97:
             EDIT_SetText(hItem, "DL645-97");
     }
     
@@ -263,15 +263,15 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     switch(g_rom_para.channel)
     {
         case CHANNEL_IR:
-            EDIT_SetText(hItem,Infrared);
+            EDIT_SetText(hItem,ChannelIR);
             break;
           
         case CHANNEL_PLC:
-            EDIT_SetText(hItem,WaveCarrier);
+            EDIT_SetText(hItem,ChannelPLC);
             break;
          
-        case CHANNEL_WIRELESS:
-            EDIT_SetText(hItem,ChannelWireless);
+        case CHANNEL_RF:
+            EDIT_SetText(hItem,ChannelRF);
             break;
     }
     //EDIT_SetBkColor(hItem,0,GUI_GREEN);
@@ -378,7 +378,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                    
                case GUI_KEY_GREEN:  /*  ±£´æÊý¾Ý  */
                    //para_store(pMsg);
-                   TSK_Set_Protocol_Text();
+                   TSK_Disp_Protocol();
                    DEV_Parameters_Write();
                    break;
                    

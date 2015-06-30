@@ -203,7 +203,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 g_sys_ctrl.sysCtdVal = COUNT_VALUE  ;
                 g_sys_ctrl.sysCtdFlag = COUNTDOWN_ON;
                 //g_sys_ctrl.monitorFlag = PLC_MONITOR_ON; //读载波节点也不能关机
-                TSK_Set_Monitor();
+                TSK_Disp_PLC();
                 OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
                 break;
             case '*':
@@ -213,11 +213,11 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 break;
             case GUI_KEY_F1: /*监控态*/
                 ButtonBlink(pMsg,ID_BUTTON_2);
-                //TSK_Set_Monitor();
+                //TSK_Disp_PLC();
                 g_gui_para.cmdType = PLC_CMD_TYPE_R2L;
                 g_sys_ctrl.guiState = GUI_PLC_MSG_LISTING;
                 //g_sys_ctrl.monitorFlag = PLC_MONITOR_ON;//监控态不能关闭电源，标志位
-                TSK_Set_Monitor();
+                TSK_Disp_PLC();
                 OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
                 break;
             case GUI_KEY_F2:/* 抄控态 */
@@ -226,7 +226,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 g_gui_para.cmdType = PLC_CMD_TYPE_L2R;
                 g_sys_ctrl.guiState = GUI_PLC_MSG_LISTING;
                 //g_sys_ctrl.monitorFlag = PLC_MONITOR_OFF;
-                TSK_Set_Monitor();
+                TSK_Disp_PLC();
                 OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
                 break;
         }

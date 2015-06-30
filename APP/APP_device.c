@@ -11,7 +11,7 @@ ROM_PARA g_rom_para =
     30,                 //屏保时间
     4000,               //接受数据延时
     1000,               //执行时间
-    DL_T_07,            //规约
+    DL645_07,            //规约
     CHANNEL_PLC,        //通道
     BAUD_RATE_9600,     //波特率
     0xFA,               //前导符
@@ -34,7 +34,7 @@ const ROM_PARA g_rom_para_default =
     30,                 //屏保时间
     4000,               //接受数据延时
     1000,               //执行时间
-    DL_T_07,            //规约
+    DL645_07,            //规约
     CHANNEL_PLC,        //通道
     BAUD_RATE_9600,     //波特率
     0xFA,               //前导符
@@ -260,11 +260,11 @@ void DEV_Init(void)
 
     memcpy(g_sys_ctrl.recentMeterAddr, c_test_addr, 6);
 
-    if(DL_T_07 == g_rom_para.plcProtocol)
+    if(DL645_07 == g_rom_para.protocol)
     {
         memcpy(g_sys_ctrl.defaultDataFlag, c_default_dataflag, 4);
     }
-    else if(DL_T_97 == g_rom_para.plcProtocol)
+    else if(DL645_97 == g_rom_para.protocol)
     {
         memcpy(g_sys_ctrl.defaultDataFlag, c_97_dataflag, 4);
     }
@@ -277,7 +277,7 @@ void DEV_Init(void)
     
 }
 
-void Rom_Para_Recover(void)
+void dev_para_recover(void)
 {
     memcpy(&g_rom_para, &g_rom_para_default, sizeof(ROM_PARA));
 

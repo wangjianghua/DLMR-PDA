@@ -5,9 +5,8 @@
 #define GUI_645_ADDR_LENGTH 12
 
 /*dropdown中下拉列表中的量，备用*/
-#define DL_T_97    0
-#define DL_T_07    1
-
+#define DL645_97                  0
+#define DL645_07                  1
 
 #define PLC_CMD_TYPE_L2R          0  //read to listening
 #define PLC_CMD_TYPE_R2L          1  //listening to read
@@ -26,7 +25,7 @@
 
 
 #define CHANNEL_PLC       0
-#define CHANNEL_WIRELESS   1
+#define CHANNEL_RF        1
 #define CHANNEL_IR        2
 
 #define ONE_STOPBIT        0

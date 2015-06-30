@@ -163,7 +163,7 @@ static void Select_Input_Edit(int  EditNum)
         case EDIT_DATA_FLAG:
             EDIT_GetText(hItem,tmpTextBuf,9);
             hItem=CPT_Set_DataFlag();
-            GUI_GetStrDataFlag(tmpTextBuf, g_rom_para.plcProtocol);
+            GUI_GetStrDataFlag(tmpTextBuf, g_rom_para.protocol);
             break;
 
         case EDIT_LENGTH:
@@ -447,21 +447,21 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
         case LISTBOX_PROTOCOL:
             LISTBOX_AddString(hItem, "DL645-07");
             LISTBOX_AddString(hItem, "DL645-97");
-            switch(g_rom_para.plcProtocol)
+            switch(g_rom_para.protocol)
             {
-                case DL_T_07:
+                case DL645_07:
                     LISTBOX_SetSel(hItem,0);
                     break;
-                case DL_T_97:
+                case DL645_97:
                     LISTBOX_SetSel(hItem,1);
                     break;
             }
             break;
             
         case LISTBOX_CHANNEL:
-            LISTBOX_AddString(hItem, WaveCarrier);
-            LISTBOX_AddString(hItem, ChannelWireless);
-            LISTBOX_AddString(hItem, Infrared);
+            LISTBOX_AddString(hItem, ChannelPLC);
+            LISTBOX_AddString(hItem, ChannelRF);
+            LISTBOX_AddString(hItem, ChannelIR);
             break;
 
 
@@ -553,13 +553,13 @@ static void Select_ListBox_Row(int  WidgetNum)
             switch(SelNum) 
             {
                 case 0:
-                    g_rom_para.plcProtocol = DL_T_07;
+                    g_rom_para.protocol = DL645_07;
                     TSK_SetProtocol_07();
                     hWin=CPS_Set_Proto();
                     EDIT_SetText(hWin,"DL645-07");
                     break;
                 case 1:
-                    g_rom_para.plcProtocol = DL_T_97;
+                    g_rom_para.protocol = DL645_97;
                     TSK_SetProtocol_97();
                     hWin=CPS_Set_Proto();
                     EDIT_SetText(hWin,"DL645-97");
@@ -573,18 +573,18 @@ static void Select_ListBox_Row(int  WidgetNum)
                 case 2:
                     g_rom_para.channel=CHANNEL_IR;
                     hWin=CPS_Set_Channel();
-                    EDIT_SetText(hWin,Infrared);
+                    EDIT_SetText(hWin,ChannelIR);
                     break;
                     
                 case 0:
                     g_rom_para.channel=CHANNEL_PLC;
                     hWin=CPS_Set_Channel();
-                    EDIT_SetText(hWin,WaveCarrier);
+                    EDIT_SetText(hWin,ChannelPLC);
                     break;
                 case 1:
-                    g_rom_para.channel=CHANNEL_WIRELESS;
+                    g_rom_para.channel=CHANNEL_RF;
                     hWin=CPS_Set_Channel();
-                    EDIT_SetText(hWin,ChannelWireless);
+                    EDIT_SetText(hWin,ChannelRF);
                     break;
             }
             break;
@@ -613,13 +613,13 @@ static void Select_ListBox_Row(int  WidgetNum)
 
 
          case LISTBOX_CTLCODE:
-            if(g_rom_para.plcProtocol == DL_T_97)
+            if(g_rom_para.protocol == DL645_97)
             {
-                g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.plcProtocol][SelNum]; 
+                g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.protocol][SelNum]; 
             }
-            else if(g_rom_para.plcProtocol == DL_T_07)
+            else if(g_rom_para.protocol == DL645_07)
             {
-                g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.plcProtocol][SelNum]; 
+                g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.protocol][SelNum]; 
             }
             hWin=CPT_Set_CtlCode();
             EDIT_SetText(hWin,pCtlCode[SelNum]);
@@ -628,18 +628,18 @@ static void Select_ListBox_Row(int  WidgetNum)
             
         case LISTBOX_READ_SEL:
             //pReadSel
-            if(g_rom_para.plcProtocol==DL_T_07)
+            if(g_rom_para.protocol==DL645_07)
             {        
                 memcpy(g_gui_para.dataFlag,
-                    &c_645DidoDef[g_rom_para.plcProtocol][SelNum],
+                    &c_645DidoDef[g_rom_para.protocol][SelNum],
                     4);
                 
                 g_gui_para.ctlCode=0x11;
             }
-            else if(g_rom_para.plcProtocol==DL_T_97)
+            else if(g_rom_para.protocol==DL645_97)
             {
                 memcpy(g_gui_para.dataFlag,
-                    &c_645DidoDef[g_rom_para.plcProtocol][SelNum],
+                    &c_645DidoDef[g_rom_para.protocol][SelNum],
                     2);
                 g_gui_para.ctlCode=0x01; 
         

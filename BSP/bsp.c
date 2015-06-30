@@ -313,6 +313,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 UART_HandleTypeDef huart4;
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
+UART_HandleTypeDef huart3;
 
 void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 {
@@ -397,6 +398,32 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 
   /* USER CODE END USART2_MspInit 1 */
   }
+  else if(huart->Instance==USART3)
+  {
+  /* USER CODE BEGIN USART3_MspInit 0 */
+
+  /* USER CODE END USART3_MspInit 0 */
+    /* Peripheral clock enable */
+    __USART3_CLK_ENABLE();
+  
+    /**USART3 GPIO Configuration    
+    PB10     ------> USART3_TX
+    PB11     ------> USART3_RX 
+    */
+    GPIO_InitStruct.Pin = GPIO_PIN_10|GPIO_PIN_11;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
+    GPIO_InitStruct.Alternate = GPIO_AF7_USART3;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /* System interrupt init*/
+    HAL_NVIC_SetPriority(USART3_IRQn, 1, 2);
+    HAL_NVIC_EnableIRQ(USART3_IRQn);
+  /* USER CODE BEGIN USART3_MspInit 1 */
+
+  /* USER CODE END USART3_MspInit 1 */
+  }    
 }
 
 /* UART4 init function */
@@ -444,11 +471,27 @@ void USART2_UART_Init(void)
   HAL_UART_Init(&huart2);
 }
 
+/* USART3 init function */
+void USART3_UART_Init(void)
+{
+  huart3.Instance = USART3;
+  huart3.Init.BaudRate = 1200;
+  huart3.Init.WordLength = UART_WORDLENGTH_9B;
+  huart3.Init.StopBits = UART_STOPBITS_1;
+  huart3.Init.Parity = UART_PARITY_EVEN;
+  huart3.Init.Mode = UART_MODE_TX_RX;
+  huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart3.Init.OverSampling = UART_OVERSAMPLING_16;
+  
+  HAL_UART_Init(&huart3);
+}
+
 void BSP_UART_Init(void)
 {
     UART4_Init();
     USART1_UART_Init();
     USART2_UART_Init();
+    USART3_UART_Init();
 
 	BSP_IntVectSet(BSP_INT_ID_USART4, UART4_IRQHandler);
 	BSP_IntEn(BSP_INT_ID_USART4);    
@@ -458,6 +501,45 @@ void BSP_UART_Init(void)
 
 	BSP_IntVectSet(BSP_INT_ID_USART2, USART2_IRQHandler);
 	BSP_IntEn(BSP_INT_ID_USART2);    
+
+	BSP_IntVectSet(BSP_INT_ID_USART3, USART3_IRQHandler);
+	BSP_IntEn(BSP_INT_ID_USART3);    
+}
+
+#define PRESCALER_VALUE     (4 - 1)
+#define PERIOD_VALUE        (789 - 1)
+#define PULSE_VALUE         ((PERIOD_VALUE + 1) / 2)
+
+TIM_HandleTypeDef Tim8Handle;
+
+void BSP_IR_PWM_Init(void)
+{    
+    TIM_OC_InitTypeDef sConfig;
+    GPIO_InitTypeDef GPIO_InitStructure; 
+
+
+    GPIO_InitStructure.Pin = GPIO_PIN_6;
+    GPIO_InitStructure.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStructure.Speed = GPIO_SPEED_FAST;
+    GPIO_InitStructure.Alternate = GPIO_AF3_TIM8;
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
+
+    Tim8Handle.Instance = TIM8;
+    Tim8Handle.Init.Prescaler = PRESCALER_VALUE;
+    Tim8Handle.Init.Period = PERIOD_VALUE;
+    Tim8Handle.Init.ClockDivision = 0;
+    Tim8Handle.Init.CounterMode = TIM_COUNTERMODE_UP;
+    HAL_TIM_PWM_Init(&Tim8Handle);
+    
+    sConfig.OCMode = TIM_OCMODE_PWM1;
+    sConfig.OCPolarity = TIM_OCPOLARITY_HIGH;
+    sConfig.OCFastMode = TIM_OCFAST_DISABLE;
+    sConfig.OCIdleState = TIM_OCIDLESTATE_RESET;
+    sConfig.OCNIdleState = TIM_OCNIDLESTATE_RESET;
+    sConfig.Pulse = PULSE_VALUE;
+    HAL_TIM_PWM_ConfigChannel(&Tim8Handle, &sConfig, TIM_CHANNEL_1);
+    
+    HAL_TIM_PWM_Start(&Tim8Handle, TIM_CHANNEL_1);   
 }
 
 // ----------------------------------------------------------------------------- //
@@ -516,6 +598,8 @@ void  BSP_Init (void)
 
     BSP_UART_Init();
 
+    BSP_IR_PWM_Init();
+
     //BSP_IWDG_Init();  //4.1
 
     PLC_PWR_ON();
@@ -543,6 +627,8 @@ void BSP_RCC_Configuration(void)
     /* DMA controller clock enable */
     __DMA1_CLK_ENABLE();
     __DMA2_CLK_ENABLE();    
+
+    __TIM8_CLK_ENABLE();
 
     /* Enable the FSMC Clock */
     //RCC_AHB3PeriphClockCmd(RCC_AHB3Periph_FSMC, ENABLE); 

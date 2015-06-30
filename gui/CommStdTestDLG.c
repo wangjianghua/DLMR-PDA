@@ -210,14 +210,14 @@ static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
         ERR_NOTE(g_hWin_std,GUI_MSBOX_ADDR_ERROR);
         return DEV_ERROR;
     }    
-    //g_rom_para.plcProtocol = DL_T_07;
+    //g_rom_para.plcProtocol = DL645_07;
 
 
     hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_3);
     //g_gui_para.g_datasign = EDIT_GetValue(pMsg->hWin);
     EDIT_GetText(hItem, tb, 8 + 1);
 
-    if(g_rom_para.plcProtocol == DL_T_07)
+    if(g_rom_para.protocol == DL645_07)
         len = DL645_07_DATA_ITEM_LEN;
     else
         len = DL645_97_DATA_ITEM_LEN;
@@ -230,7 +230,7 @@ static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
         return DEV_ERROR;
     }
 
-    if(DEV_OK != GUI_GetStrDataFlag(tb, g_rom_para.plcProtocol ))
+    if(DEV_OK != GUI_GetStrDataFlag(tb, g_rom_para.protocol ))
     {
         ERR_NOTE(g_hWin_std,GUI_MSBOX_DIDO_ERROR);
         
@@ -431,13 +431,13 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_2);
     EDIT_SetText(hItem, Readdata);
-     if(g_rom_para.plcProtocol == DL_T_07)
+     if(g_rom_para.protocol == DL645_07)
     {
-        g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.plcProtocol][1]; 
+        g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.protocol][1]; 
     }
-    else if(g_rom_para.plcProtocol == DL_T_97)
+    else if(g_rom_para.protocol == DL645_97)
     {
-        g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.plcProtocol][1]; 
+        g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.protocol][1]; 
     }
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_3);

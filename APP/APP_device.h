@@ -64,7 +64,7 @@ typedef struct _rom_para_
     unsigned int scrTimeout;           //屏幕超时
     unsigned int recvDelayTime;//接受数据延时
     unsigned int execInterval;//执行时间
-    unsigned int plcProtocol; //规约
+    unsigned int protocol; //规约
     unsigned int channel; //通道
     unsigned int baudrate; //波特率
     unsigned int preamble; //前导符
@@ -118,7 +118,7 @@ extern ROM_PARA g_rom_para;
 extern SYS_CTRL g_sys_ctrl;
 
 void DEV_Init(void);
-void Rom_Para_Recover(void);
+void dev_para_recover(void);
 
 unsigned int DEV_Parameters_Write(void);
 void DEV_Parameters_Read(void);

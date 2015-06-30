@@ -1,11 +1,12 @@
 #include "includes.h"
-#include "lcdconf.h"
+
 
 END_OBJ g_EndObjectPool[MAX_COM_PORT] =
 {
     {PC_COM_PORT, END_STATUS_IDLE, 0, 0, 0, NULL, NULL, NULL, NULL},
     {RS485_COM_PORT, END_STATUS_IDLE, 0, 0, 0, NULL, NULL, NULL, NULL},
     {PLC_COM_PORT, END_STATUS_IDLE, 0, 0, 0, NULL, NULL, NULL, NULL},    
+    {IR_COM_PORT, END_STATUS_IDLE, 0, 0, 0, NULL, NULL, NULL, NULL},    
 };
 
 pvoid g_EndObject[END_OBJECT_NUM];
@@ -22,16 +23,21 @@ unsigned char g_RS485RxEndQueueBuf[((END_RX_QUEUE_SIZE+2) * 4)];
 unsigned char g_PLCTxEndQueueBuf[((END_TX_QUEUE_SIZE+2) * 4)];
 unsigned char g_PLCRxEndQueueBuf[((END_RX_QUEUE_SIZE+2) * 4)];
 
+unsigned char g_IRTxEndQueueBuf[((END_TX_QUEUE_SIZE+2) * 4)];
+unsigned char g_IRRxEndQueueBuf[((END_RX_QUEUE_SIZE+2) * 4)];
+
 unsigned char *pTxEndQueueBuf[] = {
     g_PCTxEndQueueBuf,
     g_RS485TxEndQueueBuf,
     g_PLCTxEndQueueBuf,
+    g_IRTxEndQueueBuf,
 };
 
 unsigned char *pRxEndQueueBuf[] = {
     g_PCRxEndQueueBuf,
     g_RS485RxEndQueueBuf,
-    g_PLCRxEndQueueBuf, 
+    g_PLCRxEndQueueBuf,
+    g_IRRxEndQueueBuf,
 };
 
 /***********************************************************
@@ -42,14 +48,16 @@ OS_EVENT *g_sem_end;
 
 UART_CCB g_uart_ccb[MAX_COM_PORT];
 
-U8 g_UartPCRxBuf[UART_RECEIVE_BUF_SIZE];
-U8 g_UartRS485RxBuf[UART_RECEIVE_BUF_SIZE];
-U8 g_UartPLCRxBuf[UART_RECEIVE_BUF_SIZE];
+U8 g_UartPCRxBuf[UART_RECV_BUF_SIZE];
+U8 g_UartRS485RxBuf[UART_RECV_BUF_SIZE];
+U8 g_UartPLCRxBuf[UART_RECV_BUF_SIZE];
+U8 g_UartIRRxBuf[UART_RECV_BUF_SIZE];
 
 U8 *pUartRxBuf[] = {
     g_UartPCRxBuf,
     g_UartRS485RxBuf,
     g_UartPLCRxBuf,
+    g_UartIRRxBuf,
 };
 
 U32 UART_ReceiveData(U8 end_id, UCHAR* rxbuf, USHORT rxnum)
@@ -84,6 +92,7 @@ void End_Init(void)
     g_EndObject[PC_COM_PORT] = (pvoid)&PC_UART;
     g_EndObject[RS485_COM_PORT] = (pvoid)&RS485_UART;
     g_EndObject[PLC_COM_PORT] = (pvoid)&PLC_UART;
+    g_EndObject[IR_COM_PORT] = (pvoid)&IR_UART;
 
     mem_msg_buffer_init((MSG_INFO *)gShortMsgPool, (P_MSG_INFO *)pShortMsgPool, MAX_MSG_SHORT, sizeof(MSG_SHORT_INFO));
 
@@ -104,7 +113,7 @@ void End_Init(void)
 
         pEndObj->recv_timeout = 0;
 
-        UART_ReceiveData(i, pEndObj->end_recv_buffer, UART_RECEIVE_BUF_SIZE);
+        UART_ReceiveData(i, pEndObj->end_recv_buffer, UART_RECV_BUF_SIZE);
 
         // 所有串口状态转到REVC STATUS
         pEndObj->end_send_status = END_STATUS_IDLE;
@@ -248,11 +257,12 @@ P_END_OBJ End_get_end_obj(UCHAR end_id)
     return NULL;
 }
 
-U32 End_uart_send(UCHAR end_id,  UCHAR* txbuf, USHORT    txnum )
+U32 End_uart_send(UCHAR end_id, UCHAR *txbuf, USHORT txnum)
 {
-    UART_HandleTypeDef huart;
+    UART_HandleTypeDef *UARTx;
     P_UART_CCB p_uc;
-    UCHAR      send_byte=0;
+    UCHAR send_byte = 0;
+
 
     if( txnum < 1 )
     {
@@ -262,16 +272,20 @@ U32 End_uart_send(UCHAR end_id,  UCHAR* txbuf, USHORT    txnum )
     switch(end_id)
     {    
     case PC_COM_PORT:      
-        huart = PC_UART;
+        UARTx = &PC_UART;
         break; 
         
     case RS485_COM_PORT:      
-        huart= RS485_UART;
+        UARTx= &RS485_UART;
         break; 
         
     case PLC_COM_PORT:      
-        huart = PLC_UART;
+        UARTx = &PLC_UART;
         break; 
+        
+    case IR_COM_PORT:
+        UARTx = &IR_UART;
+        break;
         
     default:
         return FALSE;
@@ -287,14 +301,14 @@ U32 End_uart_send(UCHAR end_id,  UCHAR* txbuf, USHORT    txnum )
     p_uc->gpUartTxAddress++;
     p_uc->gUartTxCnt--;
 
-    while(RESET == __HAL_UART_GET_FLAG(&huart, UART_FLAG_TXE)); //关键
+    while(RESET == __HAL_UART_GET_FLAG(UARTx, UART_FLAG_TXE)); //关键
 
-    huart.Instance->DR = (send_byte & (uint8_t)0xFF);
+    UARTx->Instance->DR = (send_byte & (uint8_t)0xFF);
 
-    while(RESET == __HAL_UART_GET_FLAG(&huart, UART_FLAG_TC)); //关键
+    while(RESET == __HAL_UART_GET_FLAG(UARTx, UART_FLAG_TC)); //关键
 
     if(p_uc->gUartTxCnt)
-        __HAL_UART_ENABLE_IT(&huart, UART_IT_TXE);
+        __HAL_UART_ENABLE_IT(UARTx, UART_IT_TXE);
         
     return TRUE;
 };
@@ -373,9 +387,9 @@ unsigned char End_check_recv(P_END_OBJ pEndObj)
     if(p_uc->gpUartRxReadAddress <= p_uc->gpUartRxAddress)
         pEndObj->receive_len = p_uc->gpUartRxAddress - p_uc->gpUartRxReadAddress;//gIic0RxCnt;
     else
-        pEndObj->receive_len = (USHORT)((ULONG)p_uc->gpUartRxAddress + UART_RECEIVE_BUF_SIZE - (ULONG)p_uc->gpUartRxReadAddress);
+        pEndObj->receive_len = (USHORT)((ULONG)p_uc->gpUartRxAddress + UART_RECV_BUF_SIZE - (ULONG)p_uc->gpUartRxReadAddress);
 
-    if(pEndObj->receive_len > (220))//if(pEndObj->receive_len > (UART_RECEIVE_BUF_SIZE/2))
+    if(pEndObj->receive_len > (220))//if(pEndObj->receive_len > (UART_RECV_BUF_SIZE/2))
     {
         pEndObj->recv_timeout = 0;
         return TRUE;
@@ -450,6 +464,10 @@ unsigned char End_postProcess(unsigned char end_type,  pvoid h)
     case PLC_COM_PORT:
         iRet = PLC_postProcess(pMsg);
         break;        
+
+    case IR_COM_PORT:
+        iRet = IR_postProcess(pMsg);
+        break;
 
     default:
         break;  
@@ -575,66 +593,64 @@ void  App_TaskEndProc (void *p_arg)
                     free_send_buffer(pMsg);
                 }
             }
-
-            
         }
     }
 }
 
-void USART_IRQProc(UART_CCB *uccb, UART_HandleTypeDef *huart)
+void UART_IRQProc(UART_CCB *uccb, UART_HandleTypeDef *UARTx)
 {
   uint32_t tmp1 = 0, tmp2 = 0;
 
     
-  tmp1 = __HAL_UART_GET_FLAG(huart, UART_FLAG_PE);
-  tmp2 = __HAL_UART_GET_IT_SOURCE(huart, UART_IT_PE); 
+  tmp1 = __HAL_UART_GET_FLAG(UARTx, UART_FLAG_PE);
+  tmp2 = __HAL_UART_GET_IT_SOURCE(UARTx, UART_IT_PE); 
 
   /* UART parity error interrupt occurred ------------------------------------*/
   if((tmp1 != RESET) && (tmp2 != RESET))
   { 
-    __HAL_UART_CLEAR_FLAG(huart, UART_FLAG_PE);
+    __HAL_UART_CLEAR_FLAG(UARTx, UART_FLAG_PE);
     
-    huart->ErrorCode |= HAL_UART_ERROR_PE;
+    UARTx->ErrorCode |= HAL_UART_ERROR_PE;
   }
   
-  tmp1 = __HAL_UART_GET_FLAG(huart, UART_FLAG_FE);
-  tmp2 = __HAL_UART_GET_IT_SOURCE(huart, UART_IT_ERR);
+  tmp1 = __HAL_UART_GET_FLAG(UARTx, UART_FLAG_FE);
+  tmp2 = __HAL_UART_GET_IT_SOURCE(UARTx, UART_IT_ERR);
   /* UART frame error interrupt occurred -------------------------------------*/
   if((tmp1 != RESET) && (tmp2 != RESET))
   { 
-    __HAL_UART_CLEAR_FLAG(huart, UART_FLAG_FE);
+    __HAL_UART_CLEAR_FLAG(UARTx, UART_FLAG_FE);
     
-    huart->ErrorCode |= HAL_UART_ERROR_FE;
+    UARTx->ErrorCode |= HAL_UART_ERROR_FE;
   }
   
-  tmp1 = __HAL_UART_GET_FLAG(huart, UART_FLAG_NE);
-  tmp2 = __HAL_UART_GET_IT_SOURCE(huart, UART_IT_ERR);
+  tmp1 = __HAL_UART_GET_FLAG(UARTx, UART_FLAG_NE);
+  tmp2 = __HAL_UART_GET_IT_SOURCE(UARTx, UART_IT_ERR);
   /* UART noise error interrupt occurred -------------------------------------*/
   if((tmp1 != RESET) && (tmp2 != RESET))
   { 
-    __HAL_UART_CLEAR_FLAG(huart, UART_FLAG_NE);
+    __HAL_UART_CLEAR_FLAG(UARTx, UART_FLAG_NE);
     
-    huart->ErrorCode |= HAL_UART_ERROR_NE;
+    UARTx->ErrorCode |= HAL_UART_ERROR_NE;
   }
   
-  tmp1 = __HAL_UART_GET_FLAG(huart, UART_FLAG_ORE);
-  tmp2 = __HAL_UART_GET_IT_SOURCE(huart, UART_IT_ERR);
+  tmp1 = __HAL_UART_GET_FLAG(UARTx, UART_FLAG_ORE);
+  tmp2 = __HAL_UART_GET_IT_SOURCE(UARTx, UART_IT_ERR);
   /* UART Over-Run interrupt occurred ----------------------------------------*/
   if((tmp1 != RESET) && (tmp2 != RESET))
   { 
-    __HAL_UART_CLEAR_FLAG(huart, UART_FLAG_ORE);
+    __HAL_UART_CLEAR_FLAG(UARTx, UART_FLAG_ORE);
     
-    huart->ErrorCode |= HAL_UART_ERROR_ORE;
+    UARTx->ErrorCode |= HAL_UART_ERROR_ORE;
   }
   
-  tmp1 = __HAL_UART_GET_FLAG(huart, UART_FLAG_RXNE);
-  tmp2 = __HAL_UART_GET_IT_SOURCE(huart, UART_IT_RXNE);
+  tmp1 = __HAL_UART_GET_FLAG(UARTx, UART_FLAG_RXNE);
+  tmp2 = __HAL_UART_GET_IT_SOURCE(UARTx, UART_IT_RXNE);
   /* UART in mode Receiver ---------------------------------------------------*/
   if((tmp1 != RESET) && (tmp2 != RESET))
   { 
-    //UART_Receive_IT(huart);
+    //UART_Receive_IT(UARTx);
     
-    *uccb->gpUartRxAddress++ = (uint8_t)(huart->Instance->DR & (uint8_t)0x00FF);
+    *uccb->gpUartRxAddress++ = (uint8_t)(UARTx->Instance->DR & (uint8_t)0x00FF);
     
     if(uccb->gpUartRxAddress == uccb->gpUartRxEndAddress)
     {
@@ -647,58 +663,63 @@ void USART_IRQProc(UART_CCB *uccb, UART_HandleTypeDef *huart)
       //可以考虑加错误统计
     } 
     
-    __HAL_UART_CLEAR_FLAG(huart, UART_FLAG_RXNE);
+    __HAL_UART_CLEAR_FLAG(UARTx, UART_FLAG_RXNE);
 
 #if (LED_UART_EN > 0u)
     LED_UART_ON();
 #endif    
   }
   
-  tmp1 = __HAL_UART_GET_FLAG(huart, UART_FLAG_TXE);
-  tmp2 = __HAL_UART_GET_IT_SOURCE(huart, UART_IT_TXE);
+  tmp1 = __HAL_UART_GET_FLAG(UARTx, UART_FLAG_TXE);
+  tmp2 = __HAL_UART_GET_IT_SOURCE(UARTx, UART_IT_TXE);
   /* UART in mode Transmitter ------------------------------------------------*/
   if((tmp1 != RESET) && (tmp2 != RESET))
   {
-    //UART_Transmit_IT(huart);
+    //UART_Transmit_IT(UARTx);
 
     if(uccb->gUartTxCnt > 0)
     { 
-      huart->Instance->DR = (uint8_t)(*uccb->gpUartTxAddress++ & (uint8_t)0x00FF);
+      UARTx->Instance->DR = (uint8_t)(*uccb->gpUartTxAddress++ & (uint8_t)0x00FF);
       uccb->gUartTxCnt--;
     }
     else
     {
-      __HAL_UART_DISABLE_IT(huart, UART_IT_TXE);
+      __HAL_UART_DISABLE_IT(UARTx, UART_IT_TXE);
     }
 
-    __HAL_UART_CLEAR_FLAG(huart, UART_FLAG_TXE);
+    __HAL_UART_CLEAR_FLAG(UARTx, UART_FLAG_TXE);
 
 #if (LED_UART_EN > 0u)
     LED_UART_ON();
 #endif	    
   }
   
-  if(huart->ErrorCode != HAL_UART_ERROR_NONE)
+  if(UARTx->ErrorCode != HAL_UART_ERROR_NONE)
   {
     /* Set the UART state ready to be able to start again the process */
-    huart->State = HAL_UART_STATE_READY;
+    UARTx->State = HAL_UART_STATE_READY;
     
-    HAL_UART_ErrorCallback(huart);
+    HAL_UART_ErrorCallback(UARTx);
   }    
 }
 
 void UART4_IRQHandler(void)
 {
-    USART_IRQProc(&g_uart_ccb[PC_COM_PORT], &huart4);    
+    UART_IRQProc(&g_uart_ccb[PC_COM_PORT], &huart4);    
 }
 
 void USART2_IRQHandler(void)
 {
-    USART_IRQProc(&g_uart_ccb[PLC_COM_PORT], &huart2);    
+    UART_IRQProc(&g_uart_ccb[PLC_COM_PORT], &huart2);    
 }
 
 void USART1_IRQHandler(void)
 {
-    USART_IRQProc(&g_uart_ccb[RS485_COM_PORT], &huart1);    
+    UART_IRQProc(&g_uart_ccb[RS485_COM_PORT], &huart1);    
+}
+
+void USART3_IRQHandler(void)
+{
+    UART_IRQProc(&g_uart_ccb[IR_COM_PORT], &huart3);    
 }
 

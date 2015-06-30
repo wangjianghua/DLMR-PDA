@@ -502,18 +502,9 @@ static  void  App_TaskGUI (void *p_arg)
 
         if(!(count % 5))
         {
-            if(CHANNEL_WIRELESS == g_rom_para.channel)
-            {
-                TSK_SetWrlsWhite();
-            }
-            else if (CHANNEL_IR == g_rom_para.channel)
-            {
-                TSK_SetIR();
-            }
-            else
-            {
-                TSK_SetWrlsNull();
-            }
+            TSK_Disp_Protocol();
+
+            TSK_Disp_Channel();
         }
 
         count++;

@@ -279,18 +279,18 @@ static u8 RMD_Get_Para(WM_MESSAGE *pMsg)
     //hItem=WM_GetDialogItem(pMsg->hWin,ID_DROPDOWN_0);
     //dropdown_selnum=DROPDOWN_GetSel(hItem);  
     
-    if(g_rom_para.plcProtocol==DL_T_07)
+    if(g_rom_para.protocol==DL645_07)
     {        
         memcpy(g_gui_para.dataFlag,
-            &c_645DidoDef[g_rom_para.plcProtocol][dropdown_selnum],
+            &c_645DidoDef[g_rom_para.protocol][dropdown_selnum],
             4);
         
         g_gui_para.ctlCode=0x11;
     }
-    else if(g_rom_para.plcProtocol==DL_T_97)
+    else if(g_rom_para.protocol==DL645_97)
     {
         memcpy(g_gui_para.dataFlag,
-            &c_645DidoDef[g_rom_para.plcProtocol][dropdown_selnum],
+            &c_645DidoDef[g_rom_para.protocol][dropdown_selnum],
             2);
         g_gui_para.ctlCode=0x01; 
 
@@ -442,7 +442,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_1);
     
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
-    if(CHANNEL_WIRELESS == g_rom_para.channel)
+    if(CHANNEL_RF == g_rom_para.channel)
     {
         BUTTON_SetBkColor(hItem,0,0xC0C0C0);
     }
@@ -473,18 +473,18 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_1);
     EDIT_SetText(hItem, Positive);
-    if(g_rom_para.plcProtocol==DL_T_07)
+    if(g_rom_para.protocol==DL645_07)
     {        
         memcpy(g_gui_para.dataFlag,
-            &c_645DidoDef[g_rom_para.plcProtocol][0],
+            &c_645DidoDef[g_rom_para.protocol][0],
             4);
         
         g_gui_para.ctlCode=0x11;
     }
-    else if(g_rom_para.plcProtocol==DL_T_97)
+    else if(g_rom_para.protocol==DL645_97)
     {
         memcpy(g_gui_para.dataFlag,
-            &c_645DidoDef[g_rom_para.plcProtocol][0],
+            &c_645DidoDef[g_rom_para.protocol][0],
             2);
         g_gui_para.ctlCode=0x01; 
 

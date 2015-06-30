@@ -119,7 +119,7 @@ P_MSG_INFO alloc_send_buffer(unsigned char type)
     if( i >= GET_MAX_MSG(type) )
         return NULL;
    
-    memset(pmsg->msg_buffer, 0xff, UART_RECEIVE_BUF_SIZE);
+    memset(pmsg->msg_buffer, 0xff, UART_RECV_BUF_SIZE);
 
     /* 统计计数递减*/
     //FreeMSGTxCnt--;

@@ -39,7 +39,7 @@ OS_EVENT *g_sem_check;
 OS_EVENT *g_sem_chk_plc;
 OS_EVENT *g_sem_chk_rf;
 
-u8 g_msg_buf[UART_RECEIVE_BUF_SIZE];
+u8 g_msg_buf[UART_RECV_BUF_SIZE];
 u16 g_msg_len;
 
 u8 g_cplc_read_addr[13];
@@ -134,6 +134,119 @@ u16 plc_uart_send(u8 *buf, u16 len)
     return End_send(pMsg);
 }
 
+u16 ir_uart_send(u8 *buf, u16 len)
+{
+    P_MSG_INFO  pMsg = NULL;
+    
+#if OS_CRITICAL_METHOD == 3u
+    OS_CPU_SR  cpu_sr = 0u;
+#endif  
+
+
+    if(!(pMsg = (P_MSG_INFO)alloc_send_buffer(MSG_SHORT)))
+    {
+        return (FALSE);
+    }
+    
+    memcpy(pMsg->msg_buffer, buf, len);
+    
+    pMsg->msg_header.msg_len = len;
+    
+    pMsg->msg_header.end_id = IR_COM_PORT;
+    
+    pMsg->msg_header.need_buffer_free = TRUE;
+    
+    return End_send(pMsg);
+}
+
+unsigned int PC_postProcess(pvoid h)
+{
+    P_MSG_INFO  pMsg = (P_MSG_INFO)h;
+    u8  *pBuf = (UCHAR *)(pMsg->msg_buffer);
+    u16  mLen = pMsg->msg_header.msg_len;
+    
+#if OS_CRITICAL_METHOD == 3u
+    OS_CPU_SR  cpu_sr = 0u;
+#endif   
+
+
+    OS_ENTER_CRITICAL();
+    memcpy(&pc_frame_recv, pBuf, mLen);
+    OS_EXIT_CRITICAL();
+
+    OSSemPost(g_sem_pc);
+
+    return (TRUE);
+}
+
+unsigned int RS485_postProcess(pvoid h)
+{
+    P_MSG_INFO  pMsg = (P_MSG_INFO)h;
+    u8  *pBuf = (UCHAR *)(pMsg->msg_buffer);
+    u16  mLen = pMsg->msg_header.msg_len;
+
+#if OS_CRITICAL_METHOD == 3u
+    OS_CPU_SR  cpu_sr = 0u;
+#endif   
+
+
+    OS_ENTER_CRITICAL();
+    memcpy(&rs485_frame_recv, pBuf, mLen);
+    OS_EXIT_CRITICAL();
+
+    OSSemPost(g_sem_rs485);
+
+    return (TRUE);
+}
+
+#if (EWARM_OPTIMIZATION_EN > 0u)
+#pragma optimize = low
+#endif
+unsigned int PLC_postProcess(pvoid h)
+{
+    P_MSG_INFO  pMsg = (P_MSG_INFO)h;
+    u8  *pBuf = (UCHAR *)(pMsg->msg_buffer);
+    u16  mLen = pMsg->msg_header.msg_len;
+    
+#if OS_CRITICAL_METHOD == 3u
+    OS_CPU_SR  cpu_sr = 0u;
+#endif
+
+
+    OS_ENTER_CRITICAL();
+    memcpy(&dl645_frame_recv, pBuf, mLen);
+    memcpy(g_proto_para.recv_buf, pBuf, mLen);
+    g_proto_para.recv_len = mLen;
+    OS_EXIT_CRITICAL();
+
+    OSSemPost(g_sem_plc);
+    OSSemPost(g_sem_chk_plc);
+
+    return (TRUE);
+}
+
+#if (EWARM_OPTIMIZATION_EN > 0u)
+#pragma optimize = low
+#endif
+unsigned int IR_postProcess(pvoid h)
+{
+    P_MSG_INFO  pMsg = (P_MSG_INFO)h;
+    u8  *pBuf = (UCHAR *)(pMsg->msg_buffer);
+    u16  mLen = pMsg->msg_header.msg_len;
+    
+#if OS_CRITICAL_METHOD == 3u
+    OS_CPU_SR  cpu_sr = 0u;
+#endif
+
+
+    OS_ENTER_CRITICAL();
+    memcpy(g_proto_para.recv_buf, pBuf, mLen);
+    g_proto_para.recv_len = mLen;
+    OS_EXIT_CRITICAL();
+    
+    return (TRUE);
+}
+
 u16 uart_link_reply(void)
 {
     P_MSG_INFO  pMsg = NULL;
@@ -195,47 +308,6 @@ u16 cplc_read_addr(void)
     return End_send(pMsg);
 }
 
-unsigned int PC_postProcess(pvoid h)
-{
-    P_MSG_INFO  pMsg = (P_MSG_INFO)h;
-    u8  *pBuf = (UCHAR *)(pMsg->msg_buffer);
-    u16  mLen = pMsg->msg_header.msg_len;
-    
-#if OS_CRITICAL_METHOD == 3u
-    OS_CPU_SR  cpu_sr = 0u;
-#endif   
-
-
-    OS_ENTER_CRITICAL();
-
-    memcpy(&pc_frame_recv, pBuf, mLen);
-    OS_EXIT_CRITICAL();
-
-    OSSemPost(g_sem_pc);
-
-    return (TRUE);
-}
-
-unsigned int RS485_postProcess(pvoid h)
-{
-    P_MSG_INFO  pMsg = (P_MSG_INFO)h;
-    u8  *pBuf = (UCHAR *)(pMsg->msg_buffer);
-    u16  mLen = pMsg->msg_header.msg_len;
-
-#if OS_CRITICAL_METHOD == 3u
-    OS_CPU_SR  cpu_sr = 0u;
-#endif   
-
-
-    OS_ENTER_CRITICAL();
-    memcpy(&rs485_frame_recv, pBuf, mLen);
-    OS_EXIT_CRITICAL();
-
-    OSSemPost(g_sem_rs485);
-
-    return (TRUE);
-}
-
 u32 PRO_DL645_Proc()
 {
     if(DL645_FRAME_ERROR == Analysis_DL645_Frame(g_gui_para.dstAddr, 
@@ -261,31 +333,6 @@ u32 PRO_DL645_Proc()
         }
     }
     return g_proto_para.result;
-}
-
-#if (EWARM_OPTIMIZATION_EN > 0u)
-#pragma optimize = low
-#endif
-unsigned int PLC_postProcess(pvoid h)
-{
-    P_MSG_INFO  pMsg = (P_MSG_INFO)h;
-    u8  *pBuf = (UCHAR *)(pMsg->msg_buffer);
-    u16  mLen = pMsg->msg_header.msg_len;
-    
-#if OS_CRITICAL_METHOD == 3u
-    OS_CPU_SR  cpu_sr = 0u;
-#endif
-
-    OS_ENTER_CRITICAL();
-    memcpy(&dl645_frame_recv, pBuf, mLen);
-    memcpy(g_proto_para.recv_buf, pBuf, mLen);
-    g_proto_para.recv_len = mLen;
-    OS_EXIT_CRITICAL();
-
-    OSSemPost(g_sem_plc);
-    OSSemPost(g_sem_chk_plc);
-
-    return (TRUE);
 }
 
 void  PRO_Databuf_Proc() 
@@ -372,16 +419,18 @@ void  App_TaskProto (void *p_arg)
         if(OS_ERR_NONE == err)
         {
             wh = GUI_Get_PROGBAR();
-            if(wh != WM_HWIN_NULL)
+            
+            if(WM_HWIN_NULL != wh)
             {
                 g_sys_ctrl.testProgBarVal = 0;
+                
                 PROGBAR_SetValue(wh, g_sys_ctrl.testProgBarVal);         
             }
             
             switch(g_gui_para.cmdType)
             {
             case PLC_CMD_BROAD_READ: //广播命令
-                if(CHANNEL_PLC == g_rom_para.channel)
+                if(CHANNEL_PLC == g_rom_para.channel) //载波
                 {
                     while(OSSemAccept(g_sem_plc));
   
@@ -420,7 +469,7 @@ void  App_TaskProto (void *p_arg)
 
                     OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
                 }
-                else if(CHANNEL_WIRELESS == g_rom_para.channel) //无线
+                else if(CHANNEL_RF == g_rom_para.channel) //无线
                 {
                     while(OSSemAccept(g_sem_rf));
 
@@ -460,7 +509,7 @@ void  App_TaskProto (void *p_arg)
                 }
                 break;
                 
-            case PLC_CMD_TYPE_R2L: //切换为监控态
+            case PLC_CMD_TYPE_R2L: //监控态
                 while(OSSemAccept(g_sem_plc));
                 
                 plc_uart_send((u8 *)rPLC_TO_lPLC, sizeof(rPLC_TO_lPLC));
@@ -487,7 +536,7 @@ void  App_TaskProto (void *p_arg)
                 OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
                 break;
 
-            case PLC_CMD_TYPE_L2R:     //抄控态
+            case PLC_CMD_TYPE_L2R: //抄控态
                 while(OSSemAccept(g_sem_plc));
 
                 plc_uart_send((u8 *)lPLC_TO_rPLC, sizeof(lPLC_TO_rPLC));
@@ -512,7 +561,7 @@ void  App_TaskProto (void *p_arg)
                 OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
                 break;
 
-            case PLC_CMD_TYPE_NODE:  //读载波节点
+            case PLC_CMD_TYPE_NODE: //读载波节点
                 while(OSSemAccept(g_sem_plc));
                 
                 plc_uart_send((u8 *)READ_PLC_NODE, sizeof(READ_PLC_NODE));
@@ -537,7 +586,7 @@ void  App_TaskProto (void *p_arg)
                 OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
                 break;
 
-            case PLC_CMD_FREQ_SET:   //速率设置
+            case PLC_CMD_FREQ_SET: //速率设置
                 
                 while(OSSemAccept(g_sem_plc));
                 
@@ -617,7 +666,7 @@ void  App_TaskProto (void *p_arg)
 
                 RF_SEND_LEN = g_gui_para.dataLen + DL645_FIX_LEN;
                 
-                if(CHANNEL_WIRELESS == g_rom_para.channel)  //无线
+                if(CHANNEL_RF == g_rom_para.channel) //无线
                 {
                     memcpy(&rf_addr[6], g_gui_para.dstAddr, DL645_ADDR_LEN);
 
@@ -655,7 +704,7 @@ void  App_TaskProto (void *p_arg)
                     
                     OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
                 }
-                else if(CHANNEL_PLC == g_rom_para.channel)
+                else if(CHANNEL_PLC == g_rom_para.channel) //载波
                 {
                     g_proto_para.send_len = RF_SEND_LEN;
                     
@@ -694,69 +743,12 @@ void  App_TaskProto (void *p_arg)
                 break;
 
             case PLC_CMD_TYPE_ROUTE: 
-#if 0                
-                //读命令
-                if((FRM_CTRW_07_READ_SLVS_DATA == (g_gui_para.ctlCode & CCTT_CONTROL_CODE_MASK)))
-                {
-                    //中继地址的第一个地址是在帧中的地址项里，而目标地址是在数据项中,所以i+1
-                    for(i = 0; i < (g_sys_ctrl.sysAddrLevel-1); i++)
-                    {
-                        memcpy(&dl645_frame_send.Data[DL645_ADDR_LEN * i], g_gui_para.relayAddr[i+1], DL645_ADDR_LEN);
-                    }
-                    memcpy(&dl645_frame_send.Data[DL645_ADDR_LEN * (g_sys_ctrl.sysAddrLevel-1)],g_gui_para.dstAddr,DL645_ADDR_LEN);
-                    
-                    memcpy(&dl645_frame_send.Data[g_sys_ctrl.sysAddrLevel * DL645_ADDR_LEN], g_gui_para.dataFlag, DL645_07_DATA_ITEM_LEN);
-                    //memcpy(&dl645_frame_send.Data[(g_sys_ctrl.sysAddrLevel * DL645_ADDR_LEN) + DL645_07_DATA_ITEM_LEN], g_gui_para.dataBuf, g_gui_para.dataLen);
-                    g_gui_para.dataLen += (DL645_07_DATA_ITEM_LEN + g_sys_ctrl.sysAddrLevel * DL645_ADDR_LEN);
-                    g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.plcProtocol][1]; 
-                    g_gui_para.ctlCode += g_sys_ctrl.sysAddrLevel * DL645_RELAY_ADDED_VAL;
-                    //memcpy(g_gui_para.relayAddr[g_sys_ctrl.sysAddrLevel],g_gui_para.dstAddr,DL645_ADDR_LEN);
-                }
-
-                Create_DL645_Frame(g_gui_para.relayAddr[0], g_gui_para.ctlCode, g_gui_para.dataLen, &dl645_frame_send);
-                //Create_DL645_LeveFrame(u8 * leve_Addr,u8 leve,u8 * Addr,u8 C,u8 len,u8 * data,u8 * Send_buf)();
-                
-                g_proto_para.send_len = g_gui_para.dataLen + DL645_FIX_LEN;
-                
-                memcpy(&g_proto_para.send_buf[DL645_INDEX], &dl645_frame_send, g_proto_para.send_len);
-                
-                g_proto_para.send_buf[FREQ_INDEX] = g_rom_para.preamble;
-                g_proto_para.send_len += FREQ_LEN;
-                
-                OSSemAccept(g_sem_plc);
-                
-                plc_uart_send(g_proto_para.send_buf, g_proto_para.send_len);
-                
-                g_proto_para.sendStatus = PLC_MSG_SENDING;
-                
-                OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
-
-                OSTimeDly(200);
-                
-                OSSemPend(g_sem_plc, g_rom_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
-
-                g_proto_para.data_len = 0;
-                
-                if(OS_ERR_NONE == err)
-                {
-                    PRO_Databuf_Proc();
-                }
-                else
-                {   
-                    g_proto_para.result = PLC_RES_TIMEOUT;                                        
-                }
-                
-                g_proto_para.sendStatus = PLC_MSG_RECEIVED;
-                
-                OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);   
-#endif
-
                 memcpy(g_gui_para.relayAddr[g_sys_ctrl.sysAddrLevel], g_gui_para.dstAddr, DL645_ADDR_LEN);
-                g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.plcProtocol][1];
-                g_proto_para.send_len = Create_DL645_LeveFrame(g_gui_para.relayAddr, g_sys_ctrl.sysAddrLevel, g_gui_para.dstAddr,
-                                                            g_gui_para.ctlCode, DL645_07_DATA_ITEM_LEN, g_gui_para.dataFlag, &dl645_frame_send);
 
-                //plc_uart_send(g_proto_para.send_buf, g_proto_para.send_len);
+                g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.protocol][1];
+
+                g_proto_para.send_len = Create_DL645_LeveFrame(g_gui_para.relayAddr, g_sys_ctrl.sysAddrLevel, g_gui_para.dstAddr,
+                                                               g_gui_para.ctlCode, DL645_07_DATA_ITEM_LEN, g_gui_para.dataFlag, &dl645_frame_send);
 
                 memcpy(&g_proto_para.send_buf[DL645_INDEX], &dl645_frame_send, g_proto_para.send_len);
                 
@@ -789,7 +781,6 @@ void  App_TaskProto (void *p_arg)
                 g_proto_para.sendStatus = PLC_MSG_RECEIVED;
                 
                 OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
-            
                 break;
 
             default:
@@ -1110,7 +1101,7 @@ void  App_TaskPC (void *p_arg)
                             break;
 
                         case RESET_CMD:
-                            Rom_Para_Recover();
+                            dev_para_recover();
                             
                             pc_frame_send.L = 0;
                             
