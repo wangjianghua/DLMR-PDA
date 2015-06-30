@@ -507,38 +507,16 @@ extern GUI_CONST_STORAGE GUI_BITMAP bmlogo_1;
 void GUI_StartSys(void)
 {
     //GUI_Init();
-    int i;
-    GUI_SetBkColor(GUI_BLACK);
-    GUI_SetColor(GUI_WHITE);
-    GUI_SetFont(&GUI_Fontns18);
+    GUI_SetBkColor(GUI_WHITE);
+    GUI_SetFont(&GUI_Fontbold18);
     GUI_UC_SetEncodeUTF8();
+    GUI_SetColor(GUI_DARKBLUE);
+    GUI_Clear();
     WM_SetFocus(WM_HBKWIN);
-
-#if 0
+    
     GUI_DrawBitmap(&bmlogo_1, 20, 100);
-    for(i = 0;i < 10;i++)
-    {
-        GUI_DispStringAt(CmpName, (233 - 22*(i+1)), 228);
-        OSTimeDlyHMSM(0, 0, 0, 300);
-        if(i == 9)
-        {
-            OSTimeDlyHMSM(0, 0, 0, 1500);
-        }
-        GUI_ClearRect(0, 228, 240, 258);
-    }
-#endif
-    for(i = 0;i < 10;i++)
-    {
-        GUI_DrawBitmap(&bmlogo, 58, 0 + (i * 14));
-        GUI_DrawBitmap(&bmlogo, 58, 252 - (i * 14));
-        OSTimeDlyHMSM(0, 0, 0, 50);
-        GUI_ClearRect(50, 0, 190, 320);
-        if(9 == i)
-        {
-            GUI_DrawBitmap(&bmlogo_1, 20, 100);
-        }
-    }
-    GUI_DispStringAt(CmpName, 13, 228);
+    GUI_DispStringAt(CmpName, 5, 228);
+    //OSTimeDlyHMSM(0, 0, 0, 300);
     OSTimeDlyHMSM(0, 0, 3, 0);
 }
 

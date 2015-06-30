@@ -95,6 +95,7 @@ Purpose     : Display controller configuration (single layer)
 
 //#define LCD_TYPE_9328              0x9328
 
+//#define VER_ILI9341V
 
 static uint32_t Lcd_Type;
 
@@ -297,6 +298,9 @@ int LCD_GetID(void)
     }
 }
 
+
+#define VER_ILI9341
+
 int LCD_X_DisplayDriver(unsigned LayerIndex, unsigned Cmd, void * pData) {
   int r;
   (void) LayerIndex;
@@ -339,65 +343,65 @@ int LCD_X_DisplayDriver(unsigned LayerIndex, unsigned Cmd, void * pData) {
 
    if(LCD_TYPE == Lcd_Type)
    {    
-
-        LCD_WriteCmd(0xCF);
+#ifdef VER_ILI9341
+        LCD_WriteCmd(0xCF);  //power control B
         LCD_WriteData(0x00);
-        LCD_WriteData(0x81);
+        LCD_WriteData(0x81);//C1
         LCD_WriteData(0x30);
         
-        LCD_WriteCmd(0xED);
+        LCD_WriteCmd(0xED);  //Power on sequence control 
         LCD_WriteData(0x64);
         LCD_WriteData(0x03);
         LCD_WriteData(0x12);
         LCD_WriteData(0x81);
         
-        LCD_WriteCmd(0xE8);
+        LCD_WriteCmd(0xE8);  //Driver timing control A
         LCD_WriteData(0x85);
-        LCD_WriteData(0x10);
+        LCD_WriteData(0x10);//00
         LCD_WriteData(0x78);
         
-        LCD_WriteCmd(0xCB);
+        LCD_WriteCmd(0xCB); //Power control A 
         LCD_WriteData(0x39);
         LCD_WriteData(0x2C);
         LCD_WriteData(0x00);
         LCD_WriteData(0x34);
         LCD_WriteData(0x02);
         
-        LCD_WriteCmd(0xF7);
+        LCD_WriteCmd(0xF7); //Pump ratio control  
         LCD_WriteData(0x20);
         
-        LCD_WriteCmd(0xEA);
+        LCD_WriteCmd(0xEA); //Driver timing control B
         LCD_WriteData(0x00);
         LCD_WriteData(0x00);
         
-        LCD_WriteCmd(0xB1);
+        LCD_WriteCmd(0xB1); //Frame Rate Control (In Normal Mode/Full Colors)
         LCD_WriteData(0x00);
-        LCD_WriteData(0x1B);
+        LCD_WriteData(0x1B);//1A
         
-        LCD_WriteCmd(0xB6);
+        LCD_WriteCmd(0xB6); //Display Function Control
         LCD_WriteData(0x0A);
         LCD_WriteData(0xA2);
         
-        LCD_WriteCmd(0xC0);
-        LCD_WriteData(0x35);
+        LCD_WriteCmd(0xC0);  //Power Control 1 
+        LCD_WriteData(0x25);//1B
         
-        LCD_WriteCmd(0xC1);
-        LCD_WriteData(0x11);
+        LCD_WriteCmd(0xC1);  //Power Control 2
+        LCD_WriteData(0x11);//12
         
-        LCD_WriteCmd(0xC5);
+        LCD_WriteCmd(0xC5);  //VCOM Control 1
+        LCD_WriteData(0x45);//44 40
         LCD_WriteData(0x45);
-        LCD_WriteData(0x45);
         
-        LCD_WriteCmd(0xC7);
-        LCD_WriteData(0xA2);
+        LCD_WriteCmd(0xC7);  //VCOM Control 2
+        LCD_WriteData(0xA2); //B0
         
-        LCD_WriteCmd(0xF2);
+        LCD_WriteCmd(0xF2);   //Enable 3 gamma
         LCD_WriteData(0x00);
         
-        LCD_WriteCmd(0x26);
+        LCD_WriteCmd(0x26);   // Gamma Set 
         LCD_WriteData(0x01);
         
-        LCD_WriteCmd(0xE0);
+        LCD_WriteCmd(0xE0);   //
         LCD_WriteData(0x0F);
         LCD_WriteData(0x26);
         LCD_WriteData(0x24);
@@ -431,7 +435,7 @@ int LCD_X_DisplayDriver(unsigned LayerIndex, unsigned Cmd, void * pData) {
         LCD_WriteData(0x38);
         LCD_WriteData(0x0F);
         
-        LCD_WriteCmd(0x36);
+        LCD_WriteCmd(0x36);   //
         LCD_WriteData(0x08);
         
         LCD_WriteCmd(0x2A);
@@ -453,7 +457,136 @@ int LCD_X_DisplayDriver(unsigned LayerIndex, unsigned Cmd, void * pData) {
         GUI_Delay(150); 
         LCD_WriteCmd(0x29);
         LCD_WriteCmd(0x2C);
+#else
+        LCD_WriteCmd(0xCF);  //P198  POWER CONTROL
+        LCD_WriteData(0x00);    
+        LCD_WriteData(0x81);
+        LCD_WriteData(0X30);
+        
+        LCD_WriteCmd(0xED);
+        LCD_WriteData(0x64);
+        LCD_WriteData(0x03);
+        LCD_WriteData(0X12);
+        LCD_WriteData(0X81);
+        
+        
+        LCD_WriteCmd(0xe8); 
+        LCD_WriteData(0x85);
+        LCD_WriteData(0x00);
+        LCD_WriteData(0x78);
+        
+        //LCD_ILI9341_CMD(0xE9);        //P200
+        //LCD_ILI9341_Parameter(0x85);
+        //LCD_ILI9341_Parameter(0x10);
+        //LCD_ILI9341_Parameter(0x78);
+        
+        LCD_WriteCmd(0xCB);
+        LCD_WriteData(0x39);
+        LCD_WriteData(0x2C);
+        LCD_WriteData(0x00);
+        LCD_WriteData(0x34);
+        LCD_WriteData(0x02);
+        
+        
+        
+        LCD_WriteCmd(0x3A);  //PIXEL FORMAT SET 18BIT P136
+        
+        LCD_WriteData(0x55);//fpga
+        
+        LCD_WriteCmd(0xEA);
+        LCD_WriteData(0x00);
+        LCD_WriteData(0x00);
+        
+        //LCD_ILI9341_CMD(0xB0);    // frame rate control
+        
+        //LCD_ILI9341_Parameter(0xC6);
+        
+        LCD_WriteCmd(0xB1);  // frame rate control
+        LCD_WriteData(0x00);
+        LCD_WriteData(0x1A);  //1b:70hz  1f:61hz
+        
+        //LCD_ILI9341_CMD(0xB4);  //display inversion control
+        //LCD_ILI9341_Parameter(0x00);
+        
+        LCD_WriteCmd(0xB6); // Display Function Control  P166
+        LCD_WriteData(0x0a);//NORMALLY BLACK    isc:scan cycle
+        LCD_WriteData(0xA2);
+        
+        
+        LCD_WriteCmd(0xC0); //Power control  P180
+        LCD_WriteData(0x1B); //VRH[5:0]
+        
+        LCD_WriteCmd(0xC1); //Power control  P181
+        LCD_WriteData(0x11); //SAP[2:0];BT[3:0]  AVDD VGH VGL
+        LCD_WriteCmd(0xC2);
+        LCD_WriteData(0x11);
+        //LCD_ILI9341_CMD(0xCF); //VCM control   P182
+        //LCD_ILI9341_Parameter(0x00);
+        //LCD_ILI9341_Parameter(0x89);
+        //LCD_ILI9341_Parameter(0x30);
+        
+        LCD_WriteCmd(0xC5); //VCM control   P182
+        LCD_WriteData(0x45);
+        LCD_WriteData(0x45);
+        
+        LCD_WriteCmd(0xC7); //VCM control2  P184
+        LCD_WriteData(0XA2);   //4:28  1:31
+        
+        LCD_WriteCmd(0x36); // Memory Access Control  P129
+        
+        LCD_WriteData(0x08);   //08:RGB
+        
+        LCD_WriteCmd(0xF2); // 3Gamma Function Disable  P206
+        LCD_WriteData(0x00);
+        LCD_WriteCmd(0xF7);
+        LCD_WriteData(0x20);
+        
+        //LCD_ILI9341_CMD(0XF6);        //interface control  P194
+        //LCD_ILI9341_Parameter(0x01);
+        //LCD_ILI9341_Parameter(0x30);  //RGB565自动补位机?
+        //LCD_ILI9341_Parameter(0x06);  //00:internal clock opration 01:RGB 10:VSYNC  RM:--> 0
+        
+        LCD_WriteCmd(0x26); //Gamma curve selected
+        LCD_WriteData(0x01);
 
+        LCD_WriteCmd(0xE0); //Set Gamma
+        LCD_WriteData(0x0F);  //63
+        LCD_WriteData(0x26);//62
+        LCD_WriteData(0x28);//61
+        LCD_WriteData(0x0B);//59
+        LCD_WriteData(0x0D);//57
+        LCD_WriteData(0x05);//50
+        LCD_WriteData(0x4E);//43
+        LCD_WriteData(0X85);//27/36
+        LCD_WriteData(0x40);//20
+        LCD_WriteData(0x0A);//13
+        LCD_WriteData(0x17);//6
+        LCD_WriteData(0x09);//4
+        LCD_WriteData(0x10);//2
+        LCD_WriteData(0x06);//1
+        LCD_WriteData(0x00);   //0
+        
+        LCD_WriteCmd(0XE1); //Set Gamma
+        LCD_WriteData(0x00);   //63
+        LCD_WriteData(0x19);//62
+        LCD_WriteData(0x13);//61
+        LCD_WriteData(0x04);//59
+        LCD_WriteData(0x0F);//57
+        LCD_WriteData(0x05);//50
+        LCD_WriteData(0x22);//43
+        LCD_WriteData(0x22);//27//36
+        LCD_WriteData(0x35);//20
+        LCD_WriteData(0x01);//13
+        LCD_WriteData(0x08);//6
+        LCD_WriteData(0x06);//4
+        LCD_WriteData(0x2A);//2
+        LCD_WriteData(0x2E);//1
+        LCD_WriteData(0x0F);   //0
+        
+        LCD_WriteCmd(0x11); //Exit Sleep
+        GUI_Delay(120);
+        LCD_WriteCmd(0x29); //Display on
+#endif
     }   
     else
     {

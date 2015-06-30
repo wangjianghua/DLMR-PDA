@@ -86,7 +86,9 @@ extern const GUI_FONT GUI_Font_Battery_40;
 //extern const GUI_FONT GUI_FontAlgerian20;
 extern const GUI_FONT GUI_Fontcn27;
 extern const GUI_FONT GUI_Fontdate20;
-extern const GUI_FONT GUI_Fontns18;
+extern const GUI_FONT GUI_Fontbold18;
+
+
 
 
 

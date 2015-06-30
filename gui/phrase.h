@@ -26,7 +26,8 @@ extern const GUI_ConstString pProtocolText[];
 extern const GUI_ConstString pChannelText[]; 
 extern const char OperateCode[];
 extern const char ChannelWireless[];
-
+extern const char TSK_IR[];
+extern const char ShutDownTime[];
 extern const char FE_Speed[];
 
 

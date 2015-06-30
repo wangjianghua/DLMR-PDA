@@ -267,32 +267,16 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     Id  = WM_GetId(pMsg->hWinSrc);
     if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 1)
     {
-        if(Id == ID_EDIT_0)
+        switch(((WM_KEY_INFO*)(pMsg->Data.p))->Key)
         {
-            if((((WM_KEY_INFO*)(pMsg->Data.p))->Key) == GUI_KEY_ENTER)
-            {
-                g_sys_ctrl.selectWidget = EDIT_RELAY_ADDR;
-                g_hWin_Input=Create_Edit_Set(g_hWin_relay);
-                WM_SetFocus(g_hWin_Input);
-            }
-        }
-
-    }
-    switch(((WM_KEY_INFO*)(pMsg->Data.p))->Key)
-    {
-        case GUI_KEY_YELLOW:
-            if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 1)
-            {
+            case GUI_KEY_YELLOW:
                 WM_DeleteWindow(g_hWin_relay);
                 g_hWin_relay=HBWIN_NULL;
                 WM_SetFocus(g_hWin_std);
                 CPT_SetFocus();
-            }
-            break;
+                break;
 
-        case GUI_KEY_GREEN:
-            if((((WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt) == 1)
-            {
+            case GUI_KEY_GREEN:
                 RLY_GetParaAddr(pMsg);
                 //g_rom_para.
                 g_gui_para.cmdType = PLC_CMD_TYPE_ROUTE ;
@@ -301,21 +285,13 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 g_hWin_relay=HBWIN_NULL;
                 WM_SetFocus(g_hWin_std);
                 CPT_SetFocus();
+                break;
                 
-            }
-            break;
-            
-        case GUI_KEY_F1: /*删除*/
-            if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 0)
-            {
+            case GUI_KEY_F1: /*删除*/
                 Del_Relay_Addr(pMsg);
-            }
-            //WM_SetFocus(hItem);
-            break;
-            
-       case GUI_KEY_F2: /*修改*/
-            if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 0)
-            {
+                break;
+                
+           case GUI_KEY_F2: /*修改*/
                 hItem = WM_GetDialogItem(pMsg->hWin,ID_LISTVIEW_0);
                 if(LISTVIEW_GetNumRows(hItem) > 0)
                 {
@@ -323,12 +299,9 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                     g_hWin_Input = Create_Edit_Set(g_hWin_relay);
                     WM_SetFocus(g_hWin_Input);
                 }
-            }
-            break;
-            
-       case '#':      //按下的时候就直接打开了新的编辑框体
-            if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 0)
-            {
+                break;
+                
+           case '#':      //按下的时候就直接打开了新的编辑框体
                 hItem = WM_GetDialogItem(pMsg->hWin,ID_LISTVIEW_0);
                 g_sys_ctrl.sysAddrLevel = LISTVIEW_GetNumRows(hItem);
                 if(g_sys_ctrl.sysAddrLevel >= 7)
@@ -339,17 +312,11 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 g_sys_ctrl.selectWidget = ADD_RELAY_ADDR;
                 //RLY_AddAddr(pMsg);
                 g_hWin_Input = Create_Edit_Set(g_hWin_relay);
-                WM_SetFocus(g_hWin_Input);
+                WM_SetFocus(g_hWin_Input);                
+                break;
                 
-            }
-            break;
-            
-       case '*':
-            if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 0)
-            {
-                //ButtonBlink(pMsg,ID_BUTTON_0);
-                //路由开启，关闭路由需再仔细考虑
-                if(PLC_ROUTE_ON == g_sys_ctrl.sysUseRoute)
+           case '*':
+              if(PLC_ROUTE_ON == g_sys_ctrl.sysUseRoute)
                 {
                     g_sys_ctrl.sysUseRoute = PLC_ROUTE_OFF;//关闭的时候恢复控制字
                     g_gui_para.ctlCode -= g_sys_ctrl.sysAddrLevel * DL645_RELAY_ADDED_VAL;
@@ -362,8 +329,8 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                     hItem = WM_GetDialogItem(pMsg->hWin,ID_BUTTON_0);
                     BUTTON_SetText(hItem ,AlreadyStart);
                 }
-            }
-            break;        
+                break;        
+        }
     }
     break;
   default:

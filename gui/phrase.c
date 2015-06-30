@@ -14,12 +14,12 @@ const char RevDataDelay[]="\xe6\x8e\xa5\xe6\x94\xb6\xe6\x95\xb0\xe6\x8d\xae\xe5\
 //执行间隔时间
 const char BetweenAct[]="\xe6\x89\xa7\xe8\xa1\x8c\xe9\x97\xb4\xe9\x9a\x94\xe6\x97\xb6\xe9\x97\xb4:";
 //电力载波
-const char WaveCarrier[]="\xe7\x94\xb5\xe5\x8a\x9b\xe7\xba\xbf\xe8\xbd\xbd\xe6\xb3\xa2";
+const char WaveCarrier[]="\xe8\xbd\xbd\xe6\xb3\xa2\xe6\xa8\xa1\xe5\xbc\x8f";
 //无线模式
 const char ChannelWireless[]="\xe6\x97\xa0\xe7\xba\xbf\xe6\xa8\xa1\xe5\xbc\x8f";
 
 //红外
-const char Infrared[]="\xe7\xba\xa2\xe5\xa4\x96";
+const char Infrared[]="\xe7\xba\xa2\xe5\xa4\x96\xe6\xa8\xa1\xe5\xbc\x8f";
 //规约
 const char Protocal[]="\xe8\xa7\x84  \xe7\xba\xa6:";
 //通道
@@ -52,16 +52,16 @@ const char OperateCode[] = "\xe6\x93\x8d\xe4\xbd\x9c\xe7\xa0\x81";
 const char TimeSet[]="F1\xe6\x97\xb6\xe9\x97\xb4\xe8\xae\xbe\xe7\xbd\xae";
 
 //屏幕超时
-const char ScrTimeout[]="\xe5\xb1\x8f\xe5\xb9\x95\xe4\xbf\x9d\xe6\x8a\xa4(\xe7\xa7\x92):";
+const char ScrTimeout[]="\xe5\xb1\x8f\xe4\xbf\x9d\xe6\x97\xb6\xe9\x97\xb4(S)";
 
-
+const char ShutDownTime[] = "\xe8\x87\xaa\xe5\x8a\xa8\xe5\x85\xb3\xe6\x9c\xba\xe6\x97\xb6\xe9\x97\xb4(S)";
 
 //高级设置
 const char AdvanceSet[] = "F2\xe9\xab\x98\xe7\xba\xa7\xe8\xae\xbe\xe7\xbd\xae";
 
 
 const GUI_ConstString pProtocolText[] = {
-  "DL-T-97", "DL-T-07",NULL
+  "DL645-97", "DL645-07", NULL
 };
 
 const GUI_ConstString pChannelText[]={
@@ -323,6 +323,7 @@ const char *Edit_FrameTitle[]={
     _RelayAddr,  //中继地址
     AddRlyAddr,
     ModifyRlyAddr,
+    ShutDownTime,
     
     //ConfirmUpdata
 };
@@ -518,7 +519,8 @@ const char Battery_40[] ="\xe6\x9f\x92";
 const char Battery_20[] ="\xe9\x99\x86";
 const char Battery_00[] ="\xe4\xbc\x8d";
 //const char Battery_Charge[] = "\xe8\x82\x86";
-const char TSK_Wireless[] = "\xe8\x82\x86";
+const char TSK_Wireless[] = "RF";
+const char TSK_IR[] = "IR";
 
 //监控
 // const char MonitorIcon[]="\xe8\x82\x86";
@@ -526,11 +528,11 @@ const char TSK_Wireless[] = "\xe8\x82\x86";
 // const char CloseMonitor[]="\xe5\x8f\x81";
 
 //当前规约:DL-T-07
-// const char Protocol_07[]="\xe8\xa7\x84\xe7\xba\xa6:DLT-07";
-const char Protocol_07[]="DLT-07";
+// const char Protocol_07[]="\xe8\xa7\x84\xe7\xba\xa6:DL645-07";
+const char Protocol_07[]="DL645-07";
 
 
-const char Protocol_97[]="DLT-97";
+const char Protocol_97[]="DL645-97";
 
 
 /***************************************************************

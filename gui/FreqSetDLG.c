@@ -234,7 +234,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     break;
     
   case WM_KEY:
-    if((((WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt)==0)
+    if((((WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt) == 1)
     {   
         switch(((WM_KEY_INFO *)(pMsg->Data.p))->Key)
         {

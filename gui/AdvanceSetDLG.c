@@ -32,10 +32,23 @@
 #define ID_WINDOW_0 (GUI_ID_USER + 0x00)
 #define ID_TEXT_0 (GUI_ID_USER + 0x01)
 #define ID_TEXT_1 (GUI_ID_USER + 0x02)
-#define ID_EDIT_0 (GUI_ID_USER + 0x03)
-#define ID_EDIT_1 (GUI_ID_USER + 0x04)
-#define ID_BUTTON_0 (GUI_ID_USER + 0x05)
-#define ID_BUTTON_1 (GUI_ID_USER + 0x06)
+#define ID_TEXT_2 (GUI_ID_USER + 0x03)
+#define ID_TEXT_3 (GUI_ID_USER + 0x04)
+#define ID_TEXT_4 (GUI_ID_USER + 0x05)
+#define ID_TEXT_5 (GUI_ID_USER + 0x06)
+
+
+#define ID_EDIT_0 (GUI_ID_USER + 0x07)
+#define ID_EDIT_1 (GUI_ID_USER + 0x08)
+#define ID_EDIT_2 (GUI_ID_USER + 0x09)
+#define ID_EDIT_3 (GUI_ID_USER + 0x0A)
+
+
+#define ID_BUTTON_0 (GUI_ID_USER + 0x0B)
+#define ID_BUTTON_1 (GUI_ID_USER + 0x0C)
+#define ID_BUTTON_2 (GUI_ID_USER + 0x0D)
+#define ID_BUTTON_3 (GUI_ID_USER + 0x0E)
+
 
 
 // USER START (Optionally insert additional defines)
@@ -57,10 +70,14 @@
 */
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { WINDOW_CreateIndirect, "AdvanceSet",  ID_WINDOW_0, 0,   0,   240, 295, 0, 0x0,  0 },
-  { TEXT_CreateIndirect,   Speed,         ID_TEXT_0,   12,  17,  80,  20,  0, 0x0,  0 },
-  { TEXT_CreateIndirect,   OperateCode,   ID_TEXT_1,   12,  44,  80,  20,  0, 0x0,  0 },
-  { EDIT_CreateIndirect,   "freq",        ID_EDIT_0,   89,  11,  141, 20,  0, 0x64, 0 },
-  { EDIT_CreateIndirect,   "Opcode",      ID_EDIT_1,   89,  42,  141, 20,  0, 0x64, 0 },
+  { TEXT_CreateIndirect,   ScrTimeout,      ID_TEXT_0,   12,  12,  120,  20,  0, 0x0,  0 },
+  { TEXT_CreateIndirect,   ShutDownTime,   ID_TEXT_1,   12,  42,  120, 20,  0, 0x0,  0 },
+  //{ TEXT_CreateIndirect,   ShutDownTime,  ID_TEXT_2,   12,  72,  100,  20,  0, 0x0,  0 },
+  
+  { EDIT_CreateIndirect,   "freq",        ID_EDIT_0,   130,   10,  100, 20,  0, 0x64, 0 },
+  { EDIT_CreateIndirect,   "Opcode",      ID_EDIT_1,   130,   40,  100, 20,  0, 0x64, 0 },
+  //{ EDIT_CreateIndirect,   "freq",        ID_EDIT_2,   111,  70,  120, 20,  0, 0x64, 0 },
+  
   { BUTTON_CreateIndirect, Save,          ID_BUTTON_0, 12,  259, 55,  25,  0, 0x0,  0 },
   { BUTTON_CreateIndirect, Quit,          ID_BUTTON_1, 171, 259, 55,  25,  0, 0x0,  0 },
   // USER START (Optionally insert additional widgets)
@@ -75,16 +92,22 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
 
 static int ads_press_cnt = 0;
 
+#if 0
 WM_HWIN ADS_Get_Speed(void)
 {
     return WM_GetDialogItem(g_hWin_AdvanSet,ID_EDIT_0);
 }
+#endif
 
-WM_HWIN ADS_Get_OpCode(void)
+WM_HWIN ADS_GetSrcOutTime(void)
+{
+    return WM_GetDialogItem(g_hWin_AdvanSet,ID_EDIT_0);
+}
+
+WM_HWIN ADS_GetStDnTime(void)
 {
     return WM_GetDialogItem(g_hWin_AdvanSet,ID_EDIT_1);
 }
-
 
 
 //ÏòÉÏÑ¡Ôñ
@@ -157,6 +180,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
   int     NCode;
   int     Id;
   int     key_num;
+  u8      tmp[16];
   key_num=((WM_KEY_INFO *)(pMsg->Data.p))->Key;
 
    
@@ -169,13 +193,14 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
         //
         // Initialization of 'freq'
         //
-        PUB_InitFreq(pMsg,ID_EDIT_0);
-        hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_0);
-        PUB_InitFreq(pMsg, ID_EDIT_0);
+        hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_1);
+        //sprintf(tmp, "%d", g_sys_ctrl.shutdownTimeout);
+        EDIT_SetText(hItem, "30");
         WM_DisableWindow(hItem);
 
-        hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_1);
-        EDIT_SetText(hItem, "00000000");
+        hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_0);
+        //sprintf(tmp, "%d", g_sys_ctrl.sleepTimeout);
+        EDIT_SetText(hItem, "120");
         WM_DisableWindow(hItem);
 
         hItem = WM_GetDialogItem(pMsg->hWin,ID_BUTTON_0);
@@ -195,72 +220,59 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
         Id = WM_GetId(pMsg->hWinSrc);
         if(((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt == 1)
         {
-            
-            switch(Id)
+            switch(((WM_KEY_INFO *)(pMsg->Data.p))->Key)
             {
-                case ID_EDIT_0:
-                   if(key_num == GUI_KEY_ENTER)
-                   {
-                        g_hWin_speed = CreateSpeed(g_hWin_AdvanSet);
-                   }
-                   break;
-                   
-                case ID_EDIT_1:
-                   if(key_num == GUI_KEY_ENTER)
-                   {
-                      g_sys_ctrl.selectWidget=EDIT_OPCODE;
-                      g_hWin_Input=Create_Edit_Set(g_hWin_AdvanSet);
-                      WM_SetFocus(g_hWin_Input);  
-                   }
-                    break;
-            }
-
-        }
-        switch(((WM_KEY_INFO *)(pMsg->Data.p))->Key)
-        {
-            case GUI_KEY_GREEN:
-                if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 0)
-                {
+                case GUI_KEY_GREEN:
                    //WM_DeleteWindow(g_hWin_AdvanSet);
                    //WM_SetFocus(g_hWin_para);
                    WM_DeleteWindow(g_hWin_AdvanSet);
                    g_hWin_AdvanSet = HBWIN_NULL;
                    WM_SetFocus(g_hWin_para);
                    ads_press_cnt = 0;
-                }
-                break;
-                
-            case GUI_KEY_YELLOW:
-                if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 1)
-                {
+                    break;
+                    
+                case GUI_KEY_YELLOW:
                    WM_DeleteWindow(g_hWin_AdvanSet);
                    g_hWin_AdvanSet = HBWIN_NULL;
                    WM_SetFocus(g_hWin_para);
                    ads_press_cnt = 0;
-                }
-                break;
-            case GUI_KEY_TAB:
-                if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 1)
-                {
-                    ADS_Color_Change();
-                }
-                break;
-
-            case GUI_KEY_UP:
-                if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 1)
-                {
+                    break;
+#if 0
+                case GUI_KEY_TAB:
+                        ADS_Color_Change();
+                    break;
+#endif
+                case GUI_KEY_UP:
                     ADS_SelEdt_Up(pMsg);
                     ADS_Color_Change();
-                }
-                break;
+                    break;
 
-            case GUI_KEY_DOWN:
-               if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 1)
-                {
+                case GUI_KEY_DOWN:
                     ADS_SelEdt_Down(pMsg);
                     ADS_Color_Change();
-                }
-                break;
+                    break;
+                case GUI_KEY_ENTER:
+                    switch(Id)
+                    {
+#if 0
+                        case ID_EDIT_0:
+                           g_hWin_speed = CreateSpeed(g_hWin_AdvanSet);
+                           break;
+#endif
+                        case ID_EDIT_1:
+                            g_sys_ctrl.selectWidget=EDIT_SHUTDOWN_TIME;
+                            g_hWin_Input=Create_Edit_Set(g_hWin_para);
+                            WM_SetFocus(g_hWin_Input);
+ 
+                            break;
+                        case ID_EDIT_0:
+                            g_sys_ctrl.selectWidget=EDIT_SCR_OUTTIME;
+                            g_hWin_Input=Create_Edit_Set(g_hWin_para);
+                            WM_SetFocus(g_hWin_Input);
+                            break;
+                    }
+                    break;
+            }
         }
         break;
       default:

@@ -21,7 +21,7 @@ ActionState=1
 Enabled=0
 ShowSource=1
 [DebugChecksum]
-Checksum=-920717280
+Checksum=-61418544
 [Exceptions]
 StopOnUncaught=_ 0
 StopOnThrow=_ 0
@@ -114,6 +114,10 @@ GraphEnabled=0
 ShowTimeLog=1
 ShowTimeSum=1
 SumSortOrder=0
+[Disassemble mode]
+mode=0
+[Breakpoints2]
+Count=0
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""
@@ -121,22 +125,6 @@ Category=_ 0
 [TermIOLog]
 LoggingEnabled=_ 0
 LogFile=_ ""
-[PowerProbe]
-Frequency=10000
-Probe0=I0
-ProbeSetup0=2 1 1 2 0 0
-[CallStackLog]
-Enabled=0
-[DriverProfiling]
-Enabled=0
-Mode=3
-Graph=0
-Symbiont=0
-Exclusions=
-[Disassemble mode]
-mode=0
-[Breakpoints2]
-Count=0
 [Aliases]
 A0=_ "C:\Users\Administrator\Desktop\PDA_2015.01.19\PDA\APP\app.c" ""
 A1=_ "C:\Users\Administrator\Desktop\PDA_2015.01.19\PDA\drv\SI4438.c" ""
@@ -153,3 +141,15 @@ A11=_ "E:\palmtop0129\palmtop0127\drv\sd.c" ""
 A12=_ "E:\palmtop0129\palmtop0127\uCOS-II\Source\os_tmr.c" ""
 Count=13
 SuppressDialog=1
+[PowerProbe]
+Frequency=10000
+Probe0=I0
+ProbeSetup0=2 1 1 2 0 0
+[CallStackLog]
+Enabled=0
+[DriverProfiling]
+Enabled=0
+Mode=3
+Graph=0
+Symbiont=0
+Exclusions=

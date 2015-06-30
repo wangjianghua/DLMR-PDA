@@ -506,6 +506,10 @@ static  void  App_TaskGUI (void *p_arg)
             {
                 TSK_SetWrlsWhite();
             }
+            else if (CHANNEL_IR == g_rom_para.channel)
+            {
+                TSK_SetIR();
+            }
             else
             {
                 TSK_SetWrlsNull();

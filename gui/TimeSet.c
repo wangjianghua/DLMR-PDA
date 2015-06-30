@@ -340,67 +340,11 @@ static void _cbDialog(WM_MESSAGE * pMsg)
         break;
        
       case WM_KEY:
+        Id=WM_GetId(pMsg->hWinSrc);
         if((((WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt)==1)
         {
-            Id=WM_GetId(pMsg->hWinSrc);
-            key_num=((WM_KEY_INFO *)(pMsg->Data.p))->Key;
-            switch(Id)
-            {
-                case ID_EDIT_0:
-                    if(key_num==GUI_KEY_ENTER)
-                    {
-                      g_sys_ctrl.selectWidget=EDIT_YEAR;
-                      g_hWin_Input=Create_Edit_Set(g_hWin_TimeSet);                   
-                      WM_SetFocus(g_hWin_Input);
-                    }
-                    break;
-                case ID_EDIT_1:
-                    if(key_num==GUI_KEY_ENTER)
-                    {
-                      g_sys_ctrl.selectWidget=EDIT_MONTH;
-                      g_hWin_Input=Create_Edit_Set(g_hWin_TimeSet);                   
-                      WM_SetFocus(g_hWin_Input);
-                    }
-                    break;
-                    
-                case ID_EDIT_2:
-                    if(key_num==GUI_KEY_ENTER)
-                    {
-                      g_sys_ctrl.selectWidget=EDIT_DAY;
-                      g_hWin_Input=Create_Edit_Set(g_hWin_TimeSet);                   
-                      WM_SetFocus(g_hWin_Input);
-                    }
-
-                    break;
-                case ID_EDIT_3:
-                    if(key_num==GUI_KEY_ENTER)
-                    {
-                      g_sys_ctrl.selectWidget=EDIT_HOUR;
-                      g_hWin_Input=Create_Edit_Set(g_hWin_TimeSet);                   
-                      WM_SetFocus(g_hWin_Input);
-                    }
-                    break;
-                case ID_EDIT_4:
-                    if(key_num==GUI_KEY_ENTER)
-                    {
-                      g_sys_ctrl.selectWidget=EDIT_MIN;
-                      g_hWin_Input=Create_Edit_Set(g_hWin_TimeSet);                   
-                      WM_SetFocus(g_hWin_Input);
-                    }
-                    break;
-                case ID_EDIT_5:
-                    if(key_num==GUI_KEY_ENTER)
-                    {
-                      g_sys_ctrl.selectWidget=EDIT_SEC;
-                      g_hWin_Input=Create_Edit_Set(g_hWin_TimeSet);                   
-                      WM_SetFocus(g_hWin_Input);
-                    }
-                    break;
-           }
-
             switch(((WM_KEY_INFO *)(pMsg->Data.p))->Key)
             {
-                
                 case GUI_KEY_UP:
                     TMS_SelEdt_Up(pMsg);
                     TMS_Color_Change();
@@ -423,7 +367,7 @@ static void _cbDialog(WM_MESSAGE * pMsg)
                         
                     }
                     break;
-                //因为没有在edit中拦截消息，所以在edit中也可以直接删除窗口
+               
                 case GUI_KEY_YELLOW:
                     WM_DeleteWindow(g_hWin_TimeSet);
                     g_hWin_TimeSet=HBWIN_NULL;
@@ -433,7 +377,42 @@ static void _cbDialog(WM_MESSAGE * pMsg)
 
                 case GUI_KEY_TAB:
                     TMS_Color_Change();
-                    
+                    break;
+                case GUI_KEY_ENTER:
+                    switch(Id)
+                    {
+                        case ID_EDIT_0:
+                            g_sys_ctrl.selectWidget=EDIT_YEAR;
+                            g_hWin_Input=Create_Edit_Set(g_hWin_TimeSet);                   
+                            WM_SetFocus(g_hWin_Input);
+                            break;
+                        case ID_EDIT_1:
+                            g_sys_ctrl.selectWidget=EDIT_MONTH;
+                            g_hWin_Input=Create_Edit_Set(g_hWin_TimeSet);                   
+                            WM_SetFocus(g_hWin_Input);
+                            break;
+                            
+                        case ID_EDIT_2:
+                            g_sys_ctrl.selectWidget=EDIT_DAY;
+                            g_hWin_Input=Create_Edit_Set(g_hWin_TimeSet);                   
+                            WM_SetFocus(g_hWin_Input);
+                            break;
+                        case ID_EDIT_3:
+                            g_sys_ctrl.selectWidget=EDIT_HOUR;
+                            g_hWin_Input=Create_Edit_Set(g_hWin_TimeSet);                   
+                            WM_SetFocus(g_hWin_Input);
+                            break;
+                        case ID_EDIT_4:
+                            g_sys_ctrl.selectWidget=EDIT_MIN;
+                            g_hWin_Input=Create_Edit_Set(g_hWin_TimeSet);                   
+                            WM_SetFocus(g_hWin_Input);
+                            break;
+                        case ID_EDIT_5:
+                            g_sys_ctrl.selectWidget=EDIT_SEC;
+                            g_hWin_Input=Create_Edit_Set(g_hWin_TimeSet);                   
+                            WM_SetFocus(g_hWin_Input);
+                            break;
+                    }
                     break;
             }
 

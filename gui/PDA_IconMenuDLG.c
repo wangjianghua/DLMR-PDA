@@ -75,9 +75,9 @@ typedef struct {
 //任务栏资源列表
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { WINDOW_CreateIndirect,  NULL,           ID_WINDOW_0,  0,   0, 240, 25, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    " ",            ID_TEXT_0,    3,   3, 50,  15, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    "PLC-R" ,       ID_TEXT_1,    67,  3, 40,  15, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    " ",            ID_TEXT_10,   112, 5, 40,  15, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    " ",            ID_TEXT_0,    3,   3, 62,  15, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    "PLC-R" ,       ID_TEXT_1,    75,  3, 40,  15, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    " ",            ID_TEXT_10,   125, 3, 40,  15, 0, 0x0, 0 },
   { TEXT_CreateIndirect,    DownloadIcon,   ID_TEXT_5,    156, 3, 17,  17, 0, 0x0, 0 },
   { TEXT_CreateIndirect,    UploadIcon,     ID_TEXT_6,    166, 3, 17,  17, 0, 0x0, 0 },
   { TEXT_CreateIndirect,    " ",            ID_TEXT_7,    196, 3, 42,  25, 0, 0x0, 0 }, 
@@ -117,14 +117,14 @@ void TSK_SetProtocol_97(void)
 {
     WM_HWIN hItem;
     hItem = WM_GetDialogItem(g_hWin_task,ID_TEXT_0);
-    TEXT_SetText(hItem, "DLT-97");
+    TEXT_SetText(hItem, "DL645-97");
 }
 
 void TSK_SetProtocol_07(void)
 {
     WM_HWIN hItem;
     hItem = WM_GetDialogItem(g_hWin_task,ID_TEXT_0);
-    TEXT_SetText(hItem, "DLT-07");
+    TEXT_SetText(hItem, "DL645-07");
 }
 
 
@@ -136,20 +136,19 @@ WM_HWIN TSK_GetWireless()
 }
 #endif
 
-#if 1
+
 WM_HWIN TSK_Get_Battery()
 {
     return WM_GetDialogItem(g_hWin_task,ID_TEXT_7);
 }
-#endif
+
 
 void TSK_SetWrlsGreen(void)
 {
     WM_HWIN hItem;
-
     
     hItem = WM_GetDialogItem(g_hWin_task, ID_TEXT_10);
-    TEXT_SetTextColor(hItem, GUI_GREEN);
+    //TEXT_SetTextColor(hItem, GUI_GREEN);
     TEXT_SetText(hItem, TSK_Wireless);
 }
 
@@ -157,11 +156,19 @@ void TSK_SetWrlsGreen(void)
 void TSK_SetWrlsWhite(void)
 {
     WM_HWIN hItem;
-
     
     hItem = WM_GetDialogItem(g_hWin_task, ID_TEXT_10);
-    TEXT_SetTextColor(hItem, GUI_WHITE);
+    //TEXT_SetTextColor(hItem, GUI_WHITE);
     TEXT_SetText(hItem, TSK_Wireless);
+}
+
+void TSK_SetIR(void)
+{
+    WM_HWIN hItem;
+    
+    hItem = WM_GetDialogItem(g_hWin_task, ID_TEXT_10);
+    //TEXT_SetTextColor(hItem, GUI_WHITE);
+    TEXT_SetText(hItem, TSK_IR);
 }
 
 void TSK_SetWrlsNull(void)
@@ -170,7 +177,7 @@ void TSK_SetWrlsNull(void)
 
     
     hItem = WM_GetDialogItem(g_hWin_task, ID_TEXT_10);
-    TEXT_SetTextColor(hItem, GUI_WHITE);
+    //TEXT_SetTextColor(hItem, GUI_WHITE);
     TEXT_SetText(hItem, " ");
 }
 
@@ -369,18 +376,23 @@ static void _cbTaskDialog(WM_MESSAGE * pMsg)
         TEXT_SetTextColor(hItem,GUI_WHITE);
 
         hItem = WM_GetDialogItem(pMsg->hWin,ID_TEXT_10);
-        TEXT_SetFont(hItem,&GUI_Font_Battery_40);
-        TEXT_SetTextColor(hItem, GUI_WHITE);
+        //TEXT_SetFont(hItem,&GUI_Font_Battery_40);
+        //TEXT_SetTextColor(hItem, GUI_WHITE);
         
         if(CHANNEL_WIRELESS == g_rom_para.channel)
         {
             TEXT_SetText(hItem, TSK_Wireless);
         }
-        else
+        else if(CHANNEL_IR == g_rom_para.channel)
+        {
+            TEXT_SetText(hItem, TSK_IR);
+            //TEXT_SetTextColor(hItem, GUI_WHITE);
+        }
+        else 
         {
             TEXT_SetText(hItem, " ");
         }
-
+        
         hItem = WM_GetDialogItem(pMsg->hWin,ID_TEXT_1);
         if(g_gui_para.cmdType==PLC_CMD_TYPE_R2L)
         {

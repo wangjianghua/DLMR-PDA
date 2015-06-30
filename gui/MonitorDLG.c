@@ -172,7 +172,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     break;
  
   case WM_KEY:
-    if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==1)//按键释放。
+    if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 1)//按键释放。
     {
         switch(((WM_KEY_INFO *)(pMsg->Data.p))->Key)
         {

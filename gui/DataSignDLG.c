@@ -36,7 +36,6 @@
 #define ID_LISTVIEW_0     (GUI_ID_USER + 0xA3)
 
 
-int DataSign_Value; //数据标识，全局变量，规约调试中的一项依赖于此
 char DataSign_Text[TEXT_LEN]; //listview单元格中的文本内容
 
 // USER START (Optionally insert additional defines)
@@ -171,7 +170,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     break;
 
   case WM_KEY:
-    if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
+    if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 1)
     {
         switch(((WM_KEY_INFO *)(pMsg->Data.p))->Key)
         {

@@ -132,13 +132,13 @@ static void Select_Input_Edit(int  EditNum)
 
                 sprintf(tmpTextBuf, "%d", g_rom_para.scrTimeout);
             }
-            hItem=CPS_Set_ScrOutTime();
+            hItem=ADS_GetSrcOutTime();
             break;
             
         case EDIT_PASSWORD:
             EDIT_GetText(hItem,tmpTextBuf,7);
             //g_rom_para.meterPassword = atoi(tmpTextBuf);
-            hItem=CPS_Set_Pwd();
+            hItem=CPS_GetPwd();
             break;
             
         case EDIT_RECV_DELAY:
@@ -213,7 +213,7 @@ static void Select_Input_Edit(int  EditNum)
           //  break;
         case EDIT_OPCODE:
             EDIT_GetText(hItem,tmpTextBuf,9);
-            hItem = ADS_Get_OpCode();
+            hItem = CPS_GetOperator();
             break;
 
         case MODIFY_RELAY_ADDR: //修改中继地址
@@ -227,7 +227,7 @@ static void Select_Input_Edit(int  EditNum)
             hItem = RLY_GetAddr();
             break;
 
-        case ADD_RELAY_ADDR:  //按#增加,这里耦合性应该挺厉害的
+        case ADD_RELAY_ADDR:  //按#增加
             EDIT_GetText(hItem,tmpTextBuf,13);
             GUI_Fill_Zero(tmpTextBuf); 
             hItem = RLY_GetListAddr();
@@ -238,6 +238,11 @@ static void Select_Input_Edit(int  EditNum)
             int_to_char((RowCount-1), tmpListBuf, 10);
             LISTVIEW_SetItemText(hItem, 0, (RowCount-1), tmpListBuf);
             hItem = WM_GetDialogItem(g_hWin_Input,ID_EDIT_0);
+            break;
+        case EDIT_SHUTDOWN_TIME:
+            EDIT_GetText(hItem,tmpTextBuf,5);
+            g_sys_ctrl.shutdownTimeout = atoi(tmpTextBuf);
+            hItem = ADS_GetStDnTime();
             break;
             
         default:
@@ -259,13 +264,13 @@ static void _init_edit(WM_MESSAGE *pMsg,int EditNum)
     switch(EditNum)
     {
         case EDIT_SCR_OUTTIME:
-            hItem=CPS_Set_ScrOutTime();
+            hItem=ADS_GetSrcOutTime();
             EDIT_GetText(hItem,tmpTextBuf,5);
             //hItem=CPS_Set_ScrOutTime();
             break;
             
         case EDIT_PASSWORD:
-            hItem=CPS_Set_Pwd();
+            hItem = CPS_GetPwd();
             EDIT_GetText(hItem,tmpTextBuf,7);
             break;
             
@@ -335,8 +340,8 @@ static void _init_edit(WM_MESSAGE *pMsg,int EditNum)
             EDIT_GetText(hItem,tmpTextBuf,3);
             break;
         case EDIT_OPCODE: //长度需要注意,操作码
-            hItem = ADS_Get_OpCode();
-            EDIT_GetText(hItem,tmpTextBuf,5);
+            hItem = CPS_GetOperator();
+            EDIT_GetText(hItem,tmpTextBuf,9);
             break;
 
         case MODIFY_RELAY_ADDR:
@@ -348,6 +353,11 @@ static void _init_edit(WM_MESSAGE *pMsg,int EditNum)
         case ADD_RELAY_ADDR:
             memcpy(tmpTextBuf,"\0",1);
             break;
+
+         case EDIT_SHUTDOWN_TIME:
+            hItem = ADS_GetStDnTime();
+            EDIT_GetText(hItem,tmpTextBuf,5);
+            break;
             
         default:
             break;
@@ -357,7 +367,7 @@ static void _init_edit(WM_MESSAGE *pMsg,int EditNum)
      EDIT_SetText(hItem,tmpTextBuf);
 }
 
-
+ 
 
 /*********************************************************************
 *
@@ -396,7 +406,7 @@ static void _cbEditDlg(WM_MESSAGE *pMsg)
         break;
         
       case WM_KEY:
-        if((((WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt)==0)
+        if((((WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt) == 0)
         {
             switch(((WM_KEY_INFO *)(pMsg->Data.p))->Key)
             {
@@ -435,8 +445,8 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
     switch(ListBoxNum)
     {
         case LISTBOX_PROTOCOL:
-            LISTBOX_AddString(hItem, "DLT-07");
-            LISTBOX_AddString(hItem, "DLT-97");
+            LISTBOX_AddString(hItem, "DL645-07");
+            LISTBOX_AddString(hItem, "DL645-97");
             switch(g_rom_para.plcProtocol)
             {
                 case DL_T_07:
@@ -449,9 +459,9 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
             break;
             
         case LISTBOX_CHANNEL:
-            //LISTBOX_AddString(hItem, "485");
             LISTBOX_AddString(hItem, WaveCarrier);
             LISTBOX_AddString(hItem, ChannelWireless);
+            LISTBOX_AddString(hItem, Infrared);
             break;
 
 
@@ -546,13 +556,13 @@ static void Select_ListBox_Row(int  WidgetNum)
                     g_rom_para.plcProtocol = DL_T_07;
                     TSK_SetProtocol_07();
                     hWin=CPS_Set_Proto();
-                    EDIT_SetText(hWin,"DLT-07");
+                    EDIT_SetText(hWin,"DL645-07");
                     break;
                 case 1:
                     g_rom_para.plcProtocol = DL_T_97;
                     TSK_SetProtocol_97();
                     hWin=CPS_Set_Proto();
-                    EDIT_SetText(hWin,"DLT-97");
+                    EDIT_SetText(hWin,"DL645-97");
                     break;
             }
             break;
@@ -561,9 +571,9 @@ static void Select_ListBox_Row(int  WidgetNum)
             switch(SelNum)
             {
                 case 2:
-                   // g_rom_para.channel=CHANNEL_485;
-                    //hWin=CPS_Set_Channel();
-                    //EDIT_SetText(hWin,"485");
+                    g_rom_para.channel=CHANNEL_IR;
+                    hWin=CPS_Set_Channel();
+                    EDIT_SetText(hWin,Infrared);
                     break;
                     
                 case 0:
@@ -665,7 +675,7 @@ static void _cbListBoxDlg(WM_MESSAGE *pMsg)
           break;
           
         case WM_KEY:
-          if((((WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt)==0)
+          if((((WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt) == 1)
           {
               switch(((WM_KEY_INFO *)(pMsg->Data.p))->Key)
               {

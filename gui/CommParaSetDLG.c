@@ -75,11 +75,11 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { TEXT_CreateIndirect,    Protocal,     ID_TEXT_0,   8,   42,  110, 20, 0, 0x0, 0 },
   { TEXT_CreateIndirect,    Channel,      ID_TEXT_1,   8,   69,  110, 20, 0, 0x0, 0 },
   { TEXT_CreateIndirect,    BaudRate,     ID_TEXT_2,   8,   99,  110, 20, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    StopBit,      ID_TEXT_4,   8,   126, 110, 20, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    ScrTimeout,   ID_TEXT_5,   8,   152, 110, 20, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    PassWord,     ID_TEXT_6,   8,   180, 110, 20, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    RevDataDelay, ID_TEXT_7,   8,   208, 110, 20, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    BetweenAct,   ID_TEXT_8,   8,   236, 110, 20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    StopBit,      ID_TEXT_3,   8,   126, 110, 20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    PassWord,     ID_TEXT_4,   8,   152, 110, 20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    OperateCode,  ID_TEXT_5,   8,   180, 120, 20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    RevDataDelay, ID_TEXT_6,   8,   208, 110, 20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    BetweenAct,   ID_TEXT_7,   8,   236, 110, 20, 0, 0x0, 0 },
 
   { BUTTON_CreateIndirect,  TimeSet,      ID_BUTTON_0, 8,   10,  92,  25, 0, 0x0, 0 },
   { BUTTON_CreateIndirect,  AdvanceSet,   ID_BUTTON_1, 128, 10,  103,  25, 0, 0x0, 0 },
@@ -197,12 +197,13 @@ WM_HWIN CPS_Set_StopBit(void)
    return  WM_GetDialogItem(g_hWin_para,ID_EDIT_3);
 }
 
-WM_HWIN CPS_Set_ScrOutTime(void)
+WM_HWIN CPS_GetPwd(void)
 {
    return  WM_GetDialogItem(g_hWin_para,ID_EDIT_4);
 }
 
-WM_HWIN CPS_Set_Pwd(void)
+
+WM_HWIN CPS_GetOperator(void)
 {
     return  WM_GetDialogItem(g_hWin_para,ID_EDIT_5);
 }
@@ -251,18 +252,18 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     switch(g_rom_para.plcProtocol)
     {
         case DL_T_07:
-            EDIT_SetText(hItem, "DLT-07");
+            EDIT_SetText(hItem, "DL645-07");
             break;
         case DL_T_97:
-            EDIT_SetText(hItem, "DLT-97");
+            EDIT_SetText(hItem, "DL645-97");
     }
     
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_1);
     switch(g_rom_para.channel)
     {
-        case CHANNEL_485:
-            EDIT_SetText(hItem,"485");
+        case CHANNEL_IR:
+            EDIT_SetText(hItem,Infrared);
             break;
           
         case CHANNEL_PLC:
@@ -310,12 +311,12 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     }
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_4);
-    int_to_char(g_rom_para.scrTimeout,tmpBuf,10);
-    EDIT_SetText(hItem, tmpBuf);
+    //int_to_char(g_rom_para.scrTimeout,tmpBuf,10);
+    EDIT_SetText(hItem, "123456");
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_5);
     //int_to_char(g_rom_para.meterPassword,tmpBuf,10);
-    EDIT_SetText(hItem, "123456");
+    EDIT_SetText(hItem, "00000000");
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_6);
     int_to_char(g_rom_para.recvDelayTime,tmpBuf,10);
@@ -360,160 +361,111 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     break;
      
   case WM_KEY:
-    {
-        //输入消息消费到edit中
-        Id  = WM_GetId(pMsg->hWinSrc);
-        if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==1)
-        {
-            switch(Id)
-            {
-              case ID_EDIT_0:
-                if(key_num==GUI_KEY_ENTER)
-                {
-                  g_sys_ctrl.selectWidget=LISTBOX_PROTOCOL;
-                  g_hWin_Input=Create_ListBox_Set(g_hWin_para);                   
-                  WM_SetFocus(g_hWin_Input);
-                }
-                break;
-              case ID_EDIT_1:
-                if(key_num==GUI_KEY_ENTER)
-                {
-                  g_sys_ctrl.selectWidget=LISTBOX_CHANNEL;
-                  g_hWin_Input=Create_ListBox_Set(g_hWin_para);
-                  WM_SetFocus(g_hWin_Input);
-                }
-                break;
-              case ID_EDIT_2:
-                if(key_num==GUI_KEY_ENTER)
-                {
-                  g_sys_ctrl.selectWidget=LISTBOX_BAUDRATE;
-                  g_hWin_Input=Create_ListBox_Set(g_hWin_para);
-                  WM_SetFocus(g_hWin_Input);
-                }
-                break;
+      Id  = WM_GetId(pMsg->hWinSrc);
+      if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 1)
+      {
+          switch(((WM_KEY_INFO*)(pMsg->Data.p))->Key)
+          {
+               
+               case GUI_KEY_YELLOW:
+                   WM_DeleteWindow(g_hWin_para);
+                   g_hWin_para=HBWIN_NULL;
+                   WM_SetFocus(g_hWin_menu);
+                   WM_ShowWindow(g_hWin_TimeBar);
+                   WM_ShowWindow(g_hWin_Date);
+                   key_press_cnt=0;
+                   break;
+                   
+               case GUI_KEY_GREEN:  /*  保存数据  */
+                   //para_store(pMsg);
+                   TSK_Set_Protocol_Text();
+                   DEV_Parameters_Write();
+                   break;
+                   
+               case GUI_KEY_F1:
+                   g_hWin_TimeSet=CreateTimeSet();
+                   WM_SetFocus(g_hWin_TimeSet);
+                   hItem = TMS_Get_Year();
+                   WM_SetFocus(hItem);
+                   TMS_Color_Change();
+                   break;
+                   
+               case GUI_KEY_F2:
+                   g_hWin_AdvanSet= CreateAdvanceSet(g_hWin_para);
+                   WM_SetFocus(g_hWin_AdvanSet);
+                   hItem = ADS_GetSrcOutTime();
+                   ADS_SetFocus();
+                   ADS_Color_Change();
+                   break;
 #if 0
-              case ID_EDIT_3:
-                if(key_num==GUI_KEY_ENTER)
-                {
-                  g_sys_ctrl.selectWidget=LISTBOX_PREAM;
-                  g_hWin_Input=Create_ListBox_Set(g_hWin_para);
-                  WM_SetFocus(g_hWin_Input);
-                }
-                break;
+               case GUI_KEY_TAB:
+                      CPS_Color_Change();
+                      break;
 #endif
-              case ID_EDIT_3:
-                if(key_num==GUI_KEY_ENTER)
-                {
-                  g_sys_ctrl.selectWidget=LISTBOX_STOPBIT;
-                  g_hWin_Input=Create_ListBox_Set(g_hWin_para);
-                  WM_SetFocus(g_hWin_Input);
-                }
-                break;
-              case ID_EDIT_4:
-                if(key_num==GUI_KEY_ENTER)
-                {
-                  g_sys_ctrl.selectWidget=EDIT_SCR_OUTTIME;
-                  g_hWin_Input=Create_Edit_Set(g_hWin_para);
-                  WM_SetFocus(g_hWin_Input);
-                }
-                break;
-              case ID_EDIT_5:
-                if(key_num==GUI_KEY_ENTER)
-                {
-                  g_sys_ctrl.selectWidget=EDIT_PASSWORD;
-                  g_hWin_Input=Create_Edit_Set(g_hWin_para);
+               case GUI_KEY_UP:
+                   CPS_SelEdt_Up(pMsg);
+                   CPS_Color_Change();
+                   break;
                   
-                  WM_SetFocus(g_hWin_Input);
-                }
-                break;
-              case ID_EDIT_6:
-                if(key_num==GUI_KEY_ENTER)
-                {
-                  g_sys_ctrl.selectWidget=EDIT_RECV_DELAY;
-                  g_hWin_Input=Create_Edit_Set(g_hWin_para);
-                  WM_SetFocus(g_hWin_Input);
-                }
-                break;
-              case ID_EDIT_7:
-                if(key_num==GUI_KEY_ENTER)
-                {
-                  g_sys_ctrl.selectWidget=EDIT_BETWEEN_ACT;
-                  g_hWin_Input=Create_Edit_Set(g_hWin_para);
-                  WM_SetFocus(g_hWin_Input);
-                }
-                break;            
-                
-            }               
-
-        }
-        switch(((WM_KEY_INFO*)(pMsg->Data.p))->Key)
-        {
-             
-             case GUI_KEY_YELLOW:
-                if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==1)
-                {
-                    WM_DeleteWindow(g_hWin_para);
-                    g_hWin_para=HBWIN_NULL;
-                    WM_SetFocus(g_hWin_menu);
-                    WM_ShowWindow(g_hWin_TimeBar);
-                    WM_ShowWindow(g_hWin_Date);
-                    key_press_cnt=0;
-                }
-                break;
-             case GUI_KEY_GREEN:  /*  保存数据  */
-                if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
-                {
-                    //para_store(pMsg);
-                    TSK_Set_Protocol_Text();
-                    DEV_Parameters_Write();
-                }
-                break;
-             case GUI_KEY_F1:
-                if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
-                {
-                    g_hWin_TimeSet=CreateTimeSet();
-                    WM_SetFocus(g_hWin_TimeSet);
-                    hItem = TMS_Get_Year();
-                    WM_SetFocus(hItem);
-                    TMS_Color_Change();
-                }
-                break;
-             case GUI_KEY_F2:
-                if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
-                {
-                    g_hWin_AdvanSet= CreateAdvanceSet(g_hWin_para);
-                    WM_SetFocus(g_hWin_AdvanSet);
-                    hItem = ADS_Get_Speed();
-                    ADS_SetFocus();
-                    ADS_Color_Change();
-                }
-                break;
-                
-             case GUI_KEY_TAB:
-                if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
-                {
-                    CPS_Color_Change();
-                }
-                break;
-                
-             case GUI_KEY_UP:
-                if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
-                {
-                    CPS_SelEdt_Up(pMsg);
-                    CPS_Color_Change();
-                }
-                
-                break;
-             case GUI_KEY_DOWN:
-                if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
-                {
-                    CPS_SelEdt_Down(pMsg);
-                    CPS_Color_Change();
-                }
-                
-             default: break;                                                                  
-        }
-    }
+               case GUI_KEY_DOWN:
+                   CPS_SelEdt_Down(pMsg);
+                   CPS_Color_Change();
+                   break;
+               case GUI_KEY_ENTER:
+                   switch(Id)
+                   {
+                       case ID_EDIT_0:
+                           g_sys_ctrl.selectWidget=LISTBOX_PROTOCOL;
+                           g_hWin_Input=Create_ListBox_Set(g_hWin_para);                   
+                           WM_SetFocus(g_hWin_Input);
+                           break;
+                           
+                       case ID_EDIT_1:
+                           g_sys_ctrl.selectWidget=LISTBOX_CHANNEL;
+                           g_hWin_Input=Create_ListBox_Set(g_hWin_para);
+                           WM_SetFocus(g_hWin_Input);
+                           break;
+                           
+                       case ID_EDIT_2:
+                           g_sys_ctrl.selectWidget=LISTBOX_BAUDRATE;
+                           g_hWin_Input=Create_ListBox_Set(g_hWin_para);
+                           WM_SetFocus(g_hWin_Input);
+                           break;
+                           
+                       case ID_EDIT_3:
+                           g_sys_ctrl.selectWidget=LISTBOX_STOPBIT;
+                           g_hWin_Input=Create_ListBox_Set(g_hWin_para);
+                           WM_SetFocus(g_hWin_Input);
+                           break;
+                           
+                       case ID_EDIT_4:
+                           g_sys_ctrl.selectWidget = EDIT_PASSWORD;
+                           g_hWin_Input=Create_Edit_Set(g_hWin_AdvanSet);
+                           WM_SetFocus(g_hWin_Input);  
+                           break;
+                           
+                       case ID_EDIT_5:
+                           g_sys_ctrl.selectWidget = EDIT_OPCODE;
+                           g_hWin_Input=Create_Edit_Set(g_hWin_para);
+                           WM_SetFocus(g_hWin_Input);
+                           break;
+                           
+                       case ID_EDIT_6:
+                           g_sys_ctrl.selectWidget=EDIT_RECV_DELAY;
+                           g_hWin_Input=Create_Edit_Set(g_hWin_para);
+                           WM_SetFocus(g_hWin_Input);
+                           break;
+                           
+                       case ID_EDIT_7:
+                           g_sys_ctrl.selectWidget=EDIT_BETWEEN_ACT;
+                           g_hWin_Input=Create_Edit_Set(g_hWin_para);
+                           WM_SetFocus(g_hWin_Input);
+                           break;                
+                     }  
+                     break;
+               default: break;                                                                  
+          }
+      }
     break;
 /********************************************************************/
     

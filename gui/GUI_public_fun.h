@@ -27,7 +27,7 @@
 
 #define CHANNEL_PLC       0
 #define CHANNEL_WIRELESS   1
-#define CHANNEL_485        2
+#define CHANNEL_IR        2
 
 #define ONE_STOPBIT        0
 #define TWO_STOPBIT        1
@@ -96,6 +96,7 @@
 #define EDIT_RELAY_ADDR            16
 #define ADD_RELAY_ADDR             17
 #define MODIFY_RELAY_ADDR          18
+#define EDIT_SHUTDOWN_TIME            19
 
 //读节点倒计时
 #define   COUNTDOWN_OFF            0

@@ -1,10 +1,10 @@
-#ifndef __APP_STORAGE_H__
-#define __APP_STORAGE_H__
+#ifndef __APP_DEVICE_H__
+#define __APP_DEVICE_H__
 
 
 #define HARDWARE_VERSION         20
-#define SOFTWARE_VERSION         26
-#define VERSION_DATE     0x20150601
+#define SOFTWARE_VERSION         27
+#define VERSION_DATE     0x20150630
 
 #define BOOT_REQUEST_ACT   0xffffbbcc
 #define BOOT_FINISH_ACT    0xffff0000
@@ -128,5 +128,6 @@ void DEV_SoftReset(void);
 void APP_Sleep(void);
 void APP_Wakeup();
 void APP_Shutdown();
+
 
 #endif
