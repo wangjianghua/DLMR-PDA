@@ -603,7 +603,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>Palmtop1.0.bin</state>
+          <state>DLMR-PDA.bin</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
@@ -657,7 +657,7 @@
         </option>
         <option>
           <name>IlinkOutputFile</name>
-          <state>Palmtop1.0.out</state>
+          <state>DLMR-PDA.out</state>
         </option>
         <option>
           <name>IlinkDebugInfoEnable</name>

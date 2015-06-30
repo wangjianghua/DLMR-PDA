@@ -2,7 +2,7 @@
 
 <workspace>
   <project>
-    <path>$WS_DIR$\Palmtop1.0.ewp</path>
+    <path>$WS_DIR$\DLMR-PDA.ewp</path>
   </project>
   <batchBuild/>
 </workspace>

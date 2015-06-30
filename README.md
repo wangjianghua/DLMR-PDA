@@ -1,2 +1,2 @@
-# STM32F2xx_PDA_Template
-PDA based on STM32F207, EWARM v6.70
+# DLMR-PDA
+PDA based on STM32F207 for DLMR, EWARM v6.70
