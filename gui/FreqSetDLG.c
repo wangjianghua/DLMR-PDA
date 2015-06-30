@@ -139,7 +139,7 @@ void FRQ_PreamSel(WM_MESSAGE *pMsg)
         case 5:
             g_rom_para.preamble = 0xFE;
             //FRQ_FreqSel(pMsg);
-            //g_gui_para.cmdType = PLC_CMD_FREQ_SET;
+            //g_gui_para.cmdType = GUI_CMD_FREQ;
             break;
         default:
             break;
@@ -281,8 +281,8 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 if(0xFE == g_rom_para.preamble)
                 {
                     FRQ_FreqSel(pMsg);
-                    g_gui_para.cmdType = PLC_CMD_FREQ_SET;
-                    g_sys_ctrl.guiState = GUI_PLC_MSG_FREQ;
+                    g_gui_para.cmd = GUI_CMD_FREQ;
+                    g_gui_para.state = GUI_STATE_PLC_FREQ;
                     OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
                 }
                 DEV_Parameters_Write();//±£´æÊý¾Ý

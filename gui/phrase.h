@@ -20,7 +20,7 @@ extern const char Save[];
 extern const char Cancel[];
 extern const char Quit[];
 extern const char TimeSet[];
-extern const char ScrTimeout[];
+extern const char SleepTime[];
 extern const char AdvanceSet[];
 extern const GUI_ConstString pProtocolText[]; 
 extern const GUI_ConstString pChannelText[]; 

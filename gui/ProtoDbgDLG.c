@@ -64,27 +64,27 @@
 
 
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
-  { WINDOW_CreateIndirect, "cps",      ID_WINDOW_0,  0,   0,   240, 295, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, RoutTab,    ID_BUTTON_0,  6,   8,  80,  20, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, DataSignBtn,ID_BUTTON_1,  151, 8,  80,  20, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, Send,       ID_BUTTON_2,  6,   267, 55,  25, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, Msg,        ID_BUTTON_3,  80,  267, 80,  25, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, Quit,       ID_BUTTON_4,  178, 266, 55,  25, 0, 0x0, 0 },
+  { WINDOW_CreateIndirect, "cps",       ID_WINDOW_0,  0,   0,   240, 295, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, RoutTab,     ID_BUTTON_0,  6,   8,  80,  20, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, DataSignBtn, ID_BUTTON_1,  144, 8,  90,  20, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, Send,        ID_BUTTON_2,  6,   267, 55,  25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, Msg,         ID_BUTTON_3,  80,  267, 80,  25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, Quit,        ID_BUTTON_4,  178, 266, 55,  25, 0, 0x0, 0 },
 
-  { TEXT_CreateIndirect, Speed ,       ID_TEXT_0,    8,   47,  80,  20, 0, 0x0, 0 },
-  { TEXT_CreateIndirect, TarAddr,      ID_TEXT_1,    8,   79,  110, 20, 0, 0x0, 0 },
-  { TEXT_CreateIndirect, CtlCode,      ID_TEXT_2,    8,   108, 110, 20, 0, 0x0, 0 },
-  { TEXT_CreateIndirect, DataSign,     ID_TEXT_3,    8,   139, 110, 20, 0, 0x0, 0 },
-  { TEXT_CreateIndirect, Length,       ID_TEXT_4,    8,   171, 110, 20, 0, 0x0, 0 },
-  { TEXT_CreateIndirect, DataField,    ID_TEXT_5,    8,   195, 110, 20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect, Speed ,        ID_TEXT_0,    8,   47,  80,  20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect, TarAddr,       ID_TEXT_1,    8,   79,  110, 20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect, CtlCode,       ID_TEXT_2,    8,   108, 110, 20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect, DataSign,      ID_TEXT_3,    8,   139, 110, 20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect, Length,        ID_TEXT_4,    8,   171, 110, 20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect, DataField,     ID_TEXT_5,    8,   195, 110, 20, 0, 0x0, 0 },
 
-  { EDIT_CreateIndirect, "Edit",       ID_EDIT_0,    100, 45,  133, 20, 0, 0x64, 0 },
-  { EDIT_CreateIndirect, "Edit",       ID_EDIT_1,    100, 76,  133, 20, 0, 0x64, 0 }, 
-  { EDIT_CreateIndirect, "Edit",       ID_EDIT_2,    100, 106, 133, 20, 0, 0x64, 0 },
-  { EDIT_CreateIndirect, "Edit",       ID_EDIT_3,    100, 136, 133, 20, 0, 0x64, 0 },
-  { EDIT_CreateIndirect, "Edit",       ID_EDIT_4,    100, 167, 133, 20, 0, 0x64, 0 },
-  { EDIT_CreateIndirect, "Edit",       ID_EDIT_5,    100, 195, 133, 20, 0, 0x64, 0 },
-  { PROGBAR_CreateIndirect, "Progbar", ID_PROGBAR_0, 12, 231, 216, 20, 0, 0x0, 0 },
+  { EDIT_CreateIndirect, "Edit",        ID_EDIT_0,    100, 45,  133, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect, "Edit",        ID_EDIT_1,    100, 76,  133, 20, 0, 0x64, 0 }, 
+  { EDIT_CreateIndirect, "Edit",        ID_EDIT_2,    100, 106, 133, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect, "Edit",        ID_EDIT_3,    100, 136, 133, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect, "Edit",        ID_EDIT_4,    100, 167, 133, 20, 0, 0x64, 0 },
+  { EDIT_CreateIndirect, "Edit",        ID_EDIT_5,    100, 195, 133, 20, 0, 0x64, 0 },
+  { PROGBAR_CreateIndirect, "Progbar",  ID_PROGBAR_0, 12, 231, 216, 20, 0, 0x0, 0 },
 
 };  
 
@@ -256,16 +256,16 @@ static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
 
     if(PLC_ROUTE_ON == g_sys_ctrl.sysUseRoute)
     {
-        g_gui_para.cmdType = PLC_CMD_TYPE_ROUTE;
+        g_gui_para.cmd = GUI_CMD_ROUTE;
     }
     else 
     {
         if(0x13 == g_gui_para.ctlCode)
         {
-            g_gui_para.cmdType = PLC_CMD_BROAD_READ;
+            g_gui_para.cmd = GUI_CMD_BROADCAST;
         }
         else
-            g_gui_para.cmdType = PLC_CMD_TYPE_COMMON;
+            g_gui_para.cmd = GUI_CMD_COMMON;
     }
     
 
@@ -546,7 +546,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                     WM_ShowWindow(g_hWin_TimeBar);
                     WM_ShowWindow(g_hWin_Date);
                     WM_SetFocus(g_hWin_menu); 
-                    g_sys_ctrl.guiState = GUI_PLC_MSG_IDLE;
+                    g_gui_para.state = GUI_STATE_IDLE;
                     cpt_key_press_cnt=0;
                 }
                 break;
@@ -556,7 +556,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 {
                     if(DEV_OK == Get_Para_From_Widget(pMsg))//获取参数数据
                     {
-                        g_sys_ctrl.guiState = GUI_PLC_MSG_TEST;
+                        g_gui_para.state = GUI_STATE_PROTO_DBG;
                         OSMboxPost(g_sys_ctrl.up_mbox,(void*)&g_gui_para);
                     }  
                 }

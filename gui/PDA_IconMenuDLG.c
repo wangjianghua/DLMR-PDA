@@ -199,18 +199,18 @@ void TSK_Disp_PLC(void)
     WM_HWIN hItem;
     hItem=WM_GetDialogItem(g_hWin_task,ID_TEXT_1);
     //TEXT_SetFont(hItem,&GUI_Font_Battery_40);
-    if(g_gui_para.cmdType==PLC_CMD_TYPE_R2L)
+    if(g_gui_para.cmd==GUI_CMD_R2L)
     {
         TEXT_SetText(hItem,"PLC-L");
         //TEXT_SetBkColor(hItem,GUI_GREEN);
     }
-    else if((g_gui_para.cmdType == PLC_CMD_TYPE_L2R)
-           ||(g_gui_para.cmdType == PLC_CMD_TYPE_COMMON))
+    else if((g_gui_para.cmd == GUI_CMD_L2R)
+           ||(g_gui_para.cmd == GUI_CMD_COMMON))
     {
         TEXT_SetText(hItem,"PLC-R");
         //TEXT_SetBkColor(hItem,GUI_GREEN);
     }
-    else if(g_gui_para.cmdType==PLC_CMD_TYPE_NODE)
+    else if(g_gui_para.cmd==GUI_CMD_NODE)
     {
         TEXT_SetText(hItem,"PLC-N");
         //TEXT_SetBkColor(hItem,GUI_GREEN);
@@ -400,16 +400,16 @@ static void _cbTaskDialog(WM_MESSAGE * pMsg)
         }
         
         hItem = WM_GetDialogItem(pMsg->hWin,ID_TEXT_1);
-        if(g_gui_para.cmdType==PLC_CMD_TYPE_R2L)
+        if(g_gui_para.cmd==GUI_CMD_R2L)
         {
             TEXT_SetText(hItem,"PLC-L");
         }
-        else if((g_gui_para.cmdType == PLC_CMD_TYPE_L2R)
-               ||(g_gui_para.cmdType == PLC_CMD_TYPE_COMMON))
+        else if((g_gui_para.cmd == GUI_CMD_L2R)
+               ||(g_gui_para.cmd == GUI_CMD_COMMON))
         {
             TEXT_SetText(hItem,"PLC-R");
         }
-        else if(g_gui_para.cmdType==PLC_CMD_TYPE_NODE)
+        else if(g_gui_para.cmd==GUI_CMD_NODE)
         {
             TEXT_SetText(hItem,"PLC-N");
         }

@@ -2,20 +2,34 @@
 #define __GUI_PUBLIC_FUN__
 
 
-#define GUI_645_ADDR_LENGTH 12
+#define GUI_645_ADDR_LENGTH      12
 
-/*dropdown中下拉列表中的量，备用*/
 #define DL645_97                  0
 #define DL645_07                  1
 
-#define PLC_CMD_TYPE_L2R          0  //read to listening
-#define PLC_CMD_TYPE_R2L          1  //listening to read
-#define PLC_CMD_TYPE_COMMON       2  //
-#define PLC_CMD_TYPE_NODE         3
-#define PLC_CMD_BROAD_READ        4  //广播读表号
-#define PLC_CMD_FREQ_SET          5  //设置速率
-#define PLC_CMD_TYPE_ROUTE        6  //启动路由表
+typedef enum
+{
+    GUI_STATE_IDLE = 0,
+    GUI_STATE_PROTO_DBG,
+    GUI_STATE_MR,
+    GUI_STATE_PARA_SET,
+    GUI_STATE_PLC_MONITOR,
+    GUI_STATE_MEM,
+    GUI_STATE_PLC_FREQ,
+    MAX_GUI_STATE_TYPE
+} GUI_STATE_TYPE; //华兄
 
+typedef enum
+{
+    GUI_CMD_L2R = 0,
+    GUI_CMD_R2L,
+    GUI_CMD_COMMON,
+    GUI_CMD_NODE,
+    GUI_CMD_BROADCAST,
+    GUI_CMD_FREQ,
+    GUI_CMD_ROUTE,
+    MAX_GUI_CMD_TYPE
+} GUI_CMD_TYPE; //华兄
 
 #define PLC_ROUTE_OFF             0 
 #define PLC_ROUTE_ON              1
@@ -72,7 +86,7 @@
 #define LISTBOX_SPEED              7
 
 
-#define EDIT_SCR_OUTTIME           0
+#define EDIT_SLEEP_TIME            0
 #define EDIT_PASSWORD              1
 #define EDIT_RECV_DELAY            2
 #define EDIT_BETWEEN_ACT           3
@@ -118,10 +132,11 @@
 //#define ERROR_BOX(error_no)     MESSAGEBOX_Create(&gc_messageBoxText[error_no][0],"Error",0)
 
 
-typedef struct _GUI_PARA_
+typedef struct _gui_para_
 {
     //U16 g_protocal;      //规约
-    U8  cmdType;      
+    U8  state;
+    U8  cmd;      
     U8  ctlCode;   //控制字
     U8  srcAddr[6]; //电表表号  reserved
     U8  dstAddr[6]; //电表表号  reserved
@@ -177,7 +192,7 @@ WM_HWIN MNT_Get_MultiEdit();
 u32 GUI_GetMeterAddr(u8 * dbuf, u8 * gbuf);
 
 WM_HWIN GUI_Get_PROGBAR();
-WM_HWIN GUI_Get_FD_Item();
+WM_HWIN GUI_Get_FD_Usage_PROGBAR();
 
 
 WM_HWIN RMD_Get_PROGBAR();
@@ -225,7 +240,7 @@ void GUI_Fill_Zero(u8 *tempbuf); //自动补全零
 
 void CST_Set_DataFlag(u8 * tst);
 void GUI_GetHexDataFlag(u8 * strbuf, u8* dataflag, u8 len);
-void GUI_Set_FD_PROGBAR(u32 newVal);
+void GUI_Set_FD_Format_PROGBAR(u32 newVal);
 
 
 #endif /*__GUI_PUBLIC_FUN__*/

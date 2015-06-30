@@ -99,7 +99,7 @@ void FM_Format_Disk(void)
         {
             DEBUG_PRINT(("SD format ok!\n"));
             
-            GUI_Set_FD_PROGBAR(100);
+            GUI_Set_FD_Format_PROGBAR(100);
         }                        
     }
     
@@ -261,7 +261,7 @@ void FatFs_Test(void)
 
 // ---------------------------------------------------
 
-u16 sprintf_plc_listen_record(void)
+u16 sprintf_plc_monitor_record(void)
 {
     u8 *ptr;
     u16 i;
@@ -318,7 +318,7 @@ u16 sprintf_plc_listen_record(void)
 #if (EWARM_OPTIMIZATION_EN > 0u)
 #pragma optimize = low
 #endif
-u8 plc_listen_record(void)
+u8 plc_monitor_record(void)
 {
     FATFS fs;
     FIL fp;
@@ -434,7 +434,7 @@ u8 plc_listen_record(void)
         return (FALSE);
     }  
 
-    bytes = sprintf_plc_listen_record();
+    bytes = sprintf_plc_monitor_record();
         
     res = f_write(&fp, g_proto_para.fm_buf, bytes, &br); //×·¼ÓÎÄ¼þ
 

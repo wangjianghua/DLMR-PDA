@@ -1,8 +1,6 @@
 #include "includes.h"
 
 
-const u8 P_MSG_HEAD[] = "\n\nHello, I'm uart data link layer! \nYour message is: ";
-
 const INT8U cPLC_READ_ADDR[] = {0xFE, 0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
 const INT8U mPLC_REPLY_ADDR[] = {0x68, 0x62, 0x33, 0x19, 0x00, 0x00, 0x00, 0x68, 0x93, 0x06, 0x95, 0x66, 0x4C, 0x33, 0x33, 0x33, 0xF7, 0x16};
 
@@ -12,7 +10,6 @@ const INT8U lPLC_TO_rPLC[] = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68, 0x
 const INT8U READ_PLC_NODE[] = {0x68, 0x1E, 0x00, 0x41, 0x04, 0x00, 0x5F, 0x64, 0x04, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x16, 0x01, 0x00, 0x02, 0x02, 0xB4, 0xD8, 0x16};
 
 const INT8U lBroadcast_Read_Meter[12] = {0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
-
 
 const INT8U rPLC_270III[]  = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68, 0x04, 0x08, 0x34, 0x34, 0x36, 0x33, 0x33, 0x33, 0x33, 0x33, 0x50, 0x16};
 const INT8U rPLC_270III5[] = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68, 0x04, 0x08, 0x34, 0x34, 0x36, 0x33, 0x33, 0x33, 0x34, 0x33, 0x51, 0x16};
@@ -30,6 +27,7 @@ const INT8U wPLC_PWD[] = {0x34, 0x64, 0x74, 0x84};
 const INT8U wPLC_OP_CODE[] = {0x78, 0x74, 0x86, 0x87};
 
 u8 rf_send_buf[256];
+u32 rf_send_len;
 
 OS_EVENT *g_sem_plc;
 OS_EVENT *g_sem_rf;
@@ -247,99 +245,35 @@ unsigned int IR_postProcess(pvoid h)
     return (TRUE);
 }
 
-u16 uart_link_reply(void)
+u32 Proto_DL645_Proc(void)
 {
-    P_MSG_INFO  pMsg = NULL;
-    
-
-    if(!(pMsg = (P_MSG_INFO)alloc_send_buffer(MSG_SHORT)))
+    if(DL645_FRAME_ERROR == Analysis_DL645_Frame( g_gui_para.dstAddr, 
+                                                 (u8 *)&dl645_frame_recv,
+                                                  &dl645_frame_stat))
     {
-        return (FALSE);
-    }
-
-    memcpy(g_msg_buf, P_MSG_HEAD, sizeof(P_MSG_HEAD));
-
-    memcpy(pMsg->msg_buffer, g_msg_buf, sizeof(g_msg_buf));
-
-    pMsg->msg_header.msg_len = sizeof(g_msg_buf);
-
-    pMsg->msg_header.end_id = PC_COM_PORT;
-
-    pMsg->msg_header.need_buffer_free = TRUE;
-    
-    return End_send(pMsg);
-}
-
-u16 cplc_read_addr(void)
-{
-    P_MSG_INFO  pMsg = NULL;
-
-#if OS_CRITICAL_METHOD == 3u
-    OS_CPU_SR  cpu_sr = 0u;
-#endif  
-
-
-    if(!(pMsg = (P_MSG_INFO)alloc_send_buffer(MSG_SHORT)))
-    {
-        return (FALSE);
-    }
-
-    OS_ENTER_CRITICAL();
-    memcpy(g_cplc_read_addr, cPLC_READ_ADDR, sizeof(cPLC_READ_ADDR));
-
-    if(FREQ_270KHz == g_cur_freq)
-    {
-        g_cplc_read_addr[0] = 0xFC;
-    }
-    else
-    {
-        g_cplc_read_addr[0] = 0xFA;
-    }
-    OS_EXIT_CRITICAL();    
-
-    memcpy(pMsg->msg_buffer, g_cplc_read_addr, sizeof(g_cplc_read_addr));
-
-    pMsg->msg_header.msg_len = sizeof(g_cplc_read_addr);
-
-    pMsg->msg_header.end_id = PLC_COM_PORT;
-
-    pMsg->msg_header.need_buffer_free = TRUE;
-    
-    return End_send(pMsg);
-}
-
-u32 PRO_DL645_Proc()
-{
-    if(DL645_FRAME_ERROR == Analysis_DL645_Frame(g_gui_para.dstAddr, 
-                                        (u8 *)&dl645_frame_recv,
-                                        &dl645_frame_stat))
-    {
-         g_proto_para.result = PLC_RES_FAIL;                                                 
+         g_proto_para.recv_result = RECV_RES_INVALID;                                                 
     }
     else
     {                
-        if((0 == dl645_frame_stat.Status)                            
-            || (dl645_frame_stat.C == 0))
+        if((0 == dl645_frame_stat.Status) || (0 == dl645_frame_stat.C) || (dl645_frame_stat.C & DL645_REPLY_STAT_MASK))
         {
-            g_proto_para.result = PLC_RES_FAIL;                            
-        }
-        else if ((dl645_frame_stat.C & DL645_REPLY_STAT_MASK))
-        {
-            g_proto_para.result = PLC_RES_ERROR_FRAME;
+            g_proto_para.recv_result = RECV_RES_INVALID;                            
         }
         else
         {
-            g_proto_para.result = PLC_RES_SUCC;
+            g_proto_para.recv_result = RECV_RES_SUCC;
         }
     }
-    return g_proto_para.result;
+    
+    return (g_proto_para.recv_result);
 }
 
-void  PRO_Databuf_Proc() 
+void Proto_DataBuf_Proc(void) 
 {
     u32 len;
+    
 
-    if(PLC_RES_SUCC == PRO_DL645_Proc())       
+    if(RECV_RES_SUCC == Proto_DL645_Proc())       
     {
 
         len = dl645_frame_recv.L;
@@ -403,12 +337,10 @@ void  PRO_Databuf_Proc()
 void  App_TaskProto (void *p_arg)
 {
     INT8U err;
-    u8 len;
-    WM_HWIN wh;
-    int i;
-    u8 rf_addr[] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x00, 0x36, 0x19, 0x00, 0x00, 0x00};
-    u32 rf_send_len;
-    u8 plc_read_addr[20];
+    INT8U rf_addr[] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x00, 0x36, 0x19, 0x00, 0x00, 0x00};
+    INT8U plc_read_addr[20];
+    INT16U len;
+    WM_HWIN hItem;
     
     
     (void)p_arg; 
@@ -418,18 +350,18 @@ void  App_TaskProto (void *p_arg)
 
         if(OS_ERR_NONE == err)
         {
-            wh = GUI_Get_PROGBAR();
+            hItem = GUI_Get_PROGBAR();
             
-            if(WM_HWIN_NULL != wh)
+            if(WM_HWIN_NULL != hItem)
             {
-                g_sys_ctrl.testProgBarVal = 0;
+                g_sys_ctrl.ProgBarVal = 0;
                 
-                PROGBAR_SetValue(wh, g_sys_ctrl.testProgBarVal);         
+                PROGBAR_SetValue(hItem, g_sys_ctrl.ProgBarVal);         
             }
             
-            switch(g_gui_para.cmdType)
+            switch(g_gui_para.cmd)
             {
-            case PLC_CMD_BROAD_READ: //π„≤•√¸¡Ó
+            case GUI_CMD_BROADCAST: //π„≤•√¸¡Ó
                 if(CHANNEL_PLC == g_rom_para.channel) //‘ÿ≤®
                 {
                     while(OSSemAccept(g_sem_plc));
@@ -440,7 +372,7 @@ void  App_TaskProto (void *p_arg)
                       
                     plc_uart_send((u8 *)plc_read_addr, sizeof(lBroadcast_Read_Meter) + 1);
 
-                    g_proto_para.sendStatus = PLC_MSG_SENDING;
+                    g_proto_para.msg_state = MSG_STATE_SENDING;
 
                     g_proto_para.send_len = 12 + 1;
 
@@ -449,8 +381,6 @@ void  App_TaskProto (void *p_arg)
                     OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
 
                     OSTimeDly(200);
-
-                    g_proto_para.result = PLC_RES_NONE;
                     
                     OSSemPend(g_sem_plc, g_rom_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
 
@@ -458,18 +388,18 @@ void  App_TaskProto (void *p_arg)
 
                     if(OS_ERR_NONE == err)
                     {
-                        PRO_Databuf_Proc();
+                        Proto_DataBuf_Proc();
                     }
                     else
                     {
-                        g_proto_para.result = PLC_RES_TIMEOUT;
+                        g_proto_para.recv_result = RECV_RES_TIMEOUT;
                     }
 
-                    g_proto_para.sendStatus = PLC_MSG_RECEIVED;
+                    g_proto_para.msg_state = MSG_STATE_RECEIVED;
 
                     OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
                 }
-                else if(CHANNEL_RF == g_rom_para.channel) //Œﬁœﬂ
+                else if(CHANNEL_RF == g_rom_para.channel) //…‰∆µ
                 {
                     while(OSSemAccept(g_sem_rf));
 
@@ -477,7 +407,7 @@ void  App_TaskProto (void *p_arg)
                     
                     GDW_RF_Protocol_2013(rf_addr, 0x00, 0x00, 0x00, (u8 *)&lBroadcast_Read_Meter, 12, RF_SEND_BUF);
 
-                    g_proto_para.sendStatus = PLC_MSG_SENDING;
+                    g_proto_para.msg_state = MSG_STATE_SENDING;
 
                     g_proto_para.send_len = 12;
 
@@ -496,25 +426,25 @@ void  App_TaskProto (void *p_arg)
                         memcpy(&dl645_frame_recv, &RF_RECV_BUF[RF_RECV_FIX_LEN], RF_RECV_LEN - RF_RECV_FIX_LEN);                                       
                         memcpy(&g_proto_para.recv_buf,&RF_RECV_BUF[RF_RECV_FIX_LEN], RF_RECV_LEN - RF_RECV_FIX_LEN);
                         g_proto_para.recv_len = RF_RECV_LEN - RF_RECV_FIX_LEN - RF_PRINT_FIX_LEN;
-                        PRO_Databuf_Proc();
+                        Proto_DataBuf_Proc();
                     }
                     else
                     {   
-                         g_proto_para.result = PLC_RES_TIMEOUT;                                        
+                         g_proto_para.recv_result = RECV_RES_TIMEOUT;                                        
                     }
                     
-                    g_proto_para.sendStatus = PLC_MSG_RECEIVED;
+                    g_proto_para.msg_state = MSG_STATE_RECEIVED;
                     
                     OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
                 }
                 break;
                 
-            case PLC_CMD_TYPE_R2L: //º‡øÿÃ¨
+            case GUI_CMD_R2L: //º‡øÿÃ¨
                 while(OSSemAccept(g_sem_plc));
                 
                 plc_uart_send((u8 *)rPLC_TO_lPLC, sizeof(rPLC_TO_lPLC));
 
-                g_proto_para.sendStatus = PLC_MSG_SENDING;
+                g_proto_para.msg_state = MSG_STATE_SENDING;
                 
                 OSSemPend(g_sem_plc, g_rom_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
 
@@ -522,26 +452,26 @@ void  App_TaskProto (void *p_arg)
 
                 if(OS_ERR_NONE == err)
                 {
-                    PRO_DL645_Proc();
+                    Proto_DL645_Proc();
                 }
                 else
                 {
-                    g_proto_para.result = PLC_RES_TIMEOUT;
+                    g_proto_para.recv_result = RECV_RES_TIMEOUT;
 
                     g_proto_para.data_len = 0;
                 }
 
-                g_proto_para.sendStatus = PLC_MSG_RECEIVED;
+                g_proto_para.msg_state = MSG_STATE_RECEIVED;
 
                 OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
                 break;
 
-            case PLC_CMD_TYPE_L2R: //≥≠øÿÃ¨
+            case GUI_CMD_L2R: //≥≠øÿÃ¨
                 while(OSSemAccept(g_sem_plc));
 
                 plc_uart_send((u8 *)lPLC_TO_rPLC, sizeof(lPLC_TO_rPLC));
 
-                g_proto_para.sendStatus = PLC_MSG_SENDING;
+                g_proto_para.msg_state = MSG_STATE_SENDING;
                 
                 OSSemPend(g_sem_plc, g_rom_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
 
@@ -549,24 +479,24 @@ void  App_TaskProto (void *p_arg)
 
                 if(OS_ERR_NONE == err)
                 {
-                    PRO_DL645_Proc();
+                    Proto_DL645_Proc();
                 }
                 else
                 {
-                    g_proto_para.result = PLC_RES_TIMEOUT;
+                    g_proto_para.recv_result = RECV_RES_TIMEOUT;
                 }
 
-                g_proto_para.sendStatus = PLC_MSG_RECEIVED;
+                g_proto_para.msg_state = MSG_STATE_RECEIVED;
 
                 OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
                 break;
 
-            case PLC_CMD_TYPE_NODE: //∂¡‘ÿ≤®Ω⁄µ„
+            case GUI_CMD_NODE: //∂¡‘ÿ≤®Ω⁄µ„
                 while(OSSemAccept(g_sem_plc));
                 
                 plc_uart_send((u8 *)READ_PLC_NODE, sizeof(READ_PLC_NODE));
 
-                g_proto_para.sendStatus = PLC_MSG_SENDING;
+                g_proto_para.msg_state = MSG_STATE_SENDING;
                 
                 OSSemPend(g_sem_plc, g_rom_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
 
@@ -574,20 +504,19 @@ void  App_TaskProto (void *p_arg)
 
                 if(OS_ERR_NONE == err)
                 {
-                    PRO_DL645_Proc();
+                    Proto_DL645_Proc();
                 }
                 else
                 {
-                    g_proto_para.result = PLC_RES_TIMEOUT;
+                    g_proto_para.recv_result = RECV_RES_TIMEOUT;
                 }
 
-                g_proto_para.sendStatus = PLC_MSG_RECEIVED;
+                g_proto_para.msg_state = MSG_STATE_RECEIVED;
 
                 OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
                 break;
 
-            case PLC_CMD_FREQ_SET: //ÀŸ¬ …Ë÷√
-                
+            case GUI_CMD_FREQ: //∆µ¬ …Ë÷√
                 while(OSSemAccept(g_sem_plc));
                 
                 switch(g_rom_para.freqSel)
@@ -617,7 +546,7 @@ void  App_TaskProto (void *p_arg)
                         break;
                 }
 
-                g_proto_para.sendStatus = PLC_MSG_SENDING;
+                g_proto_para.msg_state = MSG_STATE_SENDING;
                 
                 OSSemPend(g_sem_plc, g_rom_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
 
@@ -625,19 +554,19 @@ void  App_TaskProto (void *p_arg)
 
                 if(OS_ERR_NONE == err)
                 {
-                    PRO_DL645_Proc();
+                    Proto_DL645_Proc();
                 }
                 else
                 {
-                    g_proto_para.result = PLC_RES_TIMEOUT;
+                    g_proto_para.recv_result = RECV_RES_TIMEOUT;
                 }
 
-                g_proto_para.sendStatus = PLC_MSG_RECEIVED;
+                g_proto_para.msg_state = MSG_STATE_RECEIVED;
 
                 OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);                
                 break;
 
-            case PLC_CMD_TYPE_COMMON:
+            case GUI_CMD_COMMON:
                 if((FRM_CTRW_97_READ_SLVS_DATA == (g_gui_para.ctlCode & CCTT_CONTROL_CODE_MASK)) ||
                    (FRM_CTRW_97_WRITE_SLVS_DATA == (g_gui_para.ctlCode & CCTT_CONTROL_CODE_MASK)))
                 {   /* 1997∂¡–¥√¸¡Ó£¨2∏ˆ◊÷Ω⁄ ˝æ›±Í ∂ */
@@ -666,7 +595,7 @@ void  App_TaskProto (void *p_arg)
 
                 RF_SEND_LEN = g_gui_para.dataLen + DL645_FIX_LEN;
                 
-                if(CHANNEL_RF == g_rom_para.channel) //Œﬁœﬂ
+                if(CHANNEL_RF == g_rom_para.channel) //…‰∆µ
                 {
                     memcpy(&rf_addr[6], g_gui_para.dstAddr, DL645_ADDR_LEN);
 
@@ -674,7 +603,7 @@ void  App_TaskProto (void *p_arg)
                     
                     GDW_RF_Protocol_2013(rf_addr, 0x00, 0x00, 0x00, (u8 *)&dl645_frame_send, RF_SEND_LEN, RF_SEND_BUF);
 
-                    g_proto_para.sendStatus = PLC_MSG_SENDING;
+                    g_proto_para.msg_state = MSG_STATE_SENDING;
 
                     g_proto_para.send_len = RF_SEND_LEN;
 
@@ -693,14 +622,14 @@ void  App_TaskProto (void *p_arg)
                         memcpy(&dl645_frame_recv, &RF_RECV_BUF[RF_RECV_FIX_LEN], RF_RECV_LEN - RF_RECV_FIX_LEN);                                       
                         memcpy(&g_proto_para.recv_buf,&RF_RECV_BUF[RF_RECV_FIX_LEN], RF_RECV_LEN - RF_RECV_FIX_LEN);
                         g_proto_para.recv_len = RF_RECV_LEN - RF_RECV_FIX_LEN - RF_PRINT_FIX_LEN;
-                        PRO_Databuf_Proc();
+                        Proto_DataBuf_Proc();
                     }
                     else
                     {   
-                        g_proto_para.result = PLC_RES_TIMEOUT;                                        
+                        g_proto_para.recv_result = RECV_RES_TIMEOUT;                                        
                     }
                     
-                    g_proto_para.sendStatus = PLC_MSG_RECEIVED;
+                    g_proto_para.msg_state = MSG_STATE_RECEIVED;
                     
                     OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
                 }
@@ -717,7 +646,7 @@ void  App_TaskProto (void *p_arg)
                     
                     plc_uart_send(g_proto_para.send_buf, g_proto_para.send_len);
                     
-                    g_proto_para.sendStatus = PLC_MSG_SENDING;
+                    g_proto_para.msg_state = MSG_STATE_SENDING;
                     
                     OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
 
@@ -729,20 +658,20 @@ void  App_TaskProto (void *p_arg)
                     
                     if(OS_ERR_NONE == err)
                     {
-                        PRO_Databuf_Proc();
+                        Proto_DataBuf_Proc();
                     }
                     else
                     {   
-                        g_proto_para.result = PLC_RES_TIMEOUT;                                        
+                        g_proto_para.recv_result = RECV_RES_TIMEOUT;                                        
                     }
                     
-                    g_proto_para.sendStatus = PLC_MSG_RECEIVED;
+                    g_proto_para.msg_state = MSG_STATE_RECEIVED;
                     
                     OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
                 }
                 break;
 
-            case PLC_CMD_TYPE_ROUTE: 
+            case GUI_CMD_ROUTE: //¬∑”…
                 memcpy(g_gui_para.relayAddr[g_sys_ctrl.sysAddrLevel], g_gui_para.dstAddr, DL645_ADDR_LEN);
 
                 g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.protocol][1];
@@ -759,7 +688,7 @@ void  App_TaskProto (void *p_arg)
                 
                 plc_uart_send(g_proto_para.send_buf, g_proto_para.send_len);
                 
-                g_proto_para.sendStatus = PLC_MSG_SENDING;
+                g_proto_para.msg_state = MSG_STATE_SENDING;
                 
                 OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
 
@@ -771,14 +700,14 @@ void  App_TaskProto (void *p_arg)
                 
                 if(OS_ERR_NONE == err)
                 {
-                    PRO_Databuf_Proc();
+                    Proto_DataBuf_Proc();
                 }
                 else
                 {   
-                    g_proto_para.result = PLC_RES_TIMEOUT;                                        
+                    g_proto_para.recv_result = RECV_RES_TIMEOUT;                                        
                 }
                 
-                g_proto_para.sendStatus = PLC_MSG_RECEIVED;
+                g_proto_para.msg_state = MSG_STATE_RECEIVED;
                 
                 OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
                 break;
@@ -795,14 +724,14 @@ void  App_TaskProto (void *p_arg)
 
                 if(OS_ERR_NONE == err)
                 {
-                    g_proto_para.result = PLC_RES_SUCC;
+                    g_proto_para.recv_result = RECV_RES_SUCC;
 
-                    if(FALSE == plc_listen_record())
+                    if(FALSE == plc_monitor_record())
                     {
                         DEBUG_PRINT(("PLC listening record error!\n"));
                     }
 
-                    g_proto_para.sendStatus = PLC_MSG_RECEIVED;
+                    g_proto_para.msg_state = MSG_STATE_RECEIVED;
                     
                     OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);                
                 }

@@ -70,8 +70,8 @@
 */
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { WINDOW_CreateIndirect, "AdvanceSet",  ID_WINDOW_0, 0,   0,   240, 295, 0, 0x0,  0 },
-  { TEXT_CreateIndirect,   ScrTimeout,      ID_TEXT_0,   12,  12,  120,  20,  0, 0x0,  0 },
-  { TEXT_CreateIndirect,   ShutDownTime,   ID_TEXT_1,   12,  42,  120, 20,  0, 0x0,  0 },
+  { TEXT_CreateIndirect,   SleepTime,      ID_TEXT_0,   8,  12,  120,  20,  0, 0x0,  0 },
+  { TEXT_CreateIndirect,   ShutDownTime,   ID_TEXT_1,   8,  42,  120, 20,  0, 0x0,  0 },
   //{ TEXT_CreateIndirect,   ShutDownTime,  ID_TEXT_2,   12,  72,  100,  20,  0, 0x0,  0 },
   
   { EDIT_CreateIndirect,   "freq",        ID_EDIT_0,   130,   10,  100, 20,  0, 0x64, 0 },
@@ -193,14 +193,14 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
         //
         // Initialization of 'freq'
         //
-        hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_1);
-        //sprintf(tmp, "%d", g_sys_ctrl.shutdownTimeout);
-        EDIT_SetText(hItem, "30");
+        hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_0);
+        sprintf(tmp, "%d", g_rom_para.auto_sleep_time);
+        EDIT_SetText(hItem, tmp);
         WM_DisableWindow(hItem);
 
-        hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_0);
-        //sprintf(tmp, "%d", g_sys_ctrl.sleepTimeout);
-        EDIT_SetText(hItem, "120");
+        hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_1);
+        sprintf(tmp, "%d", g_rom_para.auto_shutdown_time);
+        EDIT_SetText(hItem, tmp);
         WM_DisableWindow(hItem);
 
         hItem = WM_GetDialogItem(pMsg->hWin,ID_BUTTON_0);
@@ -266,7 +266,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
  
                             break;
                         case ID_EDIT_0:
-                            g_sys_ctrl.selectWidget=EDIT_SCR_OUTTIME;
+                            g_sys_ctrl.selectWidget=EDIT_SLEEP_TIME;
                             g_hWin_Input=Create_Edit_Set(g_hWin_para);
                             WM_SetFocus(g_hWin_Input);
                             break;

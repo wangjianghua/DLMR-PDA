@@ -3728,7 +3728,7 @@ FRESULT f_mkfs (
         {   
             clr_wdt(); //ЛЊаж
             
-            GUI_Set_FD_PROGBAR((n * 95) / n_fat);
+            GUI_Set_FD_Format_PROGBAR((n * 95) / n_fat);
             
             OSTimeDly(1);
             

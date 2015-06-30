@@ -205,7 +205,7 @@ u8* GUI_hex2PowerDataStr(u8 * srcBuf, u32 len)
 
 }
 
-void GUI_print_recv_buf()
+void GUI_Recv_Msg_Proc(void)
 {
     MULTIEDIT_HANDLE hObj;
     u16 i;
@@ -225,23 +225,23 @@ void GUI_print_recv_buf()
         *send_ptr++ = '\n';
         *send_ptr++ = 0;
 
-        if((g_sys_ctrl.guiState == GUI_PLC_MSG_TEST)
-            ||(g_sys_ctrl.guiState == GUI_PLC_MSG_READ)
-            ||(g_sys_ctrl.guiState == GUI_PLC_MSG_FREQ))
+        if((g_gui_para.state == GUI_STATE_PROTO_DBG)
+            ||(g_gui_para.state == GUI_STATE_MR)
+            ||(g_gui_para.state == GUI_STATE_PLC_FREQ))
         {
             hObj = MSG_Get_MultiEdit();
             MULTIEDIT_AddText(hObj, s_prbf); 
-            if(g_sys_ctrl.guiState == GUI_PLC_MSG_READ)
+            if(g_gui_para.state == GUI_STATE_MR)
             {
                 RMD_proc_resp_data();
             }
 
-            if(g_sys_ctrl.guiState == GUI_PLC_MSG_TEST)
+            if(g_gui_para.state == GUI_STATE_PROTO_DBG)
             {
                 STM_proc_resp_data();
             }
         }
-        else if(g_sys_ctrl.guiState == GUI_PLC_MSG_LISTING)
+        else if(g_gui_para.state == GUI_STATE_PLC_MONITOR)
         {
             hObj = MNT_Get_MultiEdit();
             if(g_sys_ctrl.numMultiedit > 25)
@@ -254,7 +254,7 @@ void GUI_print_recv_buf()
     }
 }
 
-void GUI_print_send_buf()
+void GUI_Send_Msg_Proc(void)
 {
     MULTIEDIT_HANDLE hObj;
     u16 i;
@@ -281,16 +281,16 @@ void GUI_print_send_buf()
 
 WM_HWIN GUI_Get_PROGBAR()
 {
-    switch(g_sys_ctrl.guiState )
+    switch(g_gui_para.state )
     {
-    case  GUI_PLC_MSG_TEST:
+    case  GUI_STATE_PROTO_DBG:
         return STM_Get_PROGBAR();
         break;
-    case  GUI_PLC_MSG_READ:
+    case  GUI_STATE_MR:
         return RMD_Get_PROGBAR();
         break;
-    case  GUI_PLC_MSG_MEMORY:
-        return GUI_Get_FD_Item();
+    case  GUI_STATE_MEM:
+        return GUI_Get_FD_Usage_PROGBAR();
         break;
     }
     
@@ -298,9 +298,9 @@ WM_HWIN GUI_Get_PROGBAR()
     
 }
 
-void GUI_FailRecvProc(void)
+void GUI_Recv_Fail_Proc(void)
 {
-    if((g_sys_ctrl.guiState == GUI_PLC_MSG_READ)&&(g_gui_para.cmdType == PLC_CMD_TYPE_COMMON))
+    if((g_gui_para.state == GUI_STATE_MR)&&(g_gui_para.cmd == GUI_CMD_COMMON))
     {
         RMD_ReadErr();
     }
@@ -310,11 +310,11 @@ void GUI_FailRecvProc(void)
 
 void GUI_ClearData(void)
 {
-    if((g_sys_ctrl.guiState == GUI_PLC_MSG_READ)&&(g_gui_para.cmdType == PLC_CMD_TYPE_COMMON))
+    if((g_gui_para.state == GUI_STATE_MR)&&(g_gui_para.cmd == GUI_CMD_COMMON))
     {
         RMD_ClearData();
     }
-    if((g_sys_ctrl.guiState == GUI_PLC_MSG_TEST)&&(g_gui_para.cmdType == PLC_CMD_TYPE_COMMON))
+    if((g_gui_para.state == GUI_STATE_PROTO_DBG)&&(g_gui_para.cmd == GUI_CMD_COMMON))
     {
         CPT_ClearData();
     }
@@ -323,72 +323,72 @@ void GUI_ClearData(void)
 #if (EWARM_OPTIMIZATION_EN > 0u)
 #pragma optimize = low
 #endif
-void GUI_Msg_Proc()
+void GUI_Msg_Proc(void)
 {
     WM_HWIN hItem;
 
-    if(g_proto_para.sendStatus == PLC_MSG_SENDING)    
+
+    if(MSG_STATE_SENDING == g_proto_para.msg_state)    
     {        
         GUI_Msg_Upload(ON);
         
-        GUI_print_send_buf();
-        
-        return;
-       
+        GUI_Send_Msg_Proc();
     }
-
-    if((g_proto_para.result == PLC_RES_FAIL) || (g_proto_para.result == PLC_RES_TIMEOUT))
-    {
-        g_proto_para.result = PLC_RES_NONE;
-        GUI_FailRecvProc();
-        ERR_NOTE(g_hWin_menu, 10);
-        hItem = GUI_Get_PROGBAR();
-        PROGBAR_SetBarColor(hItem, 0, GUI_RED);
-        return;
-    }
-
-    if(g_proto_para.result == PLC_RES_ERROR_FRAME)
-    {
-        GUI_Msg_Download(ON);
-        
-        GUI_print_recv_buf();
-
-        hItem = GUI_Get_PROGBAR();
-        if(hItem != WM_HWIN_NULL)
-        {
-            PROGBAR_SetBarColor(hItem, 0, GUI_RED);
-            g_sys_ctrl.testProgBarVal = 100;
-            PROGBAR_SetValue(hItem, g_sys_ctrl.testProgBarVal);              
-        }
-           
-        //g_sys_ctrl.guiState = GUI_PLC_MSG_IDLE;
-        g_proto_para.sendStatus = PLC_MSG_IDLE; 
-        g_proto_para.result = PLC_RES_NONE;
-        return;
-    }
-
-    if((g_proto_para.sendStatus == PLC_MSG_RECEIVED) )
-    {
-        if( g_proto_para.result == PLC_RES_SUCC )
+    else if(MSG_STATE_RECEIVED == g_proto_para.msg_state)
+    {     
+        if(RECV_RES_SUCC == g_proto_para.recv_result)
         {
             GUI_Msg_Download(ON);
             
             GUI_ClearData();
+            
             OSTimeDlyHMSM(0, 0, 0, 20);
-            GUI_print_recv_buf();
+            
+            GUI_Recv_Msg_Proc();
+        
+            hItem = GUI_Get_PROGBAR();
+            
+            if(WM_HWIN_NULL != hItem)
+            {
+                g_sys_ctrl.ProgBarVal = 100;
+                
+                PROGBAR_SetValue(hItem, g_sys_ctrl.ProgBarVal);              
+            }
+        }                    
+        else if(RECV_RES_INVALID == g_proto_para.recv_result)
+        {
+            GUI_Msg_Download(ON);
+            
+            GUI_Recv_Fail_Proc();
 
             hItem = GUI_Get_PROGBAR();
-            if(hItem != WM_HWIN_NULL)
+            
+            if(WM_HWIN_NULL != hItem)
             {
-                g_sys_ctrl.testProgBarVal = 100;
-                PROGBAR_SetValue(hItem, g_sys_ctrl.testProgBarVal);              
+                PROGBAR_SetBarColor(hItem, 0, GUI_RED);
+                
+                g_sys_ctrl.ProgBarVal = 100;
+                
+                PROGBAR_SetValue(hItem, g_sys_ctrl.ProgBarVal);              
             }
-        }        
-        //g_sys_ctrl.guiState = GUI_PLC_MSG_IDLE;
-        g_proto_para.sendStatus = PLC_MSG_IDLE;
-        g_proto_para.result = PLC_RES_NONE;
+        }  
+        else if(RECV_RES_TIMEOUT == g_proto_para.recv_result)
+        {
+            GUI_Recv_Fail_Proc();
+            
+            ERR_NOTE(g_hWin_menu, 10);
+            
+            hItem = GUI_Get_PROGBAR();
+
+            if(WM_HWIN_NULL != hItem)
+            {
+                PROGBAR_SetBarColor(hItem, 0, GUI_RED);
+            }
+        }         
+        
+        g_proto_para.msg_state = MSG_STATE_NONE;
+        g_proto_para.recv_result = RECV_RES_IDLE;
     }
-    
 }
 
 

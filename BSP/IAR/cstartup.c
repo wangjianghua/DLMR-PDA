@@ -72,6 +72,8 @@ typedef  union {
 #pragma language=extended
 #pragma segment="CSTACK"
 
+static  void  Reset_Handler      (void);
+
 static  void  App_NMI_ISR        (void);
 
 static  void  App_Fault_ISR      (void);
@@ -108,7 +110,7 @@ extern  void  __iar_program_start (void);
 
 __root  const  APP_INTVECT_ELEM  __vector_table[] @ ".intvec" = {
     { .Ptr = (void *)__sfe( "CSTACK" )},                        /*  0, SP start value.                                  */
-    __iar_program_start,                                        /*  1, PC start value.                                  */
+    Reset_Handler,                                              /*  1, PC start value.                                  */
     App_NMI_ISR,                                                /*  2, NMI.                                             */
     App_Fault_ISR,                                              /*  3, Hard Fault.                                      */
     App_MemFault_ISR,                                           /*  4, Memory Management.                               */
@@ -205,6 +207,13 @@ __root  const  APP_INTVECT_ELEM  __vector_table[] @ ".intvec" = {
     BSP_IntHandlerCRYP,                                         /* 95, INTISR[ 79]  CRYPT Interrupt.                    */
     BSP_IntHandlerHASH_RNG                                      /* 96, INTISR[ 80]  HASH RNG Interrupt.                 */
 };
+
+static  void  Reset_Handler (void)
+{
+    SystemInit();
+    
+    __iar_program_start();
+}
 
 /*
 *********************************************************************************************************

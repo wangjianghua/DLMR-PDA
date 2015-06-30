@@ -105,19 +105,21 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
 *
 **********************************************************************
 */
-WM_HWIN GUI_Get_FD_Item()
+WM_HWIN GUI_Get_FD_Usage_PROGBAR()
 {    
      return WM_GetDialogItem(g_hWin_SDInfo, ID_PROGBAR_0);            
 }
 
-void GUI_Set_FD_PROGBAR(u32 newVal)
+void GUI_Set_FD_Format_PROGBAR(u32 val)
 {
     WM_HWIN hItem;
+
+    
     hItem = WM_GetDialogItem(g_hWin_SDInfo, ID_PROGBAR_1);  
-    if(hItem != WM_HWIN_NULL)
+    
+    if(WM_HWIN_NULL != hItem)
     {
-        //g_sys_ctrl.testProgBarVal = 100;
-        PROGBAR_SetValue(hItem, newVal);              
+        PROGBAR_SetValue(hItem, val);              
     }
 }
 

@@ -30,7 +30,7 @@ u32 get_file_num(void);
 void FM_Format_Disk(void);
 void scan_files(char *path);
 void FatFs_Test(void);
-u8 plc_listen_record(void);
+u8 plc_monitor_record(void);
 
 
 #ifdef __cplusplus

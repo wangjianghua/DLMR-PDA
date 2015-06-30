@@ -123,14 +123,14 @@ static void Select_Input_Edit(int  EditNum)
     hItem=WM_GetDialogItem(g_hWin_Input,ID_EDIT_0);
     switch(EditNum)
     {
-        case EDIT_SCR_OUTTIME:
+        case EDIT_SLEEP_TIME:
             EDIT_GetText(hItem,tmpTextBuf,4);
-            g_rom_para.scrTimeout = atoi(tmpTextBuf);
-            if(g_rom_para.scrTimeout < 30)
+            g_rom_para.auto_sleep_time = atoi(tmpTextBuf);
+            if(g_rom_para.auto_sleep_time < 5)
             {
-                g_rom_para.scrTimeout = 30;
+                g_rom_para.auto_sleep_time = 5;
 
-                sprintf(tmpTextBuf, "%d", g_rom_para.scrTimeout);
+                sprintf(tmpTextBuf, "%d", g_rom_para.auto_sleep_time);
             }
             hItem=ADS_GetSrcOutTime();
             break;
@@ -239,10 +239,17 @@ static void Select_Input_Edit(int  EditNum)
             LISTVIEW_SetItemText(hItem, 0, (RowCount-1), tmpListBuf);
             hItem = WM_GetDialogItem(g_hWin_Input,ID_EDIT_0);
             break;
+            
         case EDIT_SHUTDOWN_TIME:
-            EDIT_GetText(hItem,tmpTextBuf,5);
-            g_sys_ctrl.shutdownTimeout = atoi(tmpTextBuf);
-            hItem = ADS_GetStDnTime();
+            EDIT_GetText(hItem,tmpTextBuf,4);
+            g_rom_para.auto_shutdown_time = atoi(tmpTextBuf);
+            if(g_rom_para.auto_shutdown_time < 60)
+            {
+                g_rom_para.auto_shutdown_time = 60;
+
+                sprintf(tmpTextBuf, "%d", g_rom_para.auto_shutdown_time);
+            }
+            hItem=ADS_GetStDnTime();
             break;
             
         default:
@@ -263,7 +270,7 @@ static void _init_edit(WM_MESSAGE *pMsg,int EditNum)
     int i;
     switch(EditNum)
     {
-        case EDIT_SCR_OUTTIME:
+        case EDIT_SLEEP_TIME:
             hItem=ADS_GetSrcOutTime();
             EDIT_GetText(hItem,tmpTextBuf,5);
             //hItem=CPS_Set_ScrOutTime();

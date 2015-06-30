@@ -50,31 +50,20 @@
 #define PLC_BPS_FAST             4
 //#define PLC_BPS_HIGH             4
 
+typedef enum
+{
+    MSG_STATE_NONE = 0,
+    MSG_STATE_SENDING,
+    MSG_STATE_RECEIVED
+} MSG_STATE_TYPE; //华兄
 
-
-
-#define PLC_RES_SUCC           0
-#define PLC_RES_FAIL           1
-#define PLC_RES_TIMEOUT        2
-#define PLC_RES_ERROR_FRAME    3
-#define PLC_RES_NONE           4
-
-
-
-#define PLC_MSG_NOINIT              0
-#define PLC_MSG_IDLE                1
-#define PLC_MSG_SENDING             2
-#define PLC_MSG_RECEIVED            3
-
-
-#define GUI_PLC_MSG_IDLE        0
-#define GUI_PLC_MSG_TEST        1    //规约调试
-#define GUI_PLC_MSG_READ        2    //抄表
-#define GUI_PLC_MSG_SET         3    //载波设置
-#define GUI_PLC_MSG_LISTING     4    //状态监控
-#define GUI_PLC_MSG_MEMORY      5    //内存管理
-#define GUI_PLC_MSG_FREQ        6    //速率设置
-
+typedef enum
+{
+    RECV_RES_IDLE = 0,
+    RECV_RES_SUCC,
+    RECV_RES_INVALID,
+    RECV_RES_TIMEOUT
+} RECV_RES_TYPE; //华兄
 
 #define FILE_NAME_LEN           12
 #define FILE_NUM_LEN             4
@@ -93,6 +82,9 @@
 
 typedef struct _proto_para_
 {
+	u8 msg_state; //MSG_STATE_SENDING, MSG_STATE_RECEIVED
+	u8 recv_result; //RECV_RES_SUCC, RECV_RES_INVALID, RECV_RES_TIMEOUT
+	
     u8 send_buf[256]; //DL645发送帧
     u16 send_len; //DL645发送帧长度
 
@@ -103,9 +95,6 @@ typedef struct _proto_para_
     u16 data_len; //提取数据的长度
 
     u8 fm_buf[512];
-
-    u8 sendStatus;
-    u8 result; //PLC通信结果: PLC_RES_SUCC、PLC_RES_FAIL、PLC_RES_TIMEOUT    
 } PROTO_PARA, *P_PROTO_PARA;
 
 extern OS_EVENT *g_sem_plc;
@@ -118,6 +107,7 @@ extern OS_EVENT *g_sem_chk_rf;
 extern u8 g_cur_freq;
 extern PROTO_PARA g_proto_para;
 extern u8 rf_send_buf[256];
+extern u32 rf_send_len;
 extern DL645_Frame_C dl645_frame_send;
 extern DL645_Frame_C dl645_frame_recv;
 extern DL645_Frame_Stat_C dl645_frame_stat;
@@ -130,7 +120,6 @@ unsigned int PC_postProcess(pvoid h);
 unsigned int RS485_postProcess(pvoid h);
 unsigned int PLC_postProcess(pvoid h);
 unsigned int IR_postProcess(pvoid h);
-u16 cplc_read_addr(void);
 void App_TaskProto(void *p_arg);
 void App_TaskPC(void *p_arg);
 void App_TaskRS485(void *p_arg);

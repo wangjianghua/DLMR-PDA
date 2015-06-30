@@ -303,7 +303,7 @@ static u8 RMD_Get_Para(WM_MESSAGE *pMsg)
 #endif
     g_gui_para.dataLen = 0;
 
-    g_gui_para.cmdType = PLC_CMD_TYPE_COMMON;
+    g_gui_para.cmd = GUI_CMD_COMMON;
     
     return DEV_OK;
 
@@ -324,7 +324,7 @@ void RMD_proc_resp_data(void)
 
     if(g_hWin_ReadMeter != WM_HWIN_NULL)
     {
-        if(g_gui_para.cmdType == PLC_CMD_BROAD_READ)
+        if(g_gui_para.cmd == GUI_CMD_BROADCAST)
         {
             if(len == 6)
             {
@@ -549,7 +549,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 WM_ShowWindow(g_hWin_Date);
                 WM_SetFocus(g_hWin_menu);
                 RMD_key_cnt = 0;
-                g_sys_ctrl.guiState = GUI_PLC_MSG_IDLE;
+                g_gui_para.state = GUI_STATE_IDLE;
             }
             break;
             
@@ -558,8 +558,8 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             {
                 if(CHANNEL_PLC == g_rom_para.channel)
                 {
-                    g_gui_para.cmdType = PLC_CMD_BROAD_READ;
-                    g_sys_ctrl.guiState = GUI_PLC_MSG_READ;                        
+                    g_gui_para.cmd = GUI_CMD_BROADCAST;
+                    g_gui_para.state = GUI_STATE_MR;                        
                     OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
                 }
             }
@@ -579,7 +579,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             {
                 if(DEV_OK == RMD_Get_Para(pMsg))//获取参数数据
                 {
-                    g_sys_ctrl.guiState = GUI_PLC_MSG_READ;
+                    g_gui_para.state = GUI_STATE_MR;
                     OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
                 }
             }

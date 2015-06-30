@@ -279,7 +279,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             case GUI_KEY_GREEN:
                 RLY_GetParaAddr(pMsg);
                 //g_rom_para.
-                g_gui_para.cmdType = PLC_CMD_TYPE_ROUTE ;
+                g_gui_para.cmd = GUI_CMD_ROUTE ;
                 //g_sys_ctrl.sysUseRoute = 1;
                 WM_DeleteWindow(g_hWin_relay);
                 g_hWin_relay=HBWIN_NULL;

@@ -312,11 +312,11 @@ static void _init_dialog(WM_MESSAGE * pMsg)
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_4);
     //int_to_char(g_rom_para.scrTimeout,tmpBuf,10);
-    EDIT_SetText(hItem, "123456");
+    EDIT_SetText(hItem, "0000");
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_5);
     //int_to_char(g_rom_para.meterPassword,tmpBuf,10);
-    EDIT_SetText(hItem, "00000000");
+    EDIT_SetText(hItem, "0000");
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_6);
     int_to_char(g_rom_para.recvDelayTime,tmpBuf,10);

@@ -514,6 +514,8 @@ void  App_TaskEndTick (void *p_arg)
     (void)p_arg;
     
     while (DEF_TRUE) {    
+        clr_wdt(); //ЛЊаж
+        
         End_tick_check();
         
 #if (LED_UART_EN > 0u)
@@ -522,6 +524,15 @@ void  App_TaskEndTick (void *p_arg)
 
         GUI_Msg_Upload(OFF);
         GUI_Msg_Download(OFF);
+
+        if(GPIO_PIN_RESET == GET_USB_VOL())
+        {
+            g_sys_ctrl.usb_state = TRUE;
+        }
+        else
+        {
+            g_sys_ctrl.usb_state = FALSE;
+        } 
 
         if(GPIO_PIN_RESET == HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_11))
         {

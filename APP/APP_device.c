@@ -8,10 +8,11 @@ ROM_PARA g_rom_para =
     0,                  //校验和
     VERSION_DATE,       //版本日期
 
-    30,                 //屏保时间
+    60,                 //自动睡眠时间
+    180,                //自动关机时间
     4000,               //接受数据延时
     1000,               //执行时间
-    DL645_07,            //规约
+    DL645_07,           //规约
     CHANNEL_PLC,        //通道
     BAUD_RATE_9600,     //波特率
     0xFA,               //前导符
@@ -31,10 +32,11 @@ const ROM_PARA g_rom_para_default =
     0,                  //校验和
     VERSION_DATE,       //版本日期
 
-    30,                 //屏保时间
+    60,                 //自动睡眠时间
+    180,                //自动关机时间
     4000,               //接受数据延时
     1000,               //执行时间
-    DL645_07,            //规约
+    DL645_07,           //规约
     CHANNEL_PLC,        //通道
     BAUD_RATE_9600,     //波特率
     0xFA,               //前导符
@@ -46,6 +48,7 @@ const ROM_PARA g_rom_para_default =
         0,              //保留
     }
 };
+
 
 SYS_CTRL g_sys_ctrl;
 
@@ -120,7 +123,7 @@ unsigned int Get_checksum(unsigned char *buf, unsigned short len)
 
 void DEV_Power_Off()
 {
-    if(g_sys_ctrl.sysUsbVol)
+    if(g_sys_ctrl.usb_state)
     {
         return;
     }
@@ -249,10 +252,9 @@ unsigned int DEV_Parameters_Write(void)
     return DEV_OK;    
 }
 
-const u8 c_test_addr[6] = {0x76, 0x05, 0x31, 0x01, 0x0, 0x18};
-const u8 c_default_dataflag[4] = {0x00, 0x00, 0x01, 0x0};
-
-const u8 c_97_dataflag[4] = {0x90,0x10, 0x00, 0x00};
+const u8 c_test_addr[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+const u8 c_default_dataflag[4] = {0x00, 0x00, 0x00, 0x00};
+const u8 c_97_dataflag[4] = {0x00,0x00, 0x00, 0x00};
 
 void DEV_Init(void)
 {
@@ -269,12 +271,11 @@ void DEV_Init(void)
         memcpy(g_sys_ctrl.defaultDataFlag, c_97_dataflag, 4);
     }
     
-    g_sys_ctrl.shutdownTimeout = 0;
+    g_sys_ctrl.shutdown_timeout = 0;
 
-    g_sys_ctrl.sleepTimeout = 0;
+    g_sys_ctrl.sleep_timeout = 0;
 
     g_sys_ctrl.sysPowerState = SYS_POWER_WAKEUP;
-    
 }
 
 void dev_para_recover(void)

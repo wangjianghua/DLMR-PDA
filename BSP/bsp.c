@@ -882,23 +882,21 @@ IWDG_HandleTypeDef IwdgHandle;
 /* IWDG init function */
 void BSP_IWDG_Init(void)
 {
-  /* Enable the LSI oscillator */
-  __HAL_RCC_LSI_ENABLE();
-  
-  /* Wait till LSI is ready */
-  while (__HAL_RCC_GET_FLAG(RCC_FLAG_LSIRDY) == RESET)
-  {
-  }
-  
-  IwdgHandle.Instance = IWDG;
-  IwdgHandle.Init.Prescaler = IWDG_PRESCALER_32;
-  IwdgHandle.Init.Reload = 1000;
-  HAL_IWDG_Init(&IwdgHandle);
+    /* Enable the LSI oscillator */
+    __HAL_RCC_LSI_ENABLE();
 
-  if(HAL_IWDG_Start(&IwdgHandle) != HAL_OK)
-  {
-  }
+    /* Wait till LSI is ready */
+    while (__HAL_RCC_GET_FLAG(RCC_FLAG_LSIRDY) == RESET)
+    {}
+
+    IwdgHandle.Instance = IWDG;
+    IwdgHandle.Init.Prescaler = IWDG_PRESCALER_32;
+    IwdgHandle.Init.Reload = 1250;
+    HAL_IWDG_Init(&IwdgHandle);
+
+    HAL_IWDG_Start(&IwdgHandle);
 }
+
 
 
 /*

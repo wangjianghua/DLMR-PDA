@@ -87,15 +87,13 @@
 
 typedef struct _key_ctrl_
 {
-	uint32_t key_col;
-	uint32_t key_row;
-	OS_EVENT *key_sem;
+	uint32_t col;
+	uint32_t row;
+	OS_EVENT *sem;
 } KEY_CTRL, *P_KEY_CTRL;
 
 extern KEY_CTRL g_key_ctrl;
-extern OS_EVENT *g_key_mbox;
-//extern int g_key_press_count;//added on 2014.12.31
-
+extern OS_EVENT *g_mbox_chk_key;
 
 void KEY_Init(void);
 void  App_TaskKey(void *p_arg);

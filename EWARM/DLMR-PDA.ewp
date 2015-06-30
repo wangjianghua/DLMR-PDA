@@ -2140,12 +2140,6 @@
       <name>$PROJ_DIR$\..\gui\AdvanceSetDLG.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\gui\CommParaSetDLG.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\gui\CommStdTestDLG.c</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\..\gui\DataSignDLG.c</name>
     </file>
     <file>
@@ -2167,6 +2161,9 @@
       <name>$PROJ_DIR$\..\gui\MonitorDLG.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\gui\ParaSetDLG.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\gui\PDA_Bitmap.c</name>
     </file>
     <file>
@@ -2174,6 +2171,9 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\gui\phrase.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\gui\ProtoDbgDLG.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\gui\ReadMeterDLG.c</name>

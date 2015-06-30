@@ -61,7 +61,8 @@ typedef struct _rom_para_
     unsigned int crc;
     unsigned int versionDate;
 
-    unsigned int scrTimeout;           //屏幕超时
+    unsigned int auto_sleep_time;           //屏幕超时
+    unsigned int auto_shutdown_time;
     unsigned int recvDelayTime;//接受数据延时
     unsigned int execInterval;//执行时间
     unsigned int protocol; //规约
@@ -76,20 +77,19 @@ typedef struct _rom_para_
 
     unsigned int number;
 
-    unsigned int para_data[SRM_PARA_NUMBER - 23];
+    unsigned int para_data[SRM_PARA_NUMBER - 24];
 } ROM_PARA, *P_ROM_PARA;
 
 typedef struct _sys_ctrl_
 {
     unsigned int paraAddr;
-    u32   guiState;
-    u32   testProgBarVal;
+    u32   ProgBarVal;
     u32   procTask;    //当前系统需要处理的任务
     u32   pwrValue;//电池电量
-    u32   shutdownTimeout;
-    u32   sleepTimeout;
+    u32   shutdown_timeout;
+    u32   sleep_timeout;
     u32   sysPowerState;
-    u32   sysUsbVol;
+    u32   usb_state;
     u32   sysCtdFlag;  //倒计时标志
     u32   sysCtdVal;  //倒计时的时间
     u8    numMultiedit;        //多行文本打印次数

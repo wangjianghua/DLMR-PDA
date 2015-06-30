@@ -51,10 +51,7 @@
 *                                       LOCAL GLOBAL VARIABLES
 *********************************************************************************************************
 */
-#define VECT_TAB_OFFSET  0x8000 
-
-
-                                                                /* ----------------- APPLICATION GLOBALS ------------------ */
+                                                             /* ----------------- APPLICATION GLOBALS ------------------ */
 static  OS_STK         App_TaskStartStk[APP_CFG_TASK_START_STK_SIZE];
 static  OS_STK         App_TaskEndTickStk[APP_CFG_TASK_END_TICK_STK_SIZE];
 static  OS_STK         App_TaskEndProcStk[APP_CFG_TASK_END_PROC_STK_SIZE];
@@ -66,7 +63,6 @@ static  OS_STK         App_TaskPowerStk[APP_CFG_TASK_POWER_STK_SIZE];
 static  OS_STK         App_TaskPCStk[APP_CFG_TASK_PC_STK_SIZE];
 static  OS_STK         App_TaskRS485Stk[APP_CFG_TASK_RS485_STK_SIZE];
 static  OS_STK         App_TaskCheckStk[APP_CFG_TASK_CHECK_STK_SIZE];
-static  OS_STK         App_TaskWDTStk[APP_CFG_TASK_WDT_STK_SIZE];
 
 /*
 *********************************************************************************************************
@@ -79,7 +75,6 @@ static  void           App_TaskGUI                  (void *p_arg); //GUI任务 add
 static  void           App_TaskGMP                  (void *p_arg);
 static  void           App_TaskPower                (void *p_arg);
 static  void           App_TaskCheck                (void *p_arg);
-static  void           App_TaskWDT                  (void *p_arg);
 
 static  void           App_MemAlloc                 (void);
 static  void           App_TaskCreate               (void);
@@ -90,10 +85,6 @@ static void SystemClock_Config(void)
 {
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
   RCC_OscInitTypeDef RCC_OscInitStruct;
-
-    /* Configure the Vector Table location add offset address ------------------*/
-
-  SCB->VTOR = FLASH_BASE | VECT_TAB_OFFSET; /* Vector Table Relocation in Internal FLASH */
 
 
   /* Enable HSE Oscillator and activate PLL with HSE as source */
@@ -226,7 +217,7 @@ int G_II;
 void APP_Shutdown()
 {
 #if 1
-    if(g_sys_ctrl.sysUsbVol)
+    if(g_sys_ctrl.usb_state)
     {
         return;
     }
@@ -323,8 +314,7 @@ void APP_StartButtonTest()
 */
 static  void  App_TaskStart (void *p_arg)
 {
-    u8 i = 0, n;
-    u8 t_rtc;
+    INT8U n, t_rtc;
 
 
     (void)p_arg; 
@@ -342,12 +332,12 @@ static  void  App_TaskStart (void *p_arg)
 #endif
 
     APP_StartButtonTest();
+
+    BSP_IWDG_Init();
     
     App_EventCreate();                                          /* Create Application Events                                */
 
-    App_TaskCreate();/* Create application Tasks                                 */ 
-
-    BSP_IWDG_Init();  //4.1
+    App_TaskCreate();                                           /* Create application Tasks                                 */ 
 
     GUI_Init();                                                 /* Init the STemWin GUI Library */
 
@@ -356,40 +346,30 @@ static  void  App_TaskStart (void *p_arg)
     End_Init();
 
     RF_Init();
-    
-    DEBUG_PRINT(("OS Tasks Run!\n"));
 
-    //FatFs_Test();
-    //BSP_BEEP();
-    for(t_rtc = 0; t_rtc < 3;t_rtc++)
+    for(t_rtc = 0; t_rtc < 3; t_rtc++)
     {
         RTC_ReadTime(g_rtc_time); 
         RTC_CheckTime(g_rtc_time);
     }
-    g_sys_ctrl.led_count = 2;
+        
+    DEBUG_PRINT(("OS Tasks Run!\n"));
+    
     while (DEF_TRUE) { 
-        /* Task body, always written as an infinite loop.           */
-
-        if(i++ >= 3)
-        {
-            i = 0;
-            RTC_ReadTime(g_rtc_time); 
-        }
-
         for(n = 0; n < 32; n++)
         {
-            if((0x01<<n) & g_sys_ctrl.procTask)
+            if((1 << n) & g_sys_ctrl.procTask)
             {
                 switch(n)
                 {
-                case 0:
-                    FM_Format_Disk();
+                case 0:  
+                    FM_Format_Disk();               
                     SYS_DEL_TASK(SYS_TASK_FORMAT_DISK);
                     break;
                 }
             }
         }
-        
+
         OSTimeDlyHMSM(0, 0, 0, 100);
     }
 }
@@ -493,6 +473,8 @@ static  void  App_TaskGUI (void *p_arg)
 
         if(!(count % 2))
         {
+            RTC_ReadTime(g_rtc_time);
+            
             memcpy(timebuf,RTC2Text(),10);
             TEXT_SetText(g_hWin_TimeBar,timebuf);
             
@@ -552,22 +534,15 @@ static  void  App_TaskPower (void *p_arg)
                 LCD_BL_OFF();
                 LED_SLEEP_ON();
             }
-        }
+        }      
 
-        if(GPIO_PIN_RESET == GET_USB_VOL())
+        g_sys_ctrl.shutdown_timeout++;
+        if(g_sys_ctrl.shutdown_timeout > (g_rom_para.auto_shutdown_time * 100))
         {
-            g_sys_ctrl.sysUsbVol = TRUE;
-        }
-        else
-        {
-            g_sys_ctrl.sysUsbVol = FALSE;
-        }        
-
-        g_sys_ctrl.shutdownTimeout++;
-        if(g_sys_ctrl.shutdownTimeout > ((g_rom_para.scrTimeout + 150) * 100))
-        {
-            if((PLC_CMD_TYPE_NODE == g_gui_para.cmdType) ||
-               (PLC_CMD_TYPE_R2L == g_gui_para.cmdType))
+            g_sys_ctrl.shutdown_timeout = 0;
+            
+            if((GUI_CMD_NODE == g_gui_para.cmd) ||
+               (GUI_CMD_R2L == g_gui_para.cmd))
             {
                 LCD_BL_OFF();
             }
@@ -575,16 +550,14 @@ static  void  App_TaskPower (void *p_arg)
             {
                 APP_Shutdown();
             }
-            
-            g_sys_ctrl.shutdownTimeout = 0;
         }
         
-        g_sys_ctrl.sleepTimeout++;
-        if(g_sys_ctrl.sleepTimeout > (g_rom_para.scrTimeout * 100))
+        g_sys_ctrl.sleep_timeout++;
+        if(g_sys_ctrl.sleep_timeout > (g_rom_para.auto_sleep_time * 100))
         {
-            APP_Sleep();
+            g_sys_ctrl.sleep_timeout = 0;
             
-            g_sys_ctrl.sleepTimeout = 0;
+            APP_Sleep();
         }        
 
         OSTimeDlyHMSM(0, 0, 0, 10);
@@ -609,19 +582,20 @@ static  void  App_TaskPower (void *p_arg)
 static  void  App_TaskGMP (void *p_arg)
 {
     INT8U err;
-
-    u32   tm;
-
+    u32 tm;
     WM_HWIN  wh;
     
+    
     (void)p_arg;
+    
     g_sys_ctrl.numMultiedit = 0; //控制消息多行文本的打印次数
+
     while (DEF_TRUE) {  
         /* Task body, always written as an infinite loop.           */
-        if((g_sys_ctrl.guiState == GUI_PLC_MSG_TEST)
-            ||(g_sys_ctrl.guiState == GUI_PLC_MSG_READ)
-            ||(g_sys_ctrl.guiState == GUI_PLC_MSG_LISTING)
-            ||(g_sys_ctrl.guiState == GUI_PLC_MSG_FREQ))
+        if((g_gui_para.state == GUI_STATE_PROTO_DBG)
+            ||(g_gui_para.state == GUI_STATE_MR)
+            ||(g_gui_para.state == GUI_STATE_PLC_MONITOR)
+            ||(g_gui_para.state == GUI_STATE_PLC_FREQ))
         {
             OSMboxPend(g_sys_ctrl.down_mbox, 10, &err);        
             if(OS_ERR_NONE == err)
@@ -635,11 +609,11 @@ static  void  App_TaskGMP (void *p_arg)
                 if(wh != WM_HWIN_NULL)
                 {
                     
-                    PROGBAR_SetValue(wh, g_sys_ctrl.testProgBarVal);
-                    if(g_sys_ctrl.testProgBarVal < 90)
+                    PROGBAR_SetValue(wh, g_sys_ctrl.ProgBarVal);
+                    if(g_sys_ctrl.ProgBarVal < 90)
                     {
                        PROGBAR_SetBarColor(wh, 0, GUI_GREEN);
-                       g_sys_ctrl.testProgBarVal += 1;
+                       g_sys_ctrl.ProgBarVal += 1;
                     }
                 }
             }
@@ -648,32 +622,6 @@ static  void  App_TaskGMP (void *p_arg)
         {
             OSTimeDly(10);
         }
-    }
-}
-
-/*
-*********************************************************************************************************
-*                                             App_TaskWDT()
-*
-* Description : This task monitors the state of the push buttons and passes messages to AppTaskUserIF()
-*
-* Argument(s) : p_arg   is the argument passed to 'App_TaskWDT()' by 'OSTaskCreateExt()'.
-*
-* Return(s)  : none.
-*
-* Caller(s)  : This is a task.
-*
-* Note(s)    : none.
-*********************************************************************************************************
-*/
-static  void  App_TaskWDT (void *p_arg)
-{
-    (void)p_arg;
-
-    while (DEF_TRUE) {
-        clr_wdt();
-        
-        OSTimeDlyHMSM(0, 0, 0, 500);
     }
 }
 
@@ -779,7 +727,7 @@ const char *key_chk_msg[KEYBOARD_COL_NUM * KEYBOARD_ROW_NUM + 2] =
 #endif
 static  void  App_TaskCheck (void *p_arg)
 {
-    INT8U i, err, count, rf_send_len, buf[32];
+    INT8U i, err, count, buf[32];
     const INT8U plc_read_addr[] = {0xFA, 0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
     const INT8U rf_addr[] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88};
     const INT8U rf_dl645_read[] = {0x68, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x68, 0x11, 0x04, 0x33, 0x32, 0x34, 0x33, 0xE1, 0x16};
@@ -930,10 +878,10 @@ static  void  App_TaskCheck (void *p_arg)
     { 
         GUI_DispStringAtCEOL(key_chk_msg[i], g_check_info_pos[CHECK_INFO_KEY].x1, g_check_info_pos[CHECK_INFO_KEY].y);
 
-        OSMboxAccept(g_key_mbox);
+        OSMboxAccept(g_mbox_chk_key);
 
         do {
-            p_key_msg = (int *)OSMboxPend(g_key_mbox, 0, &err);
+            p_key_msg = (int *)OSMboxPend(g_mbox_chk_key, 0, &err);
         } while((OS_ERR_NONE != err) || (key_chk_map[i] != *p_key_msg));
     }
     
@@ -1007,12 +955,12 @@ static  void  App_EventCreate (void)
 	g_sem_check = OSSemCreate(0);
     g_sem_chk_plc = OSSemCreate(0);
     g_sem_chk_rf = OSSemCreate(0);
-	g_key_ctrl.key_sem = OSSemCreate(0);    
+	g_key_ctrl.sem = OSSemCreate(0);    
     
     g_sys_ctrl.up_mbox = OSMboxCreate(NULL); /*创建消息邮箱用来发送调试参数的结构体*/
     g_sys_ctrl.down_mbox = OSMboxCreate(NULL); /*创建消息邮箱用来发送调试参数的结构体*/    
 
-    g_key_mbox = OSMboxCreate(NULL);
+    g_mbox_chk_key = OSMboxCreate(NULL);
 }
 
 
@@ -1174,20 +1122,6 @@ static  void  App_TaskCreate (void)
 
 #if (OS_TASK_NAME_EN > 0)
     OSTaskNameSet(APP_CFG_TASK_CHECK_PRIO, "Check", &err);    
-#endif
-
-    OSTaskCreateExt((void (*)(void *)) App_TaskWDT,
-                    (void           *) 0,
-                    (OS_STK         *)&App_TaskWDTStk[APP_CFG_TASK_WDT_STK_SIZE - 1],
-                    (INT8U           ) APP_CFG_TASK_WDT_PRIO,
-                    (INT16U          ) APP_CFG_TASK_WDT_PRIO,
-                    (OS_STK         *)&App_TaskWDTStk[0],
-                    (INT32U          ) APP_CFG_TASK_WDT_STK_SIZE,
-                    (void           *) 0,
-                    (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
-
-#if (OS_TASK_NAME_EN > 0)
-    OSTaskNameSet(APP_CFG_TASK_WDT_PRIO, "WDT", &err);    
 #endif
 }
 
