@@ -145,7 +145,7 @@ const u8 Read_ID_cmd[8] = {CMD_PART_INFO,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
 u8 Api_Write[16];			/*ะดรüม๎สýื้*/
 
 
-extern rf_param g_rf_param;
+extern RF_PARA g_rf_para;
 extern u8 g_plc_buf[];
 extern u8 rf_part_info[8];
 extern u8 rf_device_id[8];
@@ -644,7 +644,7 @@ rf_status_t SI_Init()
    
     }
     
-    g_rf_param.rf_state = RF_STATE_LISTEN;
+    g_rf_para.rf_state = RF_STATE_LISTEN;
 	return RF_STATUS_SUCCESS;
 }
 

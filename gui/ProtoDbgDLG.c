@@ -265,7 +265,7 @@ static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
             g_gui_para.cmd = GUI_CMD_BROADCAST;
         }
         else
-            g_gui_para.cmd = GUI_CMD_COMMON;
+            g_gui_para.cmd = GUI_CMD_MRW;
     }
     
 
@@ -546,7 +546,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                     WM_ShowWindow(g_hWin_TimeBar);
                     WM_ShowWindow(g_hWin_Date);
                     WM_SetFocus(g_hWin_menu); 
-                    g_gui_para.state = GUI_STATE_IDLE;
+                    g_gui_para.state = GUI_STATE_NONE;
                     cpt_key_press_cnt=0;
                 }
                 break;

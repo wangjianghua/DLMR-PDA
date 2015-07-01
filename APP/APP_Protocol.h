@@ -30,10 +30,12 @@
 
 #define RF_PRINT_FIX_LEN       8
 
-#define RF_SEND_BUF         rf_send_buf
-#define RF_SEND_LEN         rf_send_len
-#define RF_RECV_BUF         g_rf_param.rx.buf
-#define RF_RECV_LEN         g_rf_param.rx.rx_len
+#define RF_SEND_BUF              g_proto_para.rf_send_buf
+#define RF_SEND_LEN              g_proto_para.rf_send_len
+#define RF_RECV_BUF              g_rf_para.rx.buf
+#define RF_RECV_LEN              g_rf_para.rx.rx_len
+
+#define IR_PREAMBLE           0xFE
 
 #define PLC_270_III              0
 #define PLC_270_III_5            1
@@ -84,12 +86,23 @@ typedef struct _proto_para_
 {
 	u8 msg_state; //MSG_STATE_SENDING, MSG_STATE_RECEIVED
 	u8 recv_result; //RECV_RES_SUCC, RECV_RES_INVALID, RECV_RES_TIMEOUT
-	
+
+    DL645_Frame_C dl645_frame_send;
+    DL645_Frame_C dl645_frame_recv;
+    DL645_Frame_Stat_C dl645_frame_stat;
+    
     u8 send_buf[256]; //DL645发送帧
     u16 send_len; //DL645发送帧长度
 
     u8 recv_buf[256]; //DL645接收帧
     u16 recv_len; //DL645接收帧长度
+
+    u8 rf_send_buf[256];
+    u16 rf_send_len;
+
+    u8 ir_recv_buf[256];
+    u16 ir_send_len;
+    u16 ir_recv_len;
 
     u8 data_buf[30]; //提取数据
     u16 data_len; //提取数据的长度
@@ -99,18 +112,15 @@ typedef struct _proto_para_
 
 extern OS_EVENT *g_sem_plc;
 extern OS_EVENT *g_sem_rf;
+extern OS_EVENT *g_sem_ir;
 extern OS_EVENT *g_sem_pc;
 extern OS_EVENT *g_sem_rs485;
 extern OS_EVENT *g_sem_check;
 extern OS_EVENT *g_sem_chk_plc;
 extern OS_EVENT *g_sem_chk_rf;
+extern OS_EVENT *g_sem_chk_ir;
 extern u8 g_cur_freq;
 extern PROTO_PARA g_proto_para;
-extern u8 rf_send_buf[256];
-extern u32 rf_send_len;
-extern DL645_Frame_C dl645_frame_send;
-extern DL645_Frame_C dl645_frame_recv;
-extern DL645_Frame_Stat_C dl645_frame_stat;
 
 u16 pc_uart_send(u8 *buf, u16 len);
 u16 rs485_uart_send(u8 *buf, u16 len);

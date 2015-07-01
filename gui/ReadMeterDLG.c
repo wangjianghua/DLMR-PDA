@@ -303,7 +303,7 @@ static u8 RMD_Get_Para(WM_MESSAGE *pMsg)
 #endif
     g_gui_para.dataLen = 0;
 
-    g_gui_para.cmd = GUI_CMD_COMMON;
+    g_gui_para.cmd = GUI_CMD_MRW;
     
     return DEV_OK;
 
@@ -549,17 +549,17 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 WM_ShowWindow(g_hWin_Date);
                 WM_SetFocus(g_hWin_menu);
                 RMD_key_cnt = 0;
-                g_gui_para.state = GUI_STATE_IDLE;
+                g_gui_para.state = GUI_STATE_NONE;
             }
             break;
             
         case GUI_KEY_F1: /*获取表号*/
             if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
             {
-                if(CHANNEL_PLC == g_rom_para.channel)
+                if(CHANNEL_RF != g_rom_para.channel)
                 {
                     g_gui_para.cmd = GUI_CMD_BROADCAST;
-                    g_gui_para.state = GUI_STATE_MR;                        
+                    g_gui_para.state = GUI_STATE_AMR;                        
                     OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
                 }
             }
@@ -579,7 +579,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             {
                 if(DEV_OK == RMD_Get_Para(pMsg))//获取参数数据
                 {
-                    g_gui_para.state = GUI_STATE_MR;
+                    g_gui_para.state = GUI_STATE_AMR;
                     OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
                 }
             }

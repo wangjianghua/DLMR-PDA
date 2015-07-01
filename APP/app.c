@@ -541,8 +541,8 @@ static  void  App_TaskPower (void *p_arg)
         {
             g_sys_ctrl.shutdown_timeout = 0;
             
-            if((GUI_CMD_NODE == g_gui_para.cmd) ||
-               (GUI_CMD_R2L == g_gui_para.cmd))
+            if((GUI_CMD_PLC_READ_NODE == g_gui_para.cmd) ||
+               (GUI_CMD_PLC_R2L == g_gui_para.cmd))
             {
                 LCD_BL_OFF();
             }
@@ -593,9 +593,9 @@ static  void  App_TaskGMP (void *p_arg)
     while (DEF_TRUE) {  
         /* Task body, always written as an infinite loop.           */
         if((g_gui_para.state == GUI_STATE_PROTO_DBG)
-            ||(g_gui_para.state == GUI_STATE_MR)
+            ||(g_gui_para.state == GUI_STATE_AMR)
             ||(g_gui_para.state == GUI_STATE_PLC_MONITOR)
-            ||(g_gui_para.state == GUI_STATE_PLC_FREQ))
+            ||(g_gui_para.state == GUI_STATE_PLC_FREQ_SET))
         {
             OSMboxPend(g_sys_ctrl.down_mbox, 10, &err);        
             if(OS_ERR_NONE == err)
@@ -657,7 +657,8 @@ typedef enum
     CHECK_INFO_SD,
     CHECK_INFO_FATFS,
     CHECK_INFO_PLC,
-    CHECK_INFO_WIRELESS,
+    CHECK_INFO_RF,
+    CHECK_INFO_IR,
     CHECK_INFO_KEY,
     CHECK_INFO_POWER,
     MAX_CHECK_INFO,
@@ -683,7 +684,8 @@ const char *g_check_info[] =
     "2. SD Card:                   ",
     "3. FATFS Check                ",
     "4. PLC Check                  ",
-    "5. Wireless Check             ",
+    "5. RF Check                   ",
+    "6. IR Check                   ",
     "Waiting for the key:          ",
     "System Shutting Down ... (30s)"
 };
@@ -700,9 +702,10 @@ CHECK_INFO_POS g_check_info_pos[] =
     { 0,  7 * 16, 96, 0}, //SD
     { 0,  8 * 16, 0, 0}, //FATFS   
     { 0,  9 * 16, 0, 0}, //PLC 
-    { 0, 10 * 16, 0, 0}, //WIRELESS   
-    { 0, 11 * 16, 192, 0}, //KEY 
-    { 0, 12 * 16, 208, 0}, //POWER
+    { 0, 10 * 16, 0, 0}, //RF   
+    { 0, 11 * 16, 0, 0}, //IR 
+    { 0, 12 * 16, 192, 0}, //KEY 
+    { 0, 13 * 16, 208, 0}, //POWER
 };
 
 const int key_chk_map[KEYBOARD_COL_NUM * KEYBOARD_ROW_NUM] = 
@@ -727,8 +730,9 @@ const char *key_chk_msg[KEYBOARD_COL_NUM * KEYBOARD_ROW_NUM + 2] =
 #endif
 static  void  App_TaskCheck (void *p_arg)
 {
-    INT8U i, err, count, buf[32];
+    INT8U i, err, count, index, buf[32];
     const INT8U plc_read_addr[] = {0xFA, 0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
+    const INT8U ir_read_addr[] = {IR_PREAMBLE, 0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
     const INT8U rf_addr[] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88};
     const INT8U rf_dl645_read[] = {0x68, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x68, 0x11, 0x04, 0x33, 0x32, 0x34, 0x33, 0xE1, 0x16};
     int *p_key_msg;
@@ -820,8 +824,8 @@ static  void  App_TaskCheck (void *p_arg)
     if(OS_ERR_NONE == err)
     {
         if(DL645_FRAME_OK == Analysis_DL645_Frame( g_gui_para.dstAddr, 
-                                                  (u8 *)&dl645_frame_recv,
-                                                  &dl645_frame_stat))
+                                                  (u8 *)&g_proto_para.dl645_frame_recv,
+                                                  &g_proto_para.dl645_frame_stat))
         {
             GUI_DispStringAt(g_check_info[CHECK_INFO_PLC], g_check_info_pos[CHECK_INFO_PLC].x, g_check_info_pos[CHECK_INFO_PLC].y);
             sprintf(buf, "OK");
@@ -841,35 +845,74 @@ static  void  App_TaskCheck (void *p_arg)
         GUI_DispStringAt(buf, CHECK_INFO_ERROR_POS, g_check_info_pos[CHECK_INFO_PLC].y); 
     }
 
-    /* 检测无线 */
+    /* 检测射频 */
     while(OSSemAccept(g_sem_chk_rf));
-    rf_send_len = GDW_RF_Protocol_2013((INT8U *)rf_addr, 0x00, 0x00, 0x00, (INT8U *)rf_dl645_read, sizeof(rf_dl645_read), RF_SEND_BUF);
+    RF_SEND_LEN = GDW_RF_Protocol_2013((INT8U *)rf_addr, 0x00, 0x00, 0x00, (INT8U *)rf_dl645_read, sizeof(rf_dl645_read), RF_SEND_BUF);
     OSSemPend(g_sem_chk_rf, 2 * OS_TICKS_PER_SEC, &err);
     if(OS_ERR_NONE == err)
     {
-        memcpy(&dl645_frame_recv, &RF_RECV_BUF[RF_RECV_FIX_LEN], RF_RECV_LEN - RF_RECV_FIX_LEN);                                       
+        memcpy(&g_proto_para.dl645_frame_recv, &RF_RECV_BUF[RF_RECV_FIX_LEN], RF_RECV_LEN - RF_RECV_FIX_LEN);                                       
 
         if(DL645_FRAME_OK == Analysis_DL645_Frame( g_gui_para.dstAddr, 
-                                                  (u8 *)&dl645_frame_recv,
-                                                  &dl645_frame_stat))
+                                                  (u8 *)&g_proto_para.dl645_frame_recv,
+                                                  &g_proto_para.dl645_frame_stat))
         {
-            GUI_DispStringAt(g_check_info[CHECK_INFO_WIRELESS], g_check_info_pos[CHECK_INFO_WIRELESS].x, g_check_info_pos[CHECK_INFO_WIRELESS].y);
+            GUI_DispStringAt(g_check_info[CHECK_INFO_RF], g_check_info_pos[CHECK_INFO_RF].x, g_check_info_pos[CHECK_INFO_RF].y);
             sprintf(buf, "OK");
-            GUI_DispStringAt(buf, CHECK_INFO_OK_POS, g_check_info_pos[CHECK_INFO_WIRELESS].y); 
+            GUI_DispStringAt(buf, CHECK_INFO_OK_POS, g_check_info_pos[CHECK_INFO_RF].y); 
         }
         else
         {
-            GUI_DispStringAt(g_check_info[CHECK_INFO_WIRELESS], g_check_info_pos[CHECK_INFO_WIRELESS].x, g_check_info_pos[CHECK_INFO_WIRELESS].y);
+            GUI_DispStringAt(g_check_info[CHECK_INFO_RF], g_check_info_pos[CHECK_INFO_RF].x, g_check_info_pos[CHECK_INFO_RF].y);
             sprintf(buf, "ERROR");
-            GUI_DispStringAt(buf, CHECK_INFO_ERROR_POS, g_check_info_pos[CHECK_INFO_WIRELESS].y); 
+            GUI_DispStringAt(buf, CHECK_INFO_ERROR_POS, g_check_info_pos[CHECK_INFO_RF].y); 
         }
     }
     else
     {
-        GUI_DispStringAt(g_check_info[CHECK_INFO_WIRELESS], g_check_info_pos[CHECK_INFO_WIRELESS].x, g_check_info_pos[CHECK_INFO_WIRELESS].y);
+        GUI_DispStringAt(g_check_info[CHECK_INFO_RF], g_check_info_pos[CHECK_INFO_RF].x, g_check_info_pos[CHECK_INFO_RF].y);
         sprintf(buf, "ERROR");
-        GUI_DispStringAt(buf, CHECK_INFO_ERROR_POS, g_check_info_pos[CHECK_INFO_WIRELESS].y); 
+        GUI_DispStringAt(buf, CHECK_INFO_ERROR_POS, g_check_info_pos[CHECK_INFO_RF].y); 
     }
+
+    /* 检测红外 */
+    g_proto_para.ir_send_len = sizeof(ir_read_addr);
+    while(OSSemAccept(g_sem_chk_ir));
+    ir_uart_send((INT8U *)ir_read_addr, sizeof(ir_read_addr));
+    OSSemPend(g_sem_chk_ir, 2 * OS_TICKS_PER_SEC, &err);
+    if(OS_ERR_NONE == err)
+    {
+        g_proto_para.recv_len = g_proto_para.ir_recv_len - g_proto_para.ir_send_len;
+        
+        memcpy(g_proto_para.recv_buf, &g_proto_para.ir_recv_buf[g_proto_para.ir_send_len], g_proto_para.recv_len);
+        
+        for(index = 0; IR_PREAMBLE == g_proto_para.recv_buf[index]; index++);
+        
+        memcpy(&g_proto_para.dl645_frame_recv, &g_proto_para.recv_buf[index], g_proto_para.recv_len - index); 
+        
+        if(DL645_FRAME_OK == Analysis_DL645_Frame( g_gui_para.dstAddr, 
+                                                  (u8 *)&g_proto_para.dl645_frame_recv,
+                                                  &g_proto_para.dl645_frame_stat))
+        {
+            GUI_DispStringAt(g_check_info[CHECK_INFO_IR], g_check_info_pos[CHECK_INFO_IR].x, g_check_info_pos[CHECK_INFO_IR].y);
+            sprintf(buf, "OK");
+            GUI_DispStringAt(buf, CHECK_INFO_OK_POS, g_check_info_pos[CHECK_INFO_IR].y); 
+        }
+        else
+        {
+            GUI_DispStringAt(g_check_info[CHECK_INFO_IR], g_check_info_pos[CHECK_INFO_IR].x, g_check_info_pos[CHECK_INFO_IR].y);
+            sprintf(buf, "ERROR");
+            GUI_DispStringAt(buf, CHECK_INFO_ERROR_POS, g_check_info_pos[CHECK_INFO_IR].y); 
+        }
+    }
+    else
+    {
+        GUI_DispStringAt(g_check_info[CHECK_INFO_IR], g_check_info_pos[CHECK_INFO_IR].x, g_check_info_pos[CHECK_INFO_IR].y);
+        sprintf(buf, "ERROR");
+        GUI_DispStringAt(buf, CHECK_INFO_ERROR_POS, g_check_info_pos[CHECK_INFO_IR].y); 
+    }
+
+    g_proto_para.ir_send_len = 0;
 
     /* 检测按键 */
     GUI_DispStringAt(g_check_info[CHECK_INFO_KEY], g_check_info_pos[CHECK_INFO_KEY].x, g_check_info_pos[CHECK_INFO_KEY].y);
@@ -950,15 +993,17 @@ static  void  App_EventCreate (void)
     g_sem_end = OSSemCreate(0);
     g_sem_plc = OSSemCreate(0);
     g_sem_rf = OSSemCreate(0);
+    g_sem_ir = OSSemCreate(0);
     g_sem_pc = OSSemCreate(0);
     g_sem_rs485 = OSSemCreate(0);
 	g_sem_check = OSSemCreate(0);
     g_sem_chk_plc = OSSemCreate(0);
     g_sem_chk_rf = OSSemCreate(0);
+    g_sem_chk_ir = OSSemCreate(0);
 	g_key_ctrl.sem = OSSemCreate(0);    
     
-    g_sys_ctrl.up_mbox = OSMboxCreate(NULL); /*创建消息邮箱用来发送调试参数的结构体*/
-    g_sys_ctrl.down_mbox = OSMboxCreate(NULL); /*创建消息邮箱用来发送调试参数的结构体*/    
+    g_sys_ctrl.up_mbox = OSMboxCreate(NULL);
+    g_sys_ctrl.down_mbox = OSMboxCreate(NULL);   
 
     g_mbox_chk_key = OSMboxCreate(NULL);
 }

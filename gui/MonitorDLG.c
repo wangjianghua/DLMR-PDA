@@ -183,8 +183,8 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 WM_ShowWindow(g_hWin_Date);
                 WM_SetFocus(g_hWin_menu);
    
-                g_gui_para.cmd = GUI_CMD_L2R;
-                g_gui_para.state = GUI_STATE_IDLE;
+                g_gui_para.cmd = GUI_CMD_PLC_L2R;
+                g_gui_para.state = GUI_STATE_NONE;
                 g_sys_ctrl.sysCtdVal = COUNT_VALUE ;
                 g_sys_ctrl.sysCtdFlag = COUNTDOWN_OFF;
                 //g_sys_ctrl.monitorFlag = PLC_MONITOR_OFF;
@@ -198,7 +198,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 //hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
                 //EDIT_SetValue(hItem ,240);
                 
-                g_gui_para.cmd = GUI_CMD_NODE;
+                g_gui_para.cmd = GUI_CMD_PLC_READ_NODE;
                 g_gui_para.state = GUI_STATE_PLC_MONITOR;
                 g_sys_ctrl.sysCtdVal = COUNT_VALUE  ;
                 g_sys_ctrl.sysCtdFlag = COUNTDOWN_ON;
@@ -214,7 +214,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             case GUI_KEY_F1: /*监控态*/
                 ButtonBlink(pMsg,ID_BUTTON_2);
                 //TSK_Disp_PLC();
-                g_gui_para.cmd = GUI_CMD_R2L;
+                g_gui_para.cmd = GUI_CMD_PLC_R2L;
                 g_gui_para.state = GUI_STATE_PLC_MONITOR;
                 //g_sys_ctrl.monitorFlag = PLC_MONITOR_ON;//监控态不能关闭电源，标志位
                 TSK_Disp_PLC();
@@ -223,7 +223,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             case GUI_KEY_F2:/* 抄控态 */
                 ButtonBlink(pMsg,ID_BUTTON_5);
                 //TSK_Close_Monitor();
-                g_gui_para.cmd = GUI_CMD_L2R;
+                g_gui_para.cmd = GUI_CMD_PLC_L2R;
                 g_gui_para.state = GUI_STATE_PLC_MONITOR;
                 //g_sys_ctrl.monitorFlag = PLC_MONITOR_OFF;
                 TSK_Disp_PLC();

@@ -226,12 +226,12 @@ void GUI_Recv_Msg_Proc(void)
         *send_ptr++ = 0;
 
         if((g_gui_para.state == GUI_STATE_PROTO_DBG)
-            ||(g_gui_para.state == GUI_STATE_MR)
-            ||(g_gui_para.state == GUI_STATE_PLC_FREQ))
+            ||(g_gui_para.state == GUI_STATE_AMR)
+            ||(g_gui_para.state == GUI_STATE_PLC_FREQ_SET))
         {
             hObj = MSG_Get_MultiEdit();
             MULTIEDIT_AddText(hObj, s_prbf); 
-            if(g_gui_para.state == GUI_STATE_MR)
+            if(g_gui_para.state == GUI_STATE_AMR)
             {
                 RMD_proc_resp_data();
             }
@@ -286,7 +286,7 @@ WM_HWIN GUI_Get_PROGBAR()
     case  GUI_STATE_PROTO_DBG:
         return STM_Get_PROGBAR();
         break;
-    case  GUI_STATE_MR:
+    case  GUI_STATE_AMR:
         return RMD_Get_PROGBAR();
         break;
     case  GUI_STATE_MEM:
@@ -300,7 +300,7 @@ WM_HWIN GUI_Get_PROGBAR()
 
 void GUI_Recv_Fail_Proc(void)
 {
-    if((g_gui_para.state == GUI_STATE_MR)&&(g_gui_para.cmd == GUI_CMD_COMMON))
+    if((g_gui_para.state == GUI_STATE_AMR)&&(g_gui_para.cmd == GUI_CMD_MRW))
     {
         RMD_ReadErr();
     }
@@ -310,11 +310,11 @@ void GUI_Recv_Fail_Proc(void)
 
 void GUI_ClearData(void)
 {
-    if((g_gui_para.state == GUI_STATE_MR)&&(g_gui_para.cmd == GUI_CMD_COMMON))
+    if((g_gui_para.state == GUI_STATE_AMR)&&(g_gui_para.cmd == GUI_CMD_MRW))
     {
         RMD_ClearData();
     }
-    if((g_gui_para.state == GUI_STATE_PROTO_DBG)&&(g_gui_para.cmd == GUI_CMD_COMMON))
+    if((g_gui_para.state == GUI_STATE_PROTO_DBG)&&(g_gui_para.cmd == GUI_CMD_MRW))
     {
         CPT_ClearData();
     }

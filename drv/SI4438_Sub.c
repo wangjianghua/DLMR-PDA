@@ -16,7 +16,7 @@
 
 #ifdef RF_FREQ_470MHz
 
-rf_param  g_rf_param;
+RF_PARA g_rf_para;
 u8 RF_LED_Timeout;
 
 u8 g_plc_buf[100]={0};
@@ -72,14 +72,14 @@ rf_status_t RF_Tx(u8 * buf, u8 len)
     
     buf[len + 1] = (u8)crc;
     buf[len + 2] = (u8)(crc >> 8);
-    g_rf_param.tx.buf = buf;
-    g_rf_param.tx.tx_len = len + 3;
+    g_rf_para.tx.buf = buf;
+    g_rf_para.tx.tx_len = len + 3;
     
-    g_rf_param.tx.Index = SI_Send_Packet(len + 3, buf);
+    g_rf_para.tx.Index = SI_Send_Packet(len + 3, buf);
 
     ENABLE_RF_INT();
-    g_rf_param.rf_state = RF_STATE_TX; 
-    g_rf_param.tx.Timeout = 1;
+    g_rf_para.rf_state = RF_STATE_TX; 
+    g_rf_para.tx.Timeout = 1;
     
     
     
@@ -122,20 +122,20 @@ void RF_Event_Handle(void)
 
         //LED_On(0);
 		
-        g_rf_param.RSSI = SI_Read_RSSI();
-        if (RF_STATE_RX != g_rf_param.rf_state)
+        g_rf_para.RSSI = SI_Read_RSSI();
+        if (RF_STATE_RX != g_rf_para.rf_state)
         {
             _sys_plc_stop();
-            g_rf_param.rx.rx_index = 0;
-            g_rf_param.rf_state = RF_STATE_RX;
-            g_rf_param.rx.rx_len = SI_Read_Length();
+            g_rf_para.rx.rx_index = 0;
+            g_rf_para.rf_state = RF_STATE_RX;
+            g_rf_para.rx.rx_len = SI_Read_Length();
             
-            //Read_PayLoad(g_rf_param.rx.buf+g_rf_param.rx.rx_index);
+            //Read_PayLoad(g_rf_para.rx.buf+g_rf_para.rx.rx_index);
         }
         
-        SI_Read_Fifo(   g_rf_param.rx.rx_len - g_rf_param.rx.rx_index,
-                        g_rf_param.rx.buf + g_rf_param.rx.rx_index );
-        g_rf_param.rx.rx_index = g_rf_param.rx.rx_len;
+        SI_Read_Fifo(   g_rf_para.rx.rx_len - g_rf_para.rx.rx_index,
+                        g_rf_para.rx.buf + g_rf_para.rx.rx_index );
+        g_rf_para.rx.rx_index = g_rf_para.rx.rx_len;
 
         
         RF_Listen();
@@ -144,37 +144,37 @@ void RF_Event_Handle(void)
 
 
 
-        //g_rf_param.rx.rx_len=0; //华兄
-        g_rf_param.rx.Timeout=0;
+        //g_rf_para.rx.rx_len=0; //华兄
+        g_rf_para.rx.Timeout=0;
 		//_sys_plc_reset();
         OSSemPost(g_sem_rf); //华兄
         OSSemPost(g_sem_chk_rf); //华兄
 	}
 	 else if (sta1 & RXFF_AF) 
 	{   
-		if (RF_STATE_RX != g_rf_param.rf_state)
+		if (RF_STATE_RX != g_rf_para.rf_state)
 		{              
 			 _sys_plc_stop();
-			g_rf_param.rx.rx_index = 0;
-			g_rf_param.rf_state = RF_STATE_RX;
-            g_rf_param.rx.rx_len =SI_Read_Length();//Read_PayLoad(g_rf_param.rx.buf+g_rf_param.rx.rx_index);
+			g_rf_para.rx.rx_index = 0;
+			g_rf_para.rf_state = RF_STATE_RX;
+            g_rf_para.rx.rx_len =SI_Read_Length();//Read_PayLoad(g_rf_para.rx.buf+g_rf_para.rx.rx_index);
 		}
-		SI_Read_Fifo(RX_AF_THRESHOLD,g_rf_param.rx.buf+g_rf_param.rx.rx_index);
-		g_rf_param.rx.rx_index+=RX_AF_THRESHOLD;
-		g_rf_param.rx.Timeout=1;
+		SI_Read_Fifo(RX_AF_THRESHOLD,g_rf_para.rx.buf+g_rf_para.rx.rx_index);
+		g_rf_para.rx.rx_index+=RX_AF_THRESHOLD;
+		g_rf_para.rx.Timeout=1;
 		//_sys_plc_reset();
 
 	}
-	else if(g_rf_param.rf_state == RF_STATE_TX)
+	else if(g_rf_para.rf_state == RF_STATE_TX)
 	{
 		if (sta1 & TXFF_AE) 
 		{
-			if(g_rf_param.tx.tx_len>g_rf_param.tx.Index)
+			if(g_rf_para.tx.tx_len>g_rf_para.tx.Index)
 				{
-					L = SI_Write_Fifo(g_rf_param.tx.tx_len - g_rf_param.tx.Index,
-                                            g_rf_param.tx.buf + g_rf_param.tx.Index);
-					g_rf_param.tx.Index += L;
-					g_rf_param.tx.Timeout = 1;
+					L = SI_Write_Fifo(g_rf_para.tx.tx_len - g_rf_para.tx.Index,
+                                            g_rf_para.tx.buf + g_rf_para.tx.Index);
+					g_rf_para.tx.Index += L;
+					g_rf_para.tx.Timeout = 1;
 					TX_LED_ON(); 
                     //RF_Cnt=0;
 				}
@@ -194,7 +194,7 @@ void RF_Event_Handle(void)
             }
 //#endif
             RF_Listen();
-            g_rf_param.tx.Timeout=0;
+            g_rf_para.tx.Timeout=0;
             //LED_Off(0);
             _sys_plc_reset();
 		}
@@ -215,21 +215,21 @@ void RF_Channel_Update(u8 chen)
 
 u8 RF_Read_Sig(void)
 {
-   // memcpy(buf,(u8 *)&g_rf_param.RSSI,4);
+   // memcpy(buf,(u8 *)&g_rf_para.RSSI,4);
 
-    return(g_rf_param.RSSI);
+    return(g_rf_para.RSSI);
 }
 
 void RF_Timeout_Sub(void)
 {
    
-    if(g_rf_param.rx.Timeout)
+    if(g_rf_para.rx.Timeout)
     {
-        g_rf_param.rx.Timeout++;
-        if(g_rf_param.rx.Timeout>30)//大于300ms超时
+        g_rf_para.rx.Timeout++;
+        if(g_rf_para.rx.Timeout>30)//大于300ms超时
         {
             RF_Listen();
-            g_rf_param.rx.Timeout=0;
+            g_rf_para.rx.Timeout=0;
         }
        
     }
@@ -264,7 +264,7 @@ void RF_Reset()
 void RF_Listen()
 {
 	SI_Enter_Rx();
-	g_rf_param.rf_state = RF_STATE_LISTEN;
+	g_rf_para.rf_state = RF_STATE_LISTEN;
 }
 
 void RF_Int_Proc()
@@ -306,14 +306,14 @@ void RF_Init(void)
 
     
 
-    g_rf_param.rx.buf=RF_buf;
-    g_rf_param.rx.rx_index=0;
-    g_rf_param.rx.rx_len=0;
-    g_rf_param.rx.Timeout=0;
-    g_rf_param.tx.buf=RF_buf;
-    g_rf_param.tx.Index=0;
-    g_rf_param.tx.tx_len=0;
-    g_rf_param.tx.Timeout=0;
+    g_rf_para.rx.buf=RF_buf;
+    g_rf_para.rx.rx_index=0;
+    g_rf_para.rx.rx_len=0;
+    g_rf_para.rx.Timeout=0;
+    g_rf_para.tx.buf=RF_buf;
+    g_rf_para.tx.Index=0;
+    g_rf_para.tx.tx_len=0;
+    g_rf_para.tx.Timeout=0;
 
 
 
