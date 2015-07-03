@@ -32,7 +32,7 @@
 *
 *
 *************************************************/
-
+#if 0
 #define ID_WINDOW_0 (GUI_ID_USER + 0xA4)
 #define ID_LISTVIEW_0 (GUI_ID_USER + 0xA5)
 
@@ -45,7 +45,7 @@
 #define ID_BUTTON_3 (GUI_ID_USER + 0xAC)
 #define ID_BUTTON_4 (GUI_ID_USER + 0xAD)
 #define ID_BUTTON_5 (GUI_ID_USER + 0xAE)
-
+#endif
 
 
 
@@ -208,7 +208,7 @@ static void RLY_AddAddr(WM_MESSAGE * pMsg)
     RowCount=LISTVIEW_GetNumRows(hItem);
     LISTVIEW_AddRow(hItem, NULL);
     //放到input_Widget中处理增加的地址，这里只增加第一列的序号
-    LISTVIEW_SetItemText(hItem, 1, RowCount, "\0");//第1列也就是，中继地址列
+    LISTVIEW_SetItemText(hItem, 1, RowCount, "");//第1列也就是，中继地址列
     int_to_char((RowCount-1),tempBuf,10); 
     LISTVIEW_SetItemText(hItem, 0, RowCount, tempBuf);
 }
@@ -221,7 +221,7 @@ static void Del_Relay_Addr(WM_MESSAGE *pMsg)
     int     RowNum;//获取listview单元格行序号
     char pTextRow[2];
     int     i;
-    ButtonBlink(pMsg,ID_BUTTON_2);
+    //ButtonBlink(pMsg,ID_BUTTON_2);
     hItem=WM_GetDialogItem(pMsg->hWin,ID_LISTVIEW_0);
     RowNum=LISTVIEW_GetSel(hItem);
     LISTVIEW_DeleteRow(hItem,RowNum);
@@ -272,7 +272,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             case GUI_KEY_YELLOW:
                 WM_DeleteWindow(g_hWin_relay);
                 g_hWin_relay=HBWIN_NULL;
-                WM_SetFocus(g_hWin_std);
+                WM_SetFocus(g_hWin_ProtoDbg);
                 CPT_SetFocus();
                 break;
 
@@ -283,7 +283,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 //g_sys_ctrl.sysUseRoute = 1;
                 WM_DeleteWindow(g_hWin_relay);
                 g_hWin_relay=HBWIN_NULL;
-                WM_SetFocus(g_hWin_std);
+                WM_SetFocus(g_hWin_ProtoDbg);
                 CPT_SetFocus();
                 break;
                 
@@ -353,7 +353,7 @@ WM_HWIN CreateRelayAddr(void);
 WM_HWIN CreateRelayAddr(void) {
   WM_HWIN hWin;
 
-  hWin = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), _cbDialog, g_hWin_std, 0, 0);
+  hWin = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), _cbDialog, g_hWin_ProtoDbg, 0, 0);
   return hWin;
 }
 

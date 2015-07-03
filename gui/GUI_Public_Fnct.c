@@ -331,15 +331,22 @@ void GUI_Msg_Proc(void)
     if(MSG_STATE_SENDING == g_proto_para.msg_state)    
     {        
         GUI_Msg_Upload(ON);
+
+        trm_msg_record(TRM_MSG_SEND);
         
         GUI_Send_Msg_Proc();
     }
     else if(MSG_STATE_RECEIVED == g_proto_para.msg_state)
     {     
-        if(RECV_RES_SUCC == g_proto_para.recv_result)
+        if(RECV_RES_TIMEOUT != g_proto_para.recv_result)
         {
             GUI_Msg_Download(ON);
-            
+
+            trm_msg_record(TRM_MSG_RECV);
+        }
+        
+        if(RECV_RES_SUCC == g_proto_para.recv_result)
+        {            
             GUI_ClearData();
             
             OSTimeDlyHMSM(0, 0, 0, 20);
@@ -356,9 +363,7 @@ void GUI_Msg_Proc(void)
             }
         }                    
         else if(RECV_RES_INVALID == g_proto_para.recv_result)
-        {
-            GUI_Msg_Download(ON);
-            
+        {            
             GUI_Recv_Fail_Proc();
 
             hItem = GUI_Get_PROGBAR();
@@ -386,8 +391,8 @@ void GUI_Msg_Proc(void)
             }
         }         
         
-        g_proto_para.msg_state = MSG_STATE_NONE;
-        g_proto_para.recv_result = RECV_RES_IDLE;
+        g_proto_para.msg_state = MSG_STATE_IDLE;
+        g_proto_para.recv_result = RECV_RES_NONE;
     }
 }
 
@@ -520,7 +525,7 @@ void GUI_StartSys(void)
     OSTimeDlyHMSM(0, 0, 3, 0);
 }
 
-
+#if 0
 void ButtonBlink(WM_MESSAGE * pMsg,int Id)
 {
     
@@ -530,7 +535,71 @@ void ButtonBlink(WM_MESSAGE * pMsg,int Id)
     GUI_Delay(12);
     BUTTON_SetBkColor(hItem,0,0xC0C0C0);
 }
+#endif
 
+
+//向上选择
+void GUI_SelEdt_Up(WM_HWIN hParaentWin, int firstID, int lastID, int editNum, int pressCnt)
+{
+    WM_HWIN hItem;
+    int tmp;
+    if(pressCnt == 0)
+    {
+        hItem=WM_GetDialogItem(hParaentWin,lastID);
+        WM_SetFocus(hItem);
+        
+        pressCnt = editNum - 1;
+    }
+    else
+    {
+        pressCnt--;
+        hItem=WM_GetDialogItem(hParaentWin,(firstID + pressCnt));
+        WM_SetFocus(hItem);
+    }
+}
+
+
+
+
+
+//向下选择
+void GUI_SelEdt_Down(WM_HWIN hParaentWin, int firstID, int editNum, int pressCnt)
+{
+    WM_HWIN hItem;
+    if(pressCnt == editNum -1)
+    {
+        hItem=WM_GetDialogItem(hParaentWin,firstID);
+        WM_SetFocus(hItem);
+
+        pressCnt = 0;
+    }
+    else
+    {
+        pressCnt++;
+        hItem=WM_GetDialogItem(hParaentWin,(firstID + pressCnt));
+        WM_SetFocus(hItem);
+    }
+}
+
+
+void GUI_Color_Change(WM_HWIN hParaentWin, int firstID, int editNum )
+{
+    WM_HWIN hItem;
+    int i;
+    for(i=0;i < editNum;i++)
+    {
+        hItem=WM_GetDialogItem(hParaentWin, firstID + i);
+        if(WM_HasFocus(hItem)==1)
+        {
+            EDIT_SetBkColor(hItem,0,GUI_GREEN);
+        }
+        else if(WM_HasFocus(hItem)==0)
+        {
+            EDIT_SetBkColor(hItem,0,0xC0C0C0);
+        }
+
+    }
+}
 
 
 

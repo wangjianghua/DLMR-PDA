@@ -54,23 +54,32 @@
 
 typedef enum
 {
-    MSG_STATE_NONE = 0,
+    MSG_STATE_IDLE = 0,
     MSG_STATE_SENDING,
     MSG_STATE_RECEIVED
 } MSG_STATE_TYPE; //ЛЊаж
 
 typedef enum
 {
-    RECV_RES_IDLE = 0,
+    RECV_RES_NONE = 0,
     RECV_RES_SUCC,
     RECV_RES_INVALID,
     RECV_RES_TIMEOUT
 } RECV_RES_TYPE; //ЛЊаж
 
+typedef enum
+{
+    TRM_MSG_NONE = 0,
+    TRM_MSG_SEND,
+    TRM_MSG_RECV,
+    TRM_MSG_PLC_MONITOR,
+    MAX_TRM_MSG_TYPE
+} TRM_MSG_TYPE; //ЛЊаж
+
 #define FILE_NAME_LEN           12
 #define FILE_NUM_LEN             4
 #define FILE_SIZE_LEN            4
-#define MAX_FILE_NUM            10
+#define MAX_FILE_NUM            11
 #define SEQ_LEN                  1
 #define VERSION_LEN              6
 

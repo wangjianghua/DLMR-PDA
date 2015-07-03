@@ -7,6 +7,7 @@
 *
 **********************************************************************
 */
+#if 0
 #define ID_FRAMEWIN_0  (GUI_ID_USER + 0x00)
 #define ID_LISTBOX_0   (GUI_ID_USER + 0x02)
 #define ID_BUTTON_0    (GUI_ID_USER + 0x03)
@@ -14,7 +15,7 @@
 #define ID_TEXT_0      (GUI_ID_USER + 0x05)
 #define ID_EDIT_0      (GUI_ID_USER + 0x06)
 
-
+#endif
 
 static const GUI_WIDGET_CREATE_INFO _aListBoxCreate[] = {
   { FRAMEWIN_CreateIndirect,  "ListBox",  ID_FRAMEWIN_0,  20,  40,  200, 200,  0, 0x0, 0 },
@@ -57,16 +58,34 @@ const u8 c_TextBaudRate[5][6] = {"1200","1500","2400","4800","9600"};
 void Select_Focus(void)
 {
     
-    if(g_hWin_para>0)
+    if((g_hWin_para > 0)&&(g_hWin_TimeSet <= 0)&&(g_hWin_AdvanSet <= 0))
     {
         WM_SetFocus(g_hWin_para);
         CPS_SetFocus();
     }
-    
-    if((g_hWin_std > 0)&&(g_hWin_relay <= 0)) 
+
+    if(g_hWin_TimeSet > 0)
     {
-        WM_SetFocus(g_hWin_std);
+        WM_SetFocus(g_hWin_TimeSet);
+        TMS_SetFocus();
+    }
+    
+    if(g_hWin_AdvanSet > 0)
+    {
+        WM_SetFocus(g_hWin_AdvanSet);
+        ADS_SetFocus();
+    }
+    
+    
+    if((g_hWin_ProtoDbg > 0)&&(g_hWin_relay <= 0)) 
+    {
+        WM_SetFocus(g_hWin_ProtoDbg);
         CPT_SetFocus();
+    }
+    
+    if(g_hWin_relay > 0)
+    {
+        WM_SetFocus(g_hWin_relay);
     }
     
     if(g_hWin_ReadMeter>0)
@@ -75,39 +94,26 @@ void Select_Focus(void)
         RMD_SetFocus();
     }
 
-    if(g_hWin_TimeSet>0)
-    {
-        WM_SetFocus(g_hWin_TimeSet);
-        TMS_SetFocus();
-    }
+    
     if(g_hWin_about>0)
     {
         WM_SetFocus(g_hWin_about);
     }
-    if(g_hWin_AdvanSet > 0)
-    {
-        WM_SetFocus(g_hWin_AdvanSet);
-        ADS_SetFocus();
-    }
     
-    if(g_hWin_relay > 0)
-    {
-        WM_SetFocus(g_hWin_relay);
-    }
 
     if(g_hWin_SDInfo > 0)
     {
         WM_SetFocus(g_hWin_SDInfo);
     }
 
-    if(g_hWin_about>0)
-    {
-        WM_SetFocus(g_hWin_about);
-    }
-
     if(g_hWin_monitor > 0)
     {
         WM_SetFocus(g_hWin_monitor);
+    }
+
+    if(g_hWin_SysInfo > 0)
+    {
+        WM_SetFocus(g_hWin_SysInfo);
     }
 }
 

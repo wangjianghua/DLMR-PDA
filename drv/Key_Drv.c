@@ -83,6 +83,11 @@ void  App_TaskKey (void *p_arg)
             
 			if(GPIO_PIN_RESET == HAL_GPIO_ReadPin(KEYBOARD_COL_PORT, g_key_ctrl.col))
 			{
+                if(SYS_BEEP_ON == g_rom_para.beep_switch)
+                {
+                    Beep(); //ЛЊаж
+                }
+                
                 g_sys_ctrl.led_count = LED_KEY_DISP_TIME;
 
                 LED_KEY_ON();

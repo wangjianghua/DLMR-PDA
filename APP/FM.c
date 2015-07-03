@@ -15,6 +15,54 @@
 #include "includes.h"
 
 
+u8 fdisk_detect(void)
+{
+    u8 ret;
+    FATFS fs;
+    FIL fp;
+    FRESULT res;
+
+
+    res = f_mount(SD_DRV, &fs);
+
+    if(FR_OK == res)
+    {  
+        res = f_open(&fp, "FDDETECT.TXT", FA_OPEN_EXISTING);
+
+        if(FR_OK == res)
+        {
+            ret = TRUE;
+        }
+        else
+        {
+            f_close(&fp);
+            
+            res = f_open(&fp, "FDDETECT.TXT", FA_READ | FA_WRITE | FA_OPEN_ALWAYS);
+            
+            if(FR_OK == res)
+            {
+                f_puts("HRK Technology Inc.", &fp);
+                
+                ret = TRUE;
+            }
+            else
+            {
+                ret = FALSE;
+            }
+        }        
+
+        f_close(&fp);
+    }
+    else
+    {
+        ret = FALSE;
+    }
+
+    f_mount(SD_DRV, NULL);
+
+    return (ret);
+}
+
 u8 get_sd_info(void)
 {
     FATFS fs, *p_fs;
@@ -140,7 +188,7 @@ void scan_files(char *path)
             fname = finfo.fname;
 #endif		
 
-            if((!fname[0]) || (i >= MAX_SD_FILE_NUM - 1))
+            if((!fname[0]) || (i >= (MAX_SD_FILE_NUM - 1)))
             {
             	break;
             }
@@ -261,7 +309,7 @@ void FatFs_Test(void)
 
 // ---------------------------------------------------
 
-u16 sprintf_plc_monitor_record(void)
+u16 sprintf_trm_msg_record(u8 msg_type)
 {
     u8 *ptr;
     u16 i;
@@ -270,39 +318,85 @@ u16 sprintf_plc_monitor_record(void)
     
 
     len = 0;
-    
-    if(g_proto_para.recv_len)
+
+    if(TRM_MSG_NONE != msg_type)
     {
         memset(g_proto_para.fm_buf, ' ', sizeof(g_proto_para.fm_buf));
-        
+
         sprintf(buf, "20%02x-%02x-%02x %02x:%02x:%02x  ", g_rtc_time[YEAR_POS], 
                                                           g_rtc_time[MONTH_POS],
                                                           g_rtc_time[DATE_POS],
                                                           g_rtc_time[HOUR_POS],
                                                           g_rtc_time[MIN_POS],
                                                           g_rtc_time[SEC_POS]);
-        
+
         ptr = g_proto_para.fm_buf;
 
         memcpy(ptr, buf, 21);
         ptr += 21;
         len += 21;
 
-        *ptr++ = 'X';
-        *ptr++ = ':';
-        *ptr++ = ' ';
-        len += 3;
-        
-        for(i = 0; i < g_proto_para.recv_len; i++)
+        if(TRM_MSG_PLC_MONITOR == msg_type)
         {
-            *ptr++ = GUI_Hex2Char(g_proto_para.recv_buf[i] >> 4);
-            *ptr++ = GUI_Hex2Char(g_proto_para.recv_buf[i] & 0x0f);
+            *ptr++ = 'X';
+            *ptr++ = ':';
             *ptr++ = ' ';
             len += 3;
+            
+            for(i = 0; i < g_proto_para.recv_len; i++)
+            {
+                *ptr++ = GUI_Hex2Char(g_proto_para.recv_buf[i] >> 4);
+                *ptr++ = GUI_Hex2Char(g_proto_para.recv_buf[i] & 0x0f);
+                *ptr++ = ' ';
+                len += 3;
+            }
+
+            sprintf(buf, " LEN: %03u", g_proto_para.recv_len);
+        }   
+        else if(TRM_MSG_SEND == msg_type)      
+        {
+            *ptr++ = 'S';
+            *ptr++ = ':';
+            *ptr++ = ' ';
+            len += 3;
+
+            for(i = 0; i < g_proto_para.send_len; i++)
+            {
+                *ptr++ = GUI_Hex2Char(g_proto_para.send_buf[i] >> 4);
+                *ptr++ = GUI_Hex2Char(g_proto_para.send_buf[i] & 0x0f);
+                *ptr++ = ' ';
+                len += 3;
+            }
+            
+            sprintf(buf, " LEN: %03u", g_proto_para.send_len);
+        }
+        else if(TRM_MSG_RECV == msg_type)
+        {   
+            *ptr++ = 'R';
+            *ptr++ = ':';
+            *ptr++ = ' ';
+            len += 3;
+            
+            for(i = 0; i < g_proto_para.recv_len; i++)
+            {
+                *ptr++ = GUI_Hex2Char(g_proto_para.recv_buf[i] >> 4);
+                *ptr++ = GUI_Hex2Char(g_proto_para.recv_buf[i] & 0x0f);
+                *ptr++ = ' ';
+                len += 3;
+            }
+            
+            sprintf(buf, " LEN: %03u", g_proto_para.recv_len);
+        }
+        else
+        {
+            *ptr++ = 'X';
+            *ptr++ = ':';
+            *ptr++ = ' ';
+            len += 3;
+            
+            sprintf(buf, " LEN: %03u", 0);
         }
 
-        sprintf(buf, " LEN: %03u", g_proto_para.recv_len);
-        
         memcpy(ptr, buf, 9);
         ptr += 9;
         len += 9;
@@ -318,7 +412,7 @@ u16 sprintf_plc_monitor_record(void)
 #if (EWARM_OPTIMIZATION_EN > 0u)
 #pragma optimize = low
 #endif
-u8 plc_monitor_record(void)
+u8 trm_msg_record(u8 msg_type)
 {
     FATFS fs;
     FIL fp;
@@ -330,6 +424,13 @@ u8 plc_monitor_record(void)
     u32 sd_file_num;
     FILINFO fil_info;
 
+
+    if((TRM_MSG_RECV == msg_type) &&
+       (CHANNEL_PLC == g_rom_para.channel) &&
+       (GUI_CMD_PLC_READ_NODE == g_sys_ctrl.plc_state))
+    {
+        return (FALSE);
+    }
 
     res = f_mount(SD_DRV, &fs); //¹ÒÔØSD¿¨
 
@@ -434,7 +535,7 @@ u8 plc_monitor_record(void)
         return (FALSE);
     }  
 
-    bytes = sprintf_plc_monitor_record();
+    bytes = sprintf_trm_msg_record(msg_type);
         
     res = f_write(&fp, g_proto_para.fm_buf, bytes, &br); //×·¼ÓÎÄ¼þ
 

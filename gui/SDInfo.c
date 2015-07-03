@@ -29,7 +29,8 @@
 *       Defines
 *
 **********************************************************************
-*/
+*/
+#if  0
 #define ID_WINDOW_0  (GUI_ID_USER + 0x00)
 #define ID_TEXT_0    (GUI_ID_USER + 0x01)
 #define ID_TEXT_1    (GUI_ID_USER + 0x02)
@@ -54,7 +55,7 @@
 #define ID_PROGBAR_0 (GUI_ID_USER + 0x10)
 #define ID_PROGBAR_1 (GUI_ID_USER + 0x11)
 
-
+#endif
 
 // USER START (Optionally insert additional defines)
 // USER END

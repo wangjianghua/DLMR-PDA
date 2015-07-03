@@ -1,5 +1,72 @@
-#ifndef __GUI_PUBLIC_FUN__
-#define __GUI_PUBLIC_FUN__
+#ifndef __GUI_PUBLIC_FNCT__
+#define __GUI_PUBLIC_FNCT__
+
+
+#include "GUI.h"
+
+/********************************************
+//
+//   ID of User's Item
+//
+*********************************************/
+#define ID_EDIT_0       ( GUI_ID_USER + 0x00 )
+#define ID_EDIT_1       ( GUI_ID_USER + 0x01 )
+#define ID_EDIT_2       ( GUI_ID_USER + 0x02 )
+#define ID_EDIT_3       ( GUI_ID_USER + 0x03 )
+#define ID_EDIT_4       ( GUI_ID_USER + 0x04 )
+#define ID_EDIT_5       ( GUI_ID_USER + 0x05 )
+#define ID_EDIT_6       ( GUI_ID_USER + 0x06 )
+#define ID_EDIT_7       ( GUI_ID_USER + 0x07 )
+#define ID_EDIT_8       ( GUI_ID_USER + 0x08 )
+#define ID_EDIT_9       ( GUI_ID_USER + 0x09 )
+
+#define ID_TEXT_0       ( GUI_ID_USER + 0x10 )
+#define ID_TEXT_1       ( GUI_ID_USER + 0x11 )
+#define ID_TEXT_2       ( GUI_ID_USER + 0x12 )
+#define ID_TEXT_3       ( GUI_ID_USER + 0x13 )
+#define ID_TEXT_4       ( GUI_ID_USER + 0x14 )
+#define ID_TEXT_5       ( GUI_ID_USER + 0x15 )
+#define ID_TEXT_6       ( GUI_ID_USER + 0x16 )
+#define ID_TEXT_7       ( GUI_ID_USER + 0x17 )
+#define ID_TEXT_8       ( GUI_ID_USER + 0x18 )
+#define ID_TEXT_9       ( GUI_ID_USER + 0x19 )
+#define ID_TEXT_10      ( GUI_ID_USER + 0x1A )
+#define ID_TEXT_11      ( GUI_ID_USER + 0x1B )
+#define ID_TEXT_12      ( GUI_ID_USER + 0x1C )
+
+
+#define ID_BUTTON_0     ( GUI_ID_USER + 0x20 )
+#define ID_BUTTON_1     ( GUI_ID_USER + 0x21 )
+#define ID_BUTTON_2     ( GUI_ID_USER + 0x22 )
+#define ID_BUTTON_3     ( GUI_ID_USER + 0x23 )
+#define ID_BUTTON_4     ( GUI_ID_USER + 0x24 )
+#define ID_BUTTON_5     ( GUI_ID_USER + 0x25 )
+#define ID_BUTTON_6     ( GUI_ID_USER + 0x26 )
+#define ID_BUTTON_7     ( GUI_ID_USER + 0x27 )
+
+#define ID_LISTBOX_0    ( GUI_ID_USER + 0x30 )
+#define ID_LISTBOX_1    ( GUI_ID_USER + 0x31 )
+#define ID_LISTBOX_2    ( GUI_ID_USER + 0x32 )
+#define ID_LISTBOX_3    ( GUI_ID_USER + 0x33 )
+
+#define ID_PROGBAR_0    ( GUI_ID_USER + 0x40 )
+#define ID_PROGBAR_1    ( GUI_ID_USER + 0x41 )
+
+#define ID_LISTVIEW_0   ( GUI_ID_USER + 0x50 )
+#define ID_LISTVIEW_1   ( GUI_ID_USER + 0x51 )
+
+#define ID_MULTIEDIT_0  ( GUI_ID_USER + 0x60 )
+#define ID_MULTIEDIT_1  ( GUI_ID_USER + 0x61 )
+
+#define ID_WINDOW_0     ( GUI_ID_USER + 0x70 )
+
+#define ID_FRAMEWIN_0   ( GUI_ID_USER + 0x75 )
+
+/******************User Item ID End*******************/
+
+
+
+
 
 
 #define GUI_645_ADDR_LENGTH      12
@@ -21,7 +88,7 @@ typedef enum
 
 typedef enum
 {
-    GUI_CMD_BROADCAST = 0,
+    GUI_CMD_BROADCAST_READ_ADDR = 0,
     GUI_CMD_PLC_R2L,
     GUI_CMD_PLC_L2R,    
     GUI_CMD_PLC_FREQ_SET,
@@ -62,15 +129,20 @@ typedef enum
 #define DATA_SIGN_LENGTH    4  //数据标识符长度
 
 
-
-#define GUI_MSBOX_ADDR_ERROR       0
-#define GUI_MSBOX_DIDO_ERROR       1
-#define GUI_MSBOX_PROC_ERROR       2
-#define GUI_MSBOX_MONTH_ERROR      3
-#define GUI_MSBOX_DAY_ERROR        4
-#define GUI_MSBOX_HOUR_ERROR       5
-#define GUI_MSBOX_MIN_ERROR        6
-#define GUI_MSBOX_FORMAT_ERROR     7
+#define GUI_MSBOX_ADDR_ERROR         0
+#define GUI_MSBOX_DIDO_ERROR         1
+#define GUI_MSBOX_PROC_ERROR         2
+#define GUI_MSBOX_MONTH_ERROR        3
+#define GUI_MSBOX_DAY_ERROR          4
+#define GUI_MSBOX_HOUR_ERROR         5
+#define GUI_MSBOX_MIN_ERROR          6
+#define GUI_MSBOX_FORMAT_ERROR       7
+#define GUI_MSBOX_UPDATE_ERROR       8
+#define GUI_MSBOX_RLY_OUTNUM_ERROR   9
+#define GUI_MSBOX_OUTTIME_ERROR      10
+#define GUI_MSBOX_LOWVTG_ERROR       11
+#define GUI_MSBOX_FUN_DISALE_ERROR   12
+#define GUI_MSBOX_RESET_ERROR        13
 
 //#define KEY_PRESS_CNT_MIN          0  //按键次数
 //#define KEY_PRESS_CNT_MAX          8  //最大按键次数
@@ -161,7 +233,7 @@ extern const u8 g_self_check_pwd[];
 
 
 /*button对按键的反应，闪烁一下*/
-void ButtonBlink(WM_MESSAGE * pMsg,int Id);
+//void ButtonBlink(WM_MESSAGE * pMsg,int Id);
 void PUB_InitFreq(WM_MESSAGE *pMsg,int widgetID); //初始化速率设置eidt
 
 
@@ -210,19 +282,19 @@ void RMD_proc_resp_data();
 *
 **************/
 void CPS_SetFocus(void);
-void CPS_Color_Change(void);
+//void CPS_Color_Change(void);
 
 void TMS_SetFocus(void);
-void TMS_Color_Change(void);
+//void TMS_Color_Change(void);
 
 void ADS_SetFocus(void);
-void ADS_Color_Change(void);
+//void ADS_Color_Change(void);
 
 void CPT_SetFocus(void);
-void CPT_Color_Change(void);
+//void CPT_Color_Change(void);
 
 void RMD_SetFocus(void);
-void RMD_Color_Change(void);
+//void RMD_Color_Change(void);
 
 void Select_Focus(void);
 
@@ -230,7 +302,16 @@ void CPT_ClearData(void);
 
 void GUI_StartSys(void);
 
-extern GUI_CONST_STORAGE GUI_BITMAP bmlogo;
+void TSK_Set_BeepOn(void);
+void TSK_Set_BeepOff(void);
+
+//向上选择
+void GUI_SelEdt_Up(WM_HWIN hParaentWin, int firstID, int lastID, int editNum, int pressCnt);
+//向下选择;
+void GUI_SelEdt_Down(WM_HWIN hParaentWin, int firstID, int editNum, int pressCnt);
+void GUI_Color_Change(WM_HWIN hParaentWin, int firstID, int editNum );
+
+//extern int key_press_cnt;
 
 
 
@@ -243,4 +324,4 @@ void GUI_GetHexDataFlag(u8 * strbuf, u8* dataflag, u8 len);
 void GUI_Set_FD_Format_PROGBAR(u32 newVal);
 
 
-#endif /*__GUI_PUBLIC_FUN__*/
+#endif /*__GUI_PUBLIC_FNCT__*/

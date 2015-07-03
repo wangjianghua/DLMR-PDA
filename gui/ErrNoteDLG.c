@@ -30,12 +30,13 @@
 *
 **********************************************************************
 */
+#if 0
 #define ID_FRAMEWIN_0  (GUI_ID_USER + 0x00)
 #define ID_BUTTON_0    (GUI_ID_USER + 0x01)
 #define ID_BUTTON_1    (GUI_ID_USER + 0x02)
 #define ID_TEXT_0      (GUI_ID_USER + 0x03)
 
-
+#endif
 // USER START (Optionally insert additional defines)
 // USER END
 
@@ -57,7 +58,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { FRAMEWIN_CreateIndirect, "ErrNote", ID_FRAMEWIN_0, 50,  82,  140, 120, 0, 0x64, 0 },
   { BUTTON_CreateIndirect,   Confirm,   ID_BUTTON_0,   7,   70, 50,  20,  0, 0x0,  0 },
   { BUTTON_CreateIndirect,   Cancel,    ID_BUTTON_1,   76,  70, 50,  20,  0, 0x0,  0 },
-  { TEXT_CreateIndirect,     WrnText,    ID_TEXT_0,    7,   32,  125, 20,  0, 0x0,  0 },
+  { TEXT_CreateIndirect,     WrnText,    ID_TEXT_0,    4,   32,  130, 20,  0, 0x0,  0 },
   // USER START (Optionally insert additional widgets)
   // USER END
 };
@@ -83,9 +84,9 @@ void ERR_Sel_Win(void)
     {
         WM_SetFocus(g_hWin_relay);
     }
-    if((g_hWin_std>0)&&(g_hWin_relay <= 0))
+    if((g_hWin_ProtoDbg>0)&&(g_hWin_relay <= 0))
     {
-        WM_SetFocus(g_hWin_std);
+        WM_SetFocus(g_hWin_ProtoDbg);
     }
     if(g_hWin_about>0)
     {
@@ -110,7 +111,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
   WM_HWIN hItem;
   int     NCode;
   int     Id;
-  u8    sbuf[64];
+  u8      tmp[16];
   FRESULT res;
   FATFS fs;
   // USER START (Optionally insert additional variables)
@@ -157,15 +158,29 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 {
                     SYS_ADD_TASK(SYS_TASK_FORMAT_DISK);
                 }
-                if(g_hWin_about>0)
+                
+                if(g_hWin_SysInfo > 0)
                 {
-                  
-                  if(g_rom_para.bootFlag != BOOT_REQUEST_ACT)
-                  {
-                      g_rom_para.bootFlag = BOOT_REQUEST_ACT;
-                      DEV_Parameters_Write();
-                  }
-                  DEV_SoftReset();
+                       if(g_rom_para.bootFlag != BOOT_REQUEST_ACT)
+                      {
+                          g_rom_para.bootFlag = BOOT_REQUEST_ACT;
+                          DEV_Parameters_Write();
+                      }
+                      DEV_SoftReset();  
+                      //v_para_recover(); 
+                }
+
+                if(g_hWin_AdvanSet > 0)
+                {
+                    dev_para_recover();
+
+                    hItem = GUI_Get_AutoSleepTime_Item();
+                    sprintf(tmp, "%d", g_rom_para.auto_sleep_time);
+                    EDIT_SetText(hItem, tmp);
+
+                    hItem = GUI_Get_AutoShutdownTime_Item();
+                    sprintf(tmp, "%d", g_rom_para.auto_shutdown_time);
+                    EDIT_SetText(hItem, tmp);
                 }
                 Select_Focus();
                 break;

@@ -29,12 +29,13 @@
 *
 **********************************************************************
 */
+#if 0
 #define ID_WINDOW_0     (GUI_ID_USER + 0x9B)
 #define ID_TEXT_1     (GUI_ID_USER + 0xA0)
 #define ID_BUTTON_0     (GUI_ID_USER + 0xA1)
 #define ID_BUTTON_1     (GUI_ID_USER + 0xA2)
 #define ID_LISTVIEW_0     (GUI_ID_USER + 0xA3)
-
+#endif
 
 char DataSign_Text[TEXT_LEN]; //listview单元格中的文本内容
 
@@ -177,14 +178,14 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             case GUI_KEY_YELLOW:
                 WM_DeleteWindow(g_hWin_DataSign);
                 g_hWin_DataSign=HBWIN_NULL;
-                WM_SetFocus(g_hWin_std);
+                WM_SetFocus(g_hWin_ProtoDbg);
                 CPT_SetFocus();
                 break;
             case GUI_KEY_GREEN:
                 set_datasign_value(pMsg);
                 WM_DeleteWindow(g_hWin_DataSign);
                 g_hWin_DataSign=HBWIN_NULL;
-                WM_SetFocus(g_hWin_std);
+                WM_SetFocus(g_hWin_ProtoDbg);
                 CPT_SetFocus();
                 break;
         }
@@ -211,7 +212,7 @@ WM_HWIN CreateDataSign(void);
 WM_HWIN CreateDataSign(void) {
   WM_HWIN hWin;
 
-  hWin = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), _cbDialog, g_hWin_std, 0, 0);
+  hWin = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), _cbDialog, g_hWin_ProtoDbg, 0, 0);
   return hWin;
 }
 

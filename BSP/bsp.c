@@ -600,11 +600,9 @@ void  BSP_Init (void)
 
     BSP_IR_PWM_Init();
 
-    //BSP_IWDG_Init();  //4.1
+    beep_off();
 
     PLC_PWR_ON();
-
-    KEY_LED_OFF();
 }
 
 void BSP_RCC_Configuration(void)
@@ -748,6 +746,10 @@ void BSP_GPIO_Configuration(void)
     GPIO_InitStructure.Pull  = GPIO_PULLUP; 
     HAL_GPIO_Init(GPIOE, &GPIO_InitStructure);     
 
+    GPIO_InitStructure.Pin = GPIO_PIN_1;
+    GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
 }
 
 
@@ -1149,25 +1151,29 @@ CPU_INT32U BSP_ADC_ReadPwr(void)
 
 }
 
+void beep_on(void)
+{    
+    GPIO_SetBits(GPIOB, GPIO_PIN_1);
+}
 
+void beep_off(void)
+{   
+    GPIO_ResetBits(GPIOB, GPIO_PIN_1);
+}
 
-//·äÃùÆ÷
-void BSP_BEEP(void)
+void Beep(void)
 {
-    int i = 50;
-    GPIO_InitTypeDef GPIO_InitStructure;
-    GPIO_InitStructure.Pin = GPIO_PIN_1;
-    GPIO_InitStructure.Speed = GPIO_SPEED_FAST;
-    GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
-    
-    while(i--)
+    INT32U count;
+
+
+    count = 50;
+
+    while(count--)
     {
-        GPIO_SetBits(GPIOB, GPIO_PIN_1);
-        OSTimeDlyHMSM(0, 0, 0, 1);            
-        GPIO_ResetBits(GPIOB, GPIO_PIN_1);
-        OSTimeDlyHMSM(0, 0, 0, 1);            
-        
+        beep_on();
+        OSTimeDlyHMSM(0, 0, 0, 1);
+        beep_off();
+        OSTimeDlyHMSM(0, 0, 0, 1);
     }
 }
 

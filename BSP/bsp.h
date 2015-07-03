@@ -414,6 +414,10 @@ extern DMA_HandleTypeDef hdma_usart2_tx;
 
 extern IWDG_HandleTypeDef IwdgHandle;
 
+void beep_on(void);
+void beep_off(void);
+void Beep(void); //ЛЊаж
+
 void PLC_PWR_ON(void);
 void PLC_PWR_OFF(void);
 

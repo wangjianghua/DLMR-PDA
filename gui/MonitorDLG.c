@@ -28,7 +28,7 @@
 *
 **********************************************************************
 */
-
+#if 0
 #define ID_WINDOW_0     (GUI_ID_USER + 0x89)
 
 #define ID_BUTTON_0     (GUI_ID_USER + 0x8B)
@@ -43,7 +43,7 @@
 
 #define ID_EDIT_0       (GUI_ID_USER + 0x93)
 
-
+#endif
 
 /*********************************************************************
 *
@@ -114,16 +114,19 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
 
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_0);
-    //BUTTON_SetBkColor(hItem,0,GUI_CYAN);
+    BUTTON_SetBkColor(hItem,0,GUI_CYAN);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
 
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_2);
+    BUTTON_SetBkColor(hItem,0,GUI_CYAN);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
 
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_1);
+    BUTTON_SetBkColor(hItem,0,GUI_CYAN);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
     
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_5);
+    BUTTON_SetBkColor(hItem,0,GUI_CYAN);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
 
     hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
@@ -192,36 +195,51 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 break;
                 
             case '#': //读载波节点
-                ButtonBlink(pMsg,ID_BUTTON_0);
-                hItem = WM_GetDialogItem(pMsg->hWin,ID_BUTTON_0);
-                BUTTON_SetText(hItem,MND_reading);
-                //hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
-                //EDIT_SetValue(hItem ,240);
+                //ButtonBlink(pMsg,ID_BUTTON_0);
                 
-                g_gui_para.cmd = GUI_CMD_PLC_READ_NODE;
-                g_gui_para.state = GUI_STATE_PLC_MONITOR;
-                g_sys_ctrl.sysCtdVal = COUNT_VALUE  ;
-                g_sys_ctrl.sysCtdFlag = COUNTDOWN_ON;
-                //g_sys_ctrl.monitorFlag = PLC_MONITOR_ON; //读载波节点也不能关机
-                TSK_Disp_PLC();
-                OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
+                if(g_rom_para.channel != CHANNEL_PLC)
+                {
+                    ERR_NOTE(g_hWin_monitor,GUI_MSBOX_FUN_DISALE_ERROR);
+                }
+                else
+                {
+                    hItem = WM_GetDialogItem(pMsg->hWin,ID_BUTTON_0);
+                    BUTTON_SetText(hItem,MND_reading);
+                    //hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
+                    //EDIT_SetValue(hItem ,240);
+                    
+                    g_gui_para.cmd = GUI_CMD_PLC_READ_NODE;
+                    g_gui_para.state = GUI_STATE_PLC_MONITOR;
+                    g_sys_ctrl.sysCtdVal = COUNT_VALUE  ;
+                    g_sys_ctrl.sysCtdFlag = COUNTDOWN_ON;
+                    //g_sys_ctrl.monitorFlag = PLC_MONITOR_ON; //读载波节点也不能关机
+                    TSK_Disp_PLC();
+                    OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
+                }
                 break;
             case '*':
-                ButtonBlink(pMsg,ID_BUTTON_1);
+                //ButtonBlink(pMsg,ID_BUTTON_1);
                 hItem=WM_GetDialogItem(pMsg->hWin,ID_MULTIEDIT_0);
                 MULTIEDIT_SetText(hItem,"\0");
                 break;
             case GUI_KEY_F1: /*监控态*/
-                ButtonBlink(pMsg,ID_BUTTON_2);
+                //ButtonBlink(pMsg,ID_BUTTON_2);
                 //TSK_Disp_PLC();
-                g_gui_para.cmd = GUI_CMD_PLC_R2L;
-                g_gui_para.state = GUI_STATE_PLC_MONITOR;
-                //g_sys_ctrl.monitorFlag = PLC_MONITOR_ON;//监控态不能关闭电源，标志位
-                TSK_Disp_PLC();
-                OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
+                if(g_rom_para.channel != CHANNEL_PLC)
+                {
+                    ERR_NOTE(g_hWin_monitor,GUI_MSBOX_FUN_DISALE_ERROR);
+                }
+                else
+                {
+                    g_gui_para.cmd = GUI_CMD_PLC_R2L;
+                    g_gui_para.state = GUI_STATE_PLC_MONITOR;
+                    //g_sys_ctrl.monitorFlag = PLC_MONITOR_ON;//监控态不能关闭电源，标志位
+                    TSK_Disp_PLC();
+                    OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
+                }
                 break;
             case GUI_KEY_F2:/* 抄控态 */
-                ButtonBlink(pMsg,ID_BUTTON_5);
+                //ButtonBlink(pMsg,ID_BUTTON_5);
                 //TSK_Close_Monitor();
                 g_gui_para.cmd = GUI_CMD_PLC_L2R;
                 g_gui_para.state = GUI_STATE_PLC_MONITOR;

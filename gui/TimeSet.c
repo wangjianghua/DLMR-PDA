@@ -30,6 +30,7 @@
 *
 **********************************************************************
 */
+#if 0
 #define ID_WINDOW_0 (GUI_ID_USER + 0x00)
 #define ID_TEXT_0   (GUI_ID_USER + 0x09)
 #define ID_TEXT_1   (GUI_ID_USER + 0x0A)
@@ -50,7 +51,7 @@
 #define ID_TEXT_6   (GUI_ID_USER + 0x17)
 #define ID_TEXT_7   (GUI_ID_USER + 0x18)
 
-
+#endif
 
 /*********************************************************************
 *
@@ -289,7 +290,7 @@ void TMS_SelEdt_Down(WM_MESSAGE *pMsg)
     }
 }
 
-
+#if 0
 void TMS_Color_Change(void)
 {
     WM_HWIN hItem;
@@ -307,7 +308,7 @@ void TMS_Color_Change(void)
         }
     }
 }
-
+#endif
 void TMS_SetFocus(void)
 {
     WM_HWIN hItem;
@@ -347,11 +348,11 @@ static void _cbDialog(WM_MESSAGE * pMsg)
             {
                 case GUI_KEY_UP:
                     TMS_SelEdt_Up(pMsg);
-                    TMS_Color_Change();
+                    GUI_Color_Change(g_hWin_TimeSet,ID_EDIT_0,6);
                     break;
                 case GUI_KEY_DOWN:
                     TMS_SelEdt_Down(pMsg);
-                    TMS_Color_Change();
+                    GUI_Color_Change(g_hWin_TimeSet,ID_EDIT_0,6);
                     break;
                 case GUI_KEY_GREEN: /*保存重新设置的时间*/
                     if(DEV_OK==Time_From_Widget(g_rtc_time))
@@ -374,10 +375,11 @@ static void _cbDialog(WM_MESSAGE * pMsg)
                     WM_SetFocus(g_hWin_para);
                     tms_key_cnt=0;
                     break;   
-
+#if 0
                 case GUI_KEY_TAB:
                     TMS_Color_Change();
                     break;
+#endif
                 case GUI_KEY_ENTER:
                     switch(Id)
                     {

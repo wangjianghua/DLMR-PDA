@@ -172,12 +172,12 @@ int  main(void)
 
 WM_HWIN g_hWin_menu;
 WM_HWIN g_hWin_para;
-WM_HWIN g_hWin_std; //  通信规约调试
+WM_HWIN g_hWin_ProtoDbg; //  通信规约调试
 
 
 WM_HWIN g_hWin_monitor;  //监控
 WM_HWIN g_hWin_ReadMeter; //常用抄表
-WM_HWIN g_hWin_WaveCarrior; // 载波功能设置
+WM_HWIN g_hWin_PLC; // 载波功能设置
 WM_HWIN g_hWin_DataSign; //数据标识
 WM_HWIN g_hWin_relay;      //中继地址设置
 WM_HWIN g_hWin_msg;       //消息日志 
@@ -206,7 +206,6 @@ u8 rf_part_info[8];
 u8 rf_device_state[2];
 u8 rf_device_id[8];
 extern u8 g_get_pro[4];
-extern GUI_CONST_STORAGE GUI_BITMAP bmlogo;
 
 int G_II;
 
@@ -280,7 +279,7 @@ void APP_StartButtonTest()
             //g_sys_ctrl.power_stat = SYS_POWER_OFF;
             keyCnt = 0;
 
-            if(GET_USB_VOL() == 0)
+            if(GET_USB_STATE() == 0)
             {
                 return;
             }
@@ -363,7 +362,12 @@ static  void  App_TaskStart (void *p_arg)
                 switch(n)
                 {
                 case 0:  
-                    FM_Format_Disk();               
+                    g_sys_ctrl.sd_format_flag = TRUE;
+                    
+                    FM_Format_Disk();              
+                    
+                    g_sys_ctrl.sd_format_flag = FALSE;
+                    
                     SYS_DEL_TASK(SYS_TASK_FORMAT_DISK);
                     break;
                 }
@@ -399,10 +403,7 @@ static  void  App_TaskGUI (void *p_arg)
     int j = 0;//读取电压值计数
     u32 val = 0; //电压
     INT32U count = 0;
-    
-#if OS_CRITICAL_METHOD == 3u
-    OS_CPU_SR  cpu_sr = 0u;
-#endif  
+    OS_CPU_SR  cpu_sr; 
 
 
     (void)p_arg;
@@ -442,7 +443,7 @@ static  void  App_TaskGUI (void *p_arg)
         {
             val += BSP_ADC_ReadPwr();
             //检测到USB并且电没有充满的时候，充电标志闪烁,
-            if((GPIO_PIN_RESET == GET_USB_VOL())&&(GPIO_PIN_SET == GET_CHARG_CHK()))
+            if((GPIO_PIN_RESET == GET_USB_STATE())&&(GPIO_PIN_SET == USB_CHARGE_CHK()))
             {
                 TSK_Battery_Charge(j);
             }
@@ -451,7 +452,7 @@ static  void  App_TaskGUI (void *p_arg)
         else if(j >= 10)
         {
             g_sys_ctrl.pwrValue = val/10;
-            if((GPIO_PIN_SET == GET_USB_VOL())||(GPIO_PIN_RESET == GET_CHARG_CHK()))
+            if((GPIO_PIN_SET == GET_USB_STATE())||(GPIO_PIN_RESET == USB_CHARGE_CHK()))
             {
                 Battery_State(g_sys_ctrl.pwrValue);
             }
@@ -487,6 +488,20 @@ static  void  App_TaskGUI (void *p_arg)
             TSK_Disp_Protocol();
 
             TSK_Disp_Channel();
+        }
+
+        if((!(count % 150)) && (FALSE == g_sys_ctrl.sd_format_flag))
+        {
+            hItem = TSK_GetSD();
+            
+            if(TRUE == fdisk_detect())
+            {
+                TEXT_SetText(hItem, SD_Mount);
+            }
+            else
+            {
+                TEXT_SetText(hItem, " ");
+            }
         }
 
         count++;
@@ -541,8 +556,8 @@ static  void  App_TaskPower (void *p_arg)
         {
             g_sys_ctrl.shutdown_timeout = 0;
             
-            if((GUI_CMD_PLC_READ_NODE == g_gui_para.cmd) ||
-               (GUI_CMD_PLC_R2L == g_gui_para.cmd))
+            if((GUI_CMD_PLC_READ_NODE == g_sys_ctrl.plc_state) ||
+               (GUI_CMD_PLC_R2L == g_sys_ctrl.plc_state))
             {
                 LCD_BL_OFF();
             }

@@ -28,6 +28,7 @@ extern const char OperateCode[];
 extern const char ChannelRF[];
 extern const char ShutDownTime[];
 extern const char FE_Speed[];
+extern const char BeepSound[];
 
 
 // ±º‰…Ë÷√
@@ -169,7 +170,12 @@ extern const char SysInfo[];
 extern const char TSK_PLC[];
 extern const char TSK_RF[];
 extern const char TSK_IR[];
+//beep
+extern const char BeepOff[];
+extern const char BeepOn[];
 
+extern const char SD_Mount[];
+extern const char SD_Unmount[];
 extern const char Clear[];
 extern const char Back[];
 extern const char Log[];

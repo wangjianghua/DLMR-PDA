@@ -62,9 +62,8 @@ U8 *pUartRxBuf[] = {
 
 U32 UART_ReceiveData(U8 end_id, UCHAR* rxbuf, USHORT rxnum)
 {
-#if OS_CRITICAL_METHOD == 3                                /* Allocate storage for CPU status register     */
-    OS_CPU_SR  cpu_sr = 0;
-#endif
+    OS_CPU_SR  cpu_sr;
+    
     P_UART_CCB p_uc = &g_uart_ccb[end_id];
 
     if( (rxnum < 1) || (end_id >= MAX_COM_PORT) )
@@ -128,9 +127,7 @@ Tick任务调用，检查每个END接口是否有新的frame收完
 ************************************************************/
 unsigned short End_tick_check(void)
 {
-#if OS_CRITICAL_METHOD == 3                                /* Allocate storage for CPU status register     */
-    OS_CPU_SR  cpu_sr = 0;
-#endif
+    OS_CPU_SR  cpu_sr;
     unsigned char i;
     U16 cp_len, msg_len;
 
@@ -525,7 +522,7 @@ void  App_TaskEndTick (void *p_arg)
         GUI_Msg_Upload(OFF);
         GUI_Msg_Download(OFF);
 
-        if(GPIO_PIN_RESET == GET_USB_VOL())
+        if(GPIO_PIN_RESET == GET_USB_STATE())
         {
             g_sys_ctrl.usb_state = TRUE;
         }

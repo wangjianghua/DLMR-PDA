@@ -27,9 +27,9 @@
 *
 **********************************************************************
 */
+#if 0
 
 #define ID_WINDOW_0       (GUI_ID_USER + 0x6C)
-
 
 #define ID_TEXT_0         (GUI_ID_USER + 0x6D)
 #define ID_TEXT_1         (GUI_ID_USER + 0x6E)
@@ -61,8 +61,14 @@
 //char Edit0_Text[10]; //edit文本字符串
 //char Edit1_Text[10];
 //char Edit2_Text[10];
+#endif
 
 static int key_press_cnt = 0;//按键次数，按上下键盘的时候对应不同的button
+
+int GetKeyCnt(void)
+{
+    return key_press_cnt;
+}
 
 /*********************************************************************
 *
@@ -84,7 +90,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { BUTTON_CreateIndirect,  TimeSet,      ID_BUTTON_0, 8,   10,  92,  25, 0, 0x0, 0 },
   { BUTTON_CreateIndirect,  AdvanceSet,   ID_BUTTON_1, 128, 10,  103,  25, 0, 0x0, 0 },
   { BUTTON_CreateIndirect,  Save,         ID_BUTTON_2, 9,   264, 55,  25, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect,  Quit,         ID_BUTTON_3, 172, 263, 55,  25, 0, 0x0, 0 }, 
+  { BUTTON_CreateIndirect,  Quit,         ID_BUTTON_3, 172, 264, 55,  25, 0, 0x0, 0 }, 
 
   { EDIT_CreateIndirect,    NULL,         ID_EDIT_0,   128, 42,  103, 20, 0, 0x64, 0 },
   { EDIT_CreateIndirect,    NULL,         ID_EDIT_1,   128, 67,  103, 20, 0, 0x64, 0 },
@@ -98,7 +104,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
 };
 
 
-
+#if 1
 
 //向上选择
 void CPS_SelEdt_Up(WM_MESSAGE * pMsg)
@@ -140,9 +146,9 @@ void CPS_SelEdt_Down(WM_MESSAGE *pMsg)
     }
 }
 
+#endif
 
-
-
+#if 0
 void CPS_Color_Change(void)
 {
     WM_HWIN hItem;
@@ -161,6 +167,8 @@ void CPS_Color_Change(void)
 
     }
 }
+#endif
+
 /*********************************************
 *
 *   打开一个新的页面，再返回到当前页面的时候
@@ -387,7 +395,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                    WM_SetFocus(g_hWin_TimeSet);
                    hItem = TMS_Get_Year();
                    WM_SetFocus(hItem);
-                   TMS_Color_Change();
+                   GUI_Color_Change(g_hWin_TimeSet,ID_EDIT_0,6);
                    break;
                    
                case GUI_KEY_F2:
@@ -395,7 +403,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                    WM_SetFocus(g_hWin_AdvanSet);
                    hItem = ADS_GetSrcOutTime();
                    ADS_SetFocus();
-                   ADS_Color_Change();
+                   GUI_Color_Change(g_hWin_AdvanSet, ID_EDIT_0, 2);
                    break;
 #if 0
                case GUI_KEY_TAB:
@@ -403,13 +411,15 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                       break;
 #endif
                case GUI_KEY_UP:
+                   //GUI_SelEdt_Up(g_hWin_para, ID_EDIT_0, ID_EDIT_7, 8, GetKeyCnt);
                    CPS_SelEdt_Up(pMsg);
-                   CPS_Color_Change();
+                   GUI_Color_Change(g_hWin_para, ID_EDIT_0, 8);
                    break;
                   
                case GUI_KEY_DOWN:
+                   //GUI_SelEdt_Down(g_hWin_para, ID_EDIT_0, 7, key_press_cnt);
                    CPS_SelEdt_Down(pMsg);
-                   CPS_Color_Change();
+                   GUI_Color_Change(g_hWin_para, ID_EDIT_0, 8);
                    break;
                case GUI_KEY_ENTER:
                    switch(Id)

@@ -104,10 +104,7 @@ u16 rs485_uart_send(u8 *buf, u16 len)
 u16 plc_uart_send(u8 *buf, u16 len)
 {
     P_MSG_INFO  pMsg = NULL;
-
-#if OS_CRITICAL_METHOD == 3u
-    OS_CPU_SR  cpu_sr = 0u;
-#endif  
+    OS_CPU_SR  cpu_sr;  
 
 
     if((NULL == buf) || (0 == len))
@@ -134,10 +131,7 @@ u16 plc_uart_send(u8 *buf, u16 len)
 u16 ir_uart_send(u8 *buf, u16 len)
 {
     P_MSG_INFO  pMsg = NULL;
-    
-#if OS_CRITICAL_METHOD == 3u
-    OS_CPU_SR  cpu_sr = 0u;
-#endif  
+    OS_CPU_SR  cpu_sr;  
 
 
     if((NULL == buf) || (0 == len))
@@ -166,10 +160,7 @@ unsigned int PC_postProcess(pvoid h)
     P_MSG_INFO  pMsg = (P_MSG_INFO)h;
     u8  *pBuf = (UCHAR *)(pMsg->msg_buffer);
     u16  mLen = pMsg->msg_header.msg_len;
-    
-#if OS_CRITICAL_METHOD == 3u
-    OS_CPU_SR  cpu_sr = 0u;
-#endif   
+    OS_CPU_SR  cpu_sr;   
 
 
     OS_ENTER_CRITICAL();
@@ -186,10 +177,7 @@ unsigned int RS485_postProcess(pvoid h)
     P_MSG_INFO  pMsg = (P_MSG_INFO)h;
     u8  *pBuf = (UCHAR *)(pMsg->msg_buffer);
     u16  mLen = pMsg->msg_header.msg_len;
-
-#if OS_CRITICAL_METHOD == 3u
-    OS_CPU_SR  cpu_sr = 0u;
-#endif   
+    OS_CPU_SR  cpu_sr;   
 
 
     OS_ENTER_CRITICAL();
@@ -209,10 +197,7 @@ unsigned int PLC_postProcess(pvoid h)
     P_MSG_INFO  pMsg = (P_MSG_INFO)h;
     u8  *pBuf = (UCHAR *)(pMsg->msg_buffer);
     u16  mLen = pMsg->msg_header.msg_len;
-    
-#if OS_CRITICAL_METHOD == 3u
-    OS_CPU_SR  cpu_sr = 0u;
-#endif
+    OS_CPU_SR  cpu_sr;
 
 
     OS_ENTER_CRITICAL();
@@ -235,10 +220,7 @@ unsigned int IR_postProcess(pvoid h)
     P_MSG_INFO  pMsg = (P_MSG_INFO)h;
     u8  *pBuf = (UCHAR *)(pMsg->msg_buffer);
     u16  mLen = pMsg->msg_header.msg_len;
-    
-#if OS_CRITICAL_METHOD == 3u
-    OS_CPU_SR  cpu_sr = 0u;
-#endif
+    OS_CPU_SR  cpu_sr;
 
 
     if((0 == g_proto_para.ir_send_len) || (mLen <= g_proto_para.ir_send_len))
@@ -257,7 +239,7 @@ unsigned int IR_postProcess(pvoid h)
     return (TRUE);
 }
 
-u32 Proto_DL645_Proc(void)
+u32 DL645_Check_Frame(void)
 {
     if(DL645_FRAME_ERROR == Analysis_DL645_Frame( g_gui_para.dstAddr, 
                                                  (u8 *)&g_proto_para.dl645_frame_recv,
@@ -280,12 +262,12 @@ u32 Proto_DL645_Proc(void)
     return (g_proto_para.recv_result);
 }
 
-void Proto_DataBuf_Proc(void) 
+void Proto_Data_Proc(void) 
 {
     u32 len;
     
 
-    if(RECV_RES_SUCC == Proto_DL645_Proc())       
+    if(RECV_RES_SUCC == DL645_Check_Frame())       
     {
 
         len = g_proto_para.dl645_frame_recv.L;
@@ -373,7 +355,7 @@ void  App_TaskProto (void *p_arg)
             
             switch(g_gui_para.cmd)
             {
-            case GUI_CMD_BROADCAST: //¹ã²¥ÃüÁî
+            case GUI_CMD_BROADCAST_READ_ADDR: //¹ã²¥ÃüÁî
                 if(CHANNEL_PLC == g_rom_para.channel) //ÔØ²¨
                 {
                     memcpy(&dl645_read_addr[1], lBroadcast_Read_Meter, sizeof(lBroadcast_Read_Meter));
@@ -400,7 +382,7 @@ void  App_TaskProto (void *p_arg)
 
                     if(OS_ERR_NONE == err)
                     {
-                        Proto_DataBuf_Proc();
+                        Proto_Data_Proc();
                     }
                     else
                     {
@@ -438,7 +420,7 @@ void  App_TaskProto (void *p_arg)
                         memcpy(&g_proto_para.dl645_frame_recv, &RF_RECV_BUF[RF_RECV_FIX_LEN], RF_RECV_LEN - RF_RECV_FIX_LEN);                                       
                         memcpy(&g_proto_para.recv_buf,&RF_RECV_BUF[RF_RECV_FIX_LEN], RF_RECV_LEN - RF_RECV_FIX_LEN);
                         g_proto_para.recv_len = RF_RECV_LEN - RF_RECV_FIX_LEN - RF_PRINT_FIX_LEN;
-                        Proto_DataBuf_Proc();
+                        Proto_Data_Proc();
                     }
                     else
                     {   
@@ -485,7 +467,7 @@ void  App_TaskProto (void *p_arg)
 
                         memcpy(&g_proto_para.dl645_frame_recv, &g_proto_para.recv_buf[index], g_proto_para.recv_len - index);
                         
-                        Proto_DataBuf_Proc();
+                        Proto_Data_Proc();
                     }
                     else
                     {
@@ -507,13 +489,15 @@ void  App_TaskProto (void *p_arg)
 
                 g_proto_para.msg_state = MSG_STATE_SENDING;
                 
-                OSSemPend(g_sem_plc, g_rom_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
+                OSSemPend(g_sem_plc, 5 * OS_TICKS_PER_SEC, &err);
 
                 g_proto_para.data_len = 0;
 
                 if(OS_ERR_NONE == err)
                 {
-                    Proto_DL645_Proc();
+                    g_sys_ctrl.plc_state = GUI_CMD_PLC_R2L;
+                    
+                    DL645_Check_Frame();
                 }
                 else
                 {
@@ -528,103 +512,116 @@ void  App_TaskProto (void *p_arg)
                 break;
 
             case GUI_CMD_PLC_L2R: //³­¿ØÌ¬
-                while(OSSemAccept(g_sem_plc));
-
-                plc_uart_send((u8 *)lPLC_TO_rPLC, sizeof(lPLC_TO_rPLC));
-
-                g_proto_para.msg_state = MSG_STATE_SENDING;
-                
-                OSSemPend(g_sem_plc, g_rom_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
-
-                g_proto_para.data_len = 0;
-
-                if(OS_ERR_NONE == err)
+                if(CHANNEL_PLC == g_rom_para.channel)
                 {
-                    Proto_DL645_Proc();
-                }
-                else
-                {
-                    g_proto_para.recv_result = RECV_RES_TIMEOUT;
-                }
+                    while(OSSemAccept(g_sem_plc));
 
-                g_proto_para.msg_state = MSG_STATE_RECEIVED;
+                    plc_uart_send((u8 *)lPLC_TO_rPLC, sizeof(lPLC_TO_rPLC));
 
-                OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
+                    g_proto_para.msg_state = MSG_STATE_SENDING;
+                    
+                    OSSemPend(g_sem_plc, 5 * OS_TICKS_PER_SEC, &err);
+
+                    g_proto_para.data_len = 0;
+
+                    if(OS_ERR_NONE == err)
+                    {
+                        g_sys_ctrl.plc_state = GUI_CMD_PLC_L2R;
+                        
+                        DL645_Check_Frame();
+                    }
+                    else
+                    {
+                        g_proto_para.recv_result = RECV_RES_TIMEOUT;
+                    }
+
+                    g_proto_para.msg_state = MSG_STATE_RECEIVED;
+
+                    OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
+                }
                 break;
 
             case GUI_CMD_PLC_READ_NODE: //¶ÁÔØ²¨½Úµã
-                while(OSSemAccept(g_sem_plc));
-                
-                plc_uart_send((u8 *)READ_PLC_NODE, sizeof(READ_PLC_NODE));
-
-                g_proto_para.msg_state = MSG_STATE_SENDING;
-                
-                OSSemPend(g_sem_plc, g_rom_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
-
-                g_proto_para.data_len = 0;
-
-                if(OS_ERR_NONE == err)
+                if(CHANNEL_PLC == g_rom_para.channel)
                 {
-                    Proto_DL645_Proc();
-                }
-                else
-                {
-                    g_proto_para.recv_result = RECV_RES_TIMEOUT;
-                }
+                    while(OSSemAccept(g_sem_plc));
+                    
+                    plc_uart_send((u8 *)READ_PLC_NODE, sizeof(READ_PLC_NODE));
 
-                g_proto_para.msg_state = MSG_STATE_RECEIVED;
+                    g_proto_para.msg_state = MSG_STATE_SENDING;
+                    
+                    OSSemPend(g_sem_plc, 5 * OS_TICKS_PER_SEC, &err);
 
-                OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
+                    g_proto_para.data_len = 0;
+
+                    if(OS_ERR_NONE == err)
+                    {
+                        g_sys_ctrl.plc_state = GUI_CMD_PLC_READ_NODE;
+                        
+                        DL645_Check_Frame();
+                    }
+                    else
+                    {
+                        g_proto_para.recv_result = RECV_RES_TIMEOUT;
+                    }
+                    
+                    g_proto_para.msg_state = MSG_STATE_RECEIVED;
+
+                    OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
+                }
                 break;
 
             case GUI_CMD_PLC_FREQ_SET: //ÆµÂÊÉèÖÃ
-                while(OSSemAccept(g_sem_plc));
-                
-                switch(g_rom_para.freqSel)
+                if(CHANNEL_PLC == g_rom_para.channel)
                 {
-                    case PLC_270_III:
-                        plc_uart_send((u8 *)rPLC_270III, sizeof(rPLC_270III));
-                        break;
-                    case PLC_270_III_5:
-                        plc_uart_send((u8 *)rPLC_270III5, sizeof(rPLC_270III5));
-                        break;
-                    case PLC_270_II:
-                        plc_uart_send((u8 *)rPLC_270II, sizeof(rPLC_270II));
-                        break;
-                    case PLC_421_50BPS:
-                        plc_uart_send((u8 *)rPLC_421_50BPS, sizeof(rPLC_421_50BPS));
-                        break;
-                    case PLC_421_100BPS:
-                        plc_uart_send((u8 *)rPLC_421_100BPS, sizeof(rPLC_421_100BPS));
-                        break;
-                    case PLC_421_600BPS:
-                        plc_uart_send((u8 *)rPLC_421_600BPS, sizeof(rPLC_421_600BPS));
-                        break;
-                    case PLC_421_1200BPS:
-                        plc_uart_send((u8 *)rPLC_421_1200BPS, sizeof(rPLC_421_1200BPS));
-                        break;
-                    default:
-                        break;
+                    while(OSSemAccept(g_sem_plc));
+                    
+                    switch(g_rom_para.freqSel)
+                    {
+                        case PLC_270_III:
+                            plc_uart_send((u8 *)rPLC_270III, sizeof(rPLC_270III));
+                            break;
+                        case PLC_270_III_5:
+                            plc_uart_send((u8 *)rPLC_270III5, sizeof(rPLC_270III5));
+                            break;
+                        case PLC_270_II:
+                            plc_uart_send((u8 *)rPLC_270II, sizeof(rPLC_270II));
+                            break;
+                        case PLC_421_50BPS:
+                            plc_uart_send((u8 *)rPLC_421_50BPS, sizeof(rPLC_421_50BPS));
+                            break;
+                        case PLC_421_100BPS:
+                            plc_uart_send((u8 *)rPLC_421_100BPS, sizeof(rPLC_421_100BPS));
+                            break;
+                        case PLC_421_600BPS:
+                            plc_uart_send((u8 *)rPLC_421_600BPS, sizeof(rPLC_421_600BPS));
+                            break;
+                        case PLC_421_1200BPS:
+                            plc_uart_send((u8 *)rPLC_421_1200BPS, sizeof(rPLC_421_1200BPS));
+                            break;
+                        default:
+                            break;
+                    }
+
+                    g_proto_para.msg_state = MSG_STATE_SENDING;
+                    
+                    OSSemPend(g_sem_plc, g_rom_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
+
+                    g_proto_para.data_len = 0;
+
+                    if(OS_ERR_NONE == err)
+                    {
+                        DL645_Check_Frame();
+                    }
+                    else
+                    {
+                        g_proto_para.recv_result = RECV_RES_TIMEOUT;
+                    }
+
+                    g_proto_para.msg_state = MSG_STATE_RECEIVED;
+
+                    OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);  
                 }
-
-                g_proto_para.msg_state = MSG_STATE_SENDING;
-                
-                OSSemPend(g_sem_plc, g_rom_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
-
-                g_proto_para.data_len = 0;
-
-                if(OS_ERR_NONE == err)
-                {
-                    Proto_DL645_Proc();
-                }
-                else
-                {
-                    g_proto_para.recv_result = RECV_RES_TIMEOUT;
-                }
-
-                g_proto_para.msg_state = MSG_STATE_RECEIVED;
-
-                OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);                
                 break;
 
             case GUI_CMD_MRW:
@@ -679,7 +676,7 @@ void  App_TaskProto (void *p_arg)
                     
                     if(OS_ERR_NONE == err)
                     {
-                        Proto_DataBuf_Proc();
+                        Proto_Data_Proc();
                     }
                     else
                     {   
@@ -715,7 +712,7 @@ void  App_TaskProto (void *p_arg)
                         memcpy(&g_proto_para.dl645_frame_recv, &RF_RECV_BUF[RF_RECV_FIX_LEN], RF_RECV_LEN - RF_RECV_FIX_LEN);                                       
                         memcpy(&g_proto_para.recv_buf, &RF_RECV_BUF[RF_RECV_FIX_LEN], RF_RECV_LEN - RF_RECV_FIX_LEN);
                         g_proto_para.recv_len = RF_RECV_LEN - RF_RECV_FIX_LEN - RF_PRINT_FIX_LEN;
-                        Proto_DataBuf_Proc();
+                        Proto_Data_Proc();
                     }
                     else
                     {   
@@ -759,7 +756,7 @@ void  App_TaskProto (void *p_arg)
 
                         memcpy(&g_proto_para.dl645_frame_recv, &g_proto_para.recv_buf[index], g_proto_para.recv_len - index);
                         
-                        Proto_DataBuf_Proc();
+                        Proto_Data_Proc();
                     }
                     else
                     {
@@ -805,7 +802,7 @@ void  App_TaskProto (void *p_arg)
                     
                     if(OS_ERR_NONE == err)
                     {
-                        Proto_DataBuf_Proc();
+                        Proto_Data_Proc();
                     }
                     else
                     {   
@@ -830,12 +827,9 @@ void  App_TaskProto (void *p_arg)
 
                 if(OS_ERR_NONE == err)
                 {
+                    trm_msg_record(TRM_MSG_PLC_MONITOR);
+                    
                     g_proto_para.recv_result = RECV_RES_SUCC;
-
-                    if(FALSE == plc_monitor_record())
-                    {
-                        DEBUG_PRINT(("PLC listening record error!\n"));
-                    }
 
                     g_proto_para.msg_state = MSG_STATE_RECEIVED;
                     

@@ -2,9 +2,9 @@
 #define __APP_DEVICE_H__
 
 
-#define HARDWARE_VERSION         20
+#define HARDWARE_VERSION         23
 #define SOFTWARE_VERSION         27
-#define VERSION_DATE     0x20150630
+#define VERSION_DATE     0x20150703
 
 #define BOOT_REQUEST_ACT   0xffffbbcc
 #define BOOT_FINISH_ACT    0xffff0000
@@ -47,12 +47,14 @@ Sector 7 0x0806 0000 - 0x0807 FFFF 128 Kbyte
 #define SYS_TASK_FORMAT_DISK     0X00000001
 
 
-#define GET_USB_VOL()    HAL_GPIO_ReadPin(GPIOG,GPIO_PIN_13)
-#define GET_CHARG_CHK()  HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_2)
+#define GET_USB_STATE()    HAL_GPIO_ReadPin(GPIOG,GPIO_PIN_13)
+#define USB_CHARGE_CHK()   HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_2)
 
 #define SYS_POWER_ON        0
 #define SYS_POWER_OFF       1
 
+#define SYS_BEEP_ON         0
+#define SYS_BEEP_OFF        1
 
 typedef struct _rom_para_
 {
@@ -63,6 +65,7 @@ typedef struct _rom_para_
 
     unsigned int auto_sleep_time;           //屏幕超时
     unsigned int auto_shutdown_time;
+    unsigned int beep_switch;          //按键声音开关
     unsigned int recvDelayTime;//接受数据延时
     unsigned int execInterval;//执行时间
     unsigned int protocol; //规约
@@ -77,7 +80,7 @@ typedef struct _rom_para_
 
     unsigned int number;
 
-    unsigned int para_data[SRM_PARA_NUMBER - 24];
+    unsigned int para_data[SRM_PARA_NUMBER - 25];
 } ROM_PARA, *P_ROM_PARA;
 
 typedef struct _sys_ctrl_
@@ -96,18 +99,22 @@ typedef struct _sys_ctrl_
     u32   selectWidget;         //根据此值选择不同的回调函数
     u32   led_count;          //按键按一次LED亮一次
     u8    monitorFlag;        //处于监控态的时候，不要关机
+    u8    resetFlag;          //恢复出厂设置标志
     u8    recentMeterAddr[6];   //最近使用的表地址
     u8    relayAddr[7][6];      //中继地址，保存下，便于下次初始化
     u8    sysAddrLevel;          //共有几级中继
     u8    sysUseRoute;          //启动路由标志位
     u8    defaultDataFlag[4];   //最近使用的数据标识
     u8    DevCheckCode[9];      //自检密码
+   
     u32   sysFileNum;           //文件数量
     OS_EVENT *up_mbox; //邮箱发送的消息
     OS_EVENT *down_mbox; //邮箱发送的消息
     u32 sd_total_capacity; //SD卡总容量
     u32 sd_free_capacity; //SD卡剩余容量
+    u8 sd_format_flag; //SD卡格式化标志
     u8 self_check;
+    u8 plc_state;
 } SYS_CTRL, *P_SYS_CTRL;
 
 #define SYS_ADD_TASK(tn)        g_sys_ctrl.procTask|=tn

@@ -29,6 +29,7 @@
 *
 **********************************************************************
 */
+#if 0
 #define ID_WINDOW_0 (GUI_ID_USER + 0x00)
 #define ID_TEXT_0 (GUI_ID_USER + 0x01)
 #define ID_TEXT_1 (GUI_ID_USER + 0x02)
@@ -48,7 +49,7 @@
 #define ID_BUTTON_1 (GUI_ID_USER + 0x0C)
 #define ID_BUTTON_2 (GUI_ID_USER + 0x0D)
 #define ID_BUTTON_3 (GUI_ID_USER + 0x0E)
-
+#endif
 
 
 // USER START (Optionally insert additional defines)
@@ -70,16 +71,20 @@
 */
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { WINDOW_CreateIndirect, "AdvanceSet",  ID_WINDOW_0, 0,   0,   240, 295, 0, 0x0,  0 },
-  { TEXT_CreateIndirect,   SleepTime,      ID_TEXT_0,   8,  12,  120,  20,  0, 0x0,  0 },
-  { TEXT_CreateIndirect,   ShutDownTime,   ID_TEXT_1,   8,  42,  120, 20,  0, 0x0,  0 },
-  //{ TEXT_CreateIndirect,   ShutDownTime,  ID_TEXT_2,   12,  72,  100,  20,  0, 0x0,  0 },
+  { TEXT_CreateIndirect,   SleepTime,     ID_TEXT_0,   8,  12,  120,  20,  0, 0x0,  0 },
+  { TEXT_CreateIndirect,   ShutDownTime,  ID_TEXT_1,   8,  42,  120, 20,  0, 0x0,  0 },
+  { TEXT_CreateIndirect,   FactorySet,     ID_TEXT_2,   8,  72,  100,  20,  0, 0x0,  0 },
+  { TEXT_CreateIndirect,   BeepSound,    ID_TEXT_3,   8,  102, 100,  20,  0, 0x0,  0 },
   
   { EDIT_CreateIndirect,   "freq",        ID_EDIT_0,   130,   10,  100, 20,  0, 0x64, 0 },
   { EDIT_CreateIndirect,   "Opcode",      ID_EDIT_1,   130,   40,  100, 20,  0, 0x64, 0 },
   //{ EDIT_CreateIndirect,   "freq",        ID_EDIT_2,   111,  70,  120, 20,  0, 0x64, 0 },
+  { BUTTON_CreateIndirect, "F1",          ID_BUTTON_2, 130,   70,  100,  20,  0, 0x0,  0 },
   
-  { BUTTON_CreateIndirect, Save,          ID_BUTTON_0, 12,  259, 55,  25,  0, 0x0,  0 },
-  { BUTTON_CreateIndirect, Quit,          ID_BUTTON_1, 171, 259, 55,  25,  0, 0x0,  0 },
+  { BUTTON_CreateIndirect, "F2",          ID_BUTTON_3, 130,   100, 100,  20,  0, 0x0,  0 },
+  { BUTTON_CreateIndirect, Save,          ID_BUTTON_0, 12,  264, 55,  25,  0, 0x0,  0 },
+  { BUTTON_CreateIndirect, Quit,          ID_BUTTON_1, 171, 264, 55,  25,  0, 0x0,  0 },
+  
   // USER START (Optionally insert additional widgets)
   // USER END
 };
@@ -150,6 +155,7 @@ void ADS_SelEdt_Down(WM_MESSAGE *pMsg)
 
 }
 
+#if 0
 void ADS_Color_Change(void)
 {
     WM_HWIN hItem;
@@ -167,12 +173,22 @@ void ADS_Color_Change(void)
         }
     }
 }
-
+#endif
 void ADS_SetFocus(void)
 {
     WM_HWIN hItem;
     hItem =  WM_GetDialogItem(g_hWin_AdvanSet,(ID_EDIT_0 + ads_press_cnt));
     WM_SetFocus(hItem);
+}
+
+WM_HWIN GUI_Get_AutoSleepTime_Item(void)
+{    
+     return WM_GetDialogItem(g_hWin_AdvanSet, ID_EDIT_0);            
+}
+
+WM_HWIN GUI_Get_AutoShutdownTime_Item(void)
+{    
+     return WM_GetDialogItem(g_hWin_AdvanSet, ID_EDIT_1);            
 }
 
 static void _cbDialog(WM_MESSAGE * pMsg) {
@@ -211,6 +227,14 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
         BUTTON_SetBkColor(hItem,0,GUI_YELLOW);
         WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
 
+        hItem = WM_GetDialogItem(pMsg->hWin,ID_BUTTON_2);
+        BUTTON_SetBkColor(hItem,0,GUI_CYAN);
+        WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
+
+        hItem = WM_GetDialogItem(pMsg->hWin,ID_BUTTON_3);
+        BUTTON_SetBkColor(hItem,0,GUI_CYAN);
+        WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
+
        //PUB_InitFreq(pMsg,ID_EDIT_1);
         
         break;
@@ -236,7 +260,25 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                    g_hWin_AdvanSet = HBWIN_NULL;
                    WM_SetFocus(g_hWin_para);
                    ads_press_cnt = 0;
+                   break;
+
+                case GUI_KEY_F2:
+                    if(SYS_BEEP_ON == g_rom_para.beep_switch)
+                    {
+                         g_rom_para.beep_switch = SYS_BEEP_OFF;
+                    }
+                    else 
+                    {
+                         g_rom_para.beep_switch = SYS_BEEP_ON;
+                    }
+                    
+                    DEV_Parameters_Write();
                     break;
+
+                case GUI_KEY_F1:
+                    ERR_NOTE(g_hWin_AdvanSet,GUI_MSBOX_RESET_ERROR);
+                    break;
+                    
 #if 0
                 case GUI_KEY_TAB:
                         ADS_Color_Change();
@@ -244,12 +286,14 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
 #endif
                 case GUI_KEY_UP:
                     ADS_SelEdt_Up(pMsg);
-                    ADS_Color_Change();
+                    //ADS_Color_Change();
+                    GUI_Color_Change(g_hWin_AdvanSet, ID_EDIT_0, 2);
                     break;
 
                 case GUI_KEY_DOWN:
                     ADS_SelEdt_Down(pMsg);
-                    ADS_Color_Change();
+                    //ADS_Color_Change();
+                    GUI_Color_Change(g_hWin_AdvanSet, ID_EDIT_0, 2);
                     break;
                 case GUI_KEY_ENTER:
                     switch(Id)

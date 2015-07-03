@@ -18,9 +18,8 @@ queue * define_new_queue(queue *pNewQueue, U16 queue_size)
 
 U16 enqueue(queue *q, HANDLE x)
 {
-#if OS_CRITICAL_METHOD == 3                                /* Allocate storage for CPU status register     */
-    OS_CPU_SR  cpu_sr = 0;
-#endif
+    OS_CPU_SR  cpu_sr;
+    
     if(q)
     {
         if (q->count >= q->maxcount)
@@ -43,10 +42,9 @@ U16 enqueue(queue *q, HANDLE x)
 
 HANDLE dequeue(queue *q)
 {
-#if OS_CRITICAL_METHOD == 3                                /* Allocate storage for CPU status register     */
-    OS_CPU_SR  cpu_sr = 0;
-#endif
+    OS_CPU_SR  cpu_sr;
     HANDLE x = NULL;
+    
     if(q)
     {
 

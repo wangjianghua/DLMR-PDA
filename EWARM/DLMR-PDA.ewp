@@ -2149,7 +2149,7 @@
       <name>$PROJ_DIR$\..\gui\FreqSetDLG.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\gui\GUI_public_fun.c</name>
+      <name>$PROJ_DIR$\..\gui\GUI_Public_Fnct.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\gui\InputWidget.c</name>

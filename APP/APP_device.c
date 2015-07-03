@@ -10,6 +10,7 @@ ROM_PARA g_rom_para =
 
     60,                 //自动睡眠时间
     180,                //自动关机时间
+    SYS_BEEP_ON,        //蜂鸣器开关
     4000,               //接受数据延时
     1000,               //执行时间
     DL645_07,           //规约
@@ -34,6 +35,7 @@ const ROM_PARA g_rom_para_default =
 
     60,                 //自动睡眠时间
     180,                //自动关机时间
+    SYS_BEEP_ON,        //蜂鸣器开关
     4000,               //接受数据延时
     1000,               //执行时间
     DL645_07,           //规约
@@ -254,7 +256,7 @@ unsigned int DEV_Parameters_Write(void)
 
 const u8 c_test_addr[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 const u8 c_default_dataflag[4] = {0x00, 0x00, 0x00, 0x00};
-const u8 c_97_dataflag[4] = {0x00,0x00, 0x00, 0x00};
+const u8 c_97_dataflag[2] = {0x00,0x00};
 
 void DEV_Init(void)
 {
@@ -268,7 +270,7 @@ void DEV_Init(void)
     }
     else if(DL645_97 == g_rom_para.protocol)
     {
-        memcpy(g_sys_ctrl.defaultDataFlag, c_97_dataflag, 4);
+        memcpy(g_sys_ctrl.defaultDataFlag, c_97_dataflag, 2);
     }
     
     g_sys_ctrl.shutdown_timeout = 0;
@@ -276,6 +278,10 @@ void DEV_Init(void)
     g_sys_ctrl.sleep_timeout = 0;
 
     g_sys_ctrl.sysPowerState = SYS_POWER_WAKEUP;
+
+    g_sys_ctrl.sd_format_flag = FALSE;
+
+    g_sys_ctrl.plc_state = GUI_CMD_PLC_L2R;
 }
 
 void dev_para_recover(void)

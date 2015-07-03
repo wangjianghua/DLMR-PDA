@@ -30,6 +30,7 @@
 *
 **********************************************************************
 */
+#if 0
 #define ID_WINDOW_0 (GUI_ID_USER + 0x00)
 #define ID_TEXT_0   (GUI_ID_USER + 0x01)
 #define ID_TEXT_1   (GUI_ID_USER + 0x02)
@@ -51,7 +52,7 @@
 #define ID_BUTTON_1 (GUI_ID_USER + 0x19)
 #define ID_BUTTON_2 (GUI_ID_USER + 0x1A)
 #define ID_BUTTON_3 (GUI_ID_USER + 0x1B)
-
+#endif
 
 
 
@@ -67,8 +68,8 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { TEXT_CreateIndirect, HardVersion,   ID_TEXT_3,   12,   132, 120, 20, 0, 0x0, 0 },
   { TEXT_CreateIndirect, SiModule,       ID_TEXT_4,   12,   102,120, 20, 0, 0x0, 0 },
   { TEXT_CreateIndirect, SotfVersion,   ID_TEXT_5,   12,   162, 120, 20, 0, 0x0, 0 },
-  { TEXT_CreateIndirect, FactorySet,    ID_TEXT_6,   12,   192, 120, 20, 0, 0x0, 0 },
-  { TEXT_CreateIndirect, SDInfo,        ID_TEXT_7,   12,   222, 120, 20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect, SDInfo,    ID_TEXT_6,   12,   192, 120, 20, 0, 0x0, 0 },
+  //{ TEXT_CreateIndirect, ,        ID_TEXT_7,   12,   222, 120, 20, 0, 0x0, 0 },
     
   { EDIT_CreateIndirect, "vtg",         ID_EDIT_0,   125,  10,  100, 20, 0, 0x64, 0 },
   { EDIT_CreateIndirect, "lcd",         ID_EDIT_1,   125,  40,  100, 20, EDIT_CF_HCENTER, 0x64, 0 },
@@ -77,10 +78,10 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { EDIT_CreateIndirect, "pcb",         ID_EDIT_4,   125,  130, 100, 20, EDIT_CF_HCENTER, 0x64, 0 },
   { EDIT_CreateIndirect, "soft",        ID_EDIT_5,   125,  160, 100, 20, EDIT_CF_HCENTER, 0x64, 0 },
     
-  //{ BUTTON_CreateIndirect, Cancel,        ID_BUTTON_0, 10,   263, 80, 25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, Update,      ID_BUTTON_0, 10,   263, 80, 25, 0, 0x0, 0 },
   { BUTTON_CreateIndirect, Quit,        ID_BUTTON_1, 147,  262, 80, 25, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, "F1",        ID_BUTTON_2, 145,  190, 80, 20, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, "F2",        ID_BUTTON_3, 145,  220, 80, 20, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, "F1",        ID_BUTTON_2, 125,  190, 100, 20, 0, 0x0, 0 },
+  //{ BUTTON_CreateIndirect, "F2",        ID_BUTTON_3, 145,  220, 80, 20, 0, 0x0, 0 },
 };
 
 
@@ -150,11 +151,10 @@ static void _init_SysInfoDLg(WM_MESSAGE *pMsg)
     //WIDGET_SetEffect(hItem,&WIDGET_Effect_None);
     WM_DisableWindow(hItem);
 
-#if 0
     hItem = WM_GetDialogItem(pMsg->hWin,ID_BUTTON_0);
     BUTTON_SetBkColor(hItem, 0, GUI_GREEN);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
-#endif
+
 
     hItem = WM_GetDialogItem(pMsg->hWin,ID_BUTTON_1);
     BUTTON_SetBkColor(hItem, 0, GUI_YELLOW);
@@ -163,11 +163,11 @@ static void _init_SysInfoDLg(WM_MESSAGE *pMsg)
     hItem = WM_GetDialogItem(pMsg->hWin,ID_BUTTON_2);
     BUTTON_SetBkColor(hItem, 0, GUI_CYAN);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
-
+#if 0
     hItem = WM_GetDialogItem(pMsg->hWin,ID_BUTTON_3);
     BUTTON_SetBkColor(hItem, 0, GUI_CYAN);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
-
+#endif
 }
 
 static void SID_DelHandle(void)
@@ -219,19 +219,26 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
         switch(((WM_KEY_INFO *)(pMsg->Data.p))->Key)
         {
             case GUI_KEY_GREEN:
-                //memset(g_sys_ctrl.DevCheckCode,0,sizeof(g_sys_ctrl.DevCheckCode));
-                //SID_DelHandle();
+                ERR_NOTE(g_hWin_SysInfo,8);
                 break;
             case GUI_KEY_YELLOW:
+                //sys_ctrl.resetFlag = 0;
                 memset(g_sys_ctrl.DevCheckCode,0,sizeof(g_sys_ctrl.DevCheckCode));
                 SID_DelHandle();
                 break;
             case GUI_KEY_F2:
+#if 0
                 g_hWin_SDInfo = CreateSDInfo();
                 WM_ShowWindow(g_hWin_SDInfo);
                 WM_SetFocus(g_hWin_SDInfo);
+#endif
                 break;
             case GUI_KEY_F1:
+                //g_sys_ctrl.resetFlag = 1;
+                //ERR_NOTE(g_hWin_SysInfo,GUI_MSBOX_RESET_ERROR);
+                g_hWin_SDInfo = CreateSDInfo();
+                WM_ShowWindow(g_hWin_SDInfo);
+                WM_SetFocus(g_hWin_SDInfo);
                 break;
             case '0':
                 g_sys_ctrl.DevCheckCode[strlen(g_sys_ctrl.DevCheckCode)] = '0';

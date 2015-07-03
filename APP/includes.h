@@ -137,7 +137,7 @@ typedef __I uint8_t vuc8;   /*!< Read Only */
 #include "ff.h"
 #include "FM.h" //华兄
 #include "rtc.h"
-#include "GUI_public_fun.h"
+#include "GUI_Public_Fnct.h"
 #include "lcdconf.h"
 #include "phrase.h"
 
@@ -153,7 +153,7 @@ typedef __I uint8_t vuc8;   /*!< Read Only */
 
 extern WM_HWIN g_hWin_menu;
 extern WM_HWIN g_hWin_para;
-extern WM_HWIN g_hWin_std;
+extern WM_HWIN g_hWin_ProtoDbg;
 
 extern WM_HWIN g_hWin_DataSign;   //数据标识 
 extern WM_HWIN g_hWin_relay;      //中继地址设置
@@ -162,7 +162,7 @@ extern WM_HWIN g_hWin_msg;       //消息日志
 
 extern WM_HWIN g_hWin_monitor;  //监控
 extern WM_HWIN g_hWin_ReadMeter; //常用抄表
-extern WM_HWIN g_hWin_WaveCarrior; // 载波功能设置
+extern WM_HWIN g_hWin_PLC; // 载波功能设置
 
 
 extern WM_HWIN g_hWin_task;

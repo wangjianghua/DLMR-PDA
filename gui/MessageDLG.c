@@ -7,7 +7,7 @@
 *
 **********************************************************************
 */
-
+#if 0
 
 #define ID_WINDOW_0     (GUI_ID_USER + 0xAD)
 #define ID_MULTIEDIT_0  (GUI_ID_USER + 0xAE)
@@ -17,7 +17,7 @@
 
 #define ID_TEXT_0       (GUI_ID_USER + 0xB3)
 #define ID_TEXT_1       (GUI_ID_USER + 0xB4)
- 
+#endif 
 
 
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
@@ -95,10 +95,10 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 //g_hWin_msg=HBWIN_NULL;
                // WM_HideWindow(g_hWin_msg);
                 WM_BringToBottom(g_hWin_msg);
-                //WM_SetFocus(g_hWin_std);
-                if(g_hWin_std>0)
+                //WM_SetFocus(g_hWin_ProtoDbg);
+                if(g_hWin_ProtoDbg>0)
                 {
-                    WM_SetFocus(g_hWin_std);
+                    WM_SetFocus(g_hWin_ProtoDbg);
                 }
                 else if(g_hWin_ReadMeter>0)
                 {

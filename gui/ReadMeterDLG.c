@@ -30,6 +30,7 @@
 *
 **********************************************************************
 */
+#if 0
 #define ID_WINDOW_0   (GUI_ID_USER + 0x76)
 
 #define ID_BUTTON_0   (GUI_ID_USER + 0x77)
@@ -67,7 +68,7 @@
 #define ID_PROGBAR_0  (GUI_ID_USER + 0x91)
 
 #define ID_BUTTON_4   (GUI_ID_USER + 0x92)//自动获取表号
-
+#endif
 
 /*********************************************************************
 *
@@ -75,8 +76,8 @@
 */
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
     { WINDOW_CreateIndirect,  "ReadMeter",  ID_WINDOW_0, 0,   0,  240, 295, 0, 0x0, 0 },
-    { BUTTON_CreateIndirect,  GetMeterNum,  ID_BUTTON_1, 4,   7,  85,  25, 0, 0x0, 0 },
-    { BUTTON_CreateIndirect, ReadMeter,     ID_BUTTON_0, 147, 7,  85,  25, 0, 0x0, 0 },
+    { BUTTON_CreateIndirect,  GetMeterNum,  ID_BUTTON_1, 8,   7,  85,  25, 0, 0x0, 0 },
+    { BUTTON_CreateIndirect,  ReadMeter,    ID_BUTTON_0, 147, 7,  85,  25, 0, 0x0, 0 },
         
     { TEXT_CreateIndirect,   MeterNum,      ID_TEXT_0,   8,   46, 72,  20, 0, 0x0, 0 },
     { EDIT_CreateIndirect,   NULL,          ID_EDIT_0,   89,  42, 141, 20, 0, GUI_645_ADDR_LENGTH, 0 },
@@ -87,23 +88,23 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
     { TEXT_CreateIndirect, Speed,         ID_TEXT_12,  8,   93, 69,  20, 0, 0x0, 0 },
     { EDIT_CreateIndirect,  NULL,         ID_EDIT_2,   89,  92, 141, 20, 0, 0x64, 0 },
         
-    { TEXT_CreateIndirect, TotalVal,        ID_TEXT_2,   23,  118, 49, 20, 0, 0x0, 0 },
+    { TEXT_CreateIndirect, TotalVal,        ID_TEXT_2,   8,  118, 65, 20, 0, 0x0, 0 },
     { EDIT_CreateIndirect, NULL,            ID_EDIT_3,   89,  116, 106, 20, 0, 0x64, 0 },
     { TEXT_CreateIndirect, "kWh",           ID_TEXT_7,   199, 116, 35, 20, 0, 0x0, 0 },
         
-    { TEXT_CreateIndirect, "\xe5\xb0\x96",  ID_TEXT_3,   23,  142, 80, 20, 0, 0x0, 0 },
+    { TEXT_CreateIndirect, "\xe5\xb0\x96",  ID_TEXT_3,   8,  142, 80, 20, 0, 0x0, 0 },
     { EDIT_CreateIndirect, NULL,            ID_EDIT_4,   89,  141, 106, 20, 0, 0x64, 0 },
     { TEXT_CreateIndirect, "kWh",           ID_TEXT_8,   199, 141, 35, 20, 0, 0x0, 0 },
         
-    { TEXT_CreateIndirect, "\xe5\xb3\xb0",  ID_TEXT_4,   23,  167, 80, 20, 0, 0x0, 0 },
+    { TEXT_CreateIndirect, "\xe5\xb3\xb0",  ID_TEXT_4,   8,  167, 80, 20, 0, 0x0, 0 },
     { EDIT_CreateIndirect, NULL,            ID_EDIT_5,   89,  165, 106, 20, 0, 0x64, 0 },
     { TEXT_CreateIndirect, "kWh",           ID_TEXT_9,   199, 165, 35, 20, 0, 0x0, 0 },
         
-    { TEXT_CreateIndirect, "\xe5\xb9\xb3",  ID_TEXT_5,   23,  192, 80, 20, 0, 0x0, 0 },
+    { TEXT_CreateIndirect, "\xe5\xb9\xb3",  ID_TEXT_5,   8,  192, 80, 20, 0, 0x0, 0 },
     { EDIT_CreateIndirect, NULL,            ID_EDIT_6,   89,  190, 106, 20, 0, 0x64, 0 },
     { TEXT_CreateIndirect, "kWh",           ID_TEXT_10,  199, 190, 35, 20, 0, 0x0, 0 },
         
-    { TEXT_CreateIndirect, "\xe8\xb0\xb7",  ID_TEXT_6,   23,  216, 80, 20, 0, 0x0, 0 },
+    { TEXT_CreateIndirect, "\xe8\xb0\xb7",  ID_TEXT_6,   8,  216, 80, 20, 0, 0x0, 0 },
     { EDIT_CreateIndirect, NULL,            ID_EDIT_7,   89,  214, 106, 20, 0, 0x64, 0 },    
     { TEXT_CreateIndirect, "kWh",           ID_TEXT_11,  199, 214, 35, 20, 0, 0x0, 0 },
        
@@ -223,7 +224,7 @@ void RMD_SelEdt_Down(WM_MESSAGE *pMsg)
 
 
 
-
+#if 0
 void RMD_Color_Change(void)
 {
     WM_HWIN hItem;
@@ -241,6 +242,7 @@ void RMD_Color_Change(void)
         }
     }
 }
+#endif
 
 void RMD_SetFocus(void)
 {
@@ -324,7 +326,7 @@ void RMD_proc_resp_data(void)
 
     if(g_hWin_ReadMeter != WM_HWIN_NULL)
     {
-        if(g_gui_para.cmd == GUI_CMD_BROADCAST)
+        if(g_gui_para.cmd == GUI_CMD_BROADCAST_READ_ADDR)
         {
             if(len == 6)
             {
@@ -497,10 +499,87 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     break;
 
   case WM_KEY:
-   
-    Id=WM_GetId(pMsg->hWinSrc);
-    key_num=((WM_KEY_INFO *)(pMsg->Data.p))->Key;
-    
+    Id  = WM_GetId(pMsg->hWinSrc);
+    if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt) == 1)
+    {
+        switch(((WM_KEY_INFO*)(pMsg->Data.p))->Key)
+        {
+            case GUI_KEY_YELLOW:
+                WM_DeleteWindow(g_hWin_ReadMeter);
+                g_hWin_ReadMeter=HBWIN_NULL;
+                WM_BringToBottom(g_hWin_msg);
+                WM_HideWindow(g_hWin_msg);
+                WM_ShowWindow(g_hWin_TimeBar);
+                WM_ShowWindow(g_hWin_Date);
+                WM_SetFocus(g_hWin_menu);
+                RMD_key_cnt = 0;
+                g_gui_para.state = GUI_STATE_NONE;
+                break;
+                
+            case GUI_KEY_F1: /*获取表号*/
+                if(CHANNEL_RF != g_rom_para.channel)
+                {
+                    g_gui_para.cmd = GUI_CMD_BROADCAST_READ_ADDR;
+                    g_gui_para.state = GUI_STATE_AMR;                        
+                    OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
+                }
+                else 
+                {
+                    ERR_NOTE(g_hWin_ReadMeter,GUI_MSBOX_FUN_DISALE_ERROR);
+                }
+                break;
+                
+            case '#':
+                WM_BringToTop(g_hWin_msg);
+                WM_ShowWindow(g_hWin_msg);                    
+                WM_SetFocus(g_hWin_msg);
+                break;
+                
+            case GUI_KEY_F2:  /*抄表*/              
+                if(DEV_OK == RMD_Get_Para(pMsg))//获取参数数据
+                {
+                    g_gui_para.state = GUI_STATE_AMR;
+                    OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
+                }
+                break;
+
+            case GUI_KEY_UP:
+                RMD_SelEdt_Up(pMsg);
+                //RMD_Color_Change();
+                GUI_Color_Change(g_hWin_ReadMeter, ID_EDIT_0, 3);
+                break;
+
+            case GUI_KEY_DOWN:
+                RMD_SelEdt_Down(pMsg);
+                //RMD_Color_Change();
+                GUI_Color_Change(g_hWin_ReadMeter, ID_EDIT_0, 3);
+                break;
+            case GUI_KEY_ENTER:
+                switch(Id)
+                {
+                    case ID_EDIT_0:
+                        g_sys_ctrl.selectWidget=EDIT_METER_NUM;
+                        g_hWin_Input=Create_Edit_Set(g_hWin_ReadMeter);
+                        WM_SetFocus(g_hWin_Input);
+                        break;
+                    case ID_EDIT_1:
+                        g_sys_ctrl.selectWidget=LISTBOX_READ_SEL;
+                        g_hWin_Input=Create_ListBox_Set(g_hWin_ReadMeter);
+                        WM_SetFocus(g_hWin_Input);
+                        break;
+                        
+                    case ID_EDIT_2:
+                        //g_sys_ctrl.selectWidget=LISTBOX_SPEED;
+                        //g_hWin_Input=Create_ListBox_Set(g_hWin_ReadMeter);
+                        //WM_SetFocus(g_hWin_Input);
+                        g_hWin_speed = CreateSpeed(g_hWin_ReadMeter);
+                        //WM_SetFocus(g_hWin_speed);
+                         break;
+                 }
+       }
+    }
+    break;
+#if 0
     if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==1)//按键点击。
     {
         switch(Id)
@@ -558,7 +637,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             {
                 if(CHANNEL_RF != g_rom_para.channel)
                 {
-                    g_gui_para.cmd = GUI_CMD_BROADCAST;
+                    g_gui_para.cmd = GUI_CMD_BROADCAST_READ_ADDR;
                     g_gui_para.state = GUI_STATE_AMR;                        
                     OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
                 }
@@ -590,7 +669,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
             {
                 RMD_SelEdt_Up(pMsg);
-                RMD_Color_Change();
+                //RMD_Color_Change();
             }
             break;
 
@@ -598,10 +677,10 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
             {
                 RMD_SelEdt_Down(pMsg);
-                RMD_Color_Change();
+                //RMD_Color_Change();
+                GUI_Color_Change(g_hWin_ReadMeter, ID_EDIT_0, 3);
             }
             break;
-
         case GUI_KEY_TAB:
             if((((WM_KEY_INFO*)(pMsg->Data.p))->PressedCnt)==0)
             {
@@ -609,9 +688,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 RMD_Color_Change();
             }
             break;
-    }
-   
-    break;
+#endif
 
   case WM_MSG_CLOSE:
     WM_DeleteWindow(g_hWin_ReadMeter);

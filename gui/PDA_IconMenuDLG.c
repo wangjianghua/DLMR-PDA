@@ -29,7 +29,7 @@
 *
 **********************************************************************
 */
-
+#if 0
 //任务栏资源ID　
 #define ID_WINDOW_0   (GUI_ID_USER + 0x00)
 #define ID_TEXT_0     (GUI_ID_USER + 0x01)
@@ -46,19 +46,17 @@
 #define ID_TEXT_9     (GUI_ID_USER + 0x0B) 
 #define ID_TEXT_10    (GUI_ID_USER + 0x0C)
 //#define ID_TEXT_10    (GUI_ID_USER + 0x0C) 
+#endif
 
+extern GUI_CONST_STORAGE GUI_BITMAP bmSysSet;
+extern GUI_CONST_STORAGE GUI_BITMAP bmmonitor;
 
-extern GUI_CONST_STORAGE GUI_BITMAP _bmSystem;
-extern GUI_CONST_STORAGE GUI_BITMAP _bmRead;
-extern GUI_CONST_STORAGE GUI_BITMAP _bmRemote;
-extern GUI_CONST_STORAGE GUI_BITMAP _bmWriteRad;
-extern GUI_CONST_STORAGE GUI_BITMAP _bmEmailRad;
-extern GUI_CONST_STORAGE GUI_BITMAP _bmmonitor;
 extern GUI_CONST_STORAGE GUI_BITMAP bmmeter;
-extern GUI_CONST_STORAGE GUI_BITMAP bmwave;
+
 extern GUI_CONST_STORAGE GUI_BITMAP bmprotocal;
-extern GUI_CONST_STORAGE GUI_BITMAP bmabout;
-extern GUI_CONST_STORAGE GUI_BITMAP bmTFcard; 
+extern GUI_CONST_STORAGE GUI_BITMAP bmhelp;
+extern GUI_CONST_STORAGE GUI_BITMAP bmSysInfo;
+
 
 
 
@@ -75,12 +73,14 @@ typedef struct {
 //任务栏资源列表
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { WINDOW_CreateIndirect,  NULL,           ID_WINDOW_0,  0,   0, 240, 25, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    " ",            ID_TEXT_0,    3,   3, 65,  15, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    " " ,           ID_TEXT_1,    80,  3, 40,  15, 0, 0x0, 0 },
-  //{ TEXT_CreateIndirect,    " ",            ID_TEXT_10,   125, 3, 40,  15, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    DownloadIcon,   ID_TEXT_5,    156, 3, 17,  17, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    UploadIcon,     ID_TEXT_6,    166, 3, 17,  17, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    " ",            ID_TEXT_7,    196, 3, 42,  25, 0, 0x0, 0 }, 
+  { TEXT_CreateIndirect,    " ",            ID_TEXT_0,    3,   4, 40,  15, 0, 0x0, 0 }, //规约
+  { TEXT_CreateIndirect,    " " ,           ID_TEXT_1,    55,  4, 50,  15, 0, 0x0, 0 }, //通道
+ 
+  //{ TEXT_CreateIndirect,    " " ,           ID_TEXT_5,    75,  3, 35,  15, 0, 0x0, 0 }, //beep
+  { TEXT_CreateIndirect,    "",       ID_TEXT_6,    110, 5, 40,  15, 0, 0x0, 0 }, //内存卡
+  { TEXT_CreateIndirect,    DownloadIcon,   ID_TEXT_2,    156, 4, 17,  17, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    UploadIcon,     ID_TEXT_3,    166, 4, 17,  17, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,    " ",            ID_TEXT_4,    196, 4, 42,  25, 0, 0x0, 0 }, //电池电量
 };
 
 
@@ -88,30 +88,45 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
 static const BITMAP_ITEM _aBitmapItem[] = 
 {
   
-  {&_bmSystem,    CommParaSetText  },  //通信参数设置
+  {&bmSysSet,     CommParaSetText  },  //通信参数设置
   {&bmmeter,      ReadMeterText    },  //常用抄表 
   {&bmprotocal,   CommStdTestText  },  //通信规约调试
-  {&_bmmonitor,   MonitorText      },  //监控
-  {&bmTFcard,     SysInfo          },  //系统信息
-  {&bmabout,      About            }
+  {&bmmonitor,    MonitorText      },  //监控
+  {&bmSysInfo,    SysInfo          },  //系统信息
+  {&bmhelp,       About            }
 
 };
 
 
 WM_HWIN TSK_Get_Upload_Text()
 {
-    return WM_GetDialogItem(g_hWin_task,ID_TEXT_5);
+    return WM_GetDialogItem(g_hWin_task,ID_TEXT_2);
 }
 
 WM_HWIN TSK_Get_Download_Text()
 {
-    return WM_GetDialogItem(g_hWin_task,ID_TEXT_6);
+    return WM_GetDialogItem(g_hWin_task,ID_TEXT_3);
 }
 
 WM_HWIN TSK_Get_Protocol_Text()
 {
     return WM_GetDialogItem(g_hWin_task,ID_TEXT_0);
 }
+#if 0
+void TSK_Set_BeepOn(void)
+{
+    WM_HWIN hItem;
+    hItem = WM_GetDialogItem(g_hWin_task, ID_TEXT_5);
+    TEXT_SetText(hItem, BeepOn);
+}
+
+void TSK_Set_BeepOff(void)
+{
+    WM_HWIN hItem;
+    hItem = WM_GetDialogItem(g_hWin_task, ID_TEXT_5);
+    TEXT_SetText(hItem, BeepOff);
+}
+#endif
 
 void TSK_SetProtocol_97(void)
 {
@@ -139,7 +154,7 @@ WM_HWIN TSK_GetWireless()
 
 WM_HWIN TSK_Get_Battery()
 {
-    return WM_GetDialogItem(g_hWin_task,ID_TEXT_7);
+    return WM_GetDialogItem(g_hWin_task,ID_TEXT_4);
 }
 
 void TSK_Disp_RF(void)
@@ -166,10 +181,15 @@ void TSK_Disp_NULL(void)
     TEXT_SetText(hItem, "");
 }
 
+WM_HWIN TSK_GetSD(void)
+{
+    return WM_GetDialogItem(g_hWin_task,ID_TEXT_6);
+}
+
 void TSK_Battery_Charge(int count)
 {
     WM_HWIN hItem;
-    hItem = WM_GetDialogItem(g_hWin_task,ID_TEXT_7);
+    hItem = WM_GetDialogItem(g_hWin_task,ID_TEXT_4);
     TEXT_SetFont(hItem,&GUI_Font_Battery_40);
     switch(count)
     {
@@ -197,23 +217,21 @@ void TSK_Battery_Charge(int count)
 void TSK_Disp_PLC(void)
 {
     WM_HWIN hItem;
-    hItem=WM_GetDialogItem(g_hWin_task,ID_TEXT_1);
-    //TEXT_SetFont(hItem,&GUI_Font_Battery_40);
-    if(g_gui_para.cmd==GUI_CMD_PLC_R2L)
+
+    
+    hItem = WM_GetDialogItem(g_hWin_task,ID_TEXT_1);
+
+    if(GUI_CMD_PLC_R2L == g_sys_ctrl.plc_state)
     {
-        TEXT_SetText(hItem,"PLC-L");
-        //TEXT_SetBkColor(hItem,GUI_GREEN);
+        TEXT_SetText(hItem, "PLC-L");
     }
-    else if((g_gui_para.cmd == GUI_CMD_PLC_L2R)
-           ||(g_gui_para.cmd == GUI_CMD_MRW))
+    else if(GUI_CMD_PLC_L2R == g_sys_ctrl.plc_state)
     {
-        TEXT_SetText(hItem,"PLC-R");
-        //TEXT_SetBkColor(hItem,GUI_GREEN);
+        TEXT_SetText(hItem, "PLC-R");
     }
-    else if(g_gui_para.cmd==GUI_CMD_PLC_READ_NODE)
+    else if(GUI_CMD_PLC_READ_NODE == g_sys_ctrl.plc_state)
     {
-        TEXT_SetText(hItem,"PLC-N");
-        //TEXT_SetBkColor(hItem,GUI_GREEN);
+        TEXT_SetText(hItem, "PLC-N");
     }
 }
 
@@ -263,7 +281,7 @@ void GUI_Msg_Download(u16 sw)
     if(ON == sw)
     {
         i = ICON_FLOW_FLASH_TIMEOUT;
-        hItem = WM_GetDialogItem(g_hWin_task, ID_TEXT_5);
+        hItem = WM_GetDialogItem(g_hWin_task, ID_TEXT_2);
         TEXT_SetTextColor(hItem, GUI_YELLOW);
     }
     else
@@ -278,7 +296,7 @@ void GUI_Msg_Download(u16 sw)
         }
         else
         {
-            hItem = WM_GetDialogItem(g_hWin_task, ID_TEXT_5);
+            hItem = WM_GetDialogItem(g_hWin_task, ID_TEXT_2);
             TEXT_SetTextColor(hItem, GUI_WHITE);//GUI_GREEN);
             i = 0xffffffff;
         }
@@ -295,7 +313,7 @@ void GUI_Msg_Upload(u16 sw)
     if(ON == sw)
     {
         i = ICON_FLOW_FLASH_TIMEOUT;
-        hItem=WM_GetDialogItem(g_hWin_task,ID_TEXT_6);
+        hItem=WM_GetDialogItem(g_hWin_task,ID_TEXT_3);
         TEXT_SetTextColor(hItem, GUI_GREEN);
     }
     else
@@ -311,7 +329,7 @@ void GUI_Msg_Upload(u16 sw)
         }
         else
         {
-            hItem = WM_GetDialogItem(g_hWin_task, ID_TEXT_6);
+            hItem = WM_GetDialogItem(g_hWin_task, ID_TEXT_3);
             TEXT_SetTextColor(hItem, GUI_WHITE );//GUI_GREEN);
             i = 0xffffffff;
         }               
@@ -322,7 +340,7 @@ void GUI_Msg_Upload(u16 sw)
 void Battery_State(int pwr_val)
 {
     WM_HWIN hItem;
-    hItem=WM_GetDialogItem(g_hWin_task,ID_TEXT_7);
+    hItem=WM_GetDialogItem(g_hWin_task,ID_TEXT_4);
     TEXT_SetFont(hItem,&GUI_Font_Battery_40);
     if(pwr_val < 2166)
     {
@@ -375,47 +393,45 @@ static void _cbTaskDialog(WM_MESSAGE * pMsg)
         GUI_UC_SetEncodeUTF8();
         WINDOW_SetBkColor(pMsg->hWin, GUI_GRAY);
         
-        hItem = WM_GetDialogItem(pMsg->hWin,ID_TEXT_5);
+        hItem = WM_GetDialogItem(pMsg->hWin,ID_TEXT_2);
         TEXT_SetTextColor(hItem,GUI_WHITE);
         
-        hItem = WM_GetDialogItem(pMsg->hWin,ID_TEXT_6);
+        hItem = WM_GetDialogItem(pMsg->hWin,ID_TEXT_3);
         TEXT_SetTextColor(hItem,GUI_WHITE);
 
-        hItem = WM_GetDialogItem(pMsg->hWin,ID_TEXT_10);
         //TEXT_SetFont(hItem,&GUI_Font_Battery_40);
         //TEXT_SetTextColor(hItem, GUI_WHITE);
-        
-        if(CHANNEL_RF == g_rom_para.channel)
+
+        hItem = WM_GetDialogItem(pMsg->hWin,ID_TEXT_1);
+
+        if(CHANNEL_PLC == g_rom_para.channel)
+        {
+            if(GUI_CMD_PLC_R2L == g_sys_ctrl.plc_state)
+            {
+                TEXT_SetText(hItem, "PLC-L");
+            }
+            else if(GUI_CMD_PLC_L2R == g_sys_ctrl.plc_state)
+            {
+                TEXT_SetText(hItem, "PLC-R");
+            }
+            else if(GUI_CMD_PLC_READ_NODE == g_sys_ctrl.plc_state)
+            {
+                TEXT_SetText(hItem, "PLC-N");
+            }
+        }        
+        else if(CHANNEL_RF == g_rom_para.channel)
         {
             TEXT_SetText(hItem, TSK_RF);
         }
         else if(CHANNEL_IR == g_rom_para.channel)
         {
             TEXT_SetText(hItem, TSK_IR);
-            //TEXT_SetTextColor(hItem, GUI_WHITE);
         }
-        else 
+        else
         {
-            TEXT_SetText(hItem, " ");
+            TEXT_SetText(hItem, "");
         }
         
-        hItem = WM_GetDialogItem(pMsg->hWin,ID_TEXT_1);
-        if(g_gui_para.cmd==GUI_CMD_PLC_R2L)
-        {
-            TEXT_SetText(hItem,"PLC-L");
-        }
-        else if((g_gui_para.cmd == GUI_CMD_PLC_L2R)
-               ||(g_gui_para.cmd == GUI_CMD_MRW))
-        {
-            TEXT_SetText(hItem,"PLC-R");
-        }
-        else if(g_gui_para.cmd==GUI_CMD_PLC_READ_NODE)
-        {
-            TEXT_SetText(hItem,"PLC-N");
-        }
-        
-#if 1
-        //TSK_Disp_Protocol();
         hItem=WM_GetDialogItem(pMsg->hWin,ID_TEXT_0);
 
         if(g_rom_para.protocol==DL645_07)
@@ -426,7 +442,23 @@ static void _cbTaskDialog(WM_MESSAGE * pMsg)
         {
             TEXT_SetText(hItem,Protocol_97);
         }
-#endif       
+#if 0        
+        hItem = WM_GetDialogItem(pMsg->hWin, ID_TEXT_5);
+        TEXT_SetFont(hItem,&GUI_Font_Battery_40);
+        TEXT_SetTextColor(hItem, GUI_WHITE);
+        if(ON == g_rom_para.beep_switch)
+        {
+            TEXT_SetText(hItem, BeepOn);
+        }
+        else
+        {
+            TEXT_SetText(hItem, BeepOff);
+        }
+#endif
+        hItem = WM_GetDialogItem(pMsg->hWin, ID_TEXT_6);
+        TEXT_SetFont(hItem,&GUI_Font_Battery_40);
+        TEXT_SetTextColor(hItem, GUI_DARKGRAY);
+      
         //hItem=WM_GetDialogItem(pMsg->hWin,ID_TEXT_7); 
         //TEXT_SetFont(hItem,&GUI_Font_Battery_40);
         //Battery_State(pMsg,g_sys_ctrl.pwrValue);
@@ -484,18 +516,18 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
                             //WM_SetFocus(g_hWin_para);
                             hItem = CPS_Set_Proto();
                             WM_SetFocus(hItem);
-                            CPS_Color_Change();
+                            GUI_Color_Change(g_hWin_para, ID_EDIT_0, 8);
 							break;
                             
 						case 2:
-							g_hWin_std = CreateCommStdTest();
+							g_hWin_ProtoDbg = CreateCommStdTest();
                             WM_BringToBottom(g_hWin_msg);
                             WM_HideWindow(g_hWin_TimeBar);
                             WM_HideWindow(g_hWin_Date);
-                            //WM_SetFocus(g_hWin_std);
+                            //WM_SetFocus(g_hWin_ProtoDbg);
                             hItem = CPT_Get_Speed();
                             WM_SetFocus(hItem);
-                            CPT_Color_Change();
+                            GUI_Color_Change(g_hWin_ProtoDbg, ID_EDIT_0, 6);
 							break;
 						case 4:
 							g_hWin_SysInfo=CreateSysInfo();
@@ -513,7 +545,8 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
                             //WM_SetFocus(g_hWin_ReadMeter);
                             hItem = RMD_Get_MeterNum();
                             WM_SetFocus(hItem);
-                            RMD_Color_Change();
+                            //RMD_Color_Change();
+                            GUI_Color_Change(g_hWin_ReadMeter, ID_EDIT_0, 3);
 							break;
                             
 						case 3:

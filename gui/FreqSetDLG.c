@@ -8,6 +8,7 @@
 *
 **********************************************************************
 */
+#if 0
 #define ID_WINDOW_0  (GUI_ID_USER + 0x00)
 #define ID_LISTBOX_0 (GUI_ID_USER + 0x01)
 #define ID_LISTBOX_1 (GUI_ID_USER + 0x02)
@@ -17,7 +18,7 @@
 
 #define ID_BUTTON_0  (GUI_ID_USER + 0x05)
 #define ID_BUTTON_1  (GUI_ID_USER + 0x06)
-
+#endif
 
 
 
@@ -46,9 +47,9 @@ void FRQ_SetFocus(void)
        WM_SetFocus(g_hWin_ReadMeter);
        RMD_SetFocus();
     }
-    else if(g_hWin_std > 0)
+    else if(g_hWin_ProtoDbg > 0)
     {
-       WM_SetFocus(g_hWin_std);
+       WM_SetFocus(g_hWin_ProtoDbg);
        CPT_SetFocus();
     }
     else if((g_hWin_para > 0)&&(g_hWin_AdvanSet < 0))
@@ -256,7 +257,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                         EDIT_SetText(hItem,pTextSpeed[SelNum]);
                     }
                 }
-                else if(g_hWin_std > 0)
+                else if(g_hWin_ProtoDbg > 0)
                 {
                     hItem = WM_GetDialogItem(pMsg->hWin,ID_LISTBOX_0);
                     SelNum = LISTBOX_GetSel(hItem);
