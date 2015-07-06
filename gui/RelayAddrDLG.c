@@ -177,8 +177,7 @@ static void _init_dialog(WM_MESSAGE * pMsg)
 void RLY_GetParaAddr(WM_MESSAGE *pMsg)
 {
     WM_HWIN hItem;
-    u8 *pBuffer;
-    //int RowNum; 
+    u8 pBuffer[64];
     int i ;
     
     hItem = WM_GetDialogItem(pMsg->hWin ,ID_LISTVIEW_0);

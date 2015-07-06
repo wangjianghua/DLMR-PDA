@@ -221,11 +221,11 @@ void TSK_Disp_PLC(void)
     
     hItem = WM_GetDialogItem(g_hWin_task,ID_TEXT_1);
 
-    if(PLC_STATE_R2L == g_sys_ctrl.plc_state)
+    if(PLC_STATE_MONITOR == g_sys_ctrl.plc_state)
     {
-        TEXT_SetText(hItem, "PLC-L");
+        TEXT_SetText(hItem, "PLC-M");
     }
-    else if(PLC_STATE_L2R == g_sys_ctrl.plc_state)
+    else if(PLC_STATE_METER_READ == g_sys_ctrl.plc_state)
     {
         TEXT_SetText(hItem, "PLC-R");
     }
@@ -406,11 +406,11 @@ static void _cbTaskDialog(WM_MESSAGE * pMsg)
 
         if(CHANNEL_PLC == g_rom_para.channel)
         {
-            if(PLC_STATE_R2L == g_sys_ctrl.plc_state)
+            if(PLC_STATE_MONITOR == g_sys_ctrl.plc_state)
             {
                 TEXT_SetText(hItem, "PLC-L");
             }
-            else if(PLC_STATE_L2R == g_sys_ctrl.plc_state)
+            else if(PLC_STATE_METER_READ == g_sys_ctrl.plc_state)
             {
                 TEXT_SetText(hItem, "PLC-R");
             }

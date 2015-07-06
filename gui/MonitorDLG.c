@@ -54,8 +54,8 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { WINDOW_CreateIndirect, NULL,       ID_WINDOW_0,    0,   0,   240, 295, 0,  0x0, 0 },
     
   { BUTTON_CreateIndirect, ReadNope,       ID_BUTTON_0,    129, 43,  105, 25, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, ClearScr,       ID_BUTTON_1,    8,   43,  105, 25, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, SetMonitor,     ID_BUTTON_2,    8,   10,  105, 25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, ClearScr,       ID_BUTTON_1,    6,   43,  105, 25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, SetMonitor,     ID_BUTTON_2,    6,   10,  105, 25, 0, 0x0, 0 },
   { BUTTON_CreateIndirect, SetCopy,        ID_BUTTON_5,    129, 10,  105, 25, 0, 0x0, 0 },
     
   { BUTTON_CreateIndirect, Quit,           ID_BUTTON_3,    175,  262, 55, 25, 0, 0x0, 0 },
@@ -186,7 +186,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 WM_ShowWindow(g_hWin_Date);
                 WM_SetFocus(g_hWin_menu);
    
-                g_gui_para.cmd = GUI_CMD_PLC_L2R;
+                g_gui_para.cmd = GUI_CMD_PLC_M2R;
                 g_gui_para.state = GUI_STATE_NONE;
                 g_sys_ctrl.sysCtdVal = COUNT_VALUE ;
                 g_sys_ctrl.sysCtdFlag = COUNTDOWN_OFF;
@@ -229,7 +229,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 }
                 else
                 {
-                    g_gui_para.cmd = GUI_CMD_PLC_R2L;
+                    g_gui_para.cmd = GUI_CMD_PLC_R2M;
                     g_gui_para.state = GUI_STATE_PLC_MONITOR;
                     OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
                 }
@@ -249,7 +249,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 }
                 else
                 {
-                    g_gui_para.cmd = GUI_CMD_PLC_L2R;
+                    g_gui_para.cmd = GUI_CMD_PLC_M2R;
                     g_gui_para.state = GUI_STATE_PLC_MONITOR;
                     OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
                 }

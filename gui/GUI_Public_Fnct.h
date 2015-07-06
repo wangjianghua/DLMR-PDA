@@ -81,8 +81,8 @@ typedef enum
 typedef enum
 {
     GUI_CMD_BROAD_READ_ADDR = 0,
-    GUI_CMD_PLC_R2L,
-    GUI_CMD_PLC_L2R,    
+    GUI_CMD_PLC_R2M,
+    GUI_CMD_PLC_M2R,    
     GUI_CMD_PLC_FREQ_SET,
     GUI_CMD_PLC_READ_NODE,
     GUI_CMD_MRW,
@@ -92,8 +92,8 @@ typedef enum
 
 typedef enum
 {
-    PLC_STATE_R2L = 0,
-    PLC_STATE_L2R,    
+    PLC_STATE_MONITOR = 0,
+    PLC_STATE_METER_READ,    
     PLC_STATE_READ_NODE,
     MAX_PLC_STATE
 } PLC_STATE; //ЛЊаж

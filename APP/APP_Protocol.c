@@ -4,12 +4,12 @@
 const INT8U cPLC_READ_ADDR[] = {0xFE, 0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
 const INT8U mPLC_REPLY_ADDR[] = {0x68, 0x62, 0x33, 0x19, 0x00, 0x00, 0x00, 0x68, 0x93, 0x06, 0x95, 0x66, 0x4C, 0x33, 0x33, 0x33, 0xF7, 0x16};
 
-const INT8U rPLC_TO_lPLC[] = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68, 0x04, 0x07, 0x33, 0x34, 0x36, 0x33, 0x33, 0x33, 0x34, 0x1C, 0x16};
-const INT8U lPLC_TO_rPLC[] = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68, 0x04, 0x07, 0x33, 0x34, 0x36, 0x33, 0x33, 0x33, 0x33, 0x1B, 0x16};
+const INT8U rPLC_TO_mPLC[] = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68, 0x04, 0x07, 0x33, 0x34, 0x36, 0x33, 0x33, 0x33, 0x34, 0x1C, 0x16};
+const INT8U mPLC_TO_rPLC[] = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68, 0x04, 0x07, 0x33, 0x34, 0x36, 0x33, 0x33, 0x33, 0x33, 0x1B, 0x16};
 
 const INT8U READ_PLC_NODE[] = {0x68, 0x1E, 0x00, 0x41, 0x04, 0x00, 0x5F, 0x64, 0x04, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x16, 0x01, 0x00, 0x02, 0x02, 0xB4, 0xD8, 0x16};
 
-const INT8U lBroadcast_Read_Meter[12] = {0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
+const INT8U Broad_Read_Addr[12] = {0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
 
 const INT8U rPLC_270III[]  = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68, 0x04, 0x08, 0x34, 0x34, 0x36, 0x33, 0x33, 0x33, 0x33, 0x33, 0x50, 0x16};
 const INT8U rPLC_270III5[] = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68, 0x04, 0x08, 0x34, 0x34, 0x36, 0x33, 0x33, 0x33, 0x34, 0x33, 0x51, 0x16};
@@ -358,11 +358,11 @@ void  App_TaskProto (void *p_arg)
             case GUI_CMD_BROAD_READ_ADDR: //π„≤•∂¡…Ë±∏µÿ÷∑
                 if(CHANNEL_PLC == g_rom_para.channel) //‘ÿ≤®
                 {
-                    memcpy(&dl645_read_addr[1], lBroadcast_Read_Meter, sizeof(lBroadcast_Read_Meter));
+                    memcpy(&dl645_read_addr[1], Broad_Read_Addr, sizeof(Broad_Read_Addr));
 
                     dl645_read_addr[0] = g_rom_para.preamble;
 
-                    g_proto_para.send_len = sizeof(lBroadcast_Read_Meter) + 1;
+                    g_proto_para.send_len = sizeof(Broad_Read_Addr) + 1;
                     
                     memcpy(g_proto_para.send_buf, dl645_read_addr, g_proto_para.send_len);
 
@@ -397,9 +397,9 @@ void  App_TaskProto (void *p_arg)
                 {
                     memset(RF_SEND_BUF, 0, sizeof(RF_SEND_BUF));
 
-                    g_proto_para.send_len = sizeof(lBroadcast_Read_Meter);
+                    g_proto_para.send_len = sizeof(Broad_Read_Addr);
 
-                    memcpy(g_proto_para.send_buf, lBroadcast_Read_Meter, g_proto_para.send_len);
+                    memcpy(g_proto_para.send_buf, Broad_Read_Addr, g_proto_para.send_len);
 
                     while(OSSemAccept(g_sem_rf));
                     
@@ -433,11 +433,11 @@ void  App_TaskProto (void *p_arg)
                 }
                 else if(CHANNEL_IR == g_rom_para.channel) //∫ÏÕ‚
                 {
-                    memcpy(&dl645_read_addr[1], lBroadcast_Read_Meter, sizeof(lBroadcast_Read_Meter));
+                    memcpy(&dl645_read_addr[1], Broad_Read_Addr, sizeof(Broad_Read_Addr));
 
                     dl645_read_addr[0] = g_rom_para.preamble;
 
-                    g_proto_para.send_len = sizeof(lBroadcast_Read_Meter) + 1;
+                    g_proto_para.send_len = sizeof(Broad_Read_Addr) + 1;
 
                     g_proto_para.ir_send_len = g_proto_para.send_len;
                     
@@ -482,12 +482,12 @@ void  App_TaskProto (void *p_arg)
                 }                
                 break;
                 
-            case GUI_CMD_PLC_R2L: //º‡øÿÃ¨
+            case GUI_CMD_PLC_R2M: //º‡øÿÃ¨
                 if(CHANNEL_PLC == g_rom_para.channel)
                 {
                     while(OSSemAccept(g_sem_plc));
                     
-                    plc_uart_send((u8 *)rPLC_TO_lPLC, sizeof(rPLC_TO_lPLC));
+                    plc_uart_send((u8 *)rPLC_TO_mPLC, sizeof(rPLC_TO_mPLC));
 
                     g_proto_para.msg_state = MSG_STATE_SENDING;
                     
@@ -497,7 +497,7 @@ void  App_TaskProto (void *p_arg)
 
                     if(OS_ERR_NONE == err)
                     {
-                        g_sys_ctrl.plc_state = PLC_STATE_R2L;
+                        g_sys_ctrl.plc_state = PLC_STATE_MONITOR;
                         
                         DL645_Check_Frame();
                     }
@@ -514,12 +514,12 @@ void  App_TaskProto (void *p_arg)
                 }
                 break;
 
-            case GUI_CMD_PLC_L2R: //≥≠øÿÃ¨
+            case GUI_CMD_PLC_M2R: //≥≠øÿÃ¨
                 if(CHANNEL_PLC == g_rom_para.channel)
                 {
                     while(OSSemAccept(g_sem_plc));
 
-                    plc_uart_send((u8 *)lPLC_TO_rPLC, sizeof(lPLC_TO_rPLC));
+                    plc_uart_send((u8 *)mPLC_TO_rPLC, sizeof(mPLC_TO_rPLC));
 
                     g_proto_para.msg_state = MSG_STATE_SENDING;
                     
@@ -529,7 +529,7 @@ void  App_TaskProto (void *p_arg)
 
                     if(OS_ERR_NONE == err)
                     {
-                        g_sys_ctrl.plc_state = PLC_STATE_L2R;
+                        g_sys_ctrl.plc_state = PLC_STATE_METER_READ;
                         
                         DL645_Check_Frame();
                     }
@@ -835,7 +835,10 @@ void  App_TaskProto (void *p_arg)
 
                 if(OS_ERR_NONE == err)
                 {
-                    trm_msg_record(TRM_MSG_PLC_MONITOR);
+                    if(PLC_STATE_MONITOR == g_sys_ctrl.plc_state)
+                    {
+                        trm_msg_record(TRM_MSG_PLC_MONITOR);
+                    }
                     
                     g_proto_para.recv_result = RECV_RES_SUCC;
 

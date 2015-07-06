@@ -564,7 +564,7 @@ static  void  App_TaskPower (void *p_arg)
             g_sys_ctrl.shutdown_timeout = 0;
             
             if((PLC_STATE_READ_NODE == g_sys_ctrl.plc_state) ||
-               (PLC_STATE_R2L == g_sys_ctrl.plc_state))
+               (PLC_STATE_MONITOR == g_sys_ctrl.plc_state))
             {
                 LCD_BL_OFF();
             }

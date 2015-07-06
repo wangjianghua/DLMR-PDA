@@ -154,20 +154,21 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 WM_DeleteWindow(g_hWin_Err);
                 g_hWin_Err = WM_HWIN_NULL;
                 
-                if(g_hWin_SDInfo > 0 )
+                if(g_hWin_SDInfo > 0)
                 {
                     SYS_ADD_TASK(SYS_TASK_FORMAT_DISK);
                 }
                 
-                if(g_hWin_SysInfo > 0)
+                if((g_hWin_SysInfo > 0) && (g_hWin_SDInfo <= 0))
                 {
-                       if(g_rom_para.bootFlag != BOOT_REQUEST_ACT)
+                      if(g_rom_para.bootFlag != BOOT_REQUEST_ACT)
                       {
                           g_rom_para.bootFlag = BOOT_REQUEST_ACT;
+                          
                           DEV_Parameters_Write();
                       }
+                      
                       DEV_SoftReset();  
-                      //v_para_recover(); 
                 }
 
                 if(g_hWin_AdvanSet > 0)
@@ -182,7 +183,9 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                     sprintf(tmp, "%d", g_rom_para.auto_shutdown_time);
                     EDIT_SetText(hItem, tmp);
                 }
+                
                 Select_Focus();
+                
                 break;
         }
         break;
