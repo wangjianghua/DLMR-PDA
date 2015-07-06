@@ -64,15 +64,7 @@
 
 /******************User Item ID End*******************/
 
-
-
-
-
-
 #define GUI_645_ADDR_LENGTH      12
-
-#define DL645_97                  0
-#define DL645_07                  1
 
 typedef enum
 {
@@ -83,20 +75,28 @@ typedef enum
     GUI_STATE_PROTO_DBG,
     GUI_STATE_PLC_MONITOR,
     GUI_STATE_MEM,
-    MAX_GUI_STATE_TYPE
-} GUI_STATE_TYPE; //华兄
+    MAX_GUI_STATE
+} GUI_STATE; //华兄
 
 typedef enum
 {
-    GUI_CMD_BROADCAST_READ_ADDR = 0,
+    GUI_CMD_BROAD_READ_ADDR = 0,
     GUI_CMD_PLC_R2L,
     GUI_CMD_PLC_L2R,    
     GUI_CMD_PLC_FREQ_SET,
     GUI_CMD_PLC_READ_NODE,
     GUI_CMD_MRW,
     GUI_CMD_ROUTE,
-    MAX_GUI_CMD_TYPE
-} GUI_CMD_TYPE; //华兄
+    MAX_GUI_CMD
+} GUI_CMD; //华兄
+
+typedef enum
+{
+    PLC_STATE_R2L = 0,
+    PLC_STATE_L2R,    
+    PLC_STATE_READ_NODE,
+    MAX_PLC_STATE
+} PLC_STATE; //华兄
 
 #define PLC_ROUTE_OFF             0 
 #define PLC_ROUTE_ON              1

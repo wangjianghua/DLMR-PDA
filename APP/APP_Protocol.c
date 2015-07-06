@@ -355,7 +355,7 @@ void  App_TaskProto (void *p_arg)
             
             switch(g_gui_para.cmd)
             {
-            case GUI_CMD_BROADCAST_READ_ADDR: //π„≤•√¸¡Ó
+            case GUI_CMD_BROAD_READ_ADDR: //π„≤•∂¡…Ë±∏µÿ÷∑
                 if(CHANNEL_PLC == g_rom_para.channel) //‘ÿ≤®
                 {
                     memcpy(&dl645_read_addr[1], lBroadcast_Read_Meter, sizeof(lBroadcast_Read_Meter));
@@ -483,32 +483,35 @@ void  App_TaskProto (void *p_arg)
                 break;
                 
             case GUI_CMD_PLC_R2L: //º‡øÿÃ¨
-                while(OSSemAccept(g_sem_plc));
-                
-                plc_uart_send((u8 *)rPLC_TO_lPLC, sizeof(rPLC_TO_lPLC));
-
-                g_proto_para.msg_state = MSG_STATE_SENDING;
-                
-                OSSemPend(g_sem_plc, 5 * OS_TICKS_PER_SEC, &err);
-
-                g_proto_para.data_len = 0;
-
-                if(OS_ERR_NONE == err)
+                if(CHANNEL_PLC == g_rom_para.channel)
                 {
-                    g_sys_ctrl.plc_state = GUI_CMD_PLC_R2L;
+                    while(OSSemAccept(g_sem_plc));
                     
-                    DL645_Check_Frame();
-                }
-                else
-                {
-                    g_proto_para.recv_result = RECV_RES_TIMEOUT;
+                    plc_uart_send((u8 *)rPLC_TO_lPLC, sizeof(rPLC_TO_lPLC));
+
+                    g_proto_para.msg_state = MSG_STATE_SENDING;
+                    
+                    OSSemPend(g_sem_plc, 5 * OS_TICKS_PER_SEC, &err);
 
                     g_proto_para.data_len = 0;
+
+                    if(OS_ERR_NONE == err)
+                    {
+                        g_sys_ctrl.plc_state = PLC_STATE_R2L;
+                        
+                        DL645_Check_Frame();
+                    }
+                    else
+                    {
+                        g_proto_para.recv_result = RECV_RES_TIMEOUT;
+
+                        g_proto_para.data_len = 0;
+                    }
+
+                    g_proto_para.msg_state = MSG_STATE_RECEIVED;
+
+                    OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
                 }
-
-                g_proto_para.msg_state = MSG_STATE_RECEIVED;
-
-                OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
                 break;
 
             case GUI_CMD_PLC_L2R: //≥≠øÿÃ¨
@@ -526,7 +529,7 @@ void  App_TaskProto (void *p_arg)
 
                     if(OS_ERR_NONE == err)
                     {
-                        g_sys_ctrl.plc_state = GUI_CMD_PLC_L2R;
+                        g_sys_ctrl.plc_state = PLC_STATE_L2R;
                         
                         DL645_Check_Frame();
                     }
@@ -550,24 +553,22 @@ void  App_TaskProto (void *p_arg)
 
                     g_proto_para.msg_state = MSG_STATE_SENDING;
                     
-                    OSSemPend(g_sem_plc, 5 * OS_TICKS_PER_SEC, &err);
+                    OSSemPend(g_sem_plc, 2 * OS_TICKS_PER_SEC, &err);
 
                     g_proto_para.data_len = 0;
 
                     if(OS_ERR_NONE == err)
                     {
-                        g_sys_ctrl.plc_state = GUI_CMD_PLC_READ_NODE;
-                        
                         DL645_Check_Frame();
                     }
                     else
                     {
                         g_proto_para.recv_result = RECV_RES_TIMEOUT;
                     }
-                    
-                    g_proto_para.msg_state = MSG_STATE_RECEIVED;
 
-                    OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
+                    g_sys_ctrl.plc_state = PLC_STATE_READ_NODE;
+
+                    g_proto_para.msg_state = MSG_STATE_RECEIVED;
                 }
                 break;
 
@@ -576,31 +577,38 @@ void  App_TaskProto (void *p_arg)
                 {
                     while(OSSemAccept(g_sem_plc));
                     
-                    switch(g_rom_para.freqSel)
+                    switch(g_rom_para.plc_freq)
                     {
-                        case PLC_270_III:
-                            plc_uart_send((u8 *)rPLC_270III, sizeof(rPLC_270III));
-                            break;
-                        case PLC_270_III_5:
-                            plc_uart_send((u8 *)rPLC_270III5, sizeof(rPLC_270III5));
-                            break;
-                        case PLC_270_II:
-                            plc_uart_send((u8 *)rPLC_270II, sizeof(rPLC_270II));
-                            break;
-                        case PLC_421_50BPS:
-                            plc_uart_send((u8 *)rPLC_421_50BPS, sizeof(rPLC_421_50BPS));
-                            break;
-                        case PLC_421_100BPS:
-                            plc_uart_send((u8 *)rPLC_421_100BPS, sizeof(rPLC_421_100BPS));
-                            break;
-                        case PLC_421_600BPS:
-                            plc_uart_send((u8 *)rPLC_421_600BPS, sizeof(rPLC_421_600BPS));
-                            break;
-                        case PLC_421_1200BPS:
-                            plc_uart_send((u8 *)rPLC_421_1200BPS, sizeof(rPLC_421_1200BPS));
-                            break;
-                        default:
-                            break;
+                    case PLC_270_III:
+                        plc_uart_send((u8 *)rPLC_270III, sizeof(rPLC_270III));
+                        break;
+                        
+                    case PLC_270_III_5:
+                        plc_uart_send((u8 *)rPLC_270III5, sizeof(rPLC_270III5));
+                        break;
+                        
+                    case PLC_270_II:
+                        plc_uart_send((u8 *)rPLC_270II, sizeof(rPLC_270II));
+                        break;
+                        
+                    case PLC_421_50BPS:
+                        plc_uart_send((u8 *)rPLC_421_50BPS, sizeof(rPLC_421_50BPS));
+                        break;
+                        
+                    case PLC_421_100BPS:
+                        plc_uart_send((u8 *)rPLC_421_100BPS, sizeof(rPLC_421_100BPS));
+                        break;
+                        
+                    case PLC_421_600BPS:
+                        plc_uart_send((u8 *)rPLC_421_600BPS, sizeof(rPLC_421_600BPS));
+                        break;
+                        
+                    case PLC_421_1200BPS:
+                        plc_uart_send((u8 *)rPLC_421_1200BPS, sizeof(rPLC_421_1200BPS));
+                        break;
+                        
+                    default:
+                        break;
                     }
 
                     g_proto_para.msg_state = MSG_STATE_SENDING;
@@ -778,8 +786,8 @@ void  App_TaskProto (void *p_arg)
 
                     g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.protocol][1];
 
-                    g_proto_para.send_len = Create_DL645_LeveFrame(g_gui_para.relayAddr, g_sys_ctrl.sysAddrLevel, g_gui_para.dstAddr,
-                                                                   g_gui_para.ctlCode, DL645_07_DATA_ITEM_LEN, g_gui_para.dataFlag, &g_proto_para.dl645_frame_send);
+                    g_proto_para.send_len = Create_DL645_LeveFrame((u8 *)g_gui_para.relayAddr, g_sys_ctrl.sysAddrLevel, g_gui_para.dstAddr,
+                                                                   g_gui_para.ctlCode, DL645_07_DATA_ITEM_LEN, g_gui_para.dataFlag, (u8 *)&g_proto_para.dl645_frame_send);
 
                     memcpy(&g_proto_para.send_buf[DL645_INDEX], &g_proto_para.dl645_frame_send, g_proto_para.send_len);
                     

@@ -82,8 +82,8 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { BUTTON_CreateIndirect, "F1",          ID_BUTTON_2, 130,   70,  100,  20,  0, 0x0,  0 },
   
   { BUTTON_CreateIndirect, "F2",          ID_BUTTON_3, 130,   100, 100,  20,  0, 0x0,  0 },
-  { BUTTON_CreateIndirect, Save,          ID_BUTTON_0, 12,  264, 55,  25,  0, 0x0,  0 },
-  { BUTTON_CreateIndirect, Quit,          ID_BUTTON_1, 171, 264, 55,  25,  0, 0x0,  0 },
+  { BUTTON_CreateIndirect, Save,          ID_BUTTON_0, 10,   262, 55, 25,  0, 0x0,  0 },
+  { BUTTON_CreateIndirect, Quit,          ID_BUTTON_1, 175,  262, 55, 25,  0, 0x0,  0 },
   
   // USER START (Optionally insert additional widgets)
   // USER END
@@ -300,7 +300,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                     {
 #if 0
                         case ID_EDIT_0:
-                           g_hWin_speed = CreateSpeed(g_hWin_AdvanSet);
+                           g_hWin_freq = CreateSpeed(g_hWin_AdvanSet);
                            break;
 #endif
                         case ID_EDIT_1:

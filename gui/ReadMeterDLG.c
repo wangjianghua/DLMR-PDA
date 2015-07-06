@@ -76,17 +76,17 @@
 */
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
     { WINDOW_CreateIndirect,  "ReadMeter",  ID_WINDOW_0, 0,   0,  240, 295, 0, 0x0, 0 },
-    { BUTTON_CreateIndirect,  GetMeterNum,  ID_BUTTON_1, 8,   7,  85,  25, 0, 0x0, 0 },
-    { BUTTON_CreateIndirect,  ReadMeter,    ID_BUTTON_0, 147, 7,  85,  25, 0, 0x0, 0 },
+    { BUTTON_CreateIndirect,  GetMeterNum,  ID_BUTTON_1, 9,   10,  92,  25, 0, 0x0, 0 },
+    { BUTTON_CreateIndirect,  ReadMeter,    ID_BUTTON_0, 139, 10,  92,  25, 0, 0x0, 0 },
         
     { TEXT_CreateIndirect,   MeterNum,      ID_TEXT_0,   8,   46, 72,  20, 0, 0x0, 0 },
-    { EDIT_CreateIndirect,   NULL,          ID_EDIT_0,   89,  42, 141, 20, 0, GUI_645_ADDR_LENGTH, 0 },
+    { EDIT_CreateIndirect,   NULL,          ID_EDIT_0,   89,  42, 142, 20, 0, GUI_645_ADDR_LENGTH, 0 },
         
     { TEXT_CreateIndirect, ReadMeterSel,    ID_TEXT_1,   8,   69, 69,  20, 0, 0x0, 0 },
-    { EDIT_CreateIndirect,         NULL,    ID_EDIT_1,   89,  68, 141, 20, 0, 0x64, 0 },
+    { EDIT_CreateIndirect,         NULL,    ID_EDIT_1,   89,  68, 142, 20, 0, 0x64, 0 },
 
     { TEXT_CreateIndirect, Speed,         ID_TEXT_12,  8,   93, 69,  20, 0, 0x0, 0 },
-    { EDIT_CreateIndirect,  NULL,         ID_EDIT_2,   89,  92, 141, 20, 0, 0x64, 0 },
+    { EDIT_CreateIndirect,  NULL,         ID_EDIT_2,   89,  92, 142, 20, 0, 0x64, 0 },
         
     { TEXT_CreateIndirect, TotalVal,        ID_TEXT_2,   8,  118, 65, 20, 0, 0x0, 0 },
     { EDIT_CreateIndirect, NULL,            ID_EDIT_3,   89,  116, 106, 20, 0, 0x64, 0 },
@@ -108,9 +108,9 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
     { EDIT_CreateIndirect, NULL,            ID_EDIT_7,   89,  214, 106, 20, 0, 0x64, 0 },    
     { TEXT_CreateIndirect, "kWh",           ID_TEXT_11,  199, 214, 35, 20, 0, 0x0, 0 },
        
-    //{ BUTTON_CreateIndirect, Save,          ID_BUTTON_2, 8, 264, 55, 25, 0, 0x0, 0 },
-    { BUTTON_CreateIndirect, Msg,           ID_BUTTON_4, 74, 264, 90, 25, 0, 0x0, 0 },
-    { BUTTON_CreateIndirect, Quit,        ID_BUTTON_3, 175, 264, 55, 25, 0, 0x0, 0},
+    //{ BUTTON_CreateIndirect, Save,          ID_BUTTON_2, 10,   262, 55, 25, 0, 0x0, 0 },
+    { BUTTON_CreateIndirect, Msg,           ID_BUTTON_4, 75,  262, 90,  25, 0, 0x0, 0 },
+    { BUTTON_CreateIndirect, Quit,        ID_BUTTON_3, 175,  262, 55, 25, 0, 0x0, 0},
     { PROGBAR_CreateIndirect, NULL,         ID_PROGBAR_0, 8, 239, 220, 20, 0, 0x0, 0},
 };
 
@@ -164,7 +164,7 @@ void RMD_ReadErr(void)
     for(i = 0;i < 5;i++)
     {
         hItem = WM_GetDialogItem(g_hWin_ReadMeter, (ID_EDIT_3 + i));
-        EDIT_SetText(hItem, "EEEEEEEE.EE");
+        EDIT_SetText(hItem, "EEEEEE.EE");
     }
 }
 
@@ -281,7 +281,7 @@ static u8 RMD_Get_Para(WM_MESSAGE *pMsg)
     //hItem=WM_GetDialogItem(pMsg->hWin,ID_DROPDOWN_0);
     //dropdown_selnum=DROPDOWN_GetSel(hItem);  
     
-    if(g_rom_para.protocol==DL645_07)
+    if(g_rom_para.protocol==DL645_2007)
     {        
         memcpy(g_gui_para.dataFlag,
             &c_645DidoDef[g_rom_para.protocol][dropdown_selnum],
@@ -289,7 +289,7 @@ static u8 RMD_Get_Para(WM_MESSAGE *pMsg)
         
         g_gui_para.ctlCode=0x11;
     }
-    else if(g_rom_para.protocol==DL645_97)
+    else if(g_rom_para.protocol==DL645_1997)
     {
         memcpy(g_gui_para.dataFlag,
             &c_645DidoDef[g_rom_para.protocol][dropdown_selnum],
@@ -326,7 +326,7 @@ void RMD_proc_resp_data(void)
 
     if(g_hWin_ReadMeter != WM_HWIN_NULL)
     {
-        if(g_gui_para.cmd == GUI_CMD_BROADCAST_READ_ADDR)
+        if(g_gui_para.cmd == GUI_CMD_BROAD_READ_ADDR)
         {
             if(len == 6)
             {
@@ -442,16 +442,8 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
 
 
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_1);
-    
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
-    if(CHANNEL_RF == g_rom_para.channel)
-    {
-        BUTTON_SetBkColor(hItem,0,0xC0C0C0);
-    }
-    else
-    {
-        BUTTON_SetBkColor(hItem,0,GUI_CYAN);
-    }
+    BUTTON_SetBkColor(hItem,0,GUI_CYAN);
     
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_0);
     BUTTON_SetBkColor(hItem,0,GUI_CYAN);
@@ -475,7 +467,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_1);
     EDIT_SetText(hItem, Positive);
-    if(g_rom_para.protocol==DL645_07)
+    if(g_rom_para.protocol==DL645_2007)
     {        
         memcpy(g_gui_para.dataFlag,
             &c_645DidoDef[g_rom_para.protocol][0],
@@ -483,7 +475,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
         
         g_gui_para.ctlCode=0x11;
     }
-    else if(g_rom_para.protocol==DL645_97)
+    else if(g_rom_para.protocol==DL645_1997)
     {
         memcpy(g_gui_para.dataFlag,
             &c_645DidoDef[g_rom_para.protocol][0],
@@ -519,7 +511,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             case GUI_KEY_F1: /*ªÒ»°±Ì∫≈*/
                 if(CHANNEL_RF != g_rom_para.channel)
                 {
-                    g_gui_para.cmd = GUI_CMD_BROADCAST_READ_ADDR;
+                    g_gui_para.cmd = GUI_CMD_BROAD_READ_ADDR;
                     g_gui_para.state = GUI_STATE_AMR;                        
                     OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
                 }
@@ -572,8 +564,8 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                         //g_sys_ctrl.selectWidget=LISTBOX_SPEED;
                         //g_hWin_Input=Create_ListBox_Set(g_hWin_ReadMeter);
                         //WM_SetFocus(g_hWin_Input);
-                        g_hWin_speed = CreateSpeed(g_hWin_ReadMeter);
-                        //WM_SetFocus(g_hWin_speed);
+                        g_hWin_freq = CreateSpeed(g_hWin_ReadMeter);
+                        //WM_SetFocus(g_hWin_freq);
                          break;
                  }
        }
@@ -607,8 +599,8 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
               //g_sys_ctrl.selectWidget=LISTBOX_SPEED;
               //g_hWin_Input=Create_ListBox_Set(g_hWin_ReadMeter);
               //WM_SetFocus(g_hWin_Input);
-              g_hWin_speed = CreateSpeed(g_hWin_ReadMeter);
-              //WM_SetFocus(g_hWin_speed);
+              g_hWin_freq = CreateSpeed(g_hWin_ReadMeter);
+              //WM_SetFocus(g_hWin_freq);
             }
             break;
         }
@@ -637,7 +629,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             {
                 if(CHANNEL_RF != g_rom_para.channel)
                 {
-                    g_gui_para.cmd = GUI_CMD_BROADCAST_READ_ADDR;
+                    g_gui_para.cmd = GUI_CMD_BROAD_READ_ADDR;
                     g_gui_para.state = GUI_STATE_AMR;                        
                     OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
                 }

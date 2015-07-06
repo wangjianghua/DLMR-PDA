@@ -177,7 +177,7 @@ extern WM_HWIN g_hWin_TimeBar;
 extern WM_HWIN g_hWin_Date;
 
 extern WM_HWIN g_hWin_Input;
-extern WM_HWIN g_hWin_speed;
+extern WM_HWIN g_hWin_freq;
 extern WM_HWIN g_hWin_AdvanSet;
 extern WM_HWIN g_hWin_SDInfo;   //¥Ê¥¢ø®–≈œ¢
 //extern int test_multiedit;

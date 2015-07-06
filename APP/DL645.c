@@ -64,12 +64,12 @@ void CS_Pack(u8 *buff)
 }
 
 //------------------------------------建立DL645报文----------------------------------
-void Create_DL645_Frame(u8 *Addr,u8 C,u8 len,DL645_Frame_C *DL645_Frame)
+void Create_DL645_Frame(u8 *Addr, u8 C, u8 len, DL645_Frame_C *DL645_Frame)
 {
     DL645_Frame->Start=0x68;
-   memcpy(DL645_Frame->Addr,Addr,6);
+    memcpy(DL645_Frame->Addr,Addr,6);
     DL645_Frame->Start1=0x68;
-   DL645_Frame->C=C;
+    DL645_Frame->C=C;
     DL645_Frame->L=len;
     CS_Pack(&DL645_Frame->Start);
 }
@@ -79,7 +79,7 @@ void Create_DL645_Frame(u8 *Addr,u8 C,u8 len,DL645_Frame_C *DL645_Frame)
 //leve :中继级数
 //Addr :目标地址
 //
-u8 Create_DL645_LeveFrame(u8 *leve_Addr,u8 leve,u8 *Addr,u8 C,u8 len,u8 *data,u8 *Send_buf)
+u8 Create_DL645_LeveFrame(u8 *leve_Addr, u8 leve, u8 *Addr, u8 C, u8 len, u8 *data, u8 *Send_buf)
 {
 	DL645_Frame_C *DL645_Frame;
 	u8 Cmd,Point,i;
@@ -87,14 +87,16 @@ u8 Create_DL645_LeveFrame(u8 *leve_Addr,u8 leve,u8 *Addr,u8 C,u8 len,u8 *data,u8
 	DL645_Frame=(DL645_Frame_C *)Send_buf;
 	DL645_Frame->C=C;
 	Point=0;
+    
 	if(leve)
 	{
 		for(i=0;i<(leve);i++)
 		{
 			memcpy(DL645_Frame->Data+Point,leve_Addr+Point+6,6);
 			Point+=6;
-			DL645_Frame->C += 0x20;
+			DL645_Frame->C+=0x20;
 		}
+        
 		//memcpy(DL645_Frame->Data+Point,Addr,6); //HRK
 		//Point+=6; //HRK
 		memcpy(DL645_Frame->Addr,leve_Addr,6);
@@ -104,26 +106,28 @@ u8 Create_DL645_LeveFrame(u8 *leve_Addr,u8 leve,u8 *Addr,u8 C,u8 len,u8 *data,u8
 	else
 	{
 		memcpy(DL645_Frame->Addr,Addr,6);
-		
 	}
+    
 	memcpy(DL645_Frame->Data+Point,data,len);
 	Point+=len;
 	DL645_Frame->Start=0x68;
 	DL645_Frame->Start1=0x68;
 	DL645_Frame->L=Point;
-    	CS_Pack(&DL645_Frame->Start);
-	return(Point+12);	
+    CS_Pack(&DL645_Frame->Start);
+    
+	return (Point+12);	
 }
 
-u32 Analysis_DL645_Frame(u8 *Addr,u8 *buff, DL645_Frame_Stat_C * pFreame_st)
+u32 Analysis_DL645_Frame(u8 *Addr, u8 *buff, DL645_Frame_Stat_C *pFreame_st)
 {
-	//DL645_Frame_Stat_C	Freame_st;
 	DL645_Frame_C *DL645_Frame;
 	u8 i;
-	pFreame_st->protocol=DL645_no;
+	pFreame_st->protocol=DL645_NONE;
 	pFreame_st->ID_Leng=0;
 	pFreame_st->Status=0;
+    
 	i = CheckDL645_Frame(buff);
+    
 	if(i != DL645_FRAME_ERROR)
 	{
 		pFreame_st->Status=1; //合法645报文
@@ -146,18 +150,17 @@ u32 Analysis_DL645_Frame(u8 *Addr,u8 *buff, DL645_Frame_Stat_C * pFreame_st)
 		if((DL645_Frame->C&0x10)||(DL645_Frame->C==0x83))
 		{
 			pFreame_st->protocol=DL645_2007;
-			if(DL645_Frame->C==0x91)pFreame_st->ID_Leng=4;
+			if(DL645_Frame->C==0x91) pFreame_st->ID_Leng=4;
 		}
 		else
 		{
 			pFreame_st->protocol=DL645_1997;
-			if(DL645_Frame->C==0x81)pFreame_st->ID_Leng=2;
+			if(DL645_Frame->C==0x81) pFreame_st->ID_Leng=2;
 		}     
 
         return DL645_FRAME_OK;
 	}
     
-	//return(pFreame_st->C);
 	return DL645_FRAME_ERROR; //华兄
 }
 

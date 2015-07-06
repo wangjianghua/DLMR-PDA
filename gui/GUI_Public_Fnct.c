@@ -148,7 +148,7 @@ u32 GUI_GetStrDataFlag(u8 * dbuf, u32 pro_ver)
     u8 i;
     u8 len;
 
-    if(pro_ver == DL645_07)
+    if(pro_ver == DL645_2007)
         len = DL645_07_DATA_ITEM_LEN;
     else
         len = DL645_97_DATA_ITEM_LEN;
@@ -457,7 +457,7 @@ void PUB_InitFreq(WM_MESSAGE *pMsg,int widgetID)
    {
        case 0: /*第一次初始化的时候或者flash中没有内容,默认为270III代*/
            EDIT_SetText(hItem, pTextPreamble[0]);
-           g_rom_para.freqSel = PLC_270_III;
+           g_rom_para.plc_freq = PLC_270_III;
            g_rom_para.bpsSpeed = PLC_BPS_MIDDLE;
            break;
        case 0xFC:
@@ -476,7 +476,7 @@ void PUB_InitFreq(WM_MESSAGE *pMsg,int widgetID)
            EDIT_SetText(hItem, pTextPreamble[4]);
            break;
        case 0xFE:
-           switch(g_rom_para.freqSel)
+           switch(g_rom_para.plc_freq)
            {
                
                case PLC_270_III:

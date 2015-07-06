@@ -4,7 +4,7 @@
 
 #define HARDWARE_VERSION         23
 #define SOFTWARE_VERSION         27
-#define VERSION_DATE     0x20150703
+#define VERSION_DATE     0x20150706
 
 #define BOOT_REQUEST_ACT   0xffffbbcc
 #define BOOT_FINISH_ACT    0xffff0000
@@ -73,7 +73,7 @@ typedef struct _rom_para_
     unsigned int baudrate; //波特率
     unsigned int preamble; //前导符
     unsigned int stopbit;
-    unsigned int freqSel; //速率选择,下面减过了
+    unsigned int plc_freq; //速率选择,下面减过了
     unsigned int bpsSpeed;             //传输数据等待时间,需要保存，以便下次启动有默认设置
 
     unsigned int meterPassword[8];//密码

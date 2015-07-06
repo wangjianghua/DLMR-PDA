@@ -78,8 +78,8 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { EDIT_CreateIndirect, "pcb",         ID_EDIT_4,   125,  130, 100, 20, EDIT_CF_HCENTER, 0x64, 0 },
   { EDIT_CreateIndirect, "soft",        ID_EDIT_5,   125,  160, 100, 20, EDIT_CF_HCENTER, 0x64, 0 },
     
-  { BUTTON_CreateIndirect, Update,      ID_BUTTON_0, 10,   263, 80, 25, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, Quit,        ID_BUTTON_1, 147,  262, 80, 25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, Update,      ID_BUTTON_0, 10,   262, 55, 25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, Quit,        ID_BUTTON_1, 175,  262, 55, 25, 0, 0x0, 0 },
   { BUTTON_CreateIndirect, "F1",        ID_BUTTON_2, 125,  190, 100, 20, 0, 0x0, 0 },
   //{ BUTTON_CreateIndirect, "F2",        ID_BUTTON_3, 145,  220, 80, 20, 0, 0x0, 0 },
 };
@@ -140,13 +140,13 @@ static void _init_SysInfoDLg(WM_MESSAGE *pMsg)
     WM_DisableWindow(hItem);
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_4);
-    sprintf(tmpbuf, "V%d.%d", HARDWARE_VERSION / 10, HARDWARE_VERSION % 10);
+    sprintf(tmpbuf, "v%d.%d", HARDWARE_VERSION / 10, HARDWARE_VERSION % 10);
     EDIT_SetText(hItem, tmpbuf);
     //WIDGET_SetEffect(hItem,&WIDGET_Effect_None);
     WM_DisableWindow(hItem);
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_5);
-    sprintf(tmpbuf, "V%d.%d", SOFTWARE_VERSION / 10, SOFTWARE_VERSION % 10);
+    sprintf(tmpbuf, "v%d.%d", SOFTWARE_VERSION / 10, SOFTWARE_VERSION % 10);
     EDIT_SetText(hItem, tmpbuf);
     //WIDGET_SetEffect(hItem,&WIDGET_Effect_None);
     WM_DisableWindow(hItem);

@@ -58,8 +58,8 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { BUTTON_CreateIndirect, SetMonitor,     ID_BUTTON_2,    8,   10,  105, 25, 0, 0x0, 0 },
   { BUTTON_CreateIndirect, SetCopy,        ID_BUTTON_5,    129, 10,  105, 25, 0, 0x0, 0 },
     
-  { BUTTON_CreateIndirect, Quit,           ID_BUTTON_3,    182, 265, 55,  25, 0, 0x0, 0 },
-  //{ BUTTON_CreateIndirect, Save,           ID_BUTTON_4,    10,  265, 55,  25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, Quit,           ID_BUTTON_3,    175,  262, 55, 25, 0, 0x0, 0 },
+  //{ BUTTON_CreateIndirect, Save,           ID_BUTTON_4,    10,   263, 55, 25, 0, 0x0, 0 },
   { TEXT_CreateIndirect,   MND_countdown,  ID_TEXT_0,      10,  76,  100, 20, 0, 0x0, 0 },
   { MULTIEDIT_CreateIndirect, NULL,        ID_MULTIEDIT_0, 4,   103, 232, 153, 0, 0x0, 0 },
   { EDIT_CreateIndirect,     NULL,         ID_EDIT_0,      129,  73,  105, 25,  EDIT_CF_HCENTER, 0x64, 0 },  
@@ -203,28 +203,26 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 }
                 else
                 {
-                    hItem = WM_GetDialogItem(pMsg->hWin,ID_BUTTON_0);
-                    BUTTON_SetText(hItem,MND_reading);
-                    //hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
-                    //EDIT_SetValue(hItem ,240);
-                    
                     g_gui_para.cmd = GUI_CMD_PLC_READ_NODE;
                     g_gui_para.state = GUI_STATE_PLC_MONITOR;
-                    g_sys_ctrl.sysCtdVal = COUNT_VALUE  ;
+                    g_sys_ctrl.sysCtdVal = COUNT_VALUE;
                     g_sys_ctrl.sysCtdFlag = COUNTDOWN_ON;
-                    //g_sys_ctrl.monitorFlag = PLC_MONITOR_ON; //读载波节点也不能关机
-                    TSK_Disp_PLC();
                     OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
                 }
                 break;
+                
             case '*':
                 //ButtonBlink(pMsg,ID_BUTTON_1);
                 hItem=WM_GetDialogItem(pMsg->hWin,ID_MULTIEDIT_0);
                 MULTIEDIT_SetText(hItem,"\0");
                 break;
             case GUI_KEY_F1: /*监控态*/
-                //ButtonBlink(pMsg,ID_BUTTON_2);
-                //TSK_Disp_PLC();
+                g_sys_ctrl.sysCtdFlag = COUNTDOWN_OFF; //如果是从抄控态切换过来，要关闭抄控态
+                hItem = MNT_GetTime();
+                EDIT_SetValue(hItem,240);
+                hItem = MNT_GetReadNope();
+                BUTTON_SetText(hItem, ReadNope);
+                
                 if(g_rom_para.channel != CHANNEL_PLC)
                 {
                     ERR_NOTE(g_hWin_monitor,GUI_MSBOX_FUN_DISALE_ERROR);
@@ -233,19 +231,28 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 {
                     g_gui_para.cmd = GUI_CMD_PLC_R2L;
                     g_gui_para.state = GUI_STATE_PLC_MONITOR;
-                    //g_sys_ctrl.monitorFlag = PLC_MONITOR_ON;//监控态不能关闭电源，标志位
-                    TSK_Disp_PLC();
                     OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
                 }
                 break;
+                
             case GUI_KEY_F2:/* 抄控态 */
+                g_sys_ctrl.sysCtdFlag = COUNTDOWN_OFF; //如果是从抄控态切换过来，要关闭抄控态
+                hItem = MNT_GetTime();
+                EDIT_SetValue(hItem,240);
+                hItem = MNT_GetReadNope();
+                BUTTON_SetText(hItem, ReadNope);
                 //ButtonBlink(pMsg,ID_BUTTON_5);
                 //TSK_Close_Monitor();
-                g_gui_para.cmd = GUI_CMD_PLC_L2R;
-                g_gui_para.state = GUI_STATE_PLC_MONITOR;
-                //g_sys_ctrl.monitorFlag = PLC_MONITOR_OFF;
-                TSK_Disp_PLC();
-                OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
+                if(g_rom_para.channel != CHANNEL_PLC)
+                {
+                    ERR_NOTE(g_hWin_monitor,GUI_MSBOX_FUN_DISALE_ERROR);
+                }
+                else
+                {
+                    g_gui_para.cmd = GUI_CMD_PLC_L2R;
+                    g_gui_para.state = GUI_STATE_PLC_MONITOR;
+                    OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
+                }
                 break;
         }
     }

@@ -91,8 +91,8 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
     
   { PROGBAR_CreateIndirect,  "Progbar",    ID_PROGBAR_0, 120, 77, 115, 20, 0, 0x0,  0 },
   //{ BUTTON_CreateIndirect,   "F1",         ID_BUTTON_0,  120, 143, 115, 25, 0, 0x0,  0 },
-  { BUTTON_CreateIndirect,   MemFormat,    ID_BUTTON_1,  10,  260, 65,  25, 0, 0x0,  0 },
-  { BUTTON_CreateIndirect,   Quit,         ID_BUTTON_2,  165, 260, 65,  25, 0, 0x0,  0 },
+  { BUTTON_CreateIndirect,   MemFormat,    ID_BUTTON_1,  10,   262, 55, 25, 0, 0x0,  0 },
+  { BUTTON_CreateIndirect,   Quit,         ID_BUTTON_2,  175,  262, 55, 25, 0, 0x0,  0 },
   { PROGBAR_CreateIndirect,  "Progbar",    ID_PROGBAR_1, 9,   228, 222, 20, 0, 0x0,  0 },
     
   // USER START (Optionally insert additional widgets)

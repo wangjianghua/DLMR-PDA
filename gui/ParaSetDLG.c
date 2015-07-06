@@ -87,10 +87,10 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { TEXT_CreateIndirect,    RevDataDelay, ID_TEXT_6,   8,   208, 110, 20, 0, 0x0, 0 },
   { TEXT_CreateIndirect,    BetweenAct,   ID_TEXT_7,   8,   236, 110, 20, 0, 0x0, 0 },
 
-  { BUTTON_CreateIndirect,  TimeSet,      ID_BUTTON_0, 8,   10,  92,  25, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect,  AdvanceSet,   ID_BUTTON_1, 128, 10,  103,  25, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect,  Save,         ID_BUTTON_2, 9,   264, 55,  25, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect,  Quit,         ID_BUTTON_3, 172, 264, 55,  25, 0, 0x0, 0 }, 
+  { BUTTON_CreateIndirect,  TimeSet,      ID_BUTTON_0, 9,   10,  92,  25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect,  AdvanceSet,   ID_BUTTON_1, 139, 10,  92,  25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect,  Save,         ID_BUTTON_2, 10,   262, 55, 25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect,  Quit,         ID_BUTTON_3, 175,  262, 55, 25, 0, 0x0, 0 }, 
 
   { EDIT_CreateIndirect,    NULL,         ID_EDIT_0,   128, 42,  103, 20, 0, 0x64, 0 },
   { EDIT_CreateIndirect,    NULL,         ID_EDIT_1,   128, 67,  103, 20, 0, 0x64, 0 },
@@ -259,10 +259,10 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_0);
     switch(g_rom_para.protocol)
     {
-        case DL645_07:
+        case DL645_2007:
             EDIT_SetText(hItem, "DL645-07");
             break;
-        case DL645_97:
+        case DL645_1997:
             EDIT_SetText(hItem, "DL645-97");
     }
     

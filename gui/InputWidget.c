@@ -19,15 +19,15 @@
 
 static const GUI_WIDGET_CREATE_INFO _aListBoxCreate[] = {
   { FRAMEWIN_CreateIndirect,  "ListBox",  ID_FRAMEWIN_0,  20,  40,  200, 200,  0, 0x0, 0 },
-  { LISTBOX_CreateIndirect,   "Listbox",  ID_LISTBOX_0,   5,   7,   182, 120,  0, 0x0, 0 },
-  { BUTTON_CreateIndirect,    Confirm,    ID_BUTTON_0,    5,   140, 55,  25,   0, 0x0, 0 },
-  { BUTTON_CreateIndirect,    Cancel,       ID_BUTTON_1,    138, 140, 55,  25,   0, 0x0, 0 },
+  { LISTBOX_CreateIndirect,   "Listbox",  ID_LISTBOX_0,   6,   7,   182, 120,  0, 0x0, 0 },
+  { BUTTON_CreateIndirect,    Confirm,    ID_BUTTON_0,    7,   138, 55,  25,   0, 0x0, 0 },
+  { BUTTON_CreateIndirect,    Cancel,       ID_BUTTON_1,    132, 138, 55,  25,   0, 0x0, 0 },
 };
 
 static const GUI_WIDGET_CREATE_INFO _aEditCreate[] = {
   { FRAMEWIN_CreateIndirect, "Edit",  ID_FRAMEWIN_0, 20,  60, 200, 160, 0, 0x0,  0 },
-  { BUTTON_CreateIndirect,   Confirm, ID_BUTTON_0,   5,   82, 55,  25,  0, 0x0,  0 },
-  { BUTTON_CreateIndirect,   Cancel,    ID_BUTTON_1,   138, 82, 55,  25,  0, 0x0,  0 },
+  { BUTTON_CreateIndirect,   Confirm, ID_BUTTON_0,   7,   82, 55,  25,  0, 0x0,  0 },
+  { BUTTON_CreateIndirect,   Cancel,    ID_BUTTON_1,   132, 82, 55,  25,  0, 0x0,  0 },
   { EDIT_CreateIndirect,     "Edit",  ID_EDIT_0,     14,  38, 165, 25,  0, 0x64, 0 },
   //{ TEXT_CreateIndirect,   "Text",    ID_TEXT_0,   14,  16, 165, 20,  0, 0x0,  0 },
 
@@ -77,23 +77,27 @@ void Select_Focus(void)
     }
     
     
-    if((g_hWin_ProtoDbg > 0)&&(g_hWin_relay <= 0)) 
+    if((g_hWin_ProtoDbg > 0)&&(g_hWin_relay <= 0) && (g_hWin_freq <= 0)) 
     {
         WM_SetFocus(g_hWin_ProtoDbg);
         CPT_SetFocus();
     }
-    
-    if(g_hWin_relay > 0)
-    {
-        WM_SetFocus(g_hWin_relay);
-    }
-    
-    if(g_hWin_ReadMeter>0)
+
+    if((g_hWin_ReadMeter>0) && (g_hWin_freq <= 0))
     {
         WM_SetFocus(g_hWin_ReadMeter);
         RMD_SetFocus();
     }
 
+    if(g_hWin_relay > 0)
+    {
+        WM_SetFocus(g_hWin_relay);
+    }
+
+    if(g_hWin_freq > 0)
+    {
+        WM_SetFocus(g_hWin_freq);
+    }
     
     if(g_hWin_about>0)
     {
@@ -462,10 +466,10 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
             LISTBOX_AddString(hItem, "DL645-97");
             switch(g_rom_para.protocol)
             {
-                case DL645_07:
+                case DL645_2007:
                     LISTBOX_SetSel(hItem,0);
                     break;
-                case DL645_97:
+                case DL645_1997:
                     LISTBOX_SetSel(hItem,1);
                     break;
             }
@@ -566,13 +570,13 @@ static void Select_ListBox_Row(int  WidgetNum)
             switch(SelNum) 
             {
                 case 0:
-                    g_rom_para.protocol = DL645_07;
+                    g_rom_para.protocol = DL645_2007;
                     TSK_SetProtocol_07();
                     hWin=CPS_Set_Proto();
                     EDIT_SetText(hWin,"DL645-07");
                     break;
                 case 1:
-                    g_rom_para.protocol = DL645_97;
+                    g_rom_para.protocol = DL645_1997;
                     TSK_SetProtocol_97();
                     hWin=CPS_Set_Proto();
                     EDIT_SetText(hWin,"DL645-97");
@@ -626,11 +630,11 @@ static void Select_ListBox_Row(int  WidgetNum)
 
 
          case LISTBOX_CTLCODE:
-            if(g_rom_para.protocol == DL645_97)
+            if(g_rom_para.protocol == DL645_1997)
             {
                 g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.protocol][SelNum]; 
             }
-            else if(g_rom_para.protocol == DL645_07)
+            else if(g_rom_para.protocol == DL645_2007)
             {
                 g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.protocol][SelNum]; 
             }
@@ -641,7 +645,7 @@ static void Select_ListBox_Row(int  WidgetNum)
             
         case LISTBOX_READ_SEL:
             //pReadSel
-            if(g_rom_para.protocol==DL645_07)
+            if(g_rom_para.protocol==DL645_2007)
             {        
                 memcpy(g_gui_para.dataFlag,
                     &c_645DidoDef[g_rom_para.protocol][SelNum],
@@ -649,7 +653,7 @@ static void Select_ListBox_Row(int  WidgetNum)
                 
                 g_gui_para.ctlCode=0x11;
             }
-            else if(g_rom_para.protocol==DL645_97)
+            else if(g_rom_para.protocol==DL645_1997)
             {
                 memcpy(g_gui_para.dataFlag,
                     &c_645DidoDef[g_rom_para.protocol][SelNum],

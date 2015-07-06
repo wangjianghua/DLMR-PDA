@@ -221,15 +221,15 @@ void TSK_Disp_PLC(void)
     
     hItem = WM_GetDialogItem(g_hWin_task,ID_TEXT_1);
 
-    if(GUI_CMD_PLC_R2L == g_sys_ctrl.plc_state)
+    if(PLC_STATE_R2L == g_sys_ctrl.plc_state)
     {
         TEXT_SetText(hItem, "PLC-L");
     }
-    else if(GUI_CMD_PLC_L2R == g_sys_ctrl.plc_state)
+    else if(PLC_STATE_L2R == g_sys_ctrl.plc_state)
     {
         TEXT_SetText(hItem, "PLC-R");
     }
-    else if(GUI_CMD_PLC_READ_NODE == g_sys_ctrl.plc_state)
+    else if(PLC_STATE_READ_NODE == g_sys_ctrl.plc_state)
     {
         TEXT_SetText(hItem, "PLC-N");
     }
@@ -242,11 +242,11 @@ void TSK_Disp_Protocol(void)
     
     hItem=WM_GetDialogItem(g_hWin_task,ID_TEXT_0);
     
-    if(DL645_07 == g_rom_para.protocol)
+    if(DL645_2007 == g_rom_para.protocol)
     {
         TEXT_SetText(hItem,Protocol_07);
     }
-    else if(DL645_97 == g_rom_para.protocol)
+    else if(DL645_1997 == g_rom_para.protocol)
     {
         TEXT_SetText(hItem,Protocol_97);
     }
@@ -406,15 +406,15 @@ static void _cbTaskDialog(WM_MESSAGE * pMsg)
 
         if(CHANNEL_PLC == g_rom_para.channel)
         {
-            if(GUI_CMD_PLC_R2L == g_sys_ctrl.plc_state)
+            if(PLC_STATE_R2L == g_sys_ctrl.plc_state)
             {
                 TEXT_SetText(hItem, "PLC-L");
             }
-            else if(GUI_CMD_PLC_L2R == g_sys_ctrl.plc_state)
+            else if(PLC_STATE_L2R == g_sys_ctrl.plc_state)
             {
                 TEXT_SetText(hItem, "PLC-R");
             }
-            else if(GUI_CMD_PLC_READ_NODE == g_sys_ctrl.plc_state)
+            else if(PLC_STATE_READ_NODE == g_sys_ctrl.plc_state)
             {
                 TEXT_SetText(hItem, "PLC-N");
             }
@@ -434,11 +434,11 @@ static void _cbTaskDialog(WM_MESSAGE * pMsg)
         
         hItem=WM_GetDialogItem(pMsg->hWin,ID_TEXT_0);
 
-        if(g_rom_para.protocol==DL645_07)
+        if(g_rom_para.protocol==DL645_2007)
         {
             TEXT_SetText(hItem,Protocol_07);
         }
-        else if(g_rom_para.protocol==DL645_97)
+        else if(g_rom_para.protocol==DL645_1997)
         {
             TEXT_SetText(hItem,Protocol_97);
         }

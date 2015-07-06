@@ -33,8 +33,8 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { TEXT_CreateIndirect,    FRQ_Flag,   ID_TEXT_0,    8,   8,   100, 20,  0, 0x0, 0 },
   { LISTBOX_CreateIndirect, "Listbox",  ID_LISTBOX_1, 5,   134, 228, 122, 0, 0x0, 0 },
   { TEXT_CreateIndirect,    FE_Speed,   ID_TEXT_1,    8,   114, 150, 20,  0, 0x0, 0 },
-  { BUTTON_CreateIndirect,  FreqSet,    ID_BUTTON_0,  5,   267, 55,  20,  0, 0x0, 0 },
-  { BUTTON_CreateIndirect,  Quit,       ID_BUTTON_1,  175, 267, 55,  20,  0, 0x0, 0 },
+  { BUTTON_CreateIndirect,  FreqSet,    ID_BUTTON_0,  10,   262, 55, 25,  0, 0x0, 0 },
+  { BUTTON_CreateIndirect,  Quit,       ID_BUTTON_1,  175,  262, 55, 25,  0, 0x0, 0 },
   // USER START (Optionally insert additional widgets)
   // USER END
 };
@@ -75,32 +75,32 @@ void FRQ_FreqSel(WM_MESSAGE *pMsg)
     switch(SelNum)
     {
         case 0:
-            g_rom_para.freqSel = PLC_270_III;
+            g_rom_para.plc_freq = PLC_270_III;
             g_rom_para.bpsSpeed = PLC_BPS_MIDDLE;
             break;
             
         case 1:
-            g_rom_para.freqSel = PLC_270_III_5;
+            g_rom_para.plc_freq = PLC_270_III_5;
             g_rom_para.bpsSpeed = PLC_BPS_SLOW;
             break;
         case 2:
-            g_rom_para.freqSel = PLC_270_II;
+            g_rom_para.plc_freq = PLC_270_II;
             g_rom_para.bpsSpeed = PLC_BPS_MIDDLE;
             break;
         case 3:
-            g_rom_para.freqSel = PLC_421_50BPS;
+            g_rom_para.plc_freq = PLC_421_50BPS;
             g_rom_para.bpsSpeed = PLC_BPS_SNAIL;
             break;
         case 4:
-            g_rom_para.freqSel = PLC_421_100BPS;
+            g_rom_para.plc_freq = PLC_421_100BPS;
             g_rom_para.bpsSpeed = PLC_BSP_100;
             break;
         case 5:
-            g_rom_para.freqSel = PLC_421_600BPS;
+            g_rom_para.plc_freq = PLC_421_600BPS;
             g_rom_para.bpsSpeed = PLC_BPS_MIDDLE;
             break;
         case 6:
-            g_rom_para.freqSel = PLC_421_1200BPS;
+            g_rom_para.plc_freq = PLC_421_1200BPS;
             g_rom_para.bpsSpeed = PLC_BPS_MIDDLE;
             break;
     }
@@ -198,7 +198,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     {
         LISTBOX_AddString(hItem, pTextSpeed[i]);
     }
-    switch(g_rom_para.freqSel)
+    switch(g_rom_para.plc_freq)
     {
         case PLC_270_III:
             LISTBOX_SetSel(hItem,0);
@@ -240,63 +240,70 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
         switch(((WM_KEY_INFO *)(pMsg->Data.p))->Key)
         {
             case GUI_KEY_GREEN:
-                if(g_hWin_ReadMeter > 0)
+                if(g_rom_para.channel != CHANNEL_PLC)
                 {
-                    hItem = WM_GetDialogItem(pMsg->hWin,ID_LISTBOX_0);
-                    SelNum = LISTBOX_GetSel(hItem);
-                    if(SelNum != 5) //前导符不是FE
+                    ERR_NOTE(g_hWin_monitor,GUI_MSBOX_FUN_DISALE_ERROR);
+                }
+                else
+                {
+                    if(g_hWin_ReadMeter > 0)
                     {
-                        hItem = RMD_Get_Speed();
-                        EDIT_SetText(hItem,pTextPreamble[SelNum]);
-                    }
-                    else if(SelNum == 5)
-                    {
-                        hItem = WM_GetDialogItem(pMsg->hWin,ID_LISTBOX_1);
+                        hItem = WM_GetDialogItem(pMsg->hWin,ID_LISTBOX_0);
                         SelNum = LISTBOX_GetSel(hItem);
-                        hItem = RMD_Get_Speed();
-                        EDIT_SetText(hItem,pTextSpeed[SelNum]);
+                        if(SelNum != 5) //前导符不是FE
+                        {
+                            hItem = RMD_Get_Speed();
+                            EDIT_SetText(hItem,pTextPreamble[SelNum]);
+                        }
+                        else if(SelNum == 5)
+                        {
+                            hItem = WM_GetDialogItem(pMsg->hWin,ID_LISTBOX_1);
+                            SelNum = LISTBOX_GetSel(hItem);
+                            hItem = RMD_Get_Speed();
+                            EDIT_SetText(hItem,pTextSpeed[SelNum]);
+                        }
                     }
-                }
-                else if(g_hWin_ProtoDbg > 0)
-                {
-                    hItem = WM_GetDialogItem(pMsg->hWin,ID_LISTBOX_0);
-                    SelNum = LISTBOX_GetSel(hItem);
-                    if(SelNum != 5) //前导符不是FE
+                    else if(g_hWin_ProtoDbg > 0)
                     {
-                        hItem = CPT_Get_Speed();
-                        EDIT_SetText(hItem,pTextPreamble[SelNum]);
-                    }
-                    else if(SelNum == 5)
-                    {
-                        hItem = WM_GetDialogItem(pMsg->hWin,ID_LISTBOX_1);
+                        hItem = WM_GetDialogItem(pMsg->hWin,ID_LISTBOX_0);
                         SelNum = LISTBOX_GetSel(hItem);
-                        hItem = CPT_Get_Speed();
-                        EDIT_SetText(hItem,pTextSpeed[SelNum]);
+                        if(SelNum != 5) //前导符不是FE
+                        {
+                            hItem = CPT_Get_Speed();
+                            EDIT_SetText(hItem,pTextPreamble[SelNum]);
+                        }
+                        else if(SelNum == 5)
+                        {
+                            hItem = WM_GetDialogItem(pMsg->hWin,ID_LISTBOX_1);
+                            SelNum = LISTBOX_GetSel(hItem);
+                            hItem = CPT_Get_Speed();
+                            EDIT_SetText(hItem,pTextSpeed[SelNum]);
+                        }
                     }
+                    else if(g_hWin_para > 0)
+                    {
+                        //保留
+                    }
+                    FRQ_PreamSel(pMsg);
+                    if(0xFE == g_rom_para.preamble)
+                    {
+                        FRQ_FreqSel(pMsg);
+                        g_gui_para.cmd = GUI_CMD_PLC_FREQ_SET;
+                        g_gui_para.state = GUI_STATE_PLC_FREQ_SET;
+                        OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
+                    }
+                    DEV_Parameters_Write();//保存数据
+                    
+                    WM_DeleteWindow(g_hWin_freq);
+                    FRQ_SetFocus();
+                    g_hWin_freq = HBWIN_NULL;
                 }
-                else if(g_hWin_para > 0)
-                {
-                    //保留
-                }
-                FRQ_PreamSel(pMsg);
-                if(0xFE == g_rom_para.preamble)
-                {
-                    FRQ_FreqSel(pMsg);
-                    g_gui_para.cmd = GUI_CMD_PLC_FREQ_SET;
-                    g_gui_para.state = GUI_STATE_PLC_FREQ_SET;
-                    OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
-                }
-                DEV_Parameters_Write();//保存数据
-                
-                WM_DeleteWindow(g_hWin_speed);
-                FRQ_SetFocus();
-                g_hWin_speed = HBWIN_NULL;
                 break;
 
             case GUI_KEY_YELLOW:
-                WM_DeleteWindow(g_hWin_speed);
+                WM_DeleteWindow(g_hWin_freq);
                 FRQ_SetFocus();
-                g_hWin_speed = HBWIN_NULL;
+                g_hWin_freq = HBWIN_NULL;
                 break;
         }
     }

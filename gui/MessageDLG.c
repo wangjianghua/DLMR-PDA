@@ -23,8 +23,8 @@
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { WINDOW_CreateIndirect,    NULL,        ID_WINDOW_0,    0,   0,   240, 295, 0, 0x0, 0 },
   { MULTIEDIT_CreateIndirect, "Multiedit", ID_MULTIEDIT_0, 7,   26,  225, 229, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect,    Clear,       ID_BUTTON_1,    8,   264, 55, 25, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect,    Back,        ID_BUTTON_0,    175, 264, 55, 25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect,    Clear,       ID_BUTTON_1,    10,   262, 55, 25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect,    Back,        ID_BUTTON_0,    175,  262, 55, 25, 0, 0x0, 0 },
   { TEXT_CreateIndirect,      Log,         ID_TEXT_1,      13,  6,   119, 20, 0, 0x0, 0 },
 };
 

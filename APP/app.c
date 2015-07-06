@@ -195,7 +195,7 @@ WM_HWIN g_hWin_Err;
 WM_HWIN g_hWin_TimeBar;  //主页时间
 WM_HWIN g_hWin_Date;     //显示日期
 WM_HWIN g_hWin_Input;    //各种输入小框体
-WM_HWIN g_hWin_speed;
+WM_HWIN g_hWin_freq;
 WM_HWIN g_hWin_AdvanSet;  //高级设置
 WM_HWIN g_hWin_SDInfo;   //存储卡信息
 
@@ -340,9 +340,9 @@ static  void  App_TaskStart (void *p_arg)
 
     GUI_Init();                                                 /* Init the STemWin GUI Library */
 
-	KEY_Init();
-
     End_Init();
+    
+	KEY_Init();
 
     RF_Init();
 
@@ -421,19 +421,26 @@ static  void  App_TaskGUI (void *p_arg)
 
         if(g_hWin_monitor > 0)
         {
-            if(g_sys_ctrl.sysCtdFlag == COUNTDOWN_ON)
+            if((COUNTDOWN_ON == g_sys_ctrl.sysCtdFlag) && (PLC_STATE_READ_NODE == g_sys_ctrl.plc_state))
             {
+                hItem = MNT_GetReadNope();
+                BUTTON_SetText(hItem, MND_reading);
+                
                 if(i++ >= 10)
                 {
                     i = 0;
+                    
                     hItem = MNT_GetTime();
                     EDIT_SetValue(hItem,g_sys_ctrl.sysCtdVal--);
+                    
                     if(0 == g_sys_ctrl.sysCtdVal)
                     {
-                        g_sys_ctrl.sysCtdFlag == COUNTDOWN_OFF;//读载波节点计时标记
-                        EDIT_SetValue(hItem,0);
+                        g_sys_ctrl.sysCtdFlag = COUNTDOWN_OFF;
+                        
+                        EDIT_SetValue(hItem, 0);
+                        
                         hItem = MNT_GetReadNope();
-                        BUTTON_SetText(hItem ,ReadNope);
+                        BUTTON_SetText(hItem, ReadNope);
                     }
                 }
             }
@@ -556,8 +563,8 @@ static  void  App_TaskPower (void *p_arg)
         {
             g_sys_ctrl.shutdown_timeout = 0;
             
-            if((GUI_CMD_PLC_READ_NODE == g_sys_ctrl.plc_state) ||
-               (GUI_CMD_PLC_R2L == g_sys_ctrl.plc_state))
+            if((PLC_STATE_READ_NODE == g_sys_ctrl.plc_state) ||
+               (PLC_STATE_R2L == g_sys_ctrl.plc_state))
             {
                 LCD_BL_OFF();
             }
@@ -677,7 +684,7 @@ typedef enum
     CHECK_INFO_KEY,
     CHECK_INFO_POWER,
     MAX_CHECK_INFO,
-} CHECK_INFO_TYPE;
+} CHECK_INFO;
 
 typedef struct _check_info_pos
 {

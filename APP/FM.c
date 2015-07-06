@@ -427,7 +427,7 @@ u8 trm_msg_record(u8 msg_type)
 
     if((TRM_MSG_RECV == msg_type) &&
        (CHANNEL_PLC == g_rom_para.channel) &&
-       (GUI_CMD_PLC_READ_NODE == g_sys_ctrl.plc_state))
+       (PLC_STATE_READ_NODE == g_sys_ctrl.plc_state))
     {
         return (FALSE);
     }

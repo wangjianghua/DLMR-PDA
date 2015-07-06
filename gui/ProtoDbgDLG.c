@@ -66,11 +66,11 @@
 
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { WINDOW_CreateIndirect, "cps",       ID_WINDOW_0,  0,   0,   240, 295, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, RoutTab,     ID_BUTTON_0,  6,   8,  80,  20, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, DataSignBtn, ID_BUTTON_1,  144, 8,  90,  20, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, Send,        ID_BUTTON_2,  6,   267, 55,  25, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, Msg,         ID_BUTTON_3,  80,  267, 80,  25, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, Quit,        ID_BUTTON_4,  178, 266, 55,  25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, RoutTab,     ID_BUTTON_0,  9,   10,  92,  25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, DataSignBtn, ID_BUTTON_1,  139, 10,  92,  25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, Send,        ID_BUTTON_2,  10,   262, 55, 25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, Msg,         ID_BUTTON_3,  75,  262, 90,  25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, Quit,        ID_BUTTON_4,  175,  262, 55, 25, 0, 0x0, 0 },
 
   { TEXT_CreateIndirect, Speed ,        ID_TEXT_0,    8,   47,  80,  20, 0, 0x0, 0 },
   { TEXT_CreateIndirect, TarAddr,       ID_TEXT_1,    8,   79,  110, 20, 0, 0x0, 0 },
@@ -211,14 +211,14 @@ static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
         ERR_NOTE(g_hWin_ProtoDbg,GUI_MSBOX_ADDR_ERROR);
         return DEV_ERROR;
     }    
-    //g_rom_para.plcProtocol = DL645_07;
+    //g_rom_para.plcProtocol = DL645_2007;
 
 
     hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_3);
     //g_gui_para.g_datasign = EDIT_GetValue(pMsg->hWin);
     EDIT_GetText(hItem, tb, 8 + 1);
 
-    if(g_rom_para.protocol == DL645_07)
+    if(g_rom_para.protocol == DL645_2007)
         len = DL645_07_DATA_ITEM_LEN;
     else
         len = DL645_97_DATA_ITEM_LEN;
@@ -263,7 +263,7 @@ static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
     {
         if(0x13 == g_gui_para.ctlCode)
         {
-            g_gui_para.cmd = GUI_CMD_BROADCAST_READ_ADDR;
+            g_gui_para.cmd = GUI_CMD_BROAD_READ_ADDR;
         }
         else
             g_gui_para.cmd = GUI_CMD_MRW;
@@ -432,11 +432,11 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_2);
     EDIT_SetText(hItem, Readdata);
-     if(g_rom_para.protocol == DL645_07)
+     if(g_rom_para.protocol == DL645_2007)
     {
         g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.protocol][1]; 
     }
-    else if(g_rom_para.protocol == DL645_97)
+    else if(g_rom_para.protocol == DL645_1997)
     {
         g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.protocol][1]; 
     }
@@ -549,7 +549,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                      switch(Id)
                      {
                          case ID_EDIT_0:
-                             g_hWin_speed = CreateSpeed(g_hWin_ProtoDbg);
+                             g_hWin_freq = CreateSpeed(g_hWin_ProtoDbg);
                              break;
                              
                          case ID_EDIT_1:
@@ -590,7 +590,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
               case ID_EDIT_0:
                 if(key_num==GUI_KEY_ENTER)
                 {
-                  g_hWin_speed = CreateSpeed(g_hWin_ProtoDbg);
+                  g_hWin_freq = CreateSpeed(g_hWin_ProtoDbg);
                 }
                 break;
                 

@@ -50,7 +50,7 @@ char DataSign_Text[TEXT_LEN]; //listview单元格中的文本内容
 */
 
 
-static const char _acFlagItems[][DL645_07+1][10] = 
+static const char _acFlagItems[][2][10] = 
 {
     { "9010", "00010000"},
     { "9020", "00020000"},
@@ -68,8 +68,8 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { WINDOW_CreateIndirect,     NULL,     ID_WINDOW_0,   0,   0,   240, 295, 0, 0x0, 0 },
   { LISTVIEW_CreateIndirect,   NULL,     ID_LISTVIEW_0, 8,   50,  225, 203, 0, 0x0, 0 },
   { TEXT_CreateIndirect,       DataSign, ID_TEXT_1,     13,  31,  80,  20,  0, 0x0, 0 },
-  { BUTTON_CreateIndirect,     Confirm,  ID_BUTTON_0,   8,   264, 55,  25,  0, 0x0, 0 },
-  { BUTTON_CreateIndirect,     Quit,   ID_BUTTON_1,   175, 264, 55,  25,  0, 0x0, 0 },
+  { BUTTON_CreateIndirect,     Confirm,  ID_BUTTON_0,   10,   262, 55, 25,  0, 0x0, 0 },
+  { BUTTON_CreateIndirect,     Quit,   ID_BUTTON_1,   175,  262, 55, 25,  0, 0x0, 0 },
   // USER START (Optionally insert additional widgets)
   // USER END
 };
@@ -135,9 +135,9 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     LISTVIEW_SetAutoScrollV(hItem,1);
     while (_ReadMeterProj[i][0]) 
     {
-        if(g_rom_para.protocol >  DL645_07)
+        if(g_rom_para.protocol >  DL645_2007)
         {
-            g_rom_para.protocol =  DL645_07;
+            g_rom_para.protocol =  DL645_2007;
         }
         if(_acFlagItems[i][g_rom_para.protocol][0])
         {

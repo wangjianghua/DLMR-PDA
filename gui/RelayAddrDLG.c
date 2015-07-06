@@ -62,15 +62,15 @@
 
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { WINDOW_CreateIndirect,   NULL,       ID_WINDOW_0,   0,   0,   240, 295, 0, 0x0,  0 },
-  { EDIT_CreateIndirect,     NULL,       ID_EDIT_0,     86,  15,  144, 20,  0, 0x64, 0 },  
+  { EDIT_CreateIndirect,     NULL,       ID_EDIT_0,     88,  15,  144, 20,  0, 0x64, 0 },  
   { BUTTON_CreateIndirect,   StartRoute, ID_BUTTON_0,   8,   43,  95,  28,  0, 0x0,  0 },
-  { BUTTON_CreateIndirect,   Add,        ID_BUTTON_1,   135, 44,  95,  28,  0, 0x0,  0 },  
+  { BUTTON_CreateIndirect,   Add,        ID_BUTTON_1,   137, 43,  95,  28,  0, 0x0,  0 },  
   { TEXT_CreateIndirect,     _RelayAddr, ID_TEXT_0,     5,   18,  76,  20,  0, 0x0,  0 },
   { BUTTON_CreateIndirect,   Delete,     ID_BUTTON_2,   8,   82,  95,  28,  0, 0x0,  0 },
-  { BUTTON_CreateIndirect,   Modify,     ID_BUTTON_5,   135, 82,  95,  28,  0, 0x0,  0 },
+  { BUTTON_CreateIndirect,   Modify,     ID_BUTTON_5,   137, 82,  95,  28,  0, 0x0,  0 },
   { LISTVIEW_CreateIndirect, NULL,       ID_LISTVIEW_0, 8,   116, 224, 144, 0, 0x0,  0 },
-  { BUTTON_CreateIndirect,   Save,       ID_BUTTON_3,   8,   264, 55,  25,  0, 0x0,  0 },
-  { BUTTON_CreateIndirect,   Quit,       ID_BUTTON_4,   167, 264, 55,  25,  0, 0x0,  0 },
+  { BUTTON_CreateIndirect,   Save,       ID_BUTTON_3,   10,   262, 55, 25,  0, 0x0,  0 },
+  { BUTTON_CreateIndirect,   Quit,       ID_BUTTON_4,   175,  262, 55, 25,  0, 0x0,  0 },
   
 };
 
@@ -122,7 +122,9 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     WM_DisableWindow(hItem);
     
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_0);
+    BUTTON_SetBkColor(hItem,0,GUI_CYAN);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
+    
     if(PLC_ROUTE_ON == g_sys_ctrl.sysUseRoute)
     {
         BUTTON_SetText(hItem, AlreadyStart);
@@ -134,9 +136,11 @@ static void _init_dialog(WM_MESSAGE * pMsg)
 
     
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_1);
+    BUTTON_SetBkColor(hItem,0,GUI_CYAN);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
     
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_2);
+    BUTTON_SetBkColor(hItem,0,GUI_CYAN);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
      
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_3);
@@ -148,7 +152,9 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
     
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_5);
+    BUTTON_SetBkColor(hItem,0,GUI_CYAN);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
+    
     //
     // Initialization of 'Listview'
     //

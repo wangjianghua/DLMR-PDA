@@ -13,7 +13,7 @@ ROM_PARA g_rom_para =
     SYS_BEEP_ON,        //蜂鸣器开关
     4000,               //接受数据延时
     1000,               //执行时间
-    DL645_07,           //规约
+    DL645_2007,         //规约
     CHANNEL_PLC,        //通道
     BAUD_RATE_9600,     //波特率
     0xFA,               //前导符
@@ -38,7 +38,7 @@ const ROM_PARA g_rom_para_default =
     SYS_BEEP_ON,        //蜂鸣器开关
     4000,               //接受数据延时
     1000,               //执行时间
-    DL645_07,           //规约
+    DL645_2007,         //规约
     CHANNEL_PLC,        //通道
     BAUD_RATE_9600,     //波特率
     0xFA,               //前导符
@@ -264,11 +264,11 @@ void DEV_Init(void)
 
     memcpy(g_sys_ctrl.recentMeterAddr, c_test_addr, 6);
 
-    if(DL645_07 == g_rom_para.protocol)
+    if(DL645_2007 == g_rom_para.protocol)
     {
         memcpy(g_sys_ctrl.defaultDataFlag, c_default_dataflag, 4);
     }
-    else if(DL645_97 == g_rom_para.protocol)
+    else if(DL645_1997 == g_rom_para.protocol)
     {
         memcpy(g_sys_ctrl.defaultDataFlag, c_97_dataflag, 2);
     }
@@ -281,7 +281,7 @@ void DEV_Init(void)
 
     g_sys_ctrl.sd_format_flag = FALSE;
 
-    g_sys_ctrl.plc_state = GUI_CMD_PLC_L2R;
+    g_sys_ctrl.plc_state = PLC_STATE_L2R;
 }
 
 void dev_para_recover(void)

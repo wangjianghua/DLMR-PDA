@@ -57,7 +57,7 @@ typedef enum
     MSG_STATE_IDLE = 0,
     MSG_STATE_SENDING,
     MSG_STATE_RECEIVED
-} MSG_STATE_TYPE; //华兄
+} MSG_STATE; //华兄
 
 typedef enum
 {
@@ -65,7 +65,7 @@ typedef enum
     RECV_RES_SUCC,
     RECV_RES_INVALID,
     RECV_RES_TIMEOUT
-} RECV_RES_TYPE; //华兄
+} RECV_RES; //华兄
 
 typedef enum
 {
@@ -73,8 +73,8 @@ typedef enum
     TRM_MSG_SEND,
     TRM_MSG_RECV,
     TRM_MSG_PLC_MONITOR,
-    MAX_TRM_MSG_TYPE
-} TRM_MSG_TYPE; //华兄
+    MAX_TRM_MSG
+} TRM_MSG; //华兄
 
 #define FILE_NAME_LEN           12
 #define FILE_NUM_LEN             4
