@@ -35,6 +35,9 @@
 #define RF_RECV_BUF              g_rf_para.rx.buf
 #define RF_RECV_LEN              g_rf_para.rx.rx_len
 
+#define PLC_FREQ_270KHz_PREAMBLE    0xFC
+#define PLC_FREQ_421KHz_PREAMBLE    0xFA
+
 #define IR_PREAMBLE           0xFE
 
 #define PLC_270_III              0
@@ -73,7 +76,6 @@ typedef enum
     TRM_MSG_SEND,
     TRM_MSG_RECV,
     TRM_MSG_PLC_MONITOR,
-    MAX_TRM_MSG
 } TRM_MSG; //ЛЊаж
 
 #define FILE_NAME_LEN           12

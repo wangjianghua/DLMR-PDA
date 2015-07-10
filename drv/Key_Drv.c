@@ -1,5 +1,4 @@
 #include "includes.h"
-#include "key_drv.h"
 
 
 KEY_CTRL g_key_ctrl;
@@ -8,10 +7,10 @@ OS_EVENT *g_mbox_chk_key; //ЛЊаж
 #define ID_WINDOW_0             (GUI_ID_USER + 0x00)
 #define ID_BUTTON_0             (GUI_ID_USER + 0x01)
 #define ID_BUTTON_1             (GUI_ID_USER + 0x02)
-#define ID_EDIT_0             (GUI_ID_USER + 0x03)
-#define ID_EDIT_1             (GUI_ID_USER + 0x04)
-#define ID_TEXT_0             (GUI_ID_USER + 0x05)
-#define ID_TEXT_1             (GUI_ID_USER + 0x06)
+#define ID_EDIT_0               (GUI_ID_USER + 0x03)
+#define ID_EDIT_1               (GUI_ID_USER + 0x04)
+#define ID_TEXT_0               (GUI_ID_USER + 0x05)
+#define ID_TEXT_1               (GUI_ID_USER + 0x06)
 
 
 

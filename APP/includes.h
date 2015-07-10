@@ -149,37 +149,6 @@ typedef __I uint8_t vuc8;   /*!< Read Only */
 #define EWARM_OPTIMIZATION_EN          1u
 
 //extern GUI_CONST_STORAGE GUI_FONT GUI_FontPDAFontSong;
-
-
-extern WM_HWIN g_hWin_menu;
-extern WM_HWIN g_hWin_para;
-extern WM_HWIN g_hWin_ProtoDbg;
-
-extern WM_HWIN g_hWin_DataSign;   //数据标识 
-extern WM_HWIN g_hWin_relay;      //中继地址设置
-extern WM_HWIN g_hWin_msg;       //消息日志 
-
-
-extern WM_HWIN g_hWin_monitor;  //监控
-extern WM_HWIN g_hWin_ReadMeter; //常用抄表
-extern WM_HWIN g_hWin_PLC; // 载波功能设置
-
-
-extern WM_HWIN g_hWin_task;
-extern WM_HWIN g_hWin_about; //关于
-extern WM_HWIN g_hWin_TimeSet; //时间设置
-extern WM_HWIN g_hWin_SysInfo;
-extern WM_HWIN g_hWin_Err;
-
-extern WM_HWIN g_hWin_ReadMeterMsg;
-
-extern WM_HWIN g_hWin_TimeBar;
-extern WM_HWIN g_hWin_Date;
-
-extern WM_HWIN g_hWin_Input;
-extern WM_HWIN g_hWin_freq;
-extern WM_HWIN g_hWin_AdvanSet;
-extern WM_HWIN g_hWin_SDInfo;   //存储卡信息
 //extern int test_multiedit;
 //extern const unsigned char _aclogo[4515UL + 1];//jpeg图片
 
@@ -200,4 +169,3 @@ extern char DataSign_Text[TEXT_LEN];//??????????,???????
 
 
 #endif
-

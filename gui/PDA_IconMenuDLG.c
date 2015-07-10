@@ -75,11 +75,10 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { WINDOW_CreateIndirect,  NULL,           ID_WINDOW_0,  0,   0, 240, 25, 0, 0x0, 0 },
   { TEXT_CreateIndirect,    " ",            ID_TEXT_0,    3,   4, 40,  15, 0, 0x0, 0 }, //规约
   { TEXT_CreateIndirect,    " " ,           ID_TEXT_1,    55,  4, 50,  15, 0, 0x0, 0 }, //通道
- 
-  //{ TEXT_CreateIndirect,    " " ,           ID_TEXT_5,    75,  3, 35,  15, 0, 0x0, 0 }, //beep
-  { TEXT_CreateIndirect,    "",       ID_TEXT_6,    110, 5, 40,  15, 0, 0x0, 0 }, //内存卡
-  { TEXT_CreateIndirect,    DownloadIcon,   ID_TEXT_2,    156, 4, 17,  17, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,    UploadIcon,     ID_TEXT_3,    166, 4, 17,  17, 0, 0x0, 0 },
+  //{ TEXT_CreateIndirect,    " " ,           ID_TEXT_5,    75,  3, 35,  15, 0, 0x0, 0 }, //蜂鸣器
+  { TEXT_CreateIndirect,    " ",            ID_TEXT_6,    110, 5, 40,  15, 0, 0x0, 0 }, //内存卡
+  { TEXT_CreateIndirect,    DownloadIcon,   ID_TEXT_2,    156, 4, 17,  17, 0, 0x0, 0 }, //下行
+  { TEXT_CreateIndirect,    UploadIcon,     ID_TEXT_3,    166, 4, 17,  17, 0, 0x0, 0 }, //上行
   { TEXT_CreateIndirect,    " ",            ID_TEXT_4,    196, 4, 42,  25, 0, 0x0, 0 }, //电池电量
 };
 
@@ -408,7 +407,7 @@ static void _cbTaskDialog(WM_MESSAGE * pMsg)
         {
             if(PLC_STATE_MONITOR == g_sys_ctrl.plc_state)
             {
-                TEXT_SetText(hItem, "PLC-L");
+                TEXT_SetText(hItem, "PLC-M");
             }
             else if(PLC_STATE_METER_READ == g_sys_ctrl.plc_state)
             {

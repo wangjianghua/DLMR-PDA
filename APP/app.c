@@ -124,9 +124,7 @@ static void SystemClock_Config(void)
 
 int  main(void)
 {
-#if (OS_TASK_NAME_EN > 0)
     INT8U  err;
-#endif   
 
 
     BSP_IntDisAll();                                            /* Disable all interrupts.                              */
@@ -147,9 +145,7 @@ int  main(void)
                     (void           *) 0,
                     (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
 
-#if (OS_TASK_NAME_EN > 0)
     OSTaskNameSet(APP_CFG_TASK_START_PRIO, "Start", &err);
-#endif
 
     OSStart();                                                  /* Start multitasking (i.e. give control to uC/OS-II)   */
 }
@@ -170,48 +166,11 @@ int  main(void)
 *********************************************************************************************************
 */
 
-WM_HWIN g_hWin_menu;
-WM_HWIN g_hWin_para;
-WM_HWIN g_hWin_ProtoDbg; //  通信规约调试
-
-
-WM_HWIN g_hWin_monitor;  //监控
-WM_HWIN g_hWin_ReadMeter; //常用抄表
-WM_HWIN g_hWin_PLC; // 载波功能设置
-WM_HWIN g_hWin_DataSign; //数据标识
-WM_HWIN g_hWin_relay;      //中继地址设置
-WM_HWIN g_hWin_msg;       //消息日志 
-
-WM_HWIN g_hWin_ReadMeterMsg;//抄表的消息记录
-
-WM_HWIN g_hWin_task;//任务栏
-WM_HWIN g_hWin_about; //关于
-
-WM_HWIN g_hWin_TimeSet; //时间设置
-
-WM_HWIN g_hWin_SysInfo;
-WM_HWIN g_hWin_Err;
-
-WM_HWIN g_hWin_TimeBar;  //主页时间
-WM_HWIN g_hWin_Date;     //显示日期
-WM_HWIN g_hWin_Input;    //各种输入小框体
-WM_HWIN g_hWin_freq;
-WM_HWIN g_hWin_AdvanSet;  //高级设置
-WM_HWIN g_hWin_SDInfo;   //存储卡信息
-
-//int test_multiedit;
-
 u8 rf_int_status[8];
 u8 rf_part_info[8];
 u8 rf_device_state[2];
 u8 rf_device_id[8];
 extern u8 g_get_pro[4];
-
-int G_II;
-
-//uc8 g_testString[] = "Hello \xe7\xa1\xae! \n";
-
-//uc16 g_16string [] = {0x53D6, 0x56DE, 0x62,'\r\n',0};
 
 void APP_Shutdown()
 {
@@ -256,36 +215,41 @@ void APP_Wakeup()
 #if (EWARM_OPTIMIZATION_EN > 0u)
 #pragma optimize = low
 #endif
-void APP_StartButtonTest()
+void APP_BootProc(void)
 {
-    u32 keyCnt = 0;;
+    INT32U key_press_count = 0;
+
+    
     while(1)
     {
-        OSTimeDly(20);
-        if(GPIO_PIN_RESET == HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_11))
+        OSTimeDlyHMSM(0, 0, 0, 20);
+        
+        if(GPIO_PIN_RESET == GET_KEY_PWR_STATE())
         {
-            keyCnt++;
-            if(keyCnt > 80)
+            key_press_count++;
+            
+            if(key_press_count > 80)
             {
                 SYS_PWR_ON();
-                //g_sys_ctrl.power_stat = SYS_POWER_ON;
-                OSTimeDly(20);
+                
+                OSTimeDlyHMSM(0, 0, 0, 20);
+                
                 return;                
             }
         }
         else
         {
             APP_Shutdown();
-            //g_sys_ctrl.power_stat = SYS_POWER_OFF;
-            keyCnt = 0;
+            
+            key_press_count = 0;
 
-            if(GET_USB_STATE() == 0)
+            if(GPIO_PIN_RESET == GET_USB_STATE())
             {
                 return;
             }
             else
             {
-                DEBUG_PRINT(("Power error!\n")); //错误处理
+                DEBUG_PRINT(("Boot error!\n"));
                 
                 while(1)
                 {
@@ -330,7 +294,7 @@ static  void  App_TaskStart (void *p_arg)
     OSStatInit();                                               /* Determine CPU capacity                                   */
 #endif
 
-    APP_StartButtonTest();
+    APP_BootProc();
 
     BSP_IWDG_Init();
     
@@ -399,11 +363,9 @@ static  void  App_TaskGUI (void *p_arg)
     unsigned char timebuf[10];
     unsigned char timebuf_nosec[6];
     unsigned char timebuf_date[11];
-    int i = 0;
-    int j = 0;//读取电压值计数
+    int n = 0;//读取电压值计数
     u32 val = 0; //电压
     INT32U count = 0;
-    OS_CPU_SR  cpu_sr; 
 
 
     (void)p_arg;
@@ -419,6 +381,38 @@ static  void  App_TaskGUI (void *p_arg)
     while (DEF_TRUE) {                                          /* Task body, always written as an infinite loop.           */
         GUI_Exec();
 
+        if(n < 10)
+        {
+            val += BSP_ADC_ReadPwr();
+            //检测到USB并且电没有充满的时候，充电标志闪烁,
+            if((GPIO_PIN_RESET == GET_USB_STATE())&&(GPIO_PIN_SET == USB_CHARGE_CHK()))
+            {
+                TSK_Battery_Charge(n);
+            }
+            n++;
+        }
+        else if(n >= 10)
+        {
+            g_sys_ctrl.pwrValue = val/10;
+            if((GPIO_PIN_SET == GET_USB_STATE())||(GPIO_PIN_RESET == USB_CHARGE_CHK()))
+            {
+                Battery_State(g_sys_ctrl.pwrValue);
+            }
+            n = 0;
+            val = 0;
+            
+            if(g_hWin_SysInfo >0)
+            {
+                EDIT_SetFloatValue(SID_GetVoltage(),((float)g_sys_ctrl.pwrValue*3.3)/2048);
+            }
+           
+            if((((float)g_sys_ctrl.pwrValue * 3.3) / 2048 * 10) <= 30)    
+            {
+                ERR_NOTE(g_hWin_menu, GUI_MSBOX_LOWVTG_ERROR);
+                APP_Shutdown();
+            }
+        }
+
         if(g_hWin_monitor > 0)
         {
             if((COUNTDOWN_ON == g_sys_ctrl.sysCtdFlag) && (PLC_STATE_READ_NODE == g_sys_ctrl.plc_state))
@@ -426,10 +420,8 @@ static  void  App_TaskGUI (void *p_arg)
                 hItem = MNT_GetReadNope();
                 BUTTON_SetText(hItem, MND_reading);
                 
-                if(i++ >= 10)
-                {
-                    i = 0;
-                    
+                if(!(count % 10))
+                {                    
                     hItem = MNT_GetTime();
                     EDIT_SetValue(hItem,g_sys_ctrl.sysCtdVal--);
                     
@@ -446,39 +438,6 @@ static  void  App_TaskGUI (void *p_arg)
             }
         }
 
-        if(j < 10)
-        {
-            val += BSP_ADC_ReadPwr();
-            //检测到USB并且电没有充满的时候，充电标志闪烁,
-            if((GPIO_PIN_RESET == GET_USB_STATE())&&(GPIO_PIN_SET == USB_CHARGE_CHK()))
-            {
-                TSK_Battery_Charge(j);
-            }
-            j++;
-        }
-        else if(j >= 10)
-        {
-            g_sys_ctrl.pwrValue = val/10;
-            if((GPIO_PIN_SET == GET_USB_STATE())||(GPIO_PIN_RESET == USB_CHARGE_CHK()))
-            {
-                Battery_State(g_sys_ctrl.pwrValue);
-            }
-            j = 0;
-            val = 0;
-            
-            if(g_hWin_SysInfo >0)
-            {
-                EDIT_SetFloatValue(SID_GetVoltage(),(g_sys_ctrl.pwrValue*3.3)/2048);
-            }
-           
-            if((g_sys_ctrl.pwrValue*3.3)/2048 <= 3.0)
-            {
-                ERR_NOTE(g_hWin_menu,11);
-                APP_Shutdown();
-            }
-            
-        }
-
         if(!(count % 2))
         {
             RTC_ReadTime(g_rtc_time);
@@ -490,7 +449,7 @@ static  void  App_TaskGUI (void *p_arg)
             TEXT_SetText(g_hWin_Date,timebuf_date);
         }
 
-        if(!(count % 5))
+        if(!(count % 10))
         {
             TSK_Disp_Protocol();
 
@@ -536,19 +495,19 @@ static  void  App_TaskPower (void *p_arg)
 {
     (void)p_arg;
     
-    while(GPIO_PIN_RESET == HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_11))
+    while(GPIO_PIN_RESET == GET_KEY_PWR_STATE())
     {
         OSTimeDlyHMSM(0, 0, 0, 10);
     }
     
     while (DEF_TRUE) {
-        if(GPIO_PIN_RESET == HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_11))
+        if(GPIO_PIN_RESET == GET_KEY_PWR_STATE())
         {
             OSTimeDlyHMSM(0, 0, 0, 30);
 
-            if(GPIO_PIN_RESET == HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_11))
+            if(GPIO_PIN_RESET == GET_KEY_PWR_STATE())
             {
-                while(GPIO_PIN_RESET == HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_11))
+                while(GPIO_PIN_RESET == GET_KEY_PWR_STATE())
                 {
                     OSTimeDlyHMSM(0, 0, 0, 10);
                 }
@@ -678,7 +637,7 @@ typedef enum
     CHECK_INFO_LCD,
     CHECK_INFO_SD,
     CHECK_INFO_FATFS,
-    CHECK_INFO_PLC,
+    CHECK_INFO_PLC_FREQ_270KHz,
     CHECK_INFO_RF,
     CHECK_INFO_IR,
     CHECK_INFO_KEY,
@@ -723,7 +682,7 @@ CHECK_INFO_POS g_check_info_pos[] =
     { 0,  6 * 16, 104, 0}, //LCD  
     { 0,  7 * 16, 96, 0}, //SD
     { 0,  8 * 16, 0, 0}, //FATFS   
-    { 0,  9 * 16, 0, 0}, //PLC 
+    { 0,  9 * 16, 0, 0}, //PLC (270KHz)
     { 0, 10 * 16, 0, 0}, //RF   
     { 0, 11 * 16, 0, 0}, //IR 
     { 0, 12 * 16, 192, 0}, //KEY 
@@ -753,7 +712,8 @@ const char *key_chk_msg[KEYBOARD_COL_NUM * KEYBOARD_ROW_NUM + 2] =
 static  void  App_TaskCheck (void *p_arg)
 {
     INT8U i, err, count, index, buf[32];
-    const INT8U plc_read_addr[] = {0xFA, 0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
+    const INT8U plc_freq_270KHz_read_addr[] = {PLC_FREQ_270KHz_PREAMBLE, 0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
+    const INT8U plc_freq_421KHz_read_addr[] = {PLC_FREQ_421KHz_PREAMBLE, 0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
     const INT8U ir_read_addr[] = {IR_PREAMBLE, 0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
     const INT8U rf_addr[] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88};
     const INT8U rf_dl645_read[] = {0x68, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x68, 0x11, 0x04, 0x33, 0x32, 0x34, 0x33, 0xE1, 0x16};
@@ -839,33 +799,33 @@ static  void  App_TaskCheck (void *p_arg)
         GUI_DispStringAt(buf, CHECK_INFO_ERROR_POS, g_check_info_pos[CHECK_INFO_FATFS].y);        
     }
 
-    /* 检测载波 */
+    /* 检测载波，Freq = 270KHz */
     while(OSSemAccept(g_sem_chk_plc));
-    plc_uart_send((INT8U *)plc_read_addr, sizeof(plc_read_addr));
-    OSSemPend(g_sem_chk_plc, 2 * OS_TICKS_PER_SEC, &err);
+    plc_uart_send((INT8U *)plc_freq_270KHz_read_addr, sizeof(plc_freq_270KHz_read_addr));
+    OSSemPend(g_sem_chk_plc, 3 * OS_TICKS_PER_SEC, &err);
     if(OS_ERR_NONE == err)
     {
         if(DL645_FRAME_OK == Analysis_DL645_Frame( g_gui_para.dstAddr, 
                                                   (u8 *)&g_proto_para.dl645_frame_recv,
                                                   &g_proto_para.dl645_frame_stat))
         {
-            GUI_DispStringAt(g_check_info[CHECK_INFO_PLC], g_check_info_pos[CHECK_INFO_PLC].x, g_check_info_pos[CHECK_INFO_PLC].y);
+            GUI_DispStringAt(g_check_info[CHECK_INFO_PLC_FREQ_270KHz], g_check_info_pos[CHECK_INFO_PLC_FREQ_270KHz].x, g_check_info_pos[CHECK_INFO_PLC_FREQ_270KHz].y);
             sprintf(buf, "OK");
-            GUI_DispStringAt(buf, CHECK_INFO_OK_POS, g_check_info_pos[CHECK_INFO_PLC].y); 
+            GUI_DispStringAt(buf, CHECK_INFO_OK_POS, g_check_info_pos[CHECK_INFO_PLC_FREQ_270KHz].y); 
         }
         else
         {
-            GUI_DispStringAt(g_check_info[CHECK_INFO_PLC], g_check_info_pos[CHECK_INFO_PLC].x, g_check_info_pos[CHECK_INFO_PLC].y);
+            GUI_DispStringAt(g_check_info[CHECK_INFO_PLC_FREQ_270KHz], g_check_info_pos[CHECK_INFO_PLC_FREQ_270KHz].x, g_check_info_pos[CHECK_INFO_PLC_FREQ_270KHz].y);
             sprintf(buf, "ERROR");
-            GUI_DispStringAt(buf, CHECK_INFO_ERROR_POS, g_check_info_pos[CHECK_INFO_PLC].y); 
+            GUI_DispStringAt(buf, CHECK_INFO_ERROR_POS, g_check_info_pos[CHECK_INFO_PLC_FREQ_270KHz].y); 
         }
     }
     else
     {
-        GUI_DispStringAt(g_check_info[CHECK_INFO_PLC], g_check_info_pos[CHECK_INFO_PLC].x, g_check_info_pos[CHECK_INFO_PLC].y);
+        GUI_DispStringAt(g_check_info[CHECK_INFO_PLC_FREQ_270KHz], g_check_info_pos[CHECK_INFO_PLC_FREQ_270KHz].x, g_check_info_pos[CHECK_INFO_PLC_FREQ_270KHz].y);
         sprintf(buf, "ERROR");
-        GUI_DispStringAt(buf, CHECK_INFO_ERROR_POS, g_check_info_pos[CHECK_INFO_PLC].y); 
-    }
+        GUI_DispStringAt(buf, CHECK_INFO_ERROR_POS, g_check_info_pos[CHECK_INFO_PLC_FREQ_270KHz].y); 
+    } 
 
     /* 检测射频 */
     while(OSSemAccept(g_sem_chk_rf));
@@ -956,11 +916,11 @@ static  void  App_TaskCheck (void *p_arg)
     {
         OSTimeDlyHMSM(0, 0, 0, 10);
         
-        if(GPIO_PIN_RESET == HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_11))
+        if(GPIO_PIN_RESET == GET_KEY_PWR_STATE())
         {
             OSTimeDlyHMSM(0, 0, 0, 30);
 
-            if(GPIO_PIN_RESET == HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_11))
+            if(GPIO_PIN_RESET == GET_KEY_PWR_STATE())
             {
                 break;
             }
@@ -1061,9 +1021,7 @@ static  void  App_TaskCreate (void)
                     (void           *) 0,
                     (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
 
-#if (OS_TASK_NAME_EN > 0)
     OSTaskNameSet(APP_CFG_TASK_GUI_PRIO, "GUI", &err);
-#endif
 
     OSTaskCreateExt((void (*)(void *)) App_TaskGMP,
                     (void           *) 0,
@@ -1075,9 +1033,7 @@ static  void  App_TaskCreate (void)
                     (void           *) 0,
                     (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
     
-#if (OS_TASK_NAME_EN > 0)
     OSTaskNameSet(APP_CFG_TASK_GMP_PRIO, "GMP", &err);
-#endif
 
     OSTaskCreateExt((void (*)(void *)) App_TaskKey,              
                     (void           *) 0,
@@ -1089,9 +1045,7 @@ static  void  App_TaskCreate (void)
                     (void           *) 0,
                     (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
 
-#if (OS_TASK_NAME_EN > 0)
     OSTaskNameSet(APP_CFG_TASK_KEY_PRIO, "Key", &err);
-#endif
 
     OSTaskCreateExt((void (*)(void *)) App_TaskEndTick,
                     (void           *) 0,
@@ -1103,9 +1057,7 @@ static  void  App_TaskCreate (void)
                     (void           *) 0,
                     (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
 
-#if (OS_TASK_NAME_EN > 0)
     OSTaskNameSet(APP_CFG_TASK_END_TICK_PRIO, "EndTick", &err);
-#endif
 
     OSTaskCreateExt((void (*)(void *)) App_TaskEndProc,
                     (void           *) 0,
@@ -1117,9 +1069,7 @@ static  void  App_TaskCreate (void)
                     (void           *) 0,
                     (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
 
-#if (OS_TASK_NAME_EN > 0)
     OSTaskNameSet(APP_CFG_TASK_END_PROC_PRIO, "EndProc", &err);      
-#endif
 
     OSTaskCreateExt((void (*)(void *)) App_TaskProto,
                     (void           *) 0,
@@ -1131,9 +1081,7 @@ static  void  App_TaskCreate (void)
                     (void           *) 0,
                     (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
 
-#if (OS_TASK_NAME_EN > 0)
     OSTaskNameSet(APP_CFG_TASK_PROTO_PRIO, "Protocol", &err);    
-#endif
 
     OSTaskCreateExt((void (*)(void *)) App_TaskPower,
                     (void           *) 0,
@@ -1145,9 +1093,7 @@ static  void  App_TaskCreate (void)
                     (void           *) 0,
                     (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
 
-#if (OS_TASK_NAME_EN > 0)
     OSTaskNameSet(APP_CFG_TASK_POWER_PRIO, "Power", &err);    
-#endif
 
     OSTaskCreateExt((void (*)(void *)) App_TaskPC,
                     (void           *) 0,
@@ -1159,9 +1105,7 @@ static  void  App_TaskCreate (void)
                     (void           *) 0,
                     (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
 
-#if (OS_TASK_NAME_EN > 0)
     OSTaskNameSet(APP_CFG_TASK_PC_PRIO, "PC", &err);    
-#endif
 
     OSTaskCreateExt((void (*)(void *)) App_TaskRS485,
                     (void           *) 0,
@@ -1173,9 +1117,7 @@ static  void  App_TaskCreate (void)
                     (void           *) 0,
                     (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
 
-#if (OS_TASK_NAME_EN > 0)
     OSTaskNameSet(APP_CFG_TASK_RS485_PRIO, "RS485", &err);    
-#endif
 
     OSTaskCreateExt((void (*)(void *)) App_TaskCheck,
                     (void           *) 0,
@@ -1187,8 +1129,6 @@ static  void  App_TaskCreate (void)
                     (void           *) 0,
                     (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
 
-#if (OS_TASK_NAME_EN > 0)
-    OSTaskNameSet(APP_CFG_TASK_CHECK_PRIO, "Check", &err);    
-#endif
+    OSTaskNameSet(APP_CFG_TASK_CHECK_PRIO, "Check", &err);  
 }
 

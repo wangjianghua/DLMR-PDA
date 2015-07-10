@@ -37,11 +37,11 @@
 
 typedef struct
 {
-	u8	Status; //帧状态: 0非法、1合法、2地址符合、3地址不符合
-	u8	protocol; //协议
-	u8 	C; //645控制码
-	u8	ID_Leng; //表示码长度
-}DL645_Frame_Stat_C;
+	u8 Status; //帧状态: 0非法、1合法、2地址符合、3地址不符合
+	u8 protocol; //协议
+	u8 C; //645控制码
+	u8 ID_Leng; //表示码长度
+} DL645_Frame_Stat_C;
 
 #pragma pack(1)
 typedef struct

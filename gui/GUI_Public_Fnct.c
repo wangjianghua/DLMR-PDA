@@ -2,6 +2,36 @@
 #include "WIDGET.h"
 #include "DIALOG.h"
 
+
+WM_HWIN g_hWin_menu;
+WM_HWIN g_hWin_para;
+WM_HWIN g_hWin_ProtoDbg; //通信规约调试
+
+WM_HWIN g_hWin_monitor;  //监控
+WM_HWIN g_hWin_ReadMeter; //常用抄表
+WM_HWIN g_hWin_PLC; //载波功能设置
+WM_HWIN g_hWin_DataSign; //数据标识
+WM_HWIN g_hWin_relay;      //中继地址设置
+WM_HWIN g_hWin_msg;       //消息日志 
+
+WM_HWIN g_hWin_ReadMeterMsg; //抄表的消息记录
+
+WM_HWIN g_hWin_task; //任务栏
+WM_HWIN g_hWin_about; //关于
+
+WM_HWIN g_hWin_TimeSet; //时间设置
+
+WM_HWIN g_hWin_SysInfo;
+WM_HWIN g_hWin_Err;
+
+WM_HWIN g_hWin_TimeBar;  //主页时间
+WM_HWIN g_hWin_Date;     //显示日期
+WM_HWIN g_hWin_Input;    //各种输入小框体
+WM_HWIN g_hWin_freq;
+WM_HWIN g_hWin_AdvanSet;  //高级设置
+WM_HWIN g_hWin_SDInfo;   //存储卡信息
+
+
 u8 s_prbf[512];
 
 

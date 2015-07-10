@@ -185,13 +185,15 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 WM_ShowWindow(g_hWin_TimeBar);
                 WM_ShowWindow(g_hWin_Date);
                 WM_SetFocus(g_hWin_menu);
-   
-                g_gui_para.cmd = GUI_CMD_PLC_M2R;
-                g_gui_para.state = GUI_STATE_NONE;
-                g_sys_ctrl.sysCtdVal = COUNT_VALUE ;
-                g_sys_ctrl.sysCtdFlag = COUNTDOWN_OFF;
-                //g_sys_ctrl.monitorFlag = PLC_MONITOR_OFF;
-                OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
+
+                if(CHANNEL_PLC == g_rom_para.channel)
+                {
+                    g_gui_para.cmd = GUI_CMD_PLC_M2R;
+                    g_gui_para.state = GUI_STATE_IDLE;
+                    g_sys_ctrl.sysCtdVal = COUNT_VALUE;
+                    g_sys_ctrl.sysCtdFlag = COUNTDOWN_OFF;
+                    OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
+                }
                 break;
                 
             case '#': //¶ÁÔØ²¨½Úµã

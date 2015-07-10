@@ -1,8 +1,9 @@
 #ifndef __PHRASE_H__
-
 #define __PHRASE_H__
 
+
 #include "GUI_Type.h"
+
 //≤Œ ˝…Ë÷√
 extern const char CommParaSet[];
 extern const char RevDataDelay[];
@@ -196,8 +197,5 @@ extern const char HardwareErr[];
 
 extern const char CmpName[] ;
 
-#endif /*__PHRASE_H__*/
 
-
-
-
+#endif

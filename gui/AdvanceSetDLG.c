@@ -83,7 +83,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   
   { BUTTON_CreateIndirect, "F2",          ID_BUTTON_3, 130,   100, 100,  20,  0, 0x0,  0 },
   { BUTTON_CreateIndirect, Save,          ID_BUTTON_0, 10,   262, 55, 25,  0, 0x0,  0 },
-  { BUTTON_CreateIndirect, Quit,          ID_BUTTON_1, 175,  262, 55, 25,  0, 0x0,  0 },
+  { BUTTON_CreateIndirect, Back,          ID_BUTTON_1, 175,  262, 55, 25,  0, 0x0,  0 },
   
   // USER START (Optionally insert additional widgets)
   // USER END

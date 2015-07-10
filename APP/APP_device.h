@@ -4,7 +4,7 @@
 
 #define HARDWARE_VERSION         23
 #define SOFTWARE_VERSION         27
-#define VERSION_DATE     0x20150706
+#define VERSION_DATE     0x20150710
 
 #define BOOT_REQUEST_ACT   0xffffbbcc
 #define BOOT_FINISH_ACT    0xffff0000
@@ -47,8 +47,10 @@ Sector 7 0x0806 0000 - 0x0807 FFFF 128 Kbyte
 #define SYS_TASK_FORMAT_DISK     0X00000001
 
 
-#define GET_USB_STATE()    HAL_GPIO_ReadPin(GPIOG,GPIO_PIN_13)
-#define USB_CHARGE_CHK()   HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_2)
+#define GET_USB_STATE()         HAL_GPIO_ReadPin(GPIOG,GPIO_PIN_13)
+#define USB_CHARGE_CHK()        HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_2)
+
+#define GET_KEY_PWR_STATE()     HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_11)
 
 #define SYS_POWER_ON        0
 #define SYS_POWER_OFF       1

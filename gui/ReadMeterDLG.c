@@ -505,7 +505,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 WM_ShowWindow(g_hWin_Date);
                 WM_SetFocus(g_hWin_menu);
                 RMD_key_cnt = 0;
-                g_gui_para.state = GUI_STATE_NONE;
+                g_gui_para.state = GUI_STATE_IDLE;
                 break;
                 
             case GUI_KEY_F1: /*ªÒ»°±Ì∫≈*/
@@ -620,7 +620,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 WM_ShowWindow(g_hWin_Date);
                 WM_SetFocus(g_hWin_menu);
                 RMD_key_cnt = 0;
-                g_gui_para.state = GUI_STATE_NONE;
+                g_gui_para.state = GUI_STATE_IDLE;
             }
             break;
             

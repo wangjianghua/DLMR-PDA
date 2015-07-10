@@ -34,7 +34,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { LISTBOX_CreateIndirect, "Listbox",  ID_LISTBOX_1, 5,   134, 228, 122, 0, 0x0, 0 },
   { TEXT_CreateIndirect,    FE_Speed,   ID_TEXT_1,    8,   114, 150, 20,  0, 0x0, 0 },
   { BUTTON_CreateIndirect,  FreqSet,    ID_BUTTON_0,  10,   262, 55, 25,  0, 0x0, 0 },
-  { BUTTON_CreateIndirect,  Quit,       ID_BUTTON_1,  175,  262, 55, 25,  0, 0x0, 0 },
+  { BUTTON_CreateIndirect,  Back,       ID_BUTTON_1,  175,  262, 55, 25,  0, 0x0, 0 },
   // USER START (Optionally insert additional widgets)
   // USER END
 };

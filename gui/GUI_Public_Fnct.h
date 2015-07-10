@@ -4,6 +4,37 @@
 
 #include "GUI.h"
 
+extern WM_HWIN g_hWin_menu;
+extern WM_HWIN g_hWin_para;
+extern WM_HWIN g_hWin_ProtoDbg;
+
+extern WM_HWIN g_hWin_DataSign;   //数据标识 
+extern WM_HWIN g_hWin_relay;      //中继地址设置
+extern WM_HWIN g_hWin_msg;       //消息日志 
+
+
+extern WM_HWIN g_hWin_monitor;  //监控
+extern WM_HWIN g_hWin_ReadMeter; //常用抄表
+extern WM_HWIN g_hWin_PLC; // 载波功能设置
+
+
+extern WM_HWIN g_hWin_task;
+extern WM_HWIN g_hWin_about; //关于
+extern WM_HWIN g_hWin_TimeSet; //时间设置
+extern WM_HWIN g_hWin_SysInfo;
+extern WM_HWIN g_hWin_Err;
+
+extern WM_HWIN g_hWin_ReadMeterMsg;
+
+extern WM_HWIN g_hWin_TimeBar;
+extern WM_HWIN g_hWin_Date;
+
+extern WM_HWIN g_hWin_Input;
+extern WM_HWIN g_hWin_freq;
+extern WM_HWIN g_hWin_AdvanSet;
+extern WM_HWIN g_hWin_SDInfo;   //存储卡信息
+
+
 /********************************************
 //
 //   ID of User's Item
@@ -68,14 +99,13 @@
 
 typedef enum
 {
-    GUI_STATE_NONE = 0,
+    GUI_STATE_IDLE = 0,
     GUI_STATE_PARA_SET,
     GUI_STATE_AMR,
     GUI_STATE_PLC_FREQ_SET,  
     GUI_STATE_PROTO_DBG,
     GUI_STATE_PLC_MONITOR,
     GUI_STATE_MEM,
-    MAX_GUI_STATE
 } GUI_STATE; //华兄
 
 typedef enum
@@ -87,7 +117,6 @@ typedef enum
     GUI_CMD_PLC_READ_NODE,
     GUI_CMD_MRW,
     GUI_CMD_ROUTE,
-    MAX_GUI_CMD
 } GUI_CMD; //华兄
 
 typedef enum
@@ -95,7 +124,6 @@ typedef enum
     PLC_STATE_MONITOR = 0,
     PLC_STATE_METER_READ,    
     PLC_STATE_READ_NODE,
-    MAX_PLC_STATE
 } PLC_STATE; //华兄
 
 #define PLC_ROUTE_OFF             0 

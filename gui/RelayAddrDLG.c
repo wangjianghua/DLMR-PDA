@@ -70,7 +70,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { BUTTON_CreateIndirect,   Modify,     ID_BUTTON_5,   137, 82,  95,  28,  0, 0x0,  0 },
   { LISTVIEW_CreateIndirect, NULL,       ID_LISTVIEW_0, 8,   116, 224, 144, 0, 0x0,  0 },
   { BUTTON_CreateIndirect,   Save,       ID_BUTTON_3,   10,   262, 55, 25,  0, 0x0,  0 },
-  { BUTTON_CreateIndirect,   Quit,       ID_BUTTON_4,   175,  262, 55, 25,  0, 0x0,  0 },
+  { BUTTON_CreateIndirect,   Back,       ID_BUTTON_4,   175,  262, 55, 25,  0, 0x0,  0 },
   
 };
 
@@ -177,16 +177,16 @@ static void _init_dialog(WM_MESSAGE * pMsg)
 void RLY_GetParaAddr(WM_MESSAGE *pMsg)
 {
     WM_HWIN hItem;
-    u8 pBuffer[64];
+    u8 buf[64];
     int i ;
     
-    hItem = WM_GetDialogItem(pMsg->hWin ,ID_LISTVIEW_0);
+    hItem = WM_GetDialogItem(pMsg->hWin, ID_LISTVIEW_0);
     g_sys_ctrl.sysAddrLevel = LISTVIEW_GetNumRows(hItem);
 
     for(i = 0; i < g_sys_ctrl.sysAddrLevel; i++)
     {
-        LISTVIEW_GetItemText(hItem, 1, i, pBuffer, 13);
-        GUI_GetMeterAddr(pBuffer,g_gui_para.relayAddr[i]);
+        LISTVIEW_GetItemText(hItem, 1, i, buf, 13);
+        GUI_GetMeterAddr(buf, g_gui_para.relayAddr[i]);
     }    
 }
 

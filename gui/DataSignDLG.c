@@ -69,7 +69,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { LISTVIEW_CreateIndirect,   NULL,     ID_LISTVIEW_0, 8,   50,  225, 203, 0, 0x0, 0 },
   { TEXT_CreateIndirect,       DataSign, ID_TEXT_1,     13,  31,  80,  20,  0, 0x0, 0 },
   { BUTTON_CreateIndirect,     Confirm,  ID_BUTTON_0,   10,   262, 55, 25,  0, 0x0, 0 },
-  { BUTTON_CreateIndirect,     Quit,   ID_BUTTON_1,   175,  262, 55, 25,  0, 0x0, 0 },
+  { BUTTON_CreateIndirect,     Back,   ID_BUTTON_1,   175,  262, 55, 25,  0, 0x0, 0 },
   // USER START (Optionally insert additional widgets)
   // USER END
 };

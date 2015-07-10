@@ -531,7 +531,7 @@ void  App_TaskEndTick (void *p_arg)
             g_sys_ctrl.usb_state = FALSE;
         } 
 
-        if(GPIO_PIN_RESET == HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_11))
+        if(GPIO_PIN_RESET == GET_KEY_PWR_STATE())
         {
             key_press_count++;
             

@@ -104,7 +104,6 @@ u16 rs485_uart_send(u8 *buf, u16 len)
 u16 plc_uart_send(u8 *buf, u16 len)
 {
     P_MSG_INFO  pMsg = NULL;
-    OS_CPU_SR  cpu_sr;  
 
 
     if((NULL == buf) || (0 == len))
@@ -131,7 +130,6 @@ u16 plc_uart_send(u8 *buf, u16 len)
 u16 ir_uart_send(u8 *buf, u16 len)
 {
     P_MSG_INFO  pMsg = NULL;
-    OS_CPU_SR  cpu_sr;  
 
 
     if((NULL == buf) || (0 == len))
@@ -239,7 +237,7 @@ unsigned int IR_postProcess(pvoid h)
     return (TRUE);
 }
 
-u32 DL645_Check_Frame(void)
+u32 Proto_Check_Frame(void)
 {
     if(DL645_FRAME_ERROR == Analysis_DL645_Frame( g_gui_para.dstAddr, 
                                                  (u8 *)&g_proto_para.dl645_frame_recv,
@@ -267,7 +265,7 @@ void Proto_Data_Proc(void)
     u32 len;
     
 
-    if(RECV_RES_SUCC == DL645_Check_Frame())       
+    if(RECV_RES_SUCC == Proto_Check_Frame())       
     {
 
         len = g_proto_para.dl645_frame_recv.L;
@@ -395,8 +393,6 @@ void  App_TaskProto (void *p_arg)
                 }
                 else if(CHANNEL_RF == g_rom_para.channel) //…‰∆µ
                 {
-                    memset(RF_SEND_BUF, 0, sizeof(RF_SEND_BUF));
-
                     g_proto_para.send_len = sizeof(Broad_Read_Addr);
 
                     memcpy(g_proto_para.send_buf, Broad_Read_Addr, g_proto_para.send_len);
@@ -499,7 +495,7 @@ void  App_TaskProto (void *p_arg)
                     {
                         g_sys_ctrl.plc_state = PLC_STATE_MONITOR;
                         
-                        DL645_Check_Frame();
+                        Proto_Check_Frame();
                     }
                     else
                     {
@@ -531,7 +527,7 @@ void  App_TaskProto (void *p_arg)
                     {
                         g_sys_ctrl.plc_state = PLC_STATE_METER_READ;
                         
-                        DL645_Check_Frame();
+                        Proto_Check_Frame();
                     }
                     else
                     {
@@ -559,7 +555,7 @@ void  App_TaskProto (void *p_arg)
 
                     if(OS_ERR_NONE == err)
                     {
-                        DL645_Check_Frame();
+                        Proto_Check_Frame();
                     }
                     else
                     {
@@ -619,7 +615,7 @@ void  App_TaskProto (void *p_arg)
 
                     if(OS_ERR_NONE == err)
                     {
-                        DL645_Check_Frame();
+                        Proto_Check_Frame();
                     }
                     else
                     {

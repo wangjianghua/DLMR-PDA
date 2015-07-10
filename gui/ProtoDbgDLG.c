@@ -492,7 +492,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                      WM_ShowWindow(g_hWin_TimeBar);
                      WM_ShowWindow(g_hWin_Date);
                      WM_SetFocus(g_hWin_menu); 
-                     g_gui_para.state = GUI_STATE_NONE;
+                     g_gui_para.state = GUI_STATE_IDLE;
                      cpt_key_press_cnt=0;
                      break;
                      
@@ -650,7 +650,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                     WM_ShowWindow(g_hWin_TimeBar);
                     WM_ShowWindow(g_hWin_Date);
                     WM_SetFocus(g_hWin_menu); 
-                    g_gui_para.state = GUI_STATE_NONE;
+                    g_gui_para.state = GUI_STATE_IDLE;
                     cpt_key_press_cnt=0;
                 }
                 break;
