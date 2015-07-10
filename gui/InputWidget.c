@@ -104,6 +104,10 @@ void Select_Focus(void)
         WM_SetFocus(g_hWin_about);
     }
     
+    if((g_hWin_SysInfo > 0)&&(g_hWin_SDInfo <= 0))
+    {
+        WM_SetFocus(g_hWin_SysInfo);
+    }
 
     if(g_hWin_SDInfo > 0)
     {
@@ -115,10 +119,6 @@ void Select_Focus(void)
         WM_SetFocus(g_hWin_monitor);
     }
 
-    if(g_hWin_SysInfo > 0)
-    {
-        WM_SetFocus(g_hWin_SysInfo);
-    }
 }
 
 //在按下绿色保存按钮的时候，调用此函数

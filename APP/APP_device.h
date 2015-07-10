@@ -3,7 +3,7 @@
 
 
 #define HARDWARE_VERSION         23
-#define SOFTWARE_VERSION         27
+#define SOFTWARE_VERSION         28
 #define VERSION_DATE     0x20150710
 
 #define BOOT_REQUEST_ACT   0xffffbbcc
