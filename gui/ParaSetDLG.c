@@ -341,8 +341,115 @@ static void _init_dialog(WM_MESSAGE * pMsg)
 
 
 
+void GUI_Refresh_ParaSetDLG(void)
+{
+    WM_HWIN hItem;
+    int i;
+    char tmpBuf[30];
 
+    
+    hItem = WM_GetDialogItem(g_hWin_para, ID_BUTTON_0);
+    BUTTON_SetBkColor(hItem,0,GUI_CYAN);
+    WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
 
+    hItem = WM_GetDialogItem(g_hWin_para, ID_BUTTON_1);
+    BUTTON_SetBkColor(hItem,0,GUI_CYAN);
+    WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
+
+    hItem = WM_GetDialogItem(g_hWin_para, ID_BUTTON_2);
+    BUTTON_SetBkColor(hItem,0,GUI_GREEN);
+    WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
+
+    hItem = WM_GetDialogItem(g_hWin_para, ID_BUTTON_3);
+    BUTTON_SetBkColor(hItem,0,GUI_YELLOW);
+    WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
+
+    for(i=0;i<8;i++)
+    {
+        hItem=WM_GetDialogItem(g_hWin_para,ID_EDIT_0+i);
+        WM_DisableWindow(hItem);
+    }
+    hItem = WM_GetDialogItem(g_hWin_para, ID_EDIT_0);
+    switch(g_rom_para.protocol)
+    {
+        case DL645_2007:
+            EDIT_SetText(hItem, "DL645-07");
+            break;
+        case DL645_1997:
+            EDIT_SetText(hItem, "DL645-97");
+    }
+    
+
+    hItem = WM_GetDialogItem(g_hWin_para, ID_EDIT_1);
+    switch(g_rom_para.channel)
+    {
+        case CHANNEL_IR:
+            EDIT_SetText(hItem,ChannelIR);
+            break;
+          
+        case CHANNEL_PLC:
+            EDIT_SetText(hItem,ChannelPLC);
+            break;
+         
+        case CHANNEL_RF:
+            EDIT_SetText(hItem,ChannelRF);
+            break;
+    }
+    //EDIT_SetBkColor(hItem,0,GUI_GREEN);
+    
+
+    hItem = WM_GetDialogItem(g_hWin_para, ID_EDIT_2);
+    //EDIT_SetText(hItem, "115200");
+    switch(g_rom_para.baudrate)
+    {
+        case BAUD_RATE_1200:
+            EDIT_SetText(hItem,"1200");
+            break;
+        case BAUD_RATE_1500:
+            EDIT_SetText(hItem,"1500");
+            break;
+        case BAUD_RATE_2400:
+            EDIT_SetText(hItem,"2400");
+            break;
+        case BAUD_RATE_4800:
+            EDIT_SetText(hItem,"4800");
+            break;
+        case BAUD_RATE_9600:
+            EDIT_SetText(hItem,"9600");
+            break;
+    }
+    
+    hItem = WM_GetDialogItem(g_hWin_para, ID_EDIT_3);
+    //EDIT_SetText(hItem, "stop");
+    switch(g_rom_para.stopbit)
+    {
+        case ONE_STOPBIT:
+            EDIT_SetText(hItem, "1");
+            break;
+        case TWO_STOPBIT:
+            EDIT_SetText(hItem, "2");
+            break;     
+    }
+
+    hItem = WM_GetDialogItem(g_hWin_para, ID_EDIT_4);
+    //int_to_char(g_rom_para.scrTimeout,tmpBuf,10);
+    EDIT_SetText(hItem, "0000");
+
+    hItem = WM_GetDialogItem(g_hWin_para, ID_EDIT_5);
+    //int_to_char(g_rom_para.meterPassword,tmpBuf,10);
+    EDIT_SetText(hItem, "0000");
+
+    hItem = WM_GetDialogItem(g_hWin_para, ID_EDIT_6);
+    int_to_char(g_rom_para.recvDelayTime,tmpBuf,10);
+    EDIT_SetText(hItem, tmpBuf); 
+    
+    hItem = WM_GetDialogItem(g_hWin_para, ID_EDIT_7);
+    int_to_char(g_rom_para.execInterval,tmpBuf,10);
+    EDIT_SetText(hItem, tmpBuf);
+
+    //hItem = WM_GetDialogItem(g_hWin_para,ID_EDIT_0);
+    //WM_SetFocus(hItem);
+}
 
 
 

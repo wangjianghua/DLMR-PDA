@@ -181,14 +181,19 @@ void ADS_SetFocus(void)
     WM_SetFocus(hItem);
 }
 
-WM_HWIN GUI_Get_AutoSleepTime_Item(void)
-{    
-     return WM_GetDialogItem(g_hWin_AdvanSet, ID_EDIT_0);            
-}
+void GUI_Refresh_AdvanceSetDLG(void)
+{
+    WM_HWIN hItem;
+    u8 tmpBuf[16];
 
-WM_HWIN GUI_Get_AutoShutdownTime_Item(void)
-{    
-     return WM_GetDialogItem(g_hWin_AdvanSet, ID_EDIT_1);            
+    
+    hItem = WM_GetDialogItem(g_hWin_AdvanSet, ID_EDIT_0);
+    sprintf(tmpBuf, "%d", g_rom_para.auto_sleep_time);
+    EDIT_SetText(hItem, tmpBuf);
+    
+    hItem = WM_GetDialogItem(g_hWin_AdvanSet, ID_EDIT_1);
+    sprintf(tmpBuf, "%d", g_rom_para.auto_shutdown_time);
+    EDIT_SetText(hItem, tmpBuf);
 }
 
 static void _cbDialog(WM_MESSAGE * pMsg) {

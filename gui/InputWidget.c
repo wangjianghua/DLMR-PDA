@@ -134,7 +134,7 @@ static void Select_Input_Edit(int  EditNum)
     switch(EditNum)
     {
         case EDIT_SLEEP_TIME:
-            EDIT_GetText(hItem,tmpTextBuf,4);
+            EDIT_GetText(hItem,tmpTextBuf,6);
             g_rom_para.auto_sleep_time = atoi(tmpTextBuf);
             if(g_rom_para.auto_sleep_time < 5)
             {
@@ -146,19 +146,19 @@ static void Select_Input_Edit(int  EditNum)
             break;
             
         case EDIT_PASSWORD:
-            EDIT_GetText(hItem,tmpTextBuf,7);
+            EDIT_GetText(hItem,tmpTextBuf,9);
             //g_rom_para.meterPassword = atoi(tmpTextBuf);
             hItem=CPS_GetPwd();
             break;
             
         case EDIT_RECV_DELAY:
-            EDIT_GetText(hItem,tmpTextBuf,5);
+            EDIT_GetText(hItem,tmpTextBuf,6);
             g_rom_para.recvDelayTime = atoi(tmpTextBuf);
             hItem=CPS_Set_RevDelay();
             break;
 
         case EDIT_BETWEEN_ACT:
-            EDIT_GetText(hItem,tmpTextBuf,5);
+            EDIT_GetText(hItem,tmpTextBuf,6);
             g_rom_para.execInterval = atoi(tmpTextBuf);
             hItem=CPS_Set_BetweenAct();
             break;
@@ -177,7 +177,7 @@ static void Select_Input_Edit(int  EditNum)
             break;
 
         case EDIT_LENGTH:
-            EDIT_GetText(hItem,tmpTextBuf,2);
+            EDIT_GetText(hItem,tmpTextBuf,6);
             hItem=CPT_Set_Length();
             break;
 
@@ -251,7 +251,7 @@ static void Select_Input_Edit(int  EditNum)
             break;
             
         case EDIT_SHUTDOWN_TIME:
-            EDIT_GetText(hItem,tmpTextBuf,4);
+            EDIT_GetText(hItem,tmpTextBuf,6);
             g_rom_para.auto_shutdown_time = atoi(tmpTextBuf);
             if(g_rom_para.auto_shutdown_time < 60)
             {

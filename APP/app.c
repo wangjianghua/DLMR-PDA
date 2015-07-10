@@ -378,6 +378,9 @@ static  void  App_TaskGUI (void *p_arg)
     WM_HideWindow(g_hWin_msg);
     WM_SetFocus(g_hWin_menu);
 
+    g_sys_ctrl.pwrValue = BSP_ADC_ReadPwr();
+    Battery_State(g_sys_ctrl.pwrValue);
+
     while (DEF_TRUE) {                                          /* Task body, always written as an infinite loop.           */
         GUI_Exec();
 
@@ -523,9 +526,11 @@ static  void  App_TaskPower (void *p_arg)
             g_sys_ctrl.shutdown_timeout = 0;
             
             if((PLC_STATE_READ_NODE == g_sys_ctrl.plc_state) ||
-               (PLC_STATE_MONITOR == g_sys_ctrl.plc_state))
+               (PLC_STATE_MONITOR == g_sys_ctrl.plc_state) ||
+               (TRUE == g_sys_ctrl.sd_format_flag))
             {
                 LCD_BL_OFF();
+                LED_SLEEP_ON();
             }
             else
             {

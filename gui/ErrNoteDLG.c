@@ -111,7 +111,6 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
   WM_HWIN hItem;
   int     NCode;
   int     Id;
-  u8      tmp[16];
   FRESULT res;
   FATFS fs;
   // USER START (Optionally insert additional variables)
@@ -153,12 +152,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             case GUI_KEY_GREEN:
                 WM_DeleteWindow(g_hWin_Err);
                 g_hWin_Err = WM_HWIN_NULL;
-                
-                if(g_hWin_SDInfo > 0)
-                {
-                    SYS_ADD_TASK(SYS_TASK_FORMAT_DISK);
-                }
-                
+
                 if((g_hWin_SysInfo > 0) && (g_hWin_SDInfo <= 0))
                 {
                       if(g_rom_para.bootFlag != BOOT_REQUEST_ACT)
@@ -171,21 +165,20 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                       DEV_SoftReset();  
                 }
 
+                if(g_hWin_SDInfo > 0)
+                {
+                    SYS_ADD_TASK(SYS_TASK_FORMAT_DISK);
+                }
+
                 if(g_hWin_AdvanSet > 0)
                 {
                     dev_para_recover();
 
-                    hItem = GUI_Get_AutoSleepTime_Item();
-                    sprintf(tmp, "%d", g_rom_para.auto_sleep_time);
-                    EDIT_SetText(hItem, tmp);
-
-                    hItem = GUI_Get_AutoShutdownTime_Item();
-                    sprintf(tmp, "%d", g_rom_para.auto_shutdown_time);
-                    EDIT_SetText(hItem, tmp);
+                    GUI_Refresh_AdvanceSetDLG();
+                    GUI_Refresh_ParaSetDLG();
                 }
                 
                 Select_Focus();
-                
                 break;
         }
         break;
