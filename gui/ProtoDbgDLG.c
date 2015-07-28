@@ -261,7 +261,7 @@ static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
     }
     else 
     {
-        if(0x13 == g_gui_para.ctlCode)
+        if(0x13 == g_gui_para.ctrlCode)
         {
             g_gui_para.cmd = GUI_CMD_BROAD_READ_ADDR;
         }
@@ -434,11 +434,11 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     EDIT_SetText(hItem, Readdata);
      if(g_rom_para.protocol == DL645_2007)
     {
-        g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.protocol][1]; 
+        g_gui_para.ctrlCode = c_645ctrlDef[g_rom_para.protocol][1]; 
     }
     else if(g_rom_para.protocol == DL645_1997)
     {
-        g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.protocol][1]; 
+        g_gui_para.ctrlCode = c_645ctrlDef[g_rom_para.protocol][1]; 
     }
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_3);

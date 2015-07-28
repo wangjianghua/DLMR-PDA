@@ -324,7 +324,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
               if(PLC_ROUTE_ON == g_sys_ctrl.sysUseRoute)
                 {
                     g_sys_ctrl.sysUseRoute = PLC_ROUTE_OFF;//关闭的时候恢复控制字
-                    g_gui_para.ctlCode -= g_sys_ctrl.sysAddrLevel * DL645_RELAY_ADDED_VAL;
+                    g_gui_para.ctrlCode -= g_sys_ctrl.sysAddrLevel * DL645_RELAY_ADDED_VAL;
                     hItem = WM_GetDialogItem(pMsg->hWin,ID_BUTTON_0);
                     BUTTON_SetText(hItem ,AlreadyClosed);
                 }

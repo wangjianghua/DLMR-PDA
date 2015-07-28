@@ -287,14 +287,14 @@ static u8 RMD_Get_Para(WM_MESSAGE *pMsg)
             &c_645DidoDef[g_rom_para.protocol][dropdown_selnum],
             4);
         
-        g_gui_para.ctlCode=0x11;
+        g_gui_para.ctrlCode=0x11;
     }
     else if(g_rom_para.protocol==DL645_1997)
     {
         memcpy(g_gui_para.dataFlag,
             &c_645DidoDef[g_rom_para.protocol][dropdown_selnum],
             2);
-        g_gui_para.ctlCode=0x01; 
+        g_gui_para.ctrlCode=0x01; 
 
     }
     else
@@ -473,14 +473,14 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             &c_645DidoDef[g_rom_para.protocol][0],
             4);
         
-        g_gui_para.ctlCode=0x11;
+        g_gui_para.ctrlCode=0x11;
     }
     else if(g_rom_para.protocol==DL645_1997)
     {
         memcpy(g_gui_para.dataFlag,
             &c_645DidoDef[g_rom_para.protocol][0],
             2);
-        g_gui_para.ctlCode=0x01; 
+        g_gui_para.ctrlCode=0x01; 
 
     }
     WM_DisableWindow(hItem);

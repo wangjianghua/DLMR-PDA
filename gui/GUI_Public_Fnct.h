@@ -237,7 +237,7 @@ typedef struct _gui_para_
     //U16 g_protocal;      //规约
     U8  state;
     U8  cmd;      
-    U8  ctlCode;   //控制字
+    U8  ctrlCode;   //控制字
     U8  srcAddr[6]; //电表表号  reserved
     U8  dstAddr[6]; //电表表号  reserved
     U8  relayAddr[8][6];  //中继地址,实际是7级中继，在调用组中继帧接口的时候需要把目标地址也写进去,8个

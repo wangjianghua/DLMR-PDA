@@ -356,11 +356,11 @@ void  App_TaskProto (void *p_arg)
             case GUI_CMD_BROAD_READ_ADDR: //广播读设备地址
                 if(CHANNEL_PLC == g_rom_para.channel) //载波
                 {
-                    memcpy(&dl645_read_addr[1], Broad_Read_Addr, sizeof(Broad_Read_Addr));
+                    memcpy(&dl645_read_addr[DL645_INDEX], Broad_Read_Addr, sizeof(Broad_Read_Addr));
 
-                    dl645_read_addr[0] = g_rom_para.preamble;
+                    dl645_read_addr[PREAMBLE_INDEX] = g_rom_para.preamble;
 
-                    g_proto_para.send_len = sizeof(Broad_Read_Addr) + 1;
+                    g_proto_para.send_len = sizeof(Broad_Read_Addr) + PREAMBLE_LEN;
                     
                     memcpy(g_proto_para.send_buf, dl645_read_addr, g_proto_para.send_len);
 
@@ -420,7 +420,7 @@ void  App_TaskProto (void *p_arg)
                     }
                     else
                     {   
-                         g_proto_para.recv_result = RECV_RES_TIMEOUT;                                        
+                        g_proto_para.recv_result = RECV_RES_TIMEOUT;                                        
                     }
                     
                     g_proto_para.msg_state = MSG_STATE_RECEIVED;
@@ -429,11 +429,11 @@ void  App_TaskProto (void *p_arg)
                 }
                 else if(CHANNEL_IR == g_rom_para.channel) //红外
                 {
-                    memcpy(&dl645_read_addr[1], Broad_Read_Addr, sizeof(Broad_Read_Addr));
+                    memcpy(&dl645_read_addr[DL645_INDEX], Broad_Read_Addr, sizeof(Broad_Read_Addr));
 
-                    dl645_read_addr[0] = g_rom_para.preamble;
+                    dl645_read_addr[PREAMBLE_INDEX] = g_rom_para.preamble;
 
-                    g_proto_para.send_len = sizeof(Broad_Read_Addr) + 1;
+                    g_proto_para.send_len = sizeof(Broad_Read_Addr) + PREAMBLE_LEN;
 
                     g_proto_para.ir_send_len = g_proto_para.send_len;
                     
@@ -629,31 +629,27 @@ void  App_TaskProto (void *p_arg)
                 break;
 
             case GUI_CMD_MRW:
-                if((FRM_CTRW_97_READ_SLVS_DATA == (g_gui_para.ctlCode & CCTT_CONTROL_CODE_MASK)) ||
-                   (FRM_CTRW_97_WRITE_SLVS_DATA == (g_gui_para.ctlCode & CCTT_CONTROL_CODE_MASK)))
+                if((FRM_CTRW_97_READ_SLVS_DATA == (g_gui_para.ctrlCode & CCTT_CONTROL_CODE_MASK)) ||
+                   (FRM_CTRW_97_WRITE_SLVS_DATA == (g_gui_para.ctrlCode & CCTT_CONTROL_CODE_MASK)))
                 {   /* 1997读写命令，2个字节数据标识 */
                     memcpy(g_proto_para.dl645_frame_send.Data, g_gui_para.dataFlag, DL645_97_DATA_ITEM_LEN);
                     memcpy(&g_proto_para.dl645_frame_send.Data[DL645_97_DATA_ITEM_LEN], g_gui_para.dataBuf, g_gui_para.dataLen);
                     g_gui_para.dataLen += DL645_97_DATA_ITEM_LEN;
                 }
-                else if((FRM_CTRW_07_READ_SLVS_DATA == (g_gui_para.ctlCode & CCTT_CONTROL_CODE_MASK))
-                        ||(FRM_CTRW_07_WRITE_SLVS_DATA == (g_gui_para.ctlCode & CCTT_CONTROL_CODE_MASK)))
+                else if((FRM_CTRW_07_READ_SLVS_DATA == (g_gui_para.ctrlCode & CCTT_CONTROL_CODE_MASK)) || 
+                        (FRM_CTRW_07_WRITE_SLVS_DATA == (g_gui_para.ctrlCode & CCTT_CONTROL_CODE_MASK)))
                 
-                { 
-                    if(FRM_CTRW_07_READ_SLVS_DATA == (g_gui_para.ctlCode & CCTT_CONTROL_CODE_MASK))
-                    {
-                        /* 2007读命令，4个字节数据标识 */
-                        memcpy(g_proto_para.dl645_frame_send.Data, g_gui_para.dataFlag, DL645_07_DATA_ITEM_LEN);
-                        memcpy(&g_proto_para.dl645_frame_send.Data[DL645_07_DATA_ITEM_LEN], g_gui_para.dataBuf, g_gui_para.dataLen);
-                        g_gui_para.dataLen += DL645_07_DATA_ITEM_LEN;
-                    }
+                {   /* 2007读命令，4个字节数据标识 */
+                    memcpy(g_proto_para.dl645_frame_send.Data, g_gui_para.dataFlag, DL645_07_DATA_ITEM_LEN);
+                    memcpy(&g_proto_para.dl645_frame_send.Data[DL645_07_DATA_ITEM_LEN], g_gui_para.dataBuf, g_gui_para.dataLen);
+                    g_gui_para.dataLen += DL645_07_DATA_ITEM_LEN;
                 }
                 else
                 {   /* 非读写命令，无数据标识 */
                     memcpy(g_proto_para.dl645_frame_send.Data, g_gui_para.dataBuf, g_gui_para.dataLen);
                 } 
                 
-                Create_DL645_Frame(g_gui_para.dstAddr, g_gui_para.ctlCode, g_gui_para.dataLen, &g_proto_para.dl645_frame_send);
+                Create_DL645_Frame(g_gui_para.dstAddr, g_gui_para.ctrlCode, g_gui_para.dataLen, &g_proto_para.dl645_frame_send);
 
                 g_proto_para.send_len = g_gui_para.dataLen + DL645_FIX_LEN;
 
@@ -661,8 +657,8 @@ void  App_TaskProto (void *p_arg)
                 {
                     memcpy(&g_proto_para.send_buf[DL645_INDEX], &g_proto_para.dl645_frame_send, g_proto_para.send_len);
                     
-                    g_proto_para.send_buf[FREQ_INDEX] = g_rom_para.preamble;
-                    g_proto_para.send_len += FREQ_LEN;
+                    g_proto_para.send_buf[PREAMBLE_INDEX] = g_rom_para.preamble;
+                    g_proto_para.send_len += PREAMBLE_LEN;
                     
                     while(OSSemAccept(g_sem_plc));
                     
@@ -731,8 +727,8 @@ void  App_TaskProto (void *p_arg)
                 {
                     memcpy(&g_proto_para.send_buf[DL645_INDEX], &g_proto_para.dl645_frame_send, g_proto_para.send_len);
                     
-                    g_proto_para.send_buf[FREQ_INDEX] = g_rom_para.preamble;
-                    g_proto_para.send_len += FREQ_LEN;
+                    g_proto_para.send_buf[PREAMBLE_INDEX] = g_rom_para.preamble;
+                    g_proto_para.send_len += PREAMBLE_LEN;
 
                     g_proto_para.ir_send_len = g_proto_para.send_len;
                     
@@ -780,15 +776,17 @@ void  App_TaskProto (void *p_arg)
                 {
                     memcpy(g_gui_para.relayAddr[g_sys_ctrl.sysAddrLevel], g_gui_para.dstAddr, DL645_ADDR_LEN);
 
-                    g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.protocol][1];
+                    g_gui_para.ctrlCode = c_645ctrlDef[g_rom_para.protocol][1];
+
+                    len = (DL645_1997 == g_rom_para.protocol) ? (DL645_97_DATA_ITEM_LEN) : (DL645_07_DATA_ITEM_LEN);
 
                     g_proto_para.send_len = Create_DL645_LeveFrame((u8 *)g_gui_para.relayAddr, g_sys_ctrl.sysAddrLevel, g_gui_para.dstAddr,
-                                                                   g_gui_para.ctlCode, DL645_07_DATA_ITEM_LEN, g_gui_para.dataFlag, (u8 *)&g_proto_para.dl645_frame_send);
+                                                                   g_gui_para.ctrlCode, len, g_gui_para.dataFlag, (u8 *)&g_proto_para.dl645_frame_send);
 
                     memcpy(&g_proto_para.send_buf[DL645_INDEX], &g_proto_para.dl645_frame_send, g_proto_para.send_len);
                     
-                    g_proto_para.send_buf[FREQ_INDEX] = g_rom_para.preamble;
-                    g_proto_para.send_len += FREQ_LEN;
+                    g_proto_para.send_buf[PREAMBLE_INDEX] = g_rom_para.preamble;
+                    g_proto_para.send_len += PREAMBLE_LEN;
                     
                     while(OSSemAccept(g_sem_plc));
                     

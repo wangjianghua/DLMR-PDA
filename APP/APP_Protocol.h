@@ -6,21 +6,10 @@
 #endif
 
 
-//#define PLC_ADDR_SIZE           sizeof(g_gui_para.relayAddr)/sizeof(g_gui_para.relayAddr[0])
+#define PREAMBLE_INDEX         0
+#define PREAMBLE_LEN           1
 
-//#define PLC_ADDR_SIZE()         LISTVIEW_GetNumRows(RLY_GetListAddr())
-
-#define mPLC_REPLY_ADDR_LEN    sizeof(mPLC_REPLY_ADDR)
-
-#define FREQ_NUM               2
-
-#define FREQ_270KHz            0
-#define FREQ_421KHz            1
-
-#define FREQ_INDEX             0
-#define FREQ_LEN               1
-
-#define DL645_INDEX           (FREQ_INDEX + FREQ_LEN)  
+#define DL645_INDEX           (PREAMBLE_INDEX + PREAMBLE_LEN)  
 
 //启动中继条件下，控制字的附加值
 #define DL645_RELAY_ADDED_VAL    0x20

@@ -632,11 +632,11 @@ static void Select_ListBox_Row(int  WidgetNum)
          case LISTBOX_CTLCODE:
             if(g_rom_para.protocol == DL645_1997)
             {
-                g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.protocol][SelNum]; 
+                g_gui_para.ctrlCode = c_645ctrlDef[g_rom_para.protocol][SelNum]; 
             }
             else if(g_rom_para.protocol == DL645_2007)
             {
-                g_gui_para.ctlCode = c_645ctrlDef[g_rom_para.protocol][SelNum]; 
+                g_gui_para.ctrlCode = c_645ctrlDef[g_rom_para.protocol][SelNum]; 
             }
             hWin=CPT_Set_CtlCode();
             EDIT_SetText(hWin,pCtlCode[SelNum]);
@@ -651,14 +651,14 @@ static void Select_ListBox_Row(int  WidgetNum)
                     &c_645DidoDef[g_rom_para.protocol][SelNum],
                     4);
                 
-                g_gui_para.ctlCode=0x11;
+                g_gui_para.ctrlCode=0x11;
             }
             else if(g_rom_para.protocol==DL645_1997)
             {
                 memcpy(g_gui_para.dataFlag,
                     &c_645DidoDef[g_rom_para.protocol][SelNum],
                     2);
-                g_gui_para.ctlCode=0x01; 
+                g_gui_para.ctrlCode=0x01; 
         
             }
             hWin=RMD_Get_ReadSel();
