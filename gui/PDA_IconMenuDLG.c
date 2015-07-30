@@ -131,14 +131,14 @@ void TSK_SetProtocol_97(void)
 {
     WM_HWIN hItem;
     hItem = WM_GetDialogItem(g_hWin_task,ID_TEXT_0);
-    TEXT_SetText(hItem, "DL645-97");
+    TEXT_SetText(hItem, "DL-97");
 }
 
 void TSK_SetProtocol_07(void)
 {
     WM_HWIN hItem;
     hItem = WM_GetDialogItem(g_hWin_task,ID_TEXT_0);
-    TEXT_SetText(hItem, "DL645-07");
+    TEXT_SetText(hItem, "DL-07");
 }
 
 

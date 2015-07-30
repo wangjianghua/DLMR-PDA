@@ -77,7 +77,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { TEXT_CreateIndirect, CtlCode,       ID_TEXT_2,    8,   108, 110, 20, 0, 0x0, 0 },
   { TEXT_CreateIndirect, DataSign,      ID_TEXT_3,    8,   139, 110, 20, 0, 0x0, 0 },
   { TEXT_CreateIndirect, Length,        ID_TEXT_4,    8,   171, 110, 20, 0, 0x0, 0 },
-  { TEXT_CreateIndirect, DataField,     ID_TEXT_5,    8,   195, 110, 20, 0, 0x0, 0 },
+  //{ TEXT_CreateIndirect, DataField,     ID_TEXT_5,    8,   195, 110, 20, 0, 0x0, 0 },
 
   { EDIT_CreateIndirect, "Edit",        ID_EDIT_0,    100, 45,  133, 20, 0, 0x64, 0 },
   { EDIT_CreateIndirect, "Edit",        ID_EDIT_1,    100, 76,  133, 20, 0, 0x64, 0 }, 
@@ -147,7 +147,7 @@ void STM_Print_resp_data(u8 * src, u8 * send_ptr, u8 len)
 void STM_proc_resp_data(void)
 {
     WM_HWIN hItem;
-    u8 * pbuf, temb[32];
+    u8 *pbuf, buf[32];
     u32 len;
 
     pbuf = g_proto_para.data_buf;
@@ -155,7 +155,11 @@ void STM_proc_resp_data(void)
 
     if(g_hWin_ProtoDbg != WM_HWIN_NULL)
     {   
-        if(6==len)
+        sprintf(buf, "%d", g_proto_para.data_len);
+        hItem = WM_GetDialogItem(g_hWin_ProtoDbg, ID_EDIT_4);
+        EDIT_SetText(hItem, buf);
+        
+        if((0x13 == g_gui_para.ctrlCode) && (6 == len))
         {
             hItem = WM_GetDialogItem(g_hWin_ProtoDbg, ID_EDIT_1);
             //sprintf(temb, "%d", pbuf);
@@ -167,6 +171,8 @@ void STM_proc_resp_data(void)
         //EDIT_SetText(hItem, temb);
         
         //SWITCH(DATA FLAG)
+
+#if 0        
         if(len)
         {
             if(len > 8)
@@ -177,9 +183,10 @@ void STM_proc_resp_data(void)
             EDIT_SetText(hItem, 
             (const char*)GUI_hex2MeterAddrStr(pbuf, len));
             //STM_Print_resp_data(pbuf,temb, len);      
-            //EDIT_SetText(hItem, temb);           
-        }                            
-    }
+            //EDIT_SetText(hItem, temb);                
+        }    
+#endif         
+    }   
 }
 
 static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
@@ -241,7 +248,8 @@ static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
     
 
     hItem = WM_GetDialogItem(pMsg->hWin,ID_EDIT_4);/*长度*/
-    EDIT_GetText(hItem,tb,4);
+    //EDIT_GetText(hItem,tb,4);
+    EDIT_SetText(hItem, "0");
 
     //if(0x13 == g_gui_para.ctlCode)
     //{
@@ -249,8 +257,10 @@ static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
     //}
     //else
     //{
-    g_gui_para.dataLen = atoi(tb);
+    //g_gui_para.dataLen = atoi(tb);
     //}
+
+    g_gui_para.dataLen = 0;
   
     hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_5);/*数据*/
     EDIT_GetText(hItem, tb, 20);
@@ -263,13 +273,14 @@ static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
     {
         if(0x13 == g_gui_para.ctrlCode)
         {
-            g_gui_para.cmd = GUI_CMD_BROAD_READ_ADDR;
+            g_gui_para.cmd = GUI_CMD_BROAD_READ_DEV_ADDR;
         }
         else
+        {
             g_gui_para.cmd = GUI_CMD_MRW;
+        }
     }
     
-
     return DEV_OK;
 }
 
@@ -285,10 +296,10 @@ void CPT_SelEdt_Up(WM_MESSAGE * pMsg)
         
         //WM_SetFocus(hItem);
         
-        hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_5);
+        hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_3);
         WM_SetFocus(hItem);
         
-        cpt_key_press_cnt=5;
+        cpt_key_press_cnt=3;
     }
     else
     {
@@ -301,7 +312,7 @@ void CPT_SelEdt_Up(WM_MESSAGE * pMsg)
 void CPT_SelEdt_Down(WM_MESSAGE *pMsg)
 {
     WM_HWIN hItem;
-    if(cpt_key_press_cnt==5)
+    if(cpt_key_press_cnt==3)
     {
         hItem=WM_GetDialogItem(pMsg->hWin,ID_EDIT_0);
         WM_SetFocus(hItem);
@@ -345,7 +356,7 @@ void CPT_SetFocus(void)
 void CST_Set_DataFlag(u8 * tst)
 {
     WM_HWIN hItem;
-    hItem=WM_GetDialogItem(g_hWin_ProtoDbg,(ID_EDIT_3));
+    hItem=WM_GetDialogItem(g_hWin_ProtoDbg,ID_EDIT_3);
     EDIT_SetText(hItem, tst); 
 }
 
@@ -431,27 +442,49 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     //
     
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_2);
-    EDIT_SetText(hItem, Readdata);
-     if(g_rom_para.protocol == DL645_2007)
+    if(g_rom_para.protocol == DL645_2007)
     {
-        g_gui_para.ctrlCode = c_645ctrlDef[g_rom_para.protocol][1]; 
+        EDIT_SetText(hItem, Readdata_07);
+        g_gui_para.ctrlCode = c_645ctrlDef[g_rom_para.protocol][0]; 
     }
     else if(g_rom_para.protocol == DL645_1997)
     {
-        g_gui_para.ctrlCode = c_645ctrlDef[g_rom_para.protocol][1]; 
+        EDIT_SetText(hItem, Readdata_97);
+        g_gui_para.ctrlCode = c_645ctrlDef[g_rom_para.protocol][0]; 
     }
 
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_3);
-    GUI_GetHexDataFlag(tempbuf, g_sys_ctrl.defaultDataFlag, 4);
-    EDIT_SetText(hItem, tempbuf);
-
-    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_4);
-    //GUI_GetHexDataFlag(tempbuf, g_sys_ctrl.defaultDataFlag, 4);
-    EDIT_SetText(hItem, "0");
+    if(DL645_2007 == g_rom_para.protocol)
+    {   
+        memcpy(g_gui_para.dataFlag,
+            &c_645DidoDef[g_rom_para.protocol][0],
+            4);
+            }
+    else if(DL645_1997 == g_rom_para.protocol)
+    {
+        memcpy(g_gui_para.dataFlag,
+            &c_645DidoDef[g_rom_para.protocol][0],
+            2);
+    }
     
+    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_3);
+
+    if(DL645_1997 == g_rom_para.protocol)
+    {
+        EDIT_SetText(hItem, "0000");
+    }
+    else
+    {
+        EDIT_SetText(hItem, "00000000");
+    }
+    
+    hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_4);
+    EDIT_SetText(hItem, "0");    
+    WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
     
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_5);
-    EDIT_SetText(hItem, "00000000");
+    EDIT_SetText(hItem, "0");
+    WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
+    WM_HideWindow(hItem);
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_PROGBAR_0);
     PROGBAR_SetBarColor(hItem,0,GUI_GREEN);
@@ -507,13 +540,13 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                  case GUI_KEY_UP:
                      CPT_SelEdt_Up(pMsg);
                      //CPT_Color_Change();
-                     GUI_Color_Change(g_hWin_ProtoDbg, ID_EDIT_0, 6);
+                     GUI_Color_Change(g_hWin_ProtoDbg, ID_EDIT_0, 4);
                      break;
                      
                  case GUI_KEY_DOWN:
                      CPT_SelEdt_Down(pMsg);
                      //CPT_Color_Change();
-                     GUI_Color_Change(g_hWin_ProtoDbg, ID_EDIT_0, 6);
+                     GUI_Color_Change(g_hWin_ProtoDbg, ID_EDIT_0, 4);
                      break;
                      
                  case GUI_KEY_F1:

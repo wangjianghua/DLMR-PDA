@@ -3,8 +3,8 @@
 
 
 #define HARDWARE_VERSION         23
-#define SOFTWARE_VERSION         29
-#define VERSION_DATE     0x20150728
+#define SOFTWARE_VERSION         30
+#define VERSION_DATE     0x20150730
 
 #define BOOT_REQUEST_ACT   0xffffbbcc
 #define BOOT_FINISH_ACT    0xffff0000
@@ -117,6 +117,7 @@ typedef struct _sys_ctrl_
     u8 sd_format_flag; //SD卡格式化标志
     u8 self_check;
     u8 plc_state;
+    u8 data_item_index;
 } SYS_CTRL, *P_SYS_CTRL;
 
 #define SYS_ADD_TASK(tn)        g_sys_ctrl.procTask|=tn

@@ -73,7 +73,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { EDIT_CreateIndirect,   "sec",     ID_EDIT_5,   110, 220, 80,  20, 0, 2, 0 },
   { BUTTON_CreateIndirect, Save,      ID_BUTTON_0, 10,   262, 55, 25, 0, 0x0, 0 },
   { BUTTON_CreateIndirect, Back,      ID_BUTTON_1, 175,  262, 55, 25, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,   TimeSet_24,ID_TEXT_6,   60,  12,  150, 20, 0, 0x0, 0 },
+  { TEXT_CreateIndirect,   TimeSet_24,ID_TEXT_6,   52,  12,  150, 20, 0, 0x0, 0 },
  
 };
 

@@ -52,12 +52,14 @@ char DataSign_Text[TEXT_LEN]; //listview单元格中的文本内容
 
 static const char _acFlagItems[][2][10] = 
 {
-    { "9010", "00010000"},
-    { "9020", "00020000"},
-    { "",     "00010001"},
-    { "",     "00020001"},
-    { "",     ""},
+    { "9010",     "0001FF00" },
+    { "9020",     "0002FF00" },
+    { "9410",     "0001FF01" },
+    { "9420",     "0002FF01" },
+    { "",         "" },
 };
+
+
 
 
 /*********************************************************************
@@ -69,7 +71,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { LISTVIEW_CreateIndirect,   NULL,     ID_LISTVIEW_0, 8,   50,  225, 203, 0, 0x0, 0 },
   { TEXT_CreateIndirect,       DataSign, ID_TEXT_1,     13,  31,  80,  20,  0, 0x0, 0 },
   { BUTTON_CreateIndirect,     Confirm,  ID_BUTTON_0,   10,   262, 55, 25,  0, 0x0, 0 },
-  { BUTTON_CreateIndirect,     Back,   ID_BUTTON_1,   175,  262, 55, 25,  0, 0x0, 0 },
+  { BUTTON_CreateIndirect,     Back,     ID_BUTTON_1,   175,  262, 55, 25,  0, 0x0, 0 },
   // USER START (Optionally insert additional widgets)
   // USER END
 };
@@ -133,17 +135,17 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     LISTVIEW_SetGridVis(hItem, 0);
     LISTVIEW_SetHeaderHeight(hItem, 20);
     LISTVIEW_SetAutoScrollV(hItem,1);
-    while (_ReadMeterProj[i][0]) 
+
+    for(i = 0;i < 4; i++)
     {
-        if(g_rom_para.protocol >  DL645_2007)
+        if(DL645_2007 == g_rom_para.protocol)
         {
-            g_rom_para.protocol =  DL645_2007;
+            __AddListviewItem(hItem, _ReadMeterProj_07[i], _acFlagItems[i][g_rom_para.protocol]);
         }
-        if(_acFlagItems[i][g_rom_para.protocol][0])
+        else if(DL645_1997 == g_rom_para.protocol)
         {
-            __AddListviewItem(hItem, _ReadMeterProj[i], _acFlagItems[i][g_rom_para.protocol]);
+            __AddListviewItem(hItem, _ReadMeterProj_97[i], _acFlagItems[i][g_rom_para.protocol]);
         }
-        i++;
     }
     LISTVIEW_SetSel(hItem,0);
 }

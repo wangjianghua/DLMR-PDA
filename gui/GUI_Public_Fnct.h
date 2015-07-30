@@ -110,7 +110,7 @@ typedef enum
 
 typedef enum
 {
-    GUI_CMD_BROAD_READ_ADDR = 0,
+    GUI_CMD_BROAD_READ_DEV_ADDR = 0,
     GUI_CMD_PLC_R2M,
     GUI_CMD_PLC_M2R,    
     GUI_CMD_PLC_FREQ_SET,

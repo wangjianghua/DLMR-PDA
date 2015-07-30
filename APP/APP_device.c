@@ -282,6 +282,8 @@ void DEV_Init(void)
     g_sys_ctrl.sd_format_flag = FALSE;
 
     g_sys_ctrl.plc_state = PLC_STATE_METER_READ;
+
+    g_sys_ctrl.data_item_index = 0;
 }
 
 void dev_para_recover(void)

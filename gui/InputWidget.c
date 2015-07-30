@@ -33,24 +33,6 @@ static const GUI_WIDGET_CREATE_INFO _aEditCreate[] = {
 
 };
 
-#if 0
-const u8 c_645ctrlDef[2][PLC_CTRL_MAX_NUM] = 
-{ 
-    //97规约
-    {0x05, 0x01, 0x04,  4,5,6,7,8,9,10,11,12,13,14,15,16},
-    //07规约
-    {0x13, 0X11, 0X14,  0x19,5,6,7,8,9,10,11,12,13,14,15,16}
-};
-
-
-const u32 c_645DidoDef[2][PLC_CTRL_MAX_NUM] = 
-{ 
-    //97规约
-    {0x901f,    0x902f,     0x9410,     0x9420,5,6,7,8,9,10,11,12,13,14,15,16},
-    //07规约
-    {0x0001ff00,0X0002ff00, 0X0001ff01, 0X0002ff01,4,5,6,7,8,9,10,11,12,13,14,15,}
-};
-#endif
 const u32 c_ValBaudRate[5] = {BAUD_RATE_1200, BAUD_RATE_1500, BAUD_RATE_2400, BAUD_RATE_4800, BAUD_RATE_9600};
 
 const u8 c_TextBaudRate[5][6] = {"1200","1500","2400","4800","9600"};
@@ -462,17 +444,20 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
     switch(ListBoxNum)
     {
         case LISTBOX_PROTOCOL:
-            LISTBOX_AddString(hItem, "DL645-07");
             LISTBOX_AddString(hItem, "DL645-97");
+            LISTBOX_AddString(hItem, "DL645-07");
+
+#if 0            
             switch(g_rom_para.protocol)
             {
-                case DL645_2007:
+                case DL645_1997:
                     LISTBOX_SetSel(hItem,0);
                     break;
-                case DL645_1997:
+                case DL645_2007:
                     LISTBOX_SetSel(hItem,1);
-                    break;
+                    break;                    
             }
+#endif            
             break;
             
         case LISTBOX_CHANNEL:
@@ -488,6 +473,8 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
             LISTBOX_AddString(hItem, "2400");
             LISTBOX_AddString(hItem, "4800");
             LISTBOX_AddString(hItem, "9600");
+
+#if 0            
             switch(g_rom_para.baudrate)
             {
                 case 1200:
@@ -506,6 +493,7 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
                     LISTBOX_SetSel(hItem,4);
                     break;
             }
+#endif            
             break;
 
         case LISTBOX_PREAM:
@@ -514,6 +502,8 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
         case LISTBOX_STOPBIT:
             LISTBOX_AddString(hItem, "1");
             LISTBOX_AddString(hItem, "2");
+
+#if 0            
             switch(g_rom_para.stopbit)
             {
                 case ONE_STOPBIT:
@@ -523,21 +513,40 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
                     LISTBOX_SetSel(hItem, 1);
                     break;     
             }
+#endif            
             break;
 
         
         case LISTBOX_CTLCODE:  /*控制字*/
-            LISTBOX_AddString(hItem, GetAddr);
-            LISTBOX_AddString(hItem, Readdata);
+            if(g_rom_para.protocol == DL645_1997)
+            {
+                LISTBOX_AddString(hItem, Readdata_97);
+                LISTBOX_AddString(hItem, GetAddr_97);
+            }
+            else if(g_rom_para.protocol == DL645_2007)
+            {
+                LISTBOX_AddString(hItem, Readdata_07);
+                LISTBOX_AddString(hItem, GetAddr_07);
+            }
             //LISTBOX_AddString(hItem, WriteData);
             //LISTBOX_AddString(hItem, ClrDemond);
             break;
 
         case LISTBOX_READ_SEL:
-           LISTBOX_AddString(hItem, Positive);
-           LISTBOX_AddString(hItem, Negative);
-           LISTBOX_AddString(hItem, DayPositive);
-           LISTBOX_AddString(hItem, DayNegative);
+           if(DL645_2007 == g_rom_para.protocol)
+           {
+               for( i = 0; i < 4; i++)
+               {
+                    LISTBOX_AddString(hItem,pReadSel_07[i]);
+               }
+           }
+           if(DL645_1997 == g_rom_para.protocol)
+           {
+               for( i = 0; i < 4; i++)
+               {
+                    LISTBOX_AddString(hItem,pReadSel_97[i]);
+               } 
+           }
            break;
 
         case LISTBOX_SPEED:
@@ -570,17 +579,16 @@ static void Select_ListBox_Row(int  WidgetNum)
             switch(SelNum) 
             {
                 case 0:
-                    g_rom_para.protocol = DL645_2007;
-                    TSK_SetProtocol_07();
-                    hWin=CPS_Set_Proto();
-                    EDIT_SetText(hWin,"DL645-07");
-                    break;
-                case 1:
                     g_rom_para.protocol = DL645_1997;
-                    TSK_SetProtocol_97();
                     hWin=CPS_Set_Proto();
                     EDIT_SetText(hWin,"DL645-97");
                     break;
+                    
+                case 1:
+                    g_rom_para.protocol = DL645_2007;
+                    hWin=CPS_Set_Proto();
+                    EDIT_SetText(hWin,"DL645-07");
+                    break;                    
             }
             break;
 
@@ -630,39 +638,39 @@ static void Select_ListBox_Row(int  WidgetNum)
 
 
          case LISTBOX_CTLCODE:
+            hWin=CPT_Set_CtlCode();
+            
             if(g_rom_para.protocol == DL645_1997)
             {
                 g_gui_para.ctrlCode = c_645ctrlDef[g_rom_para.protocol][SelNum]; 
+                EDIT_SetText(hWin,pCtlCode_97[SelNum]);
             }
             else if(g_rom_para.protocol == DL645_2007)
             {
                 g_gui_para.ctrlCode = c_645ctrlDef[g_rom_para.protocol][SelNum]; 
+                EDIT_SetText(hWin,pCtlCode_07[SelNum]);
             }
-            hWin=CPT_Set_CtlCode();
-            EDIT_SetText(hWin,pCtlCode[SelNum]);
+            
 
             break;
             
         case LISTBOX_READ_SEL:
-            //pReadSel
-            if(g_rom_para.protocol==DL645_2007)
-            {        
-                memcpy(g_gui_para.dataFlag,
-                    &c_645DidoDef[g_rom_para.protocol][SelNum],
-                    4);
-                
-                g_gui_para.ctrlCode=0x11;
-            }
-            else if(g_rom_para.protocol==DL645_1997)
-            {
-                memcpy(g_gui_para.dataFlag,
-                    &c_645DidoDef[g_rom_para.protocol][SelNum],
-                    2);
-                g_gui_para.ctrlCode=0x01; 
-        
-            }
             hWin=RMD_Get_ReadSel();
-            EDIT_SetText(hWin,pReadSel[SelNum]);
+            
+            if(DL645_2007 == g_rom_para.protocol)
+            {        
+                memcpy(g_gui_para.dataFlag, &c_645DidoDef[g_rom_para.protocol][SelNum], 4);
+                
+                EDIT_SetText(hWin,pReadSel_07[SelNum]);
+            }
+            else if(DL645_1997 == g_rom_para.protocol)
+            {
+                memcpy(g_gui_para.dataFlag, &c_645DidoDef[g_rom_para.protocol][SelNum], 2);
+                
+                EDIT_SetText(hWin,pReadSel_97[SelNum]);
+            }
+
+            g_sys_ctrl.data_item_index = SelNum;
             break;
 
         default:

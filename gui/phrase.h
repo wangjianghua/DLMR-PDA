@@ -71,8 +71,12 @@ extern const char DataSign[];
 extern const char DataField[];
 extern const char RoutTab[];
 extern const char DataSignBtn[];
-extern const char GetAddr[];
-extern const char Readdata[];
+extern const char GetAddr_97[];
+extern const char GetAddr_07[];
+
+extern const char Readdata_97[];
+extern const char Readdata_07[];
+
 extern const char WriteData[];
 extern const char ReadChip[];
 extern const char Send[];
@@ -82,13 +86,19 @@ extern const char *Listbox_FrameTitle[];
 
 extern const char *Edit_FrameTitle[];
 
-extern const char *pCtlCode[];
+extern const char *pCtlCode_07[];
+extern const char *pCtlCode_97[];
 
-extern const char *pReadSel[];
+extern const char *pReadSel_07[];
+
+extern const char *pReadSel_97[];
+
 
 
 //数据标识
-extern const char _ReadMeterProj[][64];
+extern const char *_ReadMeterProj_07[4];
+extern const char *_ReadMeterProj_97[4];
+
 
 //路由表
 extern const char _RelayAddr[];

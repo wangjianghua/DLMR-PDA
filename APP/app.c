@@ -642,7 +642,7 @@ typedef enum
     CHECK_INFO_LCD,
     CHECK_INFO_SD,
     CHECK_INFO_FATFS,
-    CHECK_INFO_PLC_FREQ_270KHz,
+    CHECK_INFO_PLC,
     CHECK_INFO_RF,
     CHECK_INFO_IR,
     CHECK_INFO_KEY,
@@ -687,7 +687,7 @@ CHECK_INFO_POS g_check_info_pos[] =
     { 0,  6 * 16, 104, 0}, //LCD  
     { 0,  7 * 16, 96, 0}, //SD
     { 0,  8 * 16, 0, 0}, //FATFS   
-    { 0,  9 * 16, 0, 0}, //PLC (270KHz)
+    { 0,  9 * 16, 0, 0}, //PLC
     { 0, 10 * 16, 0, 0}, //RF   
     { 0, 11 * 16, 0, 0}, //IR 
     { 0, 12 * 16, 192, 0}, //KEY 
@@ -717,10 +717,10 @@ const char *key_chk_msg[KEYBOARD_COL_NUM * KEYBOARD_ROW_NUM + 2] =
 static  void  App_TaskCheck (void *p_arg)
 {
     INT8U i, err, count, index, buf[32];
-    const INT8U plc_freq_270KHz_read_addr[] = {PLC_FREQ_270KHz_PREAMBLE, 0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
-    const INT8U plc_freq_421KHz_read_addr[] = {PLC_FREQ_421KHz_PREAMBLE, 0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
-    const INT8U ir_read_addr[] = {IR_PREAMBLE, 0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
-    const INT8U rf_addr[] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88};
+    const INT8U plc_freq_270KHz_read_dev_addr[] = {PLC_FREQ_270KHz_PREAMBLE, 0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
+    const INT8U plc_freq_421KHz_read_dev_addr[] = {PLC_FREQ_421KHz_PREAMBLE, 0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
+    const INT8U ir_read_dev_addr[] = {IR_PREAMBLE, 0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
+    const INT8U rf_dev_addr[] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88};
     const INT8U rf_dl645_read[] = {0x68, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x68, 0x11, 0x04, 0x33, 0x32, 0x34, 0x33, 0xE1, 0x16};
     int *p_key_msg;
     
@@ -804,9 +804,9 @@ static  void  App_TaskCheck (void *p_arg)
         GUI_DispStringAt(buf, CHECK_INFO_ERROR_POS, g_check_info_pos[CHECK_INFO_FATFS].y);        
     }
 
-    /* ºÏ≤‚‘ÿ≤®£¨Freq = 270KHz */
+    /* ºÏ≤‚‘ÿ≤® */
     while(OSSemAccept(g_sem_chk_plc));
-    plc_uart_send((INT8U *)plc_freq_270KHz_read_addr, sizeof(plc_freq_270KHz_read_addr));
+    plc_uart_send((INT8U *)plc_freq_270KHz_read_dev_addr, sizeof(plc_freq_270KHz_read_dev_addr));
     OSSemPend(g_sem_chk_plc, 3 * OS_TICKS_PER_SEC, &err);
     if(OS_ERR_NONE == err)
     {
@@ -814,27 +814,27 @@ static  void  App_TaskCheck (void *p_arg)
                                                   (u8 *)&g_proto_para.dl645_frame_recv,
                                                   &g_proto_para.dl645_frame_stat))
         {
-            GUI_DispStringAt(g_check_info[CHECK_INFO_PLC_FREQ_270KHz], g_check_info_pos[CHECK_INFO_PLC_FREQ_270KHz].x, g_check_info_pos[CHECK_INFO_PLC_FREQ_270KHz].y);
+            GUI_DispStringAt(g_check_info[CHECK_INFO_PLC], g_check_info_pos[CHECK_INFO_PLC].x, g_check_info_pos[CHECK_INFO_PLC].y);
             sprintf(buf, "OK");
-            GUI_DispStringAt(buf, CHECK_INFO_OK_POS, g_check_info_pos[CHECK_INFO_PLC_FREQ_270KHz].y); 
+            GUI_DispStringAt(buf, CHECK_INFO_OK_POS, g_check_info_pos[CHECK_INFO_PLC].y); 
         }
         else
         {
-            GUI_DispStringAt(g_check_info[CHECK_INFO_PLC_FREQ_270KHz], g_check_info_pos[CHECK_INFO_PLC_FREQ_270KHz].x, g_check_info_pos[CHECK_INFO_PLC_FREQ_270KHz].y);
+            GUI_DispStringAt(g_check_info[CHECK_INFO_PLC], g_check_info_pos[CHECK_INFO_PLC].x, g_check_info_pos[CHECK_INFO_PLC].y);
             sprintf(buf, "ERROR");
-            GUI_DispStringAt(buf, CHECK_INFO_ERROR_POS, g_check_info_pos[CHECK_INFO_PLC_FREQ_270KHz].y); 
+            GUI_DispStringAt(buf, CHECK_INFO_ERROR_POS, g_check_info_pos[CHECK_INFO_PLC].y); 
         }
     }
     else
     {
-        GUI_DispStringAt(g_check_info[CHECK_INFO_PLC_FREQ_270KHz], g_check_info_pos[CHECK_INFO_PLC_FREQ_270KHz].x, g_check_info_pos[CHECK_INFO_PLC_FREQ_270KHz].y);
+        GUI_DispStringAt(g_check_info[CHECK_INFO_PLC], g_check_info_pos[CHECK_INFO_PLC].x, g_check_info_pos[CHECK_INFO_PLC].y);
         sprintf(buf, "ERROR");
-        GUI_DispStringAt(buf, CHECK_INFO_ERROR_POS, g_check_info_pos[CHECK_INFO_PLC_FREQ_270KHz].y); 
+        GUI_DispStringAt(buf, CHECK_INFO_ERROR_POS, g_check_info_pos[CHECK_INFO_PLC].y); 
     } 
 
     /* ºÏ≤‚…‰∆µ */
     while(OSSemAccept(g_sem_chk_rf));
-    RF_SEND_LEN = GDW_RF_Protocol_2013((INT8U *)rf_addr, 0x00, 0x00, 0x00, (INT8U *)rf_dl645_read, sizeof(rf_dl645_read), RF_SEND_BUF);
+    RF_SEND_LEN = GDW_RF_Protocol_2013((INT8U *)rf_dev_addr, 0x00, 0x00, 0x00, (INT8U *)rf_dl645_read, sizeof(rf_dl645_read), RF_SEND_BUF);
     OSSemPend(g_sem_chk_rf, 2 * OS_TICKS_PER_SEC, &err);
     if(OS_ERR_NONE == err)
     {
@@ -863,9 +863,9 @@ static  void  App_TaskCheck (void *p_arg)
     }
 
     /* ºÏ≤‚∫ÏÕ‚ */
-    g_proto_para.ir_send_len = sizeof(ir_read_addr);
+    g_proto_para.ir_send_len = sizeof(ir_read_dev_addr);
     while(OSSemAccept(g_sem_chk_ir));
-    ir_uart_send((INT8U *)ir_read_addr, sizeof(ir_read_addr));
+    ir_uart_send((INT8U *)ir_read_dev_addr, sizeof(ir_read_dev_addr));
     OSSemPend(g_sem_chk_ir, 2 * OS_TICKS_PER_SEC, &err);
     if(OS_ERR_NONE == err)
     {

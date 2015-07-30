@@ -277,32 +277,8 @@ static u8 RMD_Get_Para(WM_MESSAGE *pMsg)
         return DEV_ERROR;
     }
     
-#if 0
-    //hItem=WM_GetDialogItem(pMsg->hWin,ID_DROPDOWN_0);
-    //dropdown_selnum=DROPDOWN_GetSel(hItem);  
-    
-    if(g_rom_para.protocol==DL645_2007)
-    {        
-        memcpy(g_gui_para.dataFlag,
-            &c_645DidoDef[g_rom_para.protocol][dropdown_selnum],
-            4);
-        
-        g_gui_para.ctrlCode=0x11;
-    }
-    else if(g_rom_para.protocol==DL645_1997)
-    {
-        memcpy(g_gui_para.dataFlag,
-            &c_645DidoDef[g_rom_para.protocol][dropdown_selnum],
-            2);
-        g_gui_para.ctrlCode=0x01; 
+    g_gui_para.ctrlCode = c_645ctrlDef[g_rom_para.protocol][0]; 
 
-    }
-    else
-    {
-        return DEV_ERROR;
-    }
-
-#endif
     g_gui_para.dataLen = 0;
 
     g_gui_para.cmd = GUI_CMD_MRW;
@@ -326,9 +302,9 @@ void RMD_proc_resp_data(void)
 
     if(g_hWin_ReadMeter != WM_HWIN_NULL)
     {
-        if(g_gui_para.cmd == GUI_CMD_BROAD_READ_ADDR)
+        if(g_gui_para.cmd == GUI_CMD_BROAD_READ_DEV_ADDR)
         {
-            if(len == 6)
+            if((0x13 == g_gui_para.ctrlCode) && (6 == len))
             {
                 hItem = WM_GetDialogItem(g_hWin_ReadMeter, ID_EDIT_0);
                 EDIT_SetText(hItem, 
@@ -466,23 +442,30 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     WM_DisableWindow(hItem);
     
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_1);
-    EDIT_SetText(hItem, Positive);
-    if(g_rom_para.protocol==DL645_2007)
-    {        
+
+    if(DL645_2007 == g_rom_para.protocol)
+    {   
+        //EDIT_SetText(hItem, pReadSel_07[g_sys_ctrl.data_item_index]);
+        EDIT_SetText(hItem, pReadSel_07[0]);
+        
         memcpy(g_gui_para.dataFlag,
             &c_645DidoDef[g_rom_para.protocol][0],
             4);
         
         g_gui_para.ctrlCode=0x11;
     }
-    else if(g_rom_para.protocol==DL645_1997)
+    else if(DL645_1997 == g_rom_para.protocol)
     {
+        //EDIT_SetText(hItem, pReadSel_97[g_sys_ctrl.data_item_index]);
+        EDIT_SetText(hItem, pReadSel_97[0]);
+        
         memcpy(g_gui_para.dataFlag,
             &c_645DidoDef[g_rom_para.protocol][0],
             2);
         g_gui_para.ctrlCode=0x01; 
 
     }
+    
     WM_DisableWindow(hItem);
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_PROGBAR_0);
@@ -511,7 +494,8 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             case GUI_KEY_F1: /*ªÒ»°±Ì∫≈*/
                 if(CHANNEL_RF != g_rom_para.channel)
                 {
-                    g_gui_para.cmd = GUI_CMD_BROAD_READ_ADDR;
+                    g_gui_para.ctrlCode = 0x13;
+                    g_gui_para.cmd = GUI_CMD_BROAD_READ_DEV_ADDR;
                     g_gui_para.state = GUI_STATE_AMR;                        
                     OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
                 }
@@ -629,7 +613,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             {
                 if(CHANNEL_RF != g_rom_para.channel)
                 {
-                    g_gui_para.cmd = GUI_CMD_BROAD_READ_ADDR;
+                    g_gui_para.cmd = GUI_CMD_BROAD_READ_DEV_ADDR;
                     g_gui_para.state = GUI_STATE_AMR;                        
                     OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
                 }
