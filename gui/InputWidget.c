@@ -7,15 +7,6 @@
 *
 **********************************************************************
 */
-#if 0
-#define ID_FRAMEWIN_0  (GUI_ID_USER + 0x00)
-#define ID_LISTBOX_0   (GUI_ID_USER + 0x02)
-#define ID_BUTTON_0    (GUI_ID_USER + 0x03)
-#define ID_BUTTON_1    (GUI_ID_USER + 0x04)
-#define ID_TEXT_0      (GUI_ID_USER + 0x05)
-#define ID_EDIT_0      (GUI_ID_USER + 0x06)
-
-#endif
 
 static const GUI_WIDGET_CREATE_INFO _aListBoxCreate[] = {
   { FRAMEWIN_CreateIndirect,  "ListBox",  ID_FRAMEWIN_0,  20,  40,  200, 200,  0, 0x0, 0 },
@@ -40,6 +31,7 @@ const u8 c_TextBaudRate[5][6] = {"1200","1500","2400","4800","9600"};
 void Select_Focus(void)
 {
     
+    //参数设置页面中的全部页面
     if((g_hWin_para > 0)&&(g_hWin_TimeSet <= 0)&&(g_hWin_AdvanSet <= 0))
     {
         WM_SetFocus(g_hWin_para);
@@ -58,17 +50,11 @@ void Select_Focus(void)
         ADS_SetFocus();
     }
     
-    
+    //规约调试
     if((g_hWin_ProtoDbg > 0)&&(g_hWin_relay <= 0) && (g_hWin_freq <= 0)) 
     {
         WM_SetFocus(g_hWin_ProtoDbg);
         CPT_SetFocus();
-    }
-
-    if((g_hWin_ReadMeter>0) && (g_hWin_freq <= 0))
-    {
-        WM_SetFocus(g_hWin_ReadMeter);
-        RMD_SetFocus();
     }
 
     if(g_hWin_relay > 0)
@@ -81,11 +67,19 @@ void Select_Focus(void)
         WM_SetFocus(g_hWin_freq);
     }
     
-    if(g_hWin_about>0)
+    //智能抄表
+    if((g_hWin_ReadMeter > 0) && (g_hWin_freq <= 0)&&(g_hWin_MeterTime <= 0))
     {
-        WM_SetFocus(g_hWin_about);
+        WM_SetFocus(g_hWin_ReadMeter);
+        RMD_SetFocus();
     }
-    
+
+   if(g_hWin_MeterTime > 0)
+    {
+        WM_SetFocus(g_hWin_MeterTime);
+    }
+
+    //系统信息
     if((g_hWin_SysInfo > 0)&&(g_hWin_SDInfo <= 0))
     {
         WM_SetFocus(g_hWin_SysInfo);
@@ -96,13 +90,11 @@ void Select_Focus(void)
         WM_SetFocus(g_hWin_SDInfo);
     }
 
-    if(g_hWin_monitor > 0)
-    {
-        WM_SetFocus(g_hWin_monitor);
-    }
-
 }
 
+#if (EWARM_OPTIMIZATION_EN > 0u)
+#pragma optimize = low
+#endif
 //在按下绿色保存按钮的时候，调用此函数
 static void Select_Input_Edit(int  EditNum)
 {
@@ -130,6 +122,10 @@ static void Select_Input_Edit(int  EditNum)
         case EDIT_PASSWORD:
             EDIT_GetText(hItem,tmpTextBuf,9);
             //g_rom_para.meterPassword = atoi(tmpTextBuf);
+            if(DEV_ERROR == CPS_GetPwdPara(tmpTextBuf))
+            {
+                break;
+            }
             hItem=CPS_GetPwd();
             break;
             
@@ -205,6 +201,10 @@ static void Select_Input_Edit(int  EditNum)
           //  break;
         case EDIT_OPCODE:
             EDIT_GetText(hItem,tmpTextBuf,9);
+            if(DEV_ERROR== CPS_GetOpcodePara(tmpTextBuf))
+            {
+                break;
+            }
             hItem = CPS_GetOperator();
             break;
 
@@ -243,6 +243,14 @@ static void Select_Input_Edit(int  EditNum)
             }
             hItem=ADS_GetStDnTime();
             break;
+
+        case EDIT_METER_ADDE:
+            EDIT_GetText(hItem,tmpTextBuf,13);
+            GUI_Fill_Zero(tmpTextBuf);
+            GUI_GetMeterAddr(tmpTextBuf, g_sys_ctrl.recentMeterAddr);
+            hItem=MTD_GetMeterAddr();
+            
+            break;
             
         default:
             break;
@@ -270,7 +278,10 @@ static void _init_edit(WM_MESSAGE *pMsg,int EditNum)
             
         case EDIT_PASSWORD:
             hItem = CPS_GetPwd();
-            EDIT_GetText(hItem,tmpTextBuf,7);
+            EDIT_GetText(hItem,tmpTextBuf,9);
+            
+            //memcpy();
+            
             break;
             
         case EDIT_RECV_DELAY:
@@ -356,6 +367,11 @@ static void _init_edit(WM_MESSAGE *pMsg,int EditNum)
          case EDIT_SHUTDOWN_TIME:
             hItem = ADS_GetStDnTime();
             EDIT_GetText(hItem,tmpTextBuf,5);
+            break;
+
+         case EDIT_METER_ADDE:
+            hItem =  MTD_GetMeterAddr();
+            EDIT_GetText(hItem, tmpTextBuf, 13);
             break;
             
         default:
@@ -473,27 +489,6 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
             LISTBOX_AddString(hItem, "2400");
             LISTBOX_AddString(hItem, "4800");
             LISTBOX_AddString(hItem, "9600");
-
-#if 0            
-            switch(g_rom_para.baudrate)
-            {
-                case 1200:
-                    LISTBOX_SetSel(hItem,0);
-                    break;
-                case 1500:
-                    LISTBOX_SetSel(hItem,1);
-                    break;
-                case 2400:
-                    LISTBOX_SetSel(hItem,2);
-                    break;
-                case 4800:
-                    LISTBOX_SetSel(hItem,3);
-                    break;
-                case 9600:
-                    LISTBOX_SetSel(hItem,4);
-                    break;
-            }
-#endif            
             break;
 
         case LISTBOX_PREAM:
@@ -502,18 +497,6 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
         case LISTBOX_STOPBIT:
             LISTBOX_AddString(hItem, "1");
             LISTBOX_AddString(hItem, "2");
-
-#if 0            
-            switch(g_rom_para.stopbit)
-            {
-                case ONE_STOPBIT:
-                    LISTBOX_SetSel(hItem, 0);
-                    break;
-                case TWO_STOPBIT:
-                    LISTBOX_SetSel(hItem, 1);
-                    break;     
-            }
-#endif            
             break;
 
         
@@ -521,12 +504,15 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
             if(g_rom_para.protocol == DL645_1997)
             {
                 LISTBOX_AddString(hItem, Readdata_97);
-                LISTBOX_AddString(hItem, GetAddr_97);
+                LISTBOX_AddString(hItem, WriteData_97);
+                LISTBOX_AddString(hItem, CalTime_Broad);
             }
             else if(g_rom_para.protocol == DL645_2007)
             {
                 LISTBOX_AddString(hItem, Readdata_07);
+                LISTBOX_AddString(hItem, WriteData_07);
                 LISTBOX_AddString(hItem, GetAddr_07);
+                LISTBOX_AddString(hItem, CalTime_Broad);
             }
             //LISTBOX_AddString(hItem, WriteData);
             //LISTBOX_AddString(hItem, ClrDemond);
@@ -659,13 +645,13 @@ static void Select_ListBox_Row(int  WidgetNum)
             
             if(DL645_2007 == g_rom_para.protocol)
             {        
-                memcpy(g_gui_para.dataFlag, &c_645DidoDef[g_rom_para.protocol][SelNum], 4);
+                memcpy(g_gui_para.dataItem, &c_645dataItemDef[g_rom_para.protocol][SelNum], 4);
                 
                 EDIT_SetText(hWin,pReadSel_07[SelNum]);
             }
             else if(DL645_1997 == g_rom_para.protocol)
             {
-                memcpy(g_gui_para.dataFlag, &c_645DidoDef[g_rom_para.protocol][SelNum], 2);
+                memcpy(g_gui_para.dataItem, &c_645dataItemDef[g_rom_para.protocol][SelNum], 2);
                 
                 EDIT_SetText(hWin,pReadSel_97[SelNum]);
             }

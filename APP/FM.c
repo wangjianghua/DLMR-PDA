@@ -223,7 +223,7 @@ void FatFs_Test(void)
     g_rtc_time[YEAR_POS] = Hex2BcdChar(15);
     g_rtc_time[MONTH_POS] = Hex2BcdChar(1);
     g_rtc_time[DATE_POS] = Hex2BcdChar(19);
-    g_rtc_time[DAY_POS] = Hex2BcdChar(1);
+    g_rtc_time[WEEK_POS] = Hex2BcdChar(1);
     g_rtc_time[HOUR_POS] = Hex2BcdChar(15);
     g_rtc_time[MIN_POS] = Hex2BcdChar(51);
     g_rtc_time[SEC_POS] = Hex2BcdChar(15);                

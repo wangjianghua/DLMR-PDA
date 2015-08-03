@@ -100,7 +100,7 @@ const char GetMeterNum[]="F1\xe8\x8e\xb7\xe5\x8f\x96\xe8\xa1\xa8\xe5\x8f\xb7";
 
 
 //消息内容
-const char Msg[]="#\xe6\xb6\x88\xe6\x81\xaf\xe5\x86\x85\xe5\xae\xb9";
+const char MsgLog[]="#\xe6\xb6\x88\xe6\x81\xaf\xe8\xae\xb0\xe5\xbd\x95";
 
 //电表表号
 const char MeterNum[]="\xe7\x94\xb5\xe8\xa1\xa8\xe8\xa1\xa8\xe5\x8f\xb7";
@@ -167,7 +167,7 @@ const char BeepSound[] = "\xe6\x8c\x89\xe9\x94\xae\xe5\xa3\xb0\xe9\x9f\xb3\xe5\x
 *               数据标识
 **************************************************************/
 
-const char *_ReadMeterProj_07[4] = 
+const char *_ReadMeterProj_07[USED_DATAFLAG_NUM] = 
 {
     //当前正
     PositiveData,
@@ -177,9 +177,14 @@ const char *_ReadMeterProj_07[4] =
     DayPstData,
     //日冻结反
     DayNgtvData,  
+    //读年月日周
+    ReadTime_YMDW,
+    
+    ReadTime_HMS,
+    
 };
 
-const char *_ReadMeterProj_97[4] = 
+const char *_ReadMeterProj_97[USED_DATAFLAG_NUM] = 
 {
     //当前正
     Positive,
@@ -189,6 +194,11 @@ const char *_ReadMeterProj_97[4] =
     LastMonthPsv,
     //日冻结反
     LastMonthNgtv,
+
+    ReadTime_YMDW,
+    
+    ReadTime_HMS,
+    
 };
 
 
@@ -306,7 +316,7 @@ const char DataSignBtn[]="F2\xe6\x95\xb0\xe6\x8d\xae\xe6\xa0\x87\xe8\xaf\x86";
 
 //读设备地址
 const char GetAddr_07[]="\xe8\xaf\xbb\xe8\xae\xbe\xe5\xa4\x87\xe5\x9c\xb0\xe5\x9d\x80-13H";
-const char GetAddr_97[]="\xe8\xaf\xbbMAC\xe5\x9c\xb0\xe5\x9d\x80-05H";
+const char GetAddr_97[]="\xe8\xaf\xbbMAC\xe5\x9c\xb0\xe5\x9d\x80-0AH";
 
 
 //{0x05, 0x01, 0x04,  4,5,6,7,8,9,10,11,12,13,14,15,16},
@@ -321,7 +331,12 @@ const char Readdata_97[]="\xe8\xaf\xbb\xe6\x95\xb0\xe6\x8d\xae-01H";
 
 
 //写数据
-const char WriteData[]="\xe5\x86\x99\xe6\x95\xb0\xe6\x8d\xae";
+const char WriteData_07[]="\xe5\x86\x99\xe6\x95\xb0\xe6\x8d\xae-14H";
+const char WriteData_97[]="\xe5\x86\x99\xe6\x95\xb0\xe6\x8d\xae-04H";
+
+//广播校时
+const char CalTime_Broad[] = "\xe5\xb9\xbf\xe6\x92\xad\xe6\xa0\xa1\xe6\x97\xb6-08H";
+
 
 //读取产品芯片型号
 const char ReadChip[]="\xe8\xaf\xbb\xe5\x8f\x96\xe4\xba\xa7\xe5\x93\x81\xe8\x8a\xaf\xe7\x89\x87\xe5\x9e\x8b\xe5\x8f\xb7";
@@ -367,21 +382,22 @@ const char *Edit_FrameTitle[]={
     AddRlyAddr,
     ModifyRlyAddr,
     ShutDownTime,
-    
-    //ConfirmUpdata
+    MeterNum,
 };
 
 const char *pCtlCode_07[] = {
      Readdata_07,
+     WriteData_07,
      GetAddr_07,
-     WriteData,
+     CalTime_Broad,
 };
 
 
 const char *pCtlCode_97[] = {
      Readdata_97,
-     GetAddr_97,
-     WriteData,
+     WriteData_97,
+     CalTime_Broad,
+     
 };
 
 
@@ -636,10 +652,37 @@ const char HardwareErr[] = "\xe5\xbc\x82\xe5\xb8\xb8";
 const char HardwareOK[] = "\xe6\xad\xa3\xe5\xb8\xb8";
 
 
+//""
+//"\xe5\x91\xa8"
+
+const char CalTime_YMDW[] = "\xe6\xa0\xa1\xe6\x97\xb6(\xe5\xb9\xb4\xe6\x9c\x88\xe6\x97\xa5\xe5\x91\xa8)";
+const char CalTime_HMS[] = "\xe6\xa0\xa1\xe6\x97\xb6(\xe6\x97\xb6\xe5\x88\x86\xe7\xa7\x92)";
+const char Read_YMDWHMS[] = "\xe8\xaf\xbb\xe7\x94\xb5\xe8\xa1\xa8\xe6\x97\xb6\xe9\x97\xb4";
+const char ReadTime_HMS[] = "\xe6\x97\xb6\xe5\x88\x86\xe7\xa7\x92";
+const char ReadTime_YMDW[] = "\xe5\xb9\xb4\xe6\x9c\x88\xe6\x97\xa5\xe5\x91\xa8";
 
 
+const char ExtFnct[] = "\xe6\x89\xa9\xe5\xb1\x95";
+const char MeterTimeYMD[] = "\xe7\x94\xb5\xe8\xa1\xa8\xe5\xb9\xb4\xe6\x9c\x88\xe6\x97\xa5";
+const char MeterTimeHMS[] = "\xe7\x94\xb5\xe8\xa1\xa8\xe6\x97\xb6\xe5\x88\x86\xe7\xa7\x92";
+const char MeterTime[] = "\xe6\x97\xb6\xe9\x97\xb4";
 
 
+const char Monday[] = "\xe6\x98\x9f\xe6\x9c\x9f\xe4\xb8\x80";
+const char Tuesday[] = "\xe6\x98\x9f\xe6\x9c\x9f\xe4\xba\x8c";
+const char Wednesday[] = "\xe6\x98\x9f\xe6\x9c\x9f\xe4\xb8\x89";
+const char Thursday[] = "\xe6\x98\x9f\xe6\x9c\x9f\xe5\x9b\x9b";
+const char Friday[] = "\xe6\x98\x9f\xe6\x9c\x9f\xe4\xba\x94";
+const char Saturday[] ="\xe6\x98\x9f\xe6\x9c\x9f\xe5\x85\xad";
+const char Sunday[] = "\xe6\x98\x9f\xe6\x9c\x9f\xe6\x97\xa5";
 
-
+const char *TextWeek[] = {
+    "\xe5\x91\xa8\xe6\x97\xa5",
+    "\xe5\x91\xa8\xe4\xb8\x80",
+    "\xe5\x91\xa8\xe4\xba\x8c",   
+    "\xe5\x91\xa8\xe4\xb8\x89",
+    "\xe5\x91\xa8\xe5\x9b\x9b",
+    "\xe5\x91\xa8\xe4\xba\x94",
+    "\xe5\x91\xa8\xe5\x85\xad",
+};
 

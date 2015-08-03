@@ -56,6 +56,8 @@ static const char _acFlagItems[][2][10] =
     { "9020",     "0002FF00" },
     { "9410",     "0001FF01" },
     { "9420",     "0002FF01" },
+    { "C010",     "04000101" },
+    { "C011",     "04000102" },
     { "",         "" },
 };
 
@@ -68,8 +70,8 @@ static const char _acFlagItems[][2][10] =
 */
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { WINDOW_CreateIndirect,     NULL,     ID_WINDOW_0,   0,   0,   240, 295, 0, 0x0, 0 },
-  { LISTVIEW_CreateIndirect,   NULL,     ID_LISTVIEW_0, 8,   50,  225, 203, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,       DataSign, ID_TEXT_1,     13,  31,  80,  20,  0, 0x0, 0 },
+  { LISTVIEW_CreateIndirect,   NULL,     ID_LISTVIEW_0, 7,   15,  226, 230, 0, 0x0, 0 },
+  //{ TEXT_CreateIndirect,       DataSign, ID_TEXT_1,     13,   2,  80,  20,  0, 0x0, 0 },
   { BUTTON_CreateIndirect,     Confirm,  ID_BUTTON_0,   10,   262, 55, 25,  0, 0x0, 0 },
   { BUTTON_CreateIndirect,     Back,     ID_BUTTON_1,   175,  262, 55, 25,  0, 0x0, 0 },
   // USER START (Optionally insert additional widgets)
@@ -106,7 +108,6 @@ static void set_datasign_value(WM_MESSAGE *pMsg)
     CST_Set_DataFlag(DataSign_Text);
     GUI_GetStrDataFlag(DataSign_Text, g_rom_para.protocol);
     //CST_Set_DataFlag();
-       
 }
 
 
@@ -136,7 +137,7 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     LISTVIEW_SetHeaderHeight(hItem, 20);
     LISTVIEW_SetAutoScrollV(hItem,1);
 
-    for(i = 0;i < 4; i++)
+    for(i = 0;i < USED_DATAFLAG_NUM; i++)
     {
         if(DL645_2007 == g_rom_para.protocol)
         {
@@ -182,6 +183,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 g_hWin_DataSign=HBWIN_NULL;
                 WM_SetFocus(g_hWin_ProtoDbg);
                 CPT_SetFocus();
+                g_gui_para.state = GUI_STATE_IDLE;
                 break;
             case GUI_KEY_GREEN:
                 set_datasign_value(pMsg);

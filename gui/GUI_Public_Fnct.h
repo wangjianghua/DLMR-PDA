@@ -15,7 +15,6 @@ extern WM_HWIN g_hWin_msg;       //消息日志
 
 extern WM_HWIN g_hWin_monitor;  //监控
 extern WM_HWIN g_hWin_ReadMeter; //常用抄表
-extern WM_HWIN g_hWin_PLC; // 载波功能设置
 
 
 extern WM_HWIN g_hWin_task;
@@ -33,7 +32,7 @@ extern WM_HWIN g_hWin_Input;
 extern WM_HWIN g_hWin_freq;
 extern WM_HWIN g_hWin_AdvanSet;
 extern WM_HWIN g_hWin_SDInfo;   //存储卡信息
-
+extern WM_HWIN g_hWin_MeterTime;  //电表时间
 
 /********************************************
 //
@@ -106,11 +105,13 @@ typedef enum
     GUI_STATE_PROTO_DBG,
     GUI_STATE_PLC_MONITOR,
     GUI_STATE_MEM,
+    GUI_STATE_METER_TIME,
 } GUI_STATE; //华兄
 
 typedef enum
 {
     GUI_CMD_BROAD_READ_DEV_ADDR = 0,
+    GUI_CMD_BROAD_CAL_TIME,    
     GUI_CMD_PLC_R2M,
     GUI_CMD_PLC_M2R,    
     GUI_CMD_PLC_FREQ_SET,
@@ -152,7 +153,9 @@ typedef enum
 #define PLC_READ_DATA_1        1
 #define PLC_WRITE_DATA_2       2
 
-#define PLC_CTRL_MAX_NUM    16
+#define DL645_MAX_CTRL_NUM          16
+#define DL645_MAX_DATA_ITEM_NUM     16
+
 
 #define DATA_SIGN_LENGTH    4  //数据标识符长度
 
@@ -209,7 +212,9 @@ typedef enum
 #define EDIT_RELAY_ADDR            16
 #define ADD_RELAY_ADDR             17
 #define MODIFY_RELAY_ADDR          18
-#define EDIT_SHUTDOWN_TIME            19
+#define EDIT_SHUTDOWN_TIME         19
+#define EDIT_METER_ADDE            20
+
 
 //读节点倒计时
 #define   COUNTDOWN_OFF            0
@@ -219,6 +224,10 @@ typedef enum
 //#define   PLC_MONITOR_OFF          0
 //#define   PLC_MONITOR_ON           1
 
+#define PWD_LEN                 4
+#define OPCODE_LEN              4
+
+#define USED_DATAFLAG_NUM       6
 
 
 
@@ -226,35 +235,29 @@ typedef enum
 #define ON                         0
 #define OFF                        1
 
-
-
-
-//#define ERROR_BOX(error_no)     MESSAGEBOX_Create(&gc_messageBoxText[error_no][0],"Error",0)
-
+#define DL645_CTRL_READ_DATA                0u
+#define DL645_CTRL_WRITE_DATA               1u
+#define DL645_2007_CTRL_READ_DEV_ADDR       2u
 
 typedef struct _gui_para_
 {
-    //U16 g_protocal;      //规约
-    U8  state;
-    U8  cmd;      
-    U8  ctrlCode;   //控制字
-    U8  srcAddr[6]; //电表表号  reserved
-    U8  dstAddr[6]; //电表表号  reserved
-    U8  relayAddr[8][6];  //中继地址,实际是7级中继，在调用组中继帧接口的时候需要把目标地址也写进去,8个
-    U16 dataLen;        //长度
-    U8  dataFlag[4];      //数据标识
-    U8  dataBuf[256];     //数据
-    //U8  meterPWD[4] = {0x01,0x31,0x41,0x51};      //密码 
-    //U16 g_crc;           //校验和
-    
+    u8  state;
+    u8  cmd;
+    u8  ctrlCode; //控制字
+    u8  srcAddr[6]; //电表表号
+    u8  dstAddr[6]; //电表表号
+    u8  relayAddr[8][6]; //中继地址
+    u16 dataLen; //长度
+    u8  dataItem[4]; //数据标识
+    u8  dataBuf[256]; //数据
 } GUI_PARA, *P_GUI_PARA;
 
-extern GUI_PARA g_gui_para;      //参数包
+extern GUI_PARA g_gui_para;
 
 extern const char *gc_messageBoxText[];
-extern const u8 c_645ctrlDef[2][PLC_CTRL_MAX_NUM] ;
+extern const u8 c_645ctrlDef[2][DL645_MAX_CTRL_NUM] ;
 
-extern const u32 c_645DidoDef[2][PLC_CTRL_MAX_NUM] ;
+extern const u32 c_645dataItemDef[2][DL645_MAX_CTRL_NUM] ;
 
 extern const u8 g_self_check_pwd[];
 
@@ -303,6 +306,10 @@ WM_HWIN RMD_BroadErr(void);
 void RMD_ClearData(void);
 void RMD_proc_resp_data();
 
+u32 CPS_GetPwdPara(u8 * dbuf);
+u32 CPS_GetPwdOpPara(u8 * dbuf);
+
+
 
 /**********
 *
@@ -341,7 +348,10 @@ void GUI_Color_Change(WM_HWIN hParaentWin, int firstID, int editNum );
 
 //extern int key_press_cnt;
 
-
+WM_HWIN MTD_GetYMD(void);
+WM_HWIN MTD_GetHMS(void);
+WM_HWIN MTD_GetMeterAddr(void);
+void MTD_SetAddrBkColor(WM_HWIN hItem);
 
 u32 GUI_GetStrDataFlag(u8 * dbuf, u32 pro_ver);
 u8* GUI_hex2MeterAddrStr(u8 * srcBuf, u32 len);

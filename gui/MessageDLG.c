@@ -7,25 +7,14 @@
 *
 **********************************************************************
 */
-#if 0
-
-#define ID_WINDOW_0     (GUI_ID_USER + 0xAD)
-#define ID_MULTIEDIT_0  (GUI_ID_USER + 0xAE)
-
-#define ID_BUTTON_0     (GUI_ID_USER + 0xB1)
-#define ID_BUTTON_1     (GUI_ID_USER + 0xB2)
-
-#define ID_TEXT_0       (GUI_ID_USER + 0xB3)
-#define ID_TEXT_1       (GUI_ID_USER + 0xB4)
-#endif 
 
 
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { WINDOW_CreateIndirect,    NULL,        ID_WINDOW_0,    0,   0,   240, 295, 0, 0x0, 0 },
-  { MULTIEDIT_CreateIndirect, "Multiedit", ID_MULTIEDIT_0, 7,   26,  225, 229, 0, 0x0, 0 },
+  { MULTIEDIT_CreateIndirect, "Multiedit", ID_MULTIEDIT_0, 7,   15,  226, 230, 0, 0x0, 0 },
   { BUTTON_CreateIndirect,    Clear,       ID_BUTTON_1,    10,   262, 55, 25, 0, 0x0, 0 },
   { BUTTON_CreateIndirect,    Back,        ID_BUTTON_0,    175,  262, 55, 25, 0, 0x0, 0 },
-  { TEXT_CreateIndirect,      Log,         ID_TEXT_1,      13,  6,   119, 20, 0, 0x0, 0 },
+  //{ TEXT_CreateIndirect,      Log,         ID_TEXT_1,      13,  2,   119, 20, 0, 0x0, 0 },
 };
 
 /*********************************************************************
@@ -100,10 +89,15 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 {
                     WM_SetFocus(g_hWin_ProtoDbg);
                 }
-                else if(g_hWin_ReadMeter>0)
+                else if((g_hWin_ReadMeter > 0)&&(g_hWin_MeterTime <= 0))
                 {
                     WM_SetFocus(g_hWin_ReadMeter);
                 }
+                else if((g_hWin_ReadMeter > 0)&&(g_hWin_MeterTime > 0))
+                {
+                    WM_SetFocus(g_hWin_MeterTime);
+                }
+                
                 msg_key_cnt = 0;
                 break;
             case GUI_KEY_GREEN:

@@ -388,19 +388,17 @@ void RTC_WriteBuffer(unsigned short addr,unsigned char *data,unsigned char len)
 
 void RTC_ReadTime(unsigned char *time)
 {
-    if(time == 0)
+    if(time == NULL)
         return;
 
     RTC_ReadBuffer(0, time, 7);
+    
     time[SEC_POS] &= 0x7f;
     time[MIN_POS] &= 0x7f;
     time[HOUR_POS] &= 0x3f;
-    time[DAY_POS] &= 0x07;
+    time[WEEK_POS] &= 0x07;
     time[DATE_POS] &= 0x3f;
     time[MONTH_POS] &= 0x1f;
-    
-    //time[YEAR_POS] &= 0x7f; //ЛЊаж
-
 }
 
 
@@ -408,21 +406,17 @@ void RTC_ReadTime(unsigned char *time)
 
 void RTC_WriteTime(unsigned char *time)
 {
-    if(time == 0)
+    if(time == NULL)
         return;
-
     
     time[SEC_POS] &= 0x7f;
     time[MIN_POS] &= 0x7f;
     time[HOUR_POS] &= 0x3f;
-    time[DAY_POS] &= 0x07;
+    time[WEEK_POS] &= 0x07;
     time[DATE_POS] &= 0x3f;
     time[MONTH_POS] &= 0x1f;
 
-    //time[YEAR_POS] &= 0x7f; //ЛЊаж
-
     RTC_WriteBuffer(0, time, 7);
-
 }
 
 void RTC_CheckTime(unsigned char *time)
@@ -432,7 +426,7 @@ void RTC_CheckTime(unsigned char *time)
     if(((time[SEC_POS] &= 0x7f) > 0x59)
         ||((time[MIN_POS] &= 0x7f) > 0x59)
         ||((time[HOUR_POS] &= 0x3f) > 0x23)
-        ||((time[DAY_POS] &= 0x07) > 0x7)
+        ||((time[WEEK_POS] &= 0x07) > 0x7)
         ||((time[DATE_POS] &= 0x3f) > 0x31)
         ||((time[MONTH_POS] &= 0x1f) > 0x12))
     {
@@ -455,13 +449,13 @@ unsigned char Hex2BcdChar(unsigned char hex)
 /* ЛЊаж */
 void RtcTimeToSysTime(SYS_TIME *p_sys_time)
 {
-    u8 year[3], mon[3], day[3], date[3], hour[3], min[3], sec[3];
+    u8 year[3], mon[3], week[3], date[3], hour[3], min[3], sec[3];
 
     
     sprintf(year, "%02x", g_rtc_time[YEAR_POS]);
     sprintf(mon, "%02x", g_rtc_time[MONTH_POS]);
     sprintf(date, "%02x", g_rtc_time[DATE_POS]);    
-    sprintf(day, "%02x", g_rtc_time[DAY_POS]);            
+    sprintf(week, "%02x", g_rtc_time[WEEK_POS]);            
     sprintf(hour, "%02x", g_rtc_time[HOUR_POS]);
     sprintf(min, "%02x", g_rtc_time[MIN_POS]);
     sprintf(sec, "%02x", g_rtc_time[SEC_POS]);
@@ -469,7 +463,7 @@ void RtcTimeToSysTime(SYS_TIME *p_sys_time)
     year[2] = '\0';
     mon[2] = '\0';
     date[2] = '\0'; 
-    day[2] = '\0';             
+    week[2] = '\0';             
     hour[2] = '\0';
     min[2] = '\0';
     sec[2] = '\0';
@@ -477,7 +471,7 @@ void RtcTimeToSysTime(SYS_TIME *p_sys_time)
     p_sys_time->year = atoi(year);
     p_sys_time->mon = atoi(mon);
     p_sys_time->date = atoi(date); 
-    p_sys_time->day = atoi(day);
+    p_sys_time->week = atoi(week);
     p_sys_time->hour = atoi(hour);
     p_sys_time->min = atoi(min);
     p_sys_time->sec = atoi(sec);

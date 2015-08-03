@@ -247,7 +247,7 @@ u32 Proto_Check_Frame(void)
     }
     else
     {                
-        if((0 == g_proto_para.dl645_frame_stat.Status) || (0 == g_proto_para.dl645_frame_stat.C) || (g_proto_para.dl645_frame_stat.C & DL645_REPLY_STAT_MASK))
+        if((0 == g_proto_para.dl645_frame_stat.Status) || (0 == g_proto_para.dl645_frame_stat.C))
         {
             g_proto_para.recv_result = RECV_RES_INVALID;                            
         }
@@ -329,6 +329,7 @@ void Proto_Data_Proc(void)
 void  App_TaskProto (void *p_arg)
 {
     INT8U err, index;
+    INT8U dl645_broad_addr[] = {0x99, 0x99, 0x99, 0x99, 0x99, 0x99};
     INT8U rf_dev_addr[] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88};
     INT8U dl645_read_addr[16];
     INT16U len;
@@ -475,6 +476,138 @@ void  App_TaskProto (void *p_arg)
                     g_proto_para.msg_state = MSG_STATE_RECEIVED;
 
                     OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
+                }                
+                break;
+
+            case GUI_CMD_BROAD_CAL_TIME:
+                if(CHANNEL_PLC == g_rom_para.channel) //载波
+                {
+                    memcpy(g_gui_para.dstAddr, dl645_broad_addr, DL645_ADDR_LEN);
+                    
+                    g_gui_para.dataBuf[0] = g_rtc_time[SEC_POS];
+                    g_gui_para.dataBuf[1] = g_rtc_time[MIN_POS];
+                    g_gui_para.dataBuf[2] = g_rtc_time[HOUR_POS];
+                    g_gui_para.dataBuf[3] = g_rtc_time[DATE_POS];
+                    g_gui_para.dataBuf[4] = g_rtc_time[MONTH_POS];
+                    g_gui_para.dataBuf[5] = g_rtc_time[YEAR_POS];
+
+                    g_gui_para.dataLen = 6;
+
+                    memcpy(g_proto_para.dl645_frame_send.Data, g_gui_para.dataBuf, g_gui_para.dataLen);
+                    
+                    Create_DL645_Frame(g_gui_para.dstAddr, g_gui_para.ctrlCode, g_gui_para.dataLen, &g_proto_para.dl645_frame_send);
+
+                    g_proto_para.send_len = g_gui_para.dataLen + DL645_FIX_LEN;
+                    
+                    memcpy(&g_proto_para.send_buf[DL645_INDEX], &g_proto_para.dl645_frame_send, g_proto_para.send_len);
+                    
+                    g_proto_para.send_buf[PREAMBLE_INDEX] = g_rom_para.preamble;
+                    g_proto_para.send_len += PREAMBLE_LEN;
+
+                    while(OSSemAccept(g_sem_plc));
+                      
+                    plc_uart_send(g_proto_para.send_buf, g_proto_para.send_len);
+
+                    g_proto_para.msg_state = MSG_STATE_SENDING;
+
+                    OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
+
+                    OSTimeDlyHMSM(0, 0, 0, 200);
+                    
+                    g_proto_para.data_len = 0;
+
+                    g_proto_para.recv_len = 0;
+
+                    g_proto_para.recv_result = RECV_RES_SUCC;
+
+                    g_proto_para.msg_state = MSG_STATE_RECEIVED;
+
+                    OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);                    
+                }           
+                else if(CHANNEL_RF == g_rom_para.channel) //射频
+                {
+                    memcpy(g_gui_para.dstAddr, dl645_broad_addr, DL645_ADDR_LEN);
+                    
+                    g_gui_para.dataBuf[0] = g_rtc_time[SEC_POS];
+                    g_gui_para.dataBuf[1] = g_rtc_time[MIN_POS];
+                    g_gui_para.dataBuf[2] = g_rtc_time[HOUR_POS];
+                    g_gui_para.dataBuf[3] = g_rtc_time[DATE_POS];
+                    g_gui_para.dataBuf[4] = g_rtc_time[MONTH_POS];
+                    g_gui_para.dataBuf[5] = g_rtc_time[YEAR_POS];
+
+                    g_gui_para.dataLen = 6;
+
+                    memcpy(g_proto_para.dl645_frame_send.Data, g_gui_para.dataBuf, g_gui_para.dataLen);
+                    
+                    Create_DL645_Frame(g_gui_para.dstAddr, g_gui_para.ctrlCode, g_gui_para.dataLen, &g_proto_para.dl645_frame_send);
+
+                    g_proto_para.send_len = g_gui_para.dataLen + DL645_FIX_LEN;
+                    
+                    memcpy(&g_proto_para.send_buf, &g_proto_para.dl645_frame_send, g_proto_para.send_len);
+
+                    while(OSSemAccept(g_sem_rf));
+                    
+                    RF_SEND_LEN = GDW_RF_Protocol_2013(rf_dev_addr, 0x00, 0x00, 0x00, (u8 *)g_proto_para.send_buf, g_proto_para.send_len, RF_SEND_BUF);
+
+                    g_proto_para.msg_state = MSG_STATE_SENDING;
+
+                    OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
+
+                    OSTimeDlyHMSM(0, 0, 0, 200);
+                    
+                    g_proto_para.data_len = 0;
+
+                    g_proto_para.recv_len = 0;
+
+                    g_proto_para.recv_result = RECV_RES_SUCC;
+
+                    g_proto_para.msg_state = MSG_STATE_RECEIVED;
+
+                    OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);                    
+                }
+                else if(CHANNEL_IR == g_rom_para.channel) //红外
+                {
+                    memcpy(g_gui_para.dstAddr, dl645_broad_addr, DL645_ADDR_LEN);
+                    
+                    g_gui_para.dataBuf[0] = g_rtc_time[SEC_POS];
+                    g_gui_para.dataBuf[1] = g_rtc_time[MIN_POS];
+                    g_gui_para.dataBuf[2] = g_rtc_time[HOUR_POS];
+                    g_gui_para.dataBuf[3] = g_rtc_time[DATE_POS];
+                    g_gui_para.dataBuf[4] = g_rtc_time[MONTH_POS];
+                    g_gui_para.dataBuf[5] = g_rtc_time[YEAR_POS];
+
+                    g_gui_para.dataLen = 6;
+
+                    memcpy(g_proto_para.dl645_frame_send.Data, g_gui_para.dataBuf, g_gui_para.dataLen);
+                    
+                    Create_DL645_Frame(g_gui_para.dstAddr, g_gui_para.ctrlCode, g_gui_para.dataLen, &g_proto_para.dl645_frame_send);
+
+                    g_proto_para.send_len = g_gui_para.dataLen + DL645_FIX_LEN;
+                    
+                    memcpy(&g_proto_para.send_buf[DL645_INDEX], &g_proto_para.dl645_frame_send, g_proto_para.send_len);
+                    
+                    g_proto_para.send_buf[PREAMBLE_INDEX] = g_rom_para.preamble;
+                    g_proto_para.send_len += PREAMBLE_LEN;
+
+                    while(OSSemAccept(g_sem_ir));
+                      
+                    ir_uart_send(g_proto_para.send_buf, g_proto_para.send_len);
+
+                    g_proto_para.msg_state = MSG_STATE_SENDING;
+
+                    OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
+
+                    OSTimeDlyHMSM(0, 0, 0, 200);
+                    
+                    g_proto_para.data_len = 0;
+
+                    g_proto_para.recv_len = 0;
+
+                    g_proto_para.recv_result = RECV_RES_SUCC;
+
+                    g_proto_para.msg_state = MSG_STATE_RECEIVED;
+
+                    OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);                    
                 }                
                 break;
                 
@@ -632,7 +765,7 @@ void  App_TaskProto (void *p_arg)
                 if((FRM_CTRW_97_READ_SLVS_DATA == (g_gui_para.ctrlCode & CCTT_CONTROL_CODE_MASK)) ||
                    (FRM_CTRW_97_WRITE_SLVS_DATA == (g_gui_para.ctrlCode & CCTT_CONTROL_CODE_MASK)))
                 {   /* 1997读写命令，2个字节数据标识 */
-                    memcpy(g_proto_para.dl645_frame_send.Data, g_gui_para.dataFlag, DL645_97_DATA_ITEM_LEN);
+                    memcpy(g_proto_para.dl645_frame_send.Data, g_gui_para.dataItem, DL645_97_DATA_ITEM_LEN);
                     memcpy(&g_proto_para.dl645_frame_send.Data[DL645_97_DATA_ITEM_LEN], g_gui_para.dataBuf, g_gui_para.dataLen);
                     g_gui_para.dataLen += DL645_97_DATA_ITEM_LEN;
                 }
@@ -640,7 +773,7 @@ void  App_TaskProto (void *p_arg)
                         (FRM_CTRW_07_WRITE_SLVS_DATA == (g_gui_para.ctrlCode & CCTT_CONTROL_CODE_MASK)))
                 
                 {   /* 2007读写命令，4个字节数据标识 */
-                    memcpy(g_proto_para.dl645_frame_send.Data, g_gui_para.dataFlag, DL645_07_DATA_ITEM_LEN);
+                    memcpy(g_proto_para.dl645_frame_send.Data, g_gui_para.dataItem, DL645_07_DATA_ITEM_LEN);
                     memcpy(&g_proto_para.dl645_frame_send.Data[DL645_07_DATA_ITEM_LEN], g_gui_para.dataBuf, g_gui_para.dataLen);
                     g_gui_para.dataLen += DL645_07_DATA_ITEM_LEN;
                 }
@@ -776,12 +909,12 @@ void  App_TaskProto (void *p_arg)
                 {
                     memcpy(g_gui_para.relayAddr[g_sys_ctrl.sysAddrLevel], g_gui_para.dstAddr, DL645_ADDR_LEN);
 
-                    g_gui_para.ctrlCode = c_645ctrlDef[g_rom_para.protocol][1];
+                    g_gui_para.ctrlCode = c_645ctrlDef[g_rom_para.protocol][DL645_CTRL_READ_DATA];
 
                     len = (DL645_1997 == g_rom_para.protocol) ? (DL645_97_DATA_ITEM_LEN) : (DL645_07_DATA_ITEM_LEN);
 
                     g_proto_para.send_len = Create_DL645_LeveFrame((u8 *)g_gui_para.relayAddr, g_sys_ctrl.sysAddrLevel, g_gui_para.dstAddr,
-                                                                   g_gui_para.ctrlCode, len, g_gui_para.dataFlag, (u8 *)&g_proto_para.dl645_frame_send);
+                                                                   g_gui_para.ctrlCode, len, g_gui_para.dataItem, (u8 *)&g_proto_para.dl645_frame_send);
 
                     memcpy(&g_proto_para.send_buf[DL645_INDEX], &g_proto_para.dl645_frame_send, g_proto_para.send_len);
                     
@@ -1090,7 +1223,7 @@ void  App_TaskPC (void *p_arg)
                             new_time[SEC_POS] = Hex2BcdChar(pc_frame_recv.Data[12]);
                             new_time[MIN_POS] = Hex2BcdChar(pc_frame_recv.Data[13]);
                             new_time[HOUR_POS] = Hex2BcdChar(pc_frame_recv.Data[14]);
-                            new_time[DAY_POS] = Hex2BcdChar(pc_frame_recv.Data[15]);
+                            new_time[WEEK_POS] = Hex2BcdChar(pc_frame_recv.Data[15]);
                             new_time[DATE_POS] = Hex2BcdChar(pc_frame_recv.Data[16]);
                             new_time[MONTH_POS] = Hex2BcdChar(pc_frame_recv.Data[17]);
                             new_time[YEAR_POS] = Hex2BcdChar(pc_frame_recv.Data[18]);

@@ -108,10 +108,10 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
     { EDIT_CreateIndirect, NULL,            ID_EDIT_7,   89,  214, 106, 20, 0, 0x64, 0 },    
     { TEXT_CreateIndirect, "kWh",           ID_TEXT_11,  199, 214, 35, 20, 0, 0x0, 0 },
        
-    //{ BUTTON_CreateIndirect, Save,          ID_BUTTON_2, 10,   262, 55, 25, 0, 0x0, 0 },
-    { BUTTON_CreateIndirect, Msg,           ID_BUTTON_4, 75,  262, 90,  25, 0, 0x0, 0 },
-    { BUTTON_CreateIndirect, Quit,        ID_BUTTON_3, 175,  262, 55, 25, 0, 0x0, 0},
-    { PROGBAR_CreateIndirect, NULL,         ID_PROGBAR_0, 8, 239, 220, 20, 0, 0x0, 0},
+    { BUTTON_CreateIndirect, MeterTime,       ID_BUTTON_2, 10,   262, 55, 25, 0, 0x0, 0 },
+    { BUTTON_CreateIndirect, MsgLog,           ID_BUTTON_4, 75,  262, 90,  25, 0, 0x0, 0 },
+    { BUTTON_CreateIndirect, Quit,          ID_BUTTON_3, 175,  262, 55, 25, 0, 0x0, 0},
+    { PROGBAR_CreateIndirect, NULL,         ID_PROGBAR_0, 8, 238, 224, 20, 0, 0x0, 0},
 };
 
 
@@ -277,7 +277,7 @@ static u8 RMD_Get_Para(WM_MESSAGE *pMsg)
         return DEV_ERROR;
     }
     
-    g_gui_para.ctrlCode = c_645ctrlDef[g_rom_para.protocol][0]; 
+    g_gui_para.ctrlCode = c_645ctrlDef[g_rom_para.protocol][DL645_CTRL_READ_DATA]; 
 
     g_gui_para.dataLen = 0;
 
@@ -402,7 +402,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     //
     GUI_UC_SetEncodeUTF8();
 
-#if 0   
+#if 1   
     hItem=WM_GetDialogItem(pMsg->hWin,ID_BUTTON_2);
     BUTTON_SetBkColor(hItem,0,GUI_GREEN);
     WIDGET_AndState(hItem,WIDGET_STATE_FOCUSSABLE);
@@ -448,8 +448,8 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
         //EDIT_SetText(hItem, pReadSel_07[g_sys_ctrl.data_item_index]);
         EDIT_SetText(hItem, pReadSel_07[0]);
         
-        memcpy(g_gui_para.dataFlag,
-            &c_645DidoDef[g_rom_para.protocol][0],
+        memcpy(g_gui_para.dataItem,
+            &c_645dataItemDef[g_rom_para.protocol][0],
             4);
         
         g_gui_para.ctrlCode=0x11;
@@ -459,8 +459,8 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
         //EDIT_SetText(hItem, pReadSel_97[g_sys_ctrl.data_item_index]);
         EDIT_SetText(hItem, pReadSel_97[0]);
         
-        memcpy(g_gui_para.dataFlag,
-            &c_645DidoDef[g_rom_para.protocol][0],
+        memcpy(g_gui_para.dataItem,
+            &c_645dataItemDef[g_rom_para.protocol][0],
             2);
         g_gui_para.ctrlCode=0x01; 
 
@@ -489,6 +489,15 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 WM_SetFocus(g_hWin_menu);
                 RMD_key_cnt = 0;
                 g_gui_para.state = GUI_STATE_IDLE;
+                break;
+
+            case GUI_KEY_GREEN:
+                g_hWin_MeterTime = CreateExtFnct();
+                hItem = MTD_GetMeterAddr();
+                WM_SetFocus(hItem);
+                MTD_SetAddrBkColor(hItem);
+                
+                
                 break;
                 
             case GUI_KEY_F1: /*ªÒ»°±Ì∫≈*/

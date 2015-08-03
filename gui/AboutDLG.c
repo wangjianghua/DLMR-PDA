@@ -77,6 +77,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                     WM_ShowWindow(g_hWin_TimeBar);
                     WM_ShowWindow(g_hWin_Date);
                     WM_SetFocus(g_hWin_menu);
+                    g_gui_para.state = GUI_STATE_IDLE;
                     break;
                 case GUI_KEY_GREEN:
                     //ERR_NOTE(g_hWin_about, GUI_MSBOX_UPDATE_CFM);

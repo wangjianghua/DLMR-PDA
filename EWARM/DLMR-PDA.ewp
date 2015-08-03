@@ -2158,6 +2158,9 @@
       <name>$PROJ_DIR$\..\gui\MessageDLG.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\gui\MeterTimeDLG.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\gui\MonitorDLG.c</name>
     </file>
     <file>

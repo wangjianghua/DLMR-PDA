@@ -69,7 +69,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { BUTTON_CreateIndirect, RoutTab,     ID_BUTTON_0,  9,   10,  92,  25, 0, 0x0, 0 },
   { BUTTON_CreateIndirect, DataSignBtn, ID_BUTTON_1,  139, 10,  92,  25, 0, 0x0, 0 },
   { BUTTON_CreateIndirect, Send,        ID_BUTTON_2,  10,   262, 55, 25, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, Msg,         ID_BUTTON_3,  75,  262, 90,  25, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, MsgLog,         ID_BUTTON_3,  75,  262, 90,  25, 0, 0x0, 0 },
   { BUTTON_CreateIndirect, Quit,        ID_BUTTON_4,  175,  262, 55, 25, 0, 0x0, 0 },
 
   { TEXT_CreateIndirect, Speed ,        ID_TEXT_0,    8,   47,  80,  20, 0, 0x0, 0 },
@@ -85,7 +85,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { EDIT_CreateIndirect, "Edit",        ID_EDIT_3,    100, 136, 133, 20, 0, 0x64, 0 },
   { EDIT_CreateIndirect, "Edit",        ID_EDIT_4,    100, 167, 133, 20, 0, 0x64, 0 },
   { EDIT_CreateIndirect, "Edit",        ID_EDIT_5,    100, 195, 133, 20, 0, 0x64, 0 },
-  { PROGBAR_CreateIndirect, "Progbar",  ID_PROGBAR_0, 12, 231, 216, 20, 0, 0x0, 0 },
+  { PROGBAR_CreateIndirect, "Progbar",  ID_PROGBAR_0, 8,   238, 224, 20, 0, 0x0,  0 },
 
 };  
 
@@ -191,7 +191,7 @@ void STM_proc_resp_data(void)
 
 static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
 {
-    u8  i, tb[GUI_645_ADDR_LENGTH+2], len;
+    u8  i, tb[GUI_645_ADDR_LENGTH+2], len; //+2 ?
     WM_HWIN hItem;
     WM_HWIN hWin;
     //u8 addr[] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA};
@@ -274,6 +274,10 @@ static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
         if(0x13 == g_gui_para.ctrlCode)
         {
             g_gui_para.cmd = GUI_CMD_BROAD_READ_DEV_ADDR;
+        }
+        else if(0x08 == g_gui_para.ctrlCode)
+        {
+            g_gui_para.cmd = GUI_CMD_BROAD_CAL_TIME;
         }
         else
         {
@@ -442,27 +446,28 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     //
     
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_2);
+    
     if(g_rom_para.protocol == DL645_2007)
     {
         EDIT_SetText(hItem, Readdata_07);
-        g_gui_para.ctrlCode = c_645ctrlDef[g_rom_para.protocol][0]; 
     }
     else if(g_rom_para.protocol == DL645_1997)
     {
         EDIT_SetText(hItem, Readdata_97);
-        g_gui_para.ctrlCode = c_645ctrlDef[g_rom_para.protocol][0]; 
     }
+    
+    g_gui_para.ctrlCode = c_645ctrlDef[g_rom_para.protocol][DL645_CTRL_READ_DATA]; 
 
     if(DL645_2007 == g_rom_para.protocol)
     {   
-        memcpy(g_gui_para.dataFlag,
-            &c_645DidoDef[g_rom_para.protocol][0],
+        memcpy(g_gui_para.dataItem,
+            &c_645dataItemDef[g_rom_para.protocol][0],
             4);
             }
     else if(DL645_1997 == g_rom_para.protocol)
     {
-        memcpy(g_gui_para.dataFlag,
-            &c_645DidoDef[g_rom_para.protocol][0],
+        memcpy(g_gui_para.dataItem,
+            &c_645dataItemDef[g_rom_para.protocol][0],
             2);
     }
     
@@ -525,8 +530,8 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                      WM_ShowWindow(g_hWin_TimeBar);
                      WM_ShowWindow(g_hWin_Date);
                      WM_SetFocus(g_hWin_menu); 
-                     g_gui_para.state = GUI_STATE_IDLE;
                      cpt_key_press_cnt=0;
+                     g_gui_para.state = GUI_STATE_IDLE;
                      break;
                      
                  case GUI_KEY_GREEN:

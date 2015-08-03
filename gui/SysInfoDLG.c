@@ -225,6 +225,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 //sys_ctrl.resetFlag = 0;
                 memset(g_sys_ctrl.DevCheckCode,0,sizeof(g_sys_ctrl.DevCheckCode));
                 SID_DelHandle();
+                g_gui_para.state = GUI_STATE_IDLE;
                 break;
             case GUI_KEY_F2:
 #if 0

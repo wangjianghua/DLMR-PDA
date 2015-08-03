@@ -279,6 +279,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 g_hWin_relay=HBWIN_NULL;
                 WM_SetFocus(g_hWin_ProtoDbg);
                 CPT_SetFocus();
+                g_gui_para.state = GUI_STATE_IDLE;
                 break;
 
             case GUI_KEY_GREEN:

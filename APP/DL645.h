@@ -43,17 +43,18 @@ typedef struct
 	u8 ID_Leng; //表示码长度
 } DL645_Frame_Stat_C;
 
+#pragma pack(push)
 #pragma pack(1)
 typedef struct
 {
-    u8 Start;
-    u8 Addr[6];
     u8 Start1;
+    u8 Addr[6];
+    u8 Start2;
     u8 C;
     u8 L;
     u8 Data[DL645_MAX_DATA_LEN];
 } DL645_Frame_C;
-#pragma pack()
+#pragma pack(pop)
 
 void Create_DL645_Frame(u8 *Addr, u8 C, u8 len, DL645_Frame_C *DL645_Frame);
 u8 Create_DL645_LeveFrame(u8 *leve_Addr, u8 leve, u8 *Addr, u8 C, u8 len, u8 *data, u8 *Send_buf);

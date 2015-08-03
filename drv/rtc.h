@@ -17,7 +17,7 @@
 #define SEC_POS                           0
 #define MIN_POS                           1
 #define HOUR_POS                          2
-#define DAY_POS                           3
+#define WEEK_POS                          3
 #define DATE_POS                          4
 #define MONTH_POS                         5
 #define YEAR_POS                          6
@@ -25,12 +25,12 @@
 
 #define TIME_CH_LEN                       3
 
-typedef struct _sys_time
+typedef struct _sys_time_
 {
     char year;
     char mon;
     char date;    
-    char day;    
+    char week;    
     char hour;
     char min;
     char sec;
@@ -46,8 +46,8 @@ unsigned char Hex2BcdChar(unsigned char hex);
 void RtcTimeToSysTime(SYS_TIME *Time);
 unsigned char *RTC2Text(void);
 unsigned char *RTC2Text_Date(void);
+void RTC_CheckTime(unsigned char *time);
 
-void RTC_CheckTime(unsigned char * time);
 
 #ifdef __cplusplus
 }

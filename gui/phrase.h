@@ -47,7 +47,7 @@ extern const char Confirm[];
 
 //抄表
 extern const char GetMeterNum[];
-extern const char Msg[];
+extern const char MsgLog[];
 extern const char MeterNum[];
 extern const char ReadMeterSel[];
 extern const char Positive[];
@@ -77,7 +77,12 @@ extern const char GetAddr_07[];
 extern const char Readdata_97[];
 extern const char Readdata_07[];
 
-extern const char WriteData[];
+extern const char WriteData_07[];
+extern const char WriteData_97[];
+
+extern const char CalTime_Broad[];
+
+
 extern const char ReadChip[];
 extern const char Send[];
 extern const char ClrDemond[];
@@ -96,8 +101,8 @@ extern const char *pReadSel_97[];
 
 
 //数据标识
-extern const char *_ReadMeterProj_07[4];
-extern const char *_ReadMeterProj_97[4];
+extern const char *_ReadMeterProj_07[USED_DATAFLAG_NUM];
+extern const char *_ReadMeterProj_97[USED_DATAFLAG_NUM];
 
 
 //路由表
@@ -206,6 +211,29 @@ extern const char HardwareOK[];
 extern const char HardwareErr[];
 
 extern const char CmpName[] ;
+
+extern const char CalTime_YMDW[];
+extern const char CalTime_HMS[];
+
+extern const char Read_YMDWHMS[];
+extern const char ReadTime_HMS[];
+extern const char ReadTime_YMDW[];
+
+extern const char ExtFnct[];
+
+extern const char MeterTimeYMD[];
+extern const char MeterTimeHMS[];
+extern const char MeterTime[];
+
+extern const char Monday[];
+extern const char Tuesday[];
+extern const char Wednesday[];
+extern const char Thursday[];
+extern const char Friday[];
+extern const char Saturday[];
+extern const char Sunday[];
+extern const char *TextDay[];
+extern const char *TextWeek[];
 
 
 #endif

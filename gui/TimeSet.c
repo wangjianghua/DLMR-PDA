@@ -162,11 +162,11 @@ u32 Time_From_Widget(unsigned char *time)
 static void Time_Init(WM_MESSAGE *pMsg)
 {
     WM_HWIN hItem;
-    u8 year[3], mon[3], day[3], date[3], hour[3], min[3], sec[3];
+    u8 year[3], mon[3], week[3], date[3], hour[3], min[3], sec[3];
     sprintf(year, "%02x", g_rtc_time[YEAR_POS]);
     sprintf(mon, "%02x", g_rtc_time[MONTH_POS]);
     sprintf(date, "%02x", g_rtc_time[DATE_POS]);    
-    sprintf(day, "%02x", g_rtc_time[DAY_POS]);            
+    sprintf(week, "%02x", g_rtc_time[WEEK_POS]);            
     sprintf(hour, "%02x", g_rtc_time[HOUR_POS]);
     sprintf(min, "%02x", g_rtc_time[MIN_POS]);
     sprintf(sec, "%02x", g_rtc_time[SEC_POS]);
@@ -374,6 +374,7 @@ static void _cbDialog(WM_MESSAGE * pMsg)
                     g_hWin_TimeSet=HBWIN_NULL;
                     WM_SetFocus(g_hWin_para);
                     tms_key_cnt=0;
+                    g_gui_para.state = GUI_STATE_IDLE;
                     break;   
 #if 0
                 case GUI_KEY_TAB:

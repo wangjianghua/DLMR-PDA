@@ -9,7 +9,6 @@ WM_HWIN g_hWin_ProtoDbg; //通信规约调试
 
 WM_HWIN g_hWin_monitor;  //监控
 WM_HWIN g_hWin_ReadMeter; //常用抄表
-WM_HWIN g_hWin_PLC; //载波功能设置
 WM_HWIN g_hWin_DataSign; //数据标识
 WM_HWIN g_hWin_relay;      //中继地址设置
 WM_HWIN g_hWin_msg;       //消息日志 
@@ -31,25 +30,28 @@ WM_HWIN g_hWin_freq;
 WM_HWIN g_hWin_AdvanSet;  //高级设置
 WM_HWIN g_hWin_SDInfo;   //存储卡信息
 
+WM_HWIN g_hWin_MeterTime;  //电表时间
 
 u8 s_prbf[512];
 
 
-const u8 c_645ctrlDef[2][PLC_CTRL_MAX_NUM] = 
+const u8 c_645ctrlDef[2][DL645_MAX_CTRL_NUM] = 
 { 
-    //97规约
-    {0x01, 0x0A, 0x04,  4,5,6,7,8,9,10,11,12,13,14,15,16},
-    //07规约
-    {0x11, 0x13, 0x14,  0x19,5,6,7,8,9,10,11,12,13,14,15,16}
+    /* 97规约 */
+    {0x01, 0x04, 0x08},
+
+    /* 07规约 */
+    {0x11, 0x14, 0x13, 0x08}
 };
 
 
-const u32 c_645DidoDef[2][PLC_CTRL_MAX_NUM] = 
+const u32 c_645dataItemDef[2][DL645_MAX_DATA_ITEM_NUM] = 
 { 
-    //97规约
-    {0x9010,     0x9020,     0x9410,     0x9420, 5,6,7,8,9,10,11,12,13,14,15,16},
-    //07规约
-    {0x0001FF00, 0x0002FF00, 0x0001FF01, 0x0002FF01, 4,5,6,7,8,9,10,11,12,13,14,15}
+    /* 97规约 */
+    {0x9010, 0x9020, 0x9410, 0x9420, 0xC010, 0xC011},
+        
+    /* 07规约 */
+    {0x0001FF00, 0x0002FF00, 0x0001FF01, 0x0002FF01, 0x04000101, 0x04000102}
 };
 
 const u8 g_self_check_pwd[] = {'2', '2', '8', '8', '4', '4', '6', '6', '\0'}; 
@@ -64,6 +66,7 @@ void GUI_Fill_Zero(u8 *tempbuf)
     {
         for(i = 0; i < len; i++)
         {
+            //从最后一位开始放
             tempbuf[GUI_645_ADDR_LENGTH - i-1] = tempbuf[len-i-1];
         }
         
@@ -172,6 +175,8 @@ void GUI_GetHexDataFlag(u8 * strbuf, u8* dataflag, u8 len)
 
     *strbuf = '\0';
 }
+
+//把字符串dbuf中的数据转换为16进制放到dataflag中
 u32 GUI_GetStrDataFlag(u8 * dbuf, u32 pro_ver)
 {
     u8 rmd_ch;
@@ -190,7 +195,7 @@ u32 GUI_GetStrDataFlag(u8 * dbuf, u32 pro_ver)
             //error proc
             return DEV_ERROR;
         }
-        g_gui_para.dataFlag[len-1-i] = rmd_ch<<4;
+        g_gui_para.dataItem[len-1-i] = rmd_ch<<4;
         g_sys_ctrl.defaultDataFlag[len-1-i] = rmd_ch<<4;
         
         if(((rmd_ch = GUI_char2hex(dbuf[(i<<1)+1])) == 0xff))
@@ -199,7 +204,7 @@ u32 GUI_GetStrDataFlag(u8 * dbuf, u32 pro_ver)
             return DEV_ERROR;
         }
         
-        g_gui_para.dataFlag[len-1-i] |= rmd_ch;
+        g_gui_para.dataItem[len-1-i] |= rmd_ch;
         g_sys_ctrl.defaultDataFlag[len-1-i] |= rmd_ch;
     }
 
@@ -255,20 +260,25 @@ void GUI_Recv_Msg_Proc(void)
         *send_ptr++ = '\n';
         *send_ptr++ = 0;
 
-        if((g_gui_para.state == GUI_STATE_PROTO_DBG)
-            ||(g_gui_para.state == GUI_STATE_AMR)
-            ||(g_gui_para.state == GUI_STATE_PLC_FREQ_SET))
+        if((g_gui_para.state == GUI_STATE_PROTO_DBG) ||
+           (g_gui_para.state == GUI_STATE_AMR) ||
+           (g_gui_para.state == GUI_STATE_PLC_FREQ_SET) ||
+           (g_gui_para.state == GUI_STATE_METER_TIME))
         {
             hObj = MSG_Get_MultiEdit();
             MULTIEDIT_AddText(hObj, s_prbf); 
+            
             if(g_gui_para.state == GUI_STATE_AMR)
             {
                 RMD_proc_resp_data();
             }
-
-            if(g_gui_para.state == GUI_STATE_PROTO_DBG)
+            else if(g_gui_para.state == GUI_STATE_PROTO_DBG)
             {
                 STM_proc_resp_data();
+            }
+            else if(g_gui_para.state == GUI_STATE_METER_TIME)
+            {
+                MTD_proc_resp_data();
             }
         }
         else if(g_gui_para.state == GUI_STATE_PLC_MONITOR)
@@ -311,21 +321,29 @@ void GUI_Send_Msg_Proc(void)
 
 WM_HWIN GUI_Get_PROGBAR()
 {
-    switch(g_gui_para.state )
+    switch(g_gui_para.state)
     {
-    case  GUI_STATE_PROTO_DBG:
+    case GUI_STATE_PROTO_DBG:
         return STM_Get_PROGBAR();
         break;
-    case  GUI_STATE_AMR:
+        
+    case GUI_STATE_AMR:
         return RMD_Get_PROGBAR();
         break;
-    case  GUI_STATE_MEM:
+        
+    case GUI_STATE_MEM:
         return GUI_Get_FD_Usage_PROGBAR();
+        break;
+
+    case GUI_STATE_METER_TIME:
+        return MTD_Get_PROGBAR();
+        break;        
+
+    default:
         break;
     }
     
     return WM_HWIN_NULL;
-    
 }
 
 void GUI_Recv_Fail_Proc(void)

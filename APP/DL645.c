@@ -68,12 +68,12 @@ void CS_Pack(u8 *buff)
 //------------------------------------建立DL645报文----------------------------------
 void Create_DL645_Frame(u8 *Addr, u8 C, u8 len, DL645_Frame_C *DL645_Frame)
 {
-    DL645_Frame->Start=0x68;
-    memcpy(DL645_Frame->Addr,Addr,6);
     DL645_Frame->Start1=0x68;
+    memcpy(DL645_Frame->Addr,Addr,6);
+    DL645_Frame->Start2=0x68;
     DL645_Frame->C=C;
     DL645_Frame->L=len;
-    CS_Pack(&DL645_Frame->Start);
+    CS_Pack(&DL645_Frame->Start1);
 }
 
 //--------------------------中继645组帧-------------------------------------------------------------------
@@ -112,10 +112,10 @@ u8 Create_DL645_LeveFrame(u8 *leve_Addr, u8 leve, u8 *Addr, u8 C, u8 len, u8 *da
     
 	memcpy(DL645_Frame->Data+Point,data,len);
 	Point+=len;
-	DL645_Frame->Start=0x68;
 	DL645_Frame->Start1=0x68;
+	DL645_Frame->Start2=0x68;
 	DL645_Frame->L=Point;
-    CS_Pack(&DL645_Frame->Start);
+    CS_Pack(&DL645_Frame->Start1);
     
 	return (Point+12);	
 }

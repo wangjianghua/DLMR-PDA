@@ -4,7 +4,7 @@
 
 #define HARDWARE_VERSION         23
 #define SOFTWARE_VERSION         30
-#define VERSION_DATE     0x20150730
+#define VERSION_DATE     0x20150803
 
 #define BOOT_REQUEST_ACT   0xffffbbcc
 #define BOOT_FINISH_ACT    0xffff0000
@@ -24,7 +24,7 @@ Sector 7 0x0806 0000 - 0x0807 FFFF 128 Kbyte
 #define ROM_ADDR_PARA_SIZE    (sizeof(ROM_PARA))
 
 #define RAM_COPY_MAX_SIZE_K    64
-#define SRM_PARA_NUMBER      512
+#define MAX_PARA_NUM           512
 #define TAG_WORD_TABLE_MAP     0XDA3C7B92
 
 
@@ -61,28 +61,27 @@ Sector 7 0x0806 0000 - 0x0807 FFFF 128 Kbyte
 typedef struct _rom_para_
 {
     unsigned int magic_word;
-    unsigned int bootFlag;      //启动标志，不能改动
+    unsigned int bootFlag;
     unsigned int crc;
     unsigned int versionDate;
 
-    unsigned int auto_sleep_time;           //屏幕超时
+    unsigned int auto_sleep_time;
     unsigned int auto_shutdown_time;
-    unsigned int beep_switch;          //按键声音开关
-    unsigned int recvDelayTime;//接受数据延时
-    unsigned int execInterval;//执行时间
-    unsigned int protocol; //规约
-    unsigned int channel; //通道
-    unsigned int baudrate; //波特率
-    unsigned int preamble; //前导符
+    unsigned int beep_switch;
+    unsigned int recvDelayTime;
+    unsigned int execInterval;
+    unsigned int protocol;
+    unsigned int channel;
+    unsigned int baudrate;
+    unsigned int preamble;
     unsigned int stopbit;
-    unsigned int plc_freq; //速率选择,下面减过了
-    unsigned int bpsSpeed;             //传输数据等待时间,需要保存，以便下次启动有默认设置
+    unsigned int plc_freq;
+    unsigned int bpsSpeed;
 
-    unsigned int meterPassword[8];//密码
+    unsigned int meter_pwd;
+    unsigned int meter_opcode;
 
-    unsigned int number;
-
-    unsigned int para_data[SRM_PARA_NUMBER - 25];
+    unsigned int para_reserve[MAX_PARA_NUM - 18];
 } ROM_PARA, *P_ROM_PARA;
 
 typedef struct _sys_ctrl_

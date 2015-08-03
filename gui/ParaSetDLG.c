@@ -27,41 +27,6 @@
 *
 **********************************************************************
 */
-#if 0
-
-#define ID_WINDOW_0       (GUI_ID_USER + 0x6C)
-
-#define ID_TEXT_0         (GUI_ID_USER + 0x6D)
-#define ID_TEXT_1         (GUI_ID_USER + 0x6E)
-#define ID_TEXT_2         (GUI_ID_USER + 0x6F)
-#define ID_TEXT_3         (GUI_ID_USER + 0x70)
-#define ID_TEXT_4         (GUI_ID_USER + 0x71)
-#define ID_TEXT_5         (GUI_ID_USER + 0x72)
-#define ID_TEXT_6         (GUI_ID_USER + 0x73)
-#define ID_TEXT_7         (GUI_ID_USER + 0x74)
-#define ID_TEXT_8         (GUI_ID_USER + 0x75)
-
-#define ID_EDIT_0     (GUI_ID_USER + 0x76)
-#define ID_EDIT_1     (GUI_ID_USER + 0x77)
-#define ID_EDIT_2     (GUI_ID_USER + 0x78)
-#define ID_EDIT_3     (GUI_ID_USER + 0x79)
-#define ID_EDIT_4     (GUI_ID_USER + 0x7A)
-#define ID_EDIT_5     (GUI_ID_USER + 0x7B)
-#define ID_EDIT_6     (GUI_ID_USER + 0x7C)
-#define ID_EDIT_7     (GUI_ID_USER + 0x7D)
-
-#define ID_BUTTON_0   (GUI_ID_USER + 0x80)
-#define ID_BUTTON_1   (GUI_ID_USER + 0x81)
-#define ID_BUTTON_2   (GUI_ID_USER + 0x82)
-#define ID_BUTTON_3   (GUI_ID_USER + 0x83)
-#define ID_BUTTON_4   (GUI_ID_USER + 0x84)
-
-#define ID_LISTBOX_0      (GUI_ID_USER + 0x85)
-
-//char Edit0_Text[10]; //edit文本字符串
-//char Edit1_Text[10];
-//char Edit2_Text[10];
-#endif
 
 static int key_press_cnt = 0;//按键次数，按上下键盘的时候对应不同的button
 
@@ -168,6 +133,125 @@ void CPS_Color_Change(void)
     }
 }
 #endif
+
+void CPS_PwdHex2Str(u8 *strbuf)
+{
+    u8 i, *pbuf;
+    
+
+    pbuf = (u8 *)&g_rom_para.meter_pwd;
+
+    for(i = 0; i < PWD_LEN; i++)
+    {
+        *strbuf++ = GUI_Hex2Char(pbuf[PWD_LEN - i - 1] >> 4);
+        *strbuf++ = GUI_Hex2Char(pbuf[PWD_LEN - i - 1] & 0x0f);
+    }
+
+    *strbuf = '\0';
+}
+
+
+void CPS_OpcodeHex2Str(u8 *strbuf)
+{
+    u8 i, *pbuf;
+    
+
+    pbuf = (u8 *)&g_rom_para.meter_opcode;
+
+    for(i = 0; i < PWD_LEN; i++)
+    {
+        *strbuf++ = GUI_Hex2Char(pbuf[PWD_LEN - i - 1] >> 4);
+        *strbuf++ = GUI_Hex2Char(pbuf[PWD_LEN - i - 1] & 0x0f);
+    }
+
+    *strbuf = '\0';
+}
+
+
+
+#if (EWARM_OPTIMIZATION_EN > 0u)
+#pragma optimize = low
+#endif
+u32 CPS_GetPwdPara(u8 *dbuf)
+{
+    u8 i, rmd_ch, *pbuf, buf[5];
+
+
+    pbuf = (u8 *)&g_rom_para.meter_pwd;
+        
+    for(i = 0; i < PWD_LEN; i++)
+    {
+        if(((rmd_ch = GUI_char2hex(dbuf[i<<1])) == 0xff))
+        {
+            return DEV_ERROR;
+        }
+        
+        buf[PWD_LEN-1-i] = rmd_ch<<4;
+        
+        if(((rmd_ch = GUI_char2hex(dbuf[(i<<1)+1])) == 0xff))
+        {
+            return DEV_ERROR;
+        }
+        
+        buf[PWD_LEN-1-i] |= rmd_ch;
+    }
+
+    for(i = 0; i < PWD_LEN; i++)
+    {
+        pbuf[i] = buf[i];
+    }
+
+    return DEV_OK;
+}
+
+#if (EWARM_OPTIMIZATION_EN > 0u)
+#pragma optimize = low
+#endif
+u32 CPS_GetOpcodePara(u8 *dbuf)
+{
+#if 0    
+    u8 i, *pbuf;    
+    
+
+    pbuf = (u8 *)&g_rom_para.meterPassword[1];
+    
+    for(i = 0; i < OPCODE_LEN; i++)
+    {
+        pbuf[i] = dbuf[OPCODE_LEN-i-1];
+    }
+#else
+    u8 i, rmd_ch, *pbuf, buf[5];
+
+
+    pbuf = (u8 *)&g_rom_para.meter_opcode;
+        
+    for(i = 0; i < PWD_LEN; i++)
+    {
+        if(((rmd_ch = GUI_char2hex(dbuf[i<<1])) == 0xff))
+        {
+            return DEV_ERROR;
+        }
+        
+        buf[PWD_LEN-1-i] = rmd_ch<<4;
+        
+        if(((rmd_ch = GUI_char2hex(dbuf[(i<<1)+1])) == 0xff))
+        {
+            return DEV_ERROR;
+        }
+        
+        buf[PWD_LEN-1-i] |= rmd_ch;
+    }
+
+    for(i = 0; i < PWD_LEN; i++)
+    {
+        pbuf[i] = buf[i];
+    }
+
+    return DEV_OK;
+#endif
+}
+
+
 
 /*********************************************
 *
@@ -320,11 +404,13 @@ static void _init_dialog(WM_MESSAGE * pMsg)
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_4);
     //int_to_char(g_rom_para.scrTimeout,tmpBuf,10);
-    EDIT_SetText(hItem, "0000");
+    CPS_PwdHex2Str(tmpBuf);
+    EDIT_SetText(hItem, tmpBuf);
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_5);
     //int_to_char(g_rom_para.meterPassword,tmpBuf,10);
-    EDIT_SetText(hItem, "0000");
+    CPS_OpcodeHex2Str(tmpBuf);
+    EDIT_SetText(hItem, tmpBuf);
 
     hItem = WM_GetDialogItem(pMsg->hWin, ID_EDIT_6);
     int_to_char(g_rom_para.recvDelayTime,tmpBuf,10);
@@ -433,11 +519,13 @@ void GUI_Refresh_ParaSetDLG(void)
 
     hItem = WM_GetDialogItem(g_hWin_para, ID_EDIT_4);
     //int_to_char(g_rom_para.scrTimeout,tmpBuf,10);
-    EDIT_SetText(hItem, "0000");
+    CPS_PwdHex2Str(tmpBuf);
+    EDIT_SetText(hItem, tmpBuf);
 
     hItem = WM_GetDialogItem(g_hWin_para, ID_EDIT_5);
     //int_to_char(g_rom_para.meterPassword,tmpBuf,10);
-    EDIT_SetText(hItem, "0000");
+    CPS_OpcodeHex2Str(tmpBuf);
+    EDIT_SetText(hItem, tmpBuf);
 
     hItem = WM_GetDialogItem(g_hWin_para, ID_EDIT_6);
     int_to_char(g_rom_para.recvDelayTime,tmpBuf,10);
@@ -446,9 +534,6 @@ void GUI_Refresh_ParaSetDLG(void)
     hItem = WM_GetDialogItem(g_hWin_para, ID_EDIT_7);
     int_to_char(g_rom_para.execInterval,tmpBuf,10);
     EDIT_SetText(hItem, tmpBuf);
-
-    //hItem = WM_GetDialogItem(g_hWin_para,ID_EDIT_0);
-    //WM_SetFocus(hItem);
 }
 
 
@@ -489,6 +574,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                    WM_ShowWindow(g_hWin_TimeBar);
                    WM_ShowWindow(g_hWin_Date);
                    key_press_cnt=0;
+                   g_gui_para.state = GUI_STATE_IDLE;
                    break;
                    
                case GUI_KEY_GREEN:  /*  保存数据  */

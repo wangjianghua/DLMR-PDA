@@ -265,6 +265,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                    g_hWin_AdvanSet = HBWIN_NULL;
                    WM_SetFocus(g_hWin_para);
                    ads_press_cnt = 0;
+                   g_gui_para.state = GUI_STATE_IDLE;
                    break;
 
                 case GUI_KEY_F2:

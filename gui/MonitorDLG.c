@@ -185,6 +185,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 WM_ShowWindow(g_hWin_TimeBar);
                 WM_ShowWindow(g_hWin_Date);
                 WM_SetFocus(g_hWin_menu);
+                g_gui_para.state = GUI_STATE_IDLE;
 
                 if(CHANNEL_PLC == g_rom_para.channel)
                 {

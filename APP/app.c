@@ -578,10 +578,11 @@ static  void  App_TaskGMP (void *p_arg)
 
     while (DEF_TRUE) {  
         /* Task body, always written as an infinite loop.           */
-        if((g_gui_para.state == GUI_STATE_PROTO_DBG)
-            ||(g_gui_para.state == GUI_STATE_AMR)
-            ||(g_gui_para.state == GUI_STATE_PLC_MONITOR)
-            ||(g_gui_para.state == GUI_STATE_PLC_FREQ_SET))
+        if((g_gui_para.state == GUI_STATE_PROTO_DBG) ||
+           (g_gui_para.state == GUI_STATE_AMR) || 
+           (g_gui_para.state == GUI_STATE_PLC_MONITOR) ||
+           (g_gui_para.state == GUI_STATE_PLC_FREQ_SET) ||
+           (g_gui_para.state == GUI_STATE_METER_TIME))
         {
             OSMboxPend(g_sys_ctrl.down_mbox, 10, &err);        
             if(OS_ERR_NONE == err)
