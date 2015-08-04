@@ -78,7 +78,7 @@ typedef struct _rom_para_
     unsigned int plc_freq;
     unsigned int bpsSpeed;
     unsigned int meter_pwd;
-    unsigned int meter_opcode;
+    unsigned int opcode;
 
     unsigned int para_reserve[MAX_PARA_NUM - 18];
 } ROM_PARA, *P_ROM_PARA;

@@ -148,7 +148,7 @@ typedef enum
 #define BAUD_RATE_9600      4
 
 #define METER_PWD_DEFAULT       0x00000000
-#define METER_OPCODE_DEFAULT    0x00000000
+#define OPCODE_DEFAULT          0x00000000
 
 #define PLC_READ_DEVADDR_0     0
 #define PLC_READ_DATA_1        1
@@ -225,7 +225,7 @@ typedef enum
 //#define   PLC_MONITOR_OFF          0
 //#define   PLC_MONITOR_ON           1
 
-#define PWD_LEN                 4
+#define METER_PWD_LEN           4
 #define OPCODE_LEN              4
 
 #define USED_DATAFLAG_NUM       9

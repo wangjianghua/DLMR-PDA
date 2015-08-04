@@ -219,12 +219,18 @@ static u8 MTD_Get_Cal_Date_Para(WM_MESSAGE *pMsg)
     memcpy(g_gui_para.dataItem, &c_645dataItemDef[g_rom_para.protocol][4], len);
 
     g_gui_para.dataLen = 0;
+    index = 0;
 
-    memcpy(&g_gui_para.dataBuf[0], &g_rom_para.meter_pwd, PWD_LEN); //电表密码
-    memcpy(&g_gui_para.dataBuf[4], &g_rom_para.meter_opcode, OPCODE_LEN); //操作者代码
+    memcpy(&g_gui_para.dataBuf[index], &g_rom_para.meter_pwd, METER_PWD_LEN); //电表密码
+    g_gui_para.dataLen += METER_PWD_LEN;
+    index += METER_PWD_LEN;
 
-    g_gui_para.dataLen += 8;
-    index = 8;
+    if(DL645_2007 == g_rom_para.protocol)   
+    {
+        memcpy(&g_gui_para.dataBuf[index], &g_rom_para.opcode, OPCODE_LEN); //操作者代码
+        g_gui_para.dataLen += OPCODE_LEN;
+        index += OPCODE_LEN;
+    }
 
     g_gui_para.dataBuf[index++] = g_rtc_time[WEEK_POS] % 7;
     g_gui_para.dataBuf[index++] = g_rtc_time[DATE_POS];
@@ -264,12 +270,18 @@ static u8 MTD_Get_Cal_Time_Para(WM_MESSAGE *pMsg)
     memcpy(g_gui_para.dataItem, &c_645dataItemDef[g_rom_para.protocol][5], len);
 
     g_gui_para.dataLen = 0;
+    index = 0;
 
-    memcpy(&g_gui_para.dataBuf[0], &g_rom_para.meter_pwd, PWD_LEN); //电表密码
-    memcpy(&g_gui_para.dataBuf[4], &g_rom_para.meter_opcode, OPCODE_LEN); //操作者代码
+    memcpy(&g_gui_para.dataBuf[index], &g_rom_para.meter_pwd, METER_PWD_LEN); //电表密码
+    g_gui_para.dataLen += METER_PWD_LEN;
+    index += METER_PWD_LEN;
 
-    g_gui_para.dataLen += 8;
-    index = 8;
+    if(DL645_2007 == g_rom_para.protocol)   
+    {
+        memcpy(&g_gui_para.dataBuf[index], &g_rom_para.opcode, OPCODE_LEN); //操作者代码
+        g_gui_para.dataLen += OPCODE_LEN;
+        index += OPCODE_LEN;
+    }
 
     g_gui_para.dataBuf[index++] = g_rtc_time[SEC_POS];
     g_gui_para.dataBuf[index++] = g_rtc_time[MIN_POS];

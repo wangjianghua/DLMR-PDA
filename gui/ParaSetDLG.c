@@ -141,10 +141,10 @@ void CPS_PwdHex2Str(u8 *strbuf)
 
     pbuf = (u8 *)&g_rom_para.meter_pwd;
 
-    for(i = 0; i < PWD_LEN; i++)
+    for(i = 0; i < METER_PWD_LEN; i++)
     {
-        *strbuf++ = GUI_Hex2Char(pbuf[PWD_LEN - i - 1] >> 4);
-        *strbuf++ = GUI_Hex2Char(pbuf[PWD_LEN - i - 1] & 0x0f);
+        *strbuf++ = GUI_Hex2Char(pbuf[METER_PWD_LEN - i - 1] >> 4);
+        *strbuf++ = GUI_Hex2Char(pbuf[METER_PWD_LEN - i - 1] & 0x0f);
     }
 
     *strbuf = '\0';
@@ -156,12 +156,12 @@ void CPS_OpcodeHex2Str(u8 *strbuf)
     u8 i, *pbuf;
     
 
-    pbuf = (u8 *)&g_rom_para.meter_opcode;
+    pbuf = (u8 *)&g_rom_para.opcode;
 
-    for(i = 0; i < PWD_LEN; i++)
+    for(i = 0; i < OPCODE_LEN; i++)
     {
-        *strbuf++ = GUI_Hex2Char(pbuf[PWD_LEN - i - 1] >> 4);
-        *strbuf++ = GUI_Hex2Char(pbuf[PWD_LEN - i - 1] & 0x0f);
+        *strbuf++ = GUI_Hex2Char(pbuf[OPCODE_LEN - i - 1] >> 4);
+        *strbuf++ = GUI_Hex2Char(pbuf[OPCODE_LEN - i - 1] & 0x0f);
     }
 
     *strbuf = '\0';
@@ -179,24 +179,24 @@ u32 CPS_GetPwdPara(u8 *dbuf)
 
     pbuf = (u8 *)&g_rom_para.meter_pwd;
         
-    for(i = 0; i < PWD_LEN; i++)
+    for(i = 0; i < METER_PWD_LEN; i++)
     {
         if(((rmd_ch = GUI_char2hex(dbuf[i<<1])) == 0xff))
         {
             return DEV_ERROR;
         }
         
-        buf[PWD_LEN-1-i] = rmd_ch<<4;
+        buf[METER_PWD_LEN-1-i] = rmd_ch<<4;
         
         if(((rmd_ch = GUI_char2hex(dbuf[(i<<1)+1])) == 0xff))
         {
             return DEV_ERROR;
         }
         
-        buf[PWD_LEN-1-i] |= rmd_ch;
+        buf[METER_PWD_LEN-1-i] |= rmd_ch;
     }
 
-    for(i = 0; i < PWD_LEN; i++)
+    for(i = 0; i < METER_PWD_LEN; i++)
     {
         pbuf[i] = buf[i];
     }
@@ -223,26 +223,26 @@ u32 CPS_GetOpcodePara(u8 *dbuf)
     u8 i, rmd_ch, *pbuf, buf[5];
 
 
-    pbuf = (u8 *)&g_rom_para.meter_opcode;
+    pbuf = (u8 *)&g_rom_para.opcode;
         
-    for(i = 0; i < PWD_LEN; i++)
+    for(i = 0; i < OPCODE_LEN; i++)
     {
         if(((rmd_ch = GUI_char2hex(dbuf[i<<1])) == 0xff))
         {
             return DEV_ERROR;
         }
         
-        buf[PWD_LEN-1-i] = rmd_ch<<4;
+        buf[OPCODE_LEN-1-i] = rmd_ch<<4;
         
         if(((rmd_ch = GUI_char2hex(dbuf[(i<<1)+1])) == 0xff))
         {
             return DEV_ERROR;
         }
         
-        buf[PWD_LEN-1-i] |= rmd_ch;
+        buf[OPCODE_LEN-1-i] |= rmd_ch;
     }
 
-    for(i = 0; i < PWD_LEN; i++)
+    for(i = 0; i < OPCODE_LEN; i++)
     {
         pbuf[i] = buf[i];
     }

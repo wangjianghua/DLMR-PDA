@@ -21,7 +21,7 @@ ROM_PARA g_rom_para =
     PLC_421_1200BPS,        //速率
     PLC_BPS_MIDDLE,         //通讯时延
     METER_PWD_DEFAULT,      //电表密码
-    METER_OPCODE_DEFAULT,   //电表操作码
+    OPCODE_DEFAULT,         //操作者代码
     
     {
         0,                  //保留
@@ -48,7 +48,7 @@ const ROM_PARA g_rom_para_default =
     PLC_421_1200BPS,        //速率
     PLC_BPS_MIDDLE,         //通讯时延
     METER_PWD_DEFAULT,      //电表密码
-    METER_OPCODE_DEFAULT,   //电表操作码
+    OPCODE_DEFAULT,         //操作者代码
     
     {
         0,                  //保留
