@@ -234,6 +234,9 @@ extern const char Saturday[];
 extern const char Sunday[];
 extern const char *TextDay[];
 extern const char *TextWeek[];
+extern const char FreezeTime[];
+extern const char FrzNgtvData[];
+extern const char FrzPstvData[];
 
 
 #endif

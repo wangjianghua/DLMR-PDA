@@ -35,6 +35,15 @@ WM_HWIN g_hWin_MeterTime;  //电表时间
 u8 s_prbf[512];
 
 
+const u8 g_ProtoDebugCtrl[2][DL645_MAX_CTRL_NUM] = 
+{ 
+    /* 97规约 */
+    {0x01, 0x08},
+
+    /* 07规约 */
+    {0x11, 0x13, 0x08}
+};
+
 const u8 c_645ctrlDef[2][DL645_MAX_CTRL_NUM] = 
 { 
     /* 97规约 */
@@ -44,14 +53,13 @@ const u8 c_645ctrlDef[2][DL645_MAX_CTRL_NUM] =
     {0x11, 0x14, 0x13, 0x08}
 };
 
-
 const u32 c_645dataItemDef[2][DL645_MAX_DATA_ITEM_NUM] = 
 { 
     /* 97规约 */
     {0x9010, 0x9020, 0x9410, 0x9420, 0xC010, 0xC011},
         
     /* 07规约 */
-    {0x0001FF00, 0x0002FF00, 0x0001FF01, 0x0002FF01, 0x04000101, 0x04000102}
+    {0x0001FF00, 0x0002FF00, 0x0001FF01, 0x0002FF01, 0x04000101, 0x04000102, 0x05060001, 0x05060101, 0x05060201}
 };
 
 const u8 g_self_check_pwd[] = {'2', '2', '8', '8', '4', '4', '6', '6', '\0'}; 
@@ -409,7 +417,24 @@ void GUI_Msg_Proc(void)
                 
                 PROGBAR_SetValue(hItem, g_sys_ctrl.ProgBarVal);              
             }
-        }                    
+        }
+        else if(RECV_RES_ABNORMAL_REPLY == g_proto_para.recv_result)
+        {
+            GUI_Recv_Fail_Proc();
+
+            GUI_Recv_Msg_Proc();
+
+            hItem = GUI_Get_PROGBAR();
+            
+            if(WM_HWIN_NULL != hItem)
+            {
+                PROGBAR_SetBarColor(hItem, 0, GUI_RED);
+                
+                g_sys_ctrl.ProgBarVal = 100;
+                
+                PROGBAR_SetValue(hItem, g_sys_ctrl.ProgBarVal);              
+            }
+        }
         else if(RECV_RES_INVALID == g_proto_para.recv_result)
         {            
             GUI_Recv_Fail_Proc();

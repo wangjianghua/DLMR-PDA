@@ -147,7 +147,8 @@ typedef enum
 #define BAUD_RATE_4800      3
 #define BAUD_RATE_9600      4
 
-
+#define METER_PWD_DEFAULT       0x00000000
+#define METER_OPCODE_DEFAULT    0x00000000
 
 #define PLC_READ_DEVADDR_0     0
 #define PLC_READ_DATA_1        1
@@ -227,7 +228,7 @@ typedef enum
 #define PWD_LEN                 4
 #define OPCODE_LEN              4
 
-#define USED_DATAFLAG_NUM       6
+#define USED_DATAFLAG_NUM       9
 
 
 
@@ -255,9 +256,12 @@ typedef struct _gui_para_
 extern GUI_PARA g_gui_para;
 
 extern const char *gc_messageBoxText[];
-extern const u8 c_645ctrlDef[2][DL645_MAX_CTRL_NUM] ;
 
-extern const u32 c_645dataItemDef[2][DL645_MAX_CTRL_NUM] ;
+extern const u8 g_ProtoDebugCtrl[2][DL645_MAX_CTRL_NUM];
+
+extern const u8 c_645ctrlDef[2][DL645_MAX_CTRL_NUM];
+
+extern const u32 c_645dataItemDef[2][DL645_MAX_CTRL_NUM];
 
 extern const u8 g_self_check_pwd[];
 

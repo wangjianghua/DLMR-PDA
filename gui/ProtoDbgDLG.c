@@ -456,7 +456,7 @@ static void _init_dialog(WM_MESSAGE * pMsg)
         EDIT_SetText(hItem, Readdata_97);
     }
     
-    g_gui_para.ctrlCode = c_645ctrlDef[g_rom_para.protocol][DL645_CTRL_READ_DATA]; 
+    g_gui_para.ctrlCode = g_ProtoDebugCtrl[g_rom_para.protocol][0]; 
 
     if(DL645_2007 == g_rom_para.protocol)
     {   

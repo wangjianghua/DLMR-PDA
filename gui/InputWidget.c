@@ -504,13 +504,13 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
             if(g_rom_para.protocol == DL645_1997)
             {
                 LISTBOX_AddString(hItem, Readdata_97);
-                LISTBOX_AddString(hItem, WriteData_97);
+                //LISTBOX_AddString(hItem, WriteData_97);
                 LISTBOX_AddString(hItem, CalTime_Broad);
             }
             else if(g_rom_para.protocol == DL645_2007)
             {
                 LISTBOX_AddString(hItem, Readdata_07);
-                LISTBOX_AddString(hItem, WriteData_07);
+                //LISTBOX_AddString(hItem, WriteData_07);
                 LISTBOX_AddString(hItem, GetAddr_07);
                 LISTBOX_AddString(hItem, CalTime_Broad);
             }
@@ -628,12 +628,12 @@ static void Select_ListBox_Row(int  WidgetNum)
             
             if(g_rom_para.protocol == DL645_1997)
             {
-                g_gui_para.ctrlCode = c_645ctrlDef[g_rom_para.protocol][SelNum]; 
+                g_gui_para.ctrlCode = g_ProtoDebugCtrl[g_rom_para.protocol][SelNum]; 
                 EDIT_SetText(hWin,pCtlCode_97[SelNum]);
             }
             else if(g_rom_para.protocol == DL645_2007)
             {
-                g_gui_para.ctrlCode = c_645ctrlDef[g_rom_para.protocol][SelNum]; 
+                g_gui_para.ctrlCode = g_ProtoDebugCtrl[g_rom_para.protocol][SelNum]; 
                 EDIT_SetText(hWin,pCtlCode_07[SelNum]);
             }
             

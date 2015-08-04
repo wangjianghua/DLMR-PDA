@@ -99,6 +99,8 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 }
                 
                 msg_key_cnt = 0;
+
+                g_gui_para.state = GUI_STATE_IDLE;
                 break;
             case GUI_KEY_GREEN:
                 hItem=WM_GetDialogItem(pMsg->hWin,ID_MULTIEDIT_0);

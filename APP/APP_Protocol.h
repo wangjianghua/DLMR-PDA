@@ -55,6 +55,7 @@ typedef enum
 {
     RECV_RES_NONE = 0,
     RECV_RES_SUCC,
+    RECV_RES_ABNORMAL_REPLY,
     RECV_RES_INVALID,
     RECV_RES_TIMEOUT
 } RECV_RES; //ЛЊаж

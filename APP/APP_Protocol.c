@@ -243,13 +243,13 @@ u32 Proto_Check_Frame(void)
                                                  (u8 *)&g_proto_para.dl645_frame_recv,
                                                   &g_proto_para.dl645_frame_stat))
     {
-         g_proto_para.recv_result = RECV_RES_INVALID;                                                 
+        g_proto_para.recv_result = RECV_RES_INVALID;                                                 
     }
     else
     {                
-        if((0 == g_proto_para.dl645_frame_stat.Status) || (0 == g_proto_para.dl645_frame_stat.C))
+        if(g_proto_para.dl645_frame_stat.C & DL645_REPLY_STAT_MASK)
         {
-            g_proto_para.recv_result = RECV_RES_INVALID;                            
+            g_proto_para.recv_result = RECV_RES_ABNORMAL_REPLY;
         }
         else
         {
@@ -262,25 +262,21 @@ u32 Proto_Check_Frame(void)
 
 void Proto_Data_Proc(void) 
 {
-    u32 len;
+    u16 len;
     
 
     if(RECV_RES_SUCC == Proto_Check_Frame())       
     {
-
         len = g_proto_para.dl645_frame_recv.L;
 
         if((FRM_CTRW_97_READ_SLVS_DATA == (g_proto_para.dl645_frame_stat.C & CCTT_CONTROL_CODE_MASK)) ||
            (FRM_CTRW_97_WRITE_SLVS_DATA == (g_proto_para.dl645_frame_stat.C & CCTT_CONTROL_CODE_MASK)))
-        {   /* 1997读写命令，2个字节数据标识 */
-            
+        {
             if(len >= DL645_97_DATA_ITEM_LEN)
             {
                 g_proto_para.data_len = len - DL645_97_DATA_ITEM_LEN;
-                memcpy(g_proto_para.data_buf, &g_proto_para.dl645_frame_recv.Data[DL645_97_DATA_ITEM_LEN], len - DL645_97_DATA_ITEM_LEN);
+                memcpy(g_proto_para.data_buf, &g_proto_para.dl645_frame_recv.Data[DL645_97_DATA_ITEM_LEN], g_proto_para.data_len);
             }
-
-            
         }
         else if((FRM_CTRW_07_READ_SLVS_DATA == (g_proto_para.dl645_frame_stat.C & CCTT_CONTROL_CODE_MASK)) ||
                 (FRM_CTRW_07_WRITE_SLVS_DATA == (g_proto_para.dl645_frame_stat.C & CCTT_CONTROL_CODE_MASK)))
@@ -288,23 +284,18 @@ void Proto_Data_Proc(void)
         {
             if(len >= DL645_07_DATA_ITEM_LEN)
             {
-                /* 2007读写命令，4个字节数据标识 */
-                memcpy(g_proto_para.data_buf, &g_proto_para.dl645_frame_recv.Data[DL645_07_DATA_ITEM_LEN], len - DL645_07_DATA_ITEM_LEN);
-    
                 g_proto_para.data_len = len - DL645_07_DATA_ITEM_LEN;
+                memcpy(g_proto_para.data_buf, &g_proto_para.dl645_frame_recv.Data[DL645_07_DATA_ITEM_LEN], g_proto_para.data_len);
             }
-
         }      
         else if((FRM_CTRW_07_BROAD_READ_ADDR == (g_proto_para.dl645_frame_stat.C & CCTT_CONTROL_CODE_MASK)))
         {
-            if(len == 6)
+            if(6 == len)
             {
-                /* 2007读写命令，4个字节数据标识 */
-                memcpy(g_proto_para.data_buf, &g_proto_para.dl645_frame_recv.Data[0], 6);    
                 g_proto_para.data_len = 6;
+                memcpy(g_proto_para.data_buf, &g_proto_para.dl645_frame_recv.Data[0], g_proto_para.data_len);    
             }
         }
-            
     }
 }
 
@@ -328,10 +319,10 @@ void Proto_Data_Proc(void)
 #endif
 void  App_TaskProto (void *p_arg)
 {
-    INT8U err, index;
-    INT8U dl645_broad_addr[] = {0x99, 0x99, 0x99, 0x99, 0x99, 0x99};
+    const INT8U dl645_broad_addr[6] = {0x99, 0x99, 0x99, 0x99, 0x99, 0x99};
     INT8U rf_dev_addr[] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88};
     INT8U dl645_read_addr[16];
+    INT8U err, index;
     INT16U len;
     WM_HWIN hItem;
     
@@ -394,9 +385,9 @@ void  App_TaskProto (void *p_arg)
                 }
                 else if(CHANNEL_RF == g_rom_para.channel) //射频
                 {
-                    g_proto_para.send_len = sizeof(Broad_Read_Dev_Addr);
+                    memcpy(g_proto_para.send_buf, Broad_Read_Dev_Addr, sizeof(Broad_Read_Dev_Addr));
 
-                    memcpy(g_proto_para.send_buf, Broad_Read_Dev_Addr, g_proto_para.send_len);
+                    g_proto_para.send_len = sizeof(Broad_Read_Dev_Addr);
 
                     while(OSSemAccept(g_sem_rf));
                     
@@ -480,25 +471,25 @@ void  App_TaskProto (void *p_arg)
                 break;
 
             case GUI_CMD_BROAD_CAL_TIME:
+                memcpy(g_gui_para.dstAddr, dl645_broad_addr, sizeof(dl645_broad_addr));
+                
+                g_gui_para.dataBuf[0] = g_rtc_time[SEC_POS];
+                g_gui_para.dataBuf[1] = g_rtc_time[MIN_POS];
+                g_gui_para.dataBuf[2] = g_rtc_time[HOUR_POS];
+                g_gui_para.dataBuf[3] = g_rtc_time[DATE_POS];
+                g_gui_para.dataBuf[4] = g_rtc_time[MONTH_POS];
+                g_gui_para.dataBuf[5] = g_rtc_time[YEAR_POS];
+                
+                g_gui_para.dataLen = 6;
+                
+                memcpy(g_proto_para.dl645_frame_send.Data, g_gui_para.dataBuf, g_gui_para.dataLen);
+                
+                Create_DL645_Frame(g_gui_para.dstAddr, g_gui_para.ctrlCode, g_gui_para.dataLen, &g_proto_para.dl645_frame_send);
+                
+                g_proto_para.send_len = g_gui_para.dataLen + DL645_FIX_LEN;
+                
                 if(CHANNEL_PLC == g_rom_para.channel) //载波
-                {
-                    memcpy(g_gui_para.dstAddr, dl645_broad_addr, DL645_ADDR_LEN);
-                    
-                    g_gui_para.dataBuf[0] = g_rtc_time[SEC_POS];
-                    g_gui_para.dataBuf[1] = g_rtc_time[MIN_POS];
-                    g_gui_para.dataBuf[2] = g_rtc_time[HOUR_POS];
-                    g_gui_para.dataBuf[3] = g_rtc_time[DATE_POS];
-                    g_gui_para.dataBuf[4] = g_rtc_time[MONTH_POS];
-                    g_gui_para.dataBuf[5] = g_rtc_time[YEAR_POS];
-
-                    g_gui_para.dataLen = 6;
-
-                    memcpy(g_proto_para.dl645_frame_send.Data, g_gui_para.dataBuf, g_gui_para.dataLen);
-                    
-                    Create_DL645_Frame(g_gui_para.dstAddr, g_gui_para.ctrlCode, g_gui_para.dataLen, &g_proto_para.dl645_frame_send);
-
-                    g_proto_para.send_len = g_gui_para.dataLen + DL645_FIX_LEN;
-                    
+                {                    
                     memcpy(&g_proto_para.send_buf[DL645_INDEX], &g_proto_para.dl645_frame_send, g_proto_para.send_len);
                     
                     g_proto_para.send_buf[PREAMBLE_INDEX] = g_rom_para.preamble;
@@ -514,9 +505,9 @@ void  App_TaskProto (void *p_arg)
 
                     OSTimeDlyHMSM(0, 0, 0, 200);
                     
-                    g_proto_para.data_len = 0;
-
                     g_proto_para.recv_len = 0;
+
+                    g_proto_para.data_len = 0;
 
                     g_proto_para.recv_result = RECV_RES_SUCC;
 
@@ -525,25 +516,8 @@ void  App_TaskProto (void *p_arg)
                     OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);                    
                 }           
                 else if(CHANNEL_RF == g_rom_para.channel) //射频
-                {
-                    memcpy(g_gui_para.dstAddr, dl645_broad_addr, DL645_ADDR_LEN);
-                    
-                    g_gui_para.dataBuf[0] = g_rtc_time[SEC_POS];
-                    g_gui_para.dataBuf[1] = g_rtc_time[MIN_POS];
-                    g_gui_para.dataBuf[2] = g_rtc_time[HOUR_POS];
-                    g_gui_para.dataBuf[3] = g_rtc_time[DATE_POS];
-                    g_gui_para.dataBuf[4] = g_rtc_time[MONTH_POS];
-                    g_gui_para.dataBuf[5] = g_rtc_time[YEAR_POS];
-
-                    g_gui_para.dataLen = 6;
-
-                    memcpy(g_proto_para.dl645_frame_send.Data, g_gui_para.dataBuf, g_gui_para.dataLen);
-                    
-                    Create_DL645_Frame(g_gui_para.dstAddr, g_gui_para.ctrlCode, g_gui_para.dataLen, &g_proto_para.dl645_frame_send);
-
-                    g_proto_para.send_len = g_gui_para.dataLen + DL645_FIX_LEN;
-                    
-                    memcpy(&g_proto_para.send_buf, &g_proto_para.dl645_frame_send, g_proto_para.send_len);
+                {                    
+                    memcpy(g_proto_para.send_buf, &g_proto_para.dl645_frame_send, g_proto_para.send_len);
 
                     while(OSSemAccept(g_sem_rf));
                     
@@ -555,9 +529,9 @@ void  App_TaskProto (void *p_arg)
 
                     OSTimeDlyHMSM(0, 0, 0, 200);
                     
-                    g_proto_para.data_len = 0;
-
                     g_proto_para.recv_len = 0;
+
+                    g_proto_para.data_len = 0;
 
                     g_proto_para.recv_result = RECV_RES_SUCC;
 
@@ -567,27 +541,12 @@ void  App_TaskProto (void *p_arg)
                 }
                 else if(CHANNEL_IR == g_rom_para.channel) //红外
                 {
-                    memcpy(g_gui_para.dstAddr, dl645_broad_addr, DL645_ADDR_LEN);
-                    
-                    g_gui_para.dataBuf[0] = g_rtc_time[SEC_POS];
-                    g_gui_para.dataBuf[1] = g_rtc_time[MIN_POS];
-                    g_gui_para.dataBuf[2] = g_rtc_time[HOUR_POS];
-                    g_gui_para.dataBuf[3] = g_rtc_time[DATE_POS];
-                    g_gui_para.dataBuf[4] = g_rtc_time[MONTH_POS];
-                    g_gui_para.dataBuf[5] = g_rtc_time[YEAR_POS];
-
-                    g_gui_para.dataLen = 6;
-
-                    memcpy(g_proto_para.dl645_frame_send.Data, g_gui_para.dataBuf, g_gui_para.dataLen);
-                    
-                    Create_DL645_Frame(g_gui_para.dstAddr, g_gui_para.ctrlCode, g_gui_para.dataLen, &g_proto_para.dl645_frame_send);
-
-                    g_proto_para.send_len = g_gui_para.dataLen + DL645_FIX_LEN;
-                    
                     memcpy(&g_proto_para.send_buf[DL645_INDEX], &g_proto_para.dl645_frame_send, g_proto_para.send_len);
                     
                     g_proto_para.send_buf[PREAMBLE_INDEX] = g_rom_para.preamble;
                     g_proto_para.send_len += PREAMBLE_LEN;
+
+                    g_proto_para.ir_send_len = g_proto_para.send_len;
 
                     while(OSSemAccept(g_sem_ir));
                       
@@ -599,11 +558,13 @@ void  App_TaskProto (void *p_arg)
 
                     OSTimeDlyHMSM(0, 0, 0, 200);
                     
-                    g_proto_para.data_len = 0;
-
                     g_proto_para.recv_len = 0;
 
+                    g_proto_para.data_len = 0;
+
                     g_proto_para.recv_result = RECV_RES_SUCC;
+
+                    g_proto_para.ir_send_len = 0;
 
                     g_proto_para.msg_state = MSG_STATE_RECEIVED;
 
@@ -998,7 +959,8 @@ void  App_TaskProto (void *p_arg)
 #endif
 void  App_TaskPC (void *p_arg)
 {
-    INT8U err, send_file_num, fname[16], buf[128], pc_addr[6] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA};
+    const INT8U pc_addr[6] = {0x99, 0x99, 0x99, 0x99, 0x99, 0x99};
+    INT8U err, send_file_num, fname[16], buf[128];
     INT16U send_len;
     INT32U i, j, pc_data_item, sd_file_num;
     FATFS fs;
@@ -1015,284 +977,277 @@ void  App_TaskPC (void *p_arg)
 
         if(OS_ERR_NONE == err)
         {
-            if(DL645_FRAME_ERROR != Analysis_DL645_Frame(pc_addr, (u8 *)&pc_frame_recv, &pc_frame_stat))
+            if(DL645_FRAME_OK == Analysis_DL645_Frame((u8 *)pc_addr, (u8 *)&pc_frame_recv, &pc_frame_stat))
             {
-                if(0 != pc_frame_stat.Status)
+                memcpy(&pc_frame_send, &pc_frame_recv, sizeof(DL645_Frame_C));
+                
+                if((FRM_CTRW_07_READ_SLVS_DATA == (pc_frame_stat.C & CCTT_CONTROL_CODE_MASK)) ||
+                   (FRM_CTRW_07_WRITE_SLVS_DATA == (pc_frame_stat.C & CCTT_CONTROL_CODE_MASK)) || 
+                   (FRM_CTRW_07_EXT_READ_SLVS_DATA == (pc_frame_stat.C & CCTT_CONTROL_CODE_MASK)))
                 {
-                    memcpy(&pc_frame_send, &pc_frame_recv, sizeof(DL645_Frame_C));
-                    
-                    if((FRM_CTRW_07_READ_SLVS_DATA == (pc_frame_stat.C & CCTT_CONTROL_CODE_MASK)) ||
-                       (FRM_CTRW_07_WRITE_SLVS_DATA == (pc_frame_stat.C & CCTT_CONTROL_CODE_MASK)) || 
-                       (FRM_CTRW_07_EXT_READ_SLVS_DATA == (pc_frame_stat.C & CCTT_CONTROL_CODE_MASK)))
+                    pc_data_item = ((INT32U)pc_frame_recv.Data[3] << 24) | ((INT32U)pc_frame_recv.Data[2] << 16) | ((INT32U)pc_frame_recv.Data[1] << 8) | ((INT32U)pc_frame_recv.Data[0] << 0);
+                
+                    switch(pc_data_item)
                     {
-                        pc_data_item = ((INT32U)pc_frame_recv.Data[3] << 24) | ((INT32U)pc_frame_recv.Data[2] << 16) | ((INT32U)pc_frame_recv.Data[1] << 8) | ((INT32U)pc_frame_recv.Data[0] << 0);
-                    
-                        switch(pc_data_item)
+                    case SHAKE_HANDS_CMD:
+                        pc_frame_send.L = DL645_07_DATA_ITEM_LEN;
+                        pc_frame_send.C = 0x91;
+
+                        Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.C, pc_frame_send.L, &pc_frame_send);
+
+                        send_len = pc_frame_send.L + DL645_FIX_LEN;
+
+                        while(OSSemAccept(g_sem_pc));
+
+                        pc_uart_send((u8 *)&pc_frame_send, send_len);
+                        break;
+
+                    case SCAN_FILE_CMD: //扫描根目录
+                        if(FR_OK == f_mount(SD_DRV, &fs))
                         {
-                        case SHAKE_HANDS_CMD:
-                            pc_frame_send.L = DL645_07_DATA_ITEM_LEN;
+                            scan_files("/");
+
+                            sd_file_num = 0;
+                            while(SD_FileName[sd_file_num][0])
+                            {
+                                if(FR_OK == f_open(&fp, SD_FileName[sd_file_num], FA_OPEN_EXISTING | FA_READ))
+                                {
+                                    SD_FileSize[sd_file_num] = f_size(&fp);
+                                }
+
+                                f_close(&fp);
+
+                                sd_file_num++;
+                            }
+                            
+                            memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN], &sd_file_num, FILE_NUM_LEN);
+
+                            i = sd_file_num;
+                            j = 0;
+                            while(i && (j < MAX_FILE_NUM))
+                            {
+                                memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN + FILE_NUM_LEN + FILE_NAME_LEN * j + FILE_SIZE_LEN * j], SD_FileName[j], FILE_NAME_LEN);
+                                memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN + FILE_NUM_LEN + FILE_NAME_LEN * j + FILE_SIZE_LEN * j + FILE_NAME_LEN], &SD_FileSize[j], FILE_SIZE_LEN);
+
+                                i--;
+                                j++;
+                            }
+
+                            send_file_num = j;
+
+                            pc_frame_send.L = DL645_07_DATA_ITEM_LEN + FILE_NUM_LEN + FILE_NAME_LEN * send_file_num + FILE_SIZE_LEN * send_file_num;
+
                             pc_frame_send.C = 0x91;
 
-                            Create_DL645_Frame(pc_addr, pc_frame_send.C, pc_frame_send.L, &pc_frame_send);
-
+                            Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.C, pc_frame_send.L, &pc_frame_send);
+    
                             send_len = pc_frame_send.L + DL645_FIX_LEN;
 
                             while(OSSemAccept(g_sem_pc));
+                        
+                            pc_uart_send((u8 *)&pc_frame_send, send_len);                                    
+                        } 
 
-                            pc_uart_send((u8 *)&pc_frame_send, send_len);
-                            break;
+                        f_mount(SD_DRV, NULL);
+                        break;
 
-                        case SCAN_FILE_CMD: //扫描根目录
+                    case READ_FILE_CMD: //读指定文件内容
+                        switch(pc_frame_recv.C)
+                        {
+                        case FRM_CTRW_07_READ_SLVS_DATA:
+                            fsize = 0;
+                            offset = 0;
+                            seq = 0;
+                            
+                            memcpy(fname, &pc_frame_recv.Data[DL645_07_DATA_ITEM_LEN], FILE_NAME_LEN);
+                            
+                            fname[FILE_NAME_LEN] = '\0';
+                            
                             if(FR_OK == f_mount(SD_DRV, &fs))
                             {
-                                scan_files("/");
-
-                                sd_file_num = 0;
-                                while(SD_FileName[sd_file_num][0])
+                                if(FR_OK == f_open(&fp, fname, FA_OPEN_EXISTING | FA_READ))
                                 {
-                                    if(FR_OK == f_open(&fp, SD_FileName[sd_file_num], FA_OPEN_EXISTING | FA_READ))
+                                    if(FR_OK == f_read(&fp, buf, 128, &br))
                                     {
-                                        SD_FileSize[sd_file_num] = f_size(&fp);
-                                    }
+                                        fsize = f_size(&fp);
+                                        offset += br;
 
-                                    f_close(&fp);
-
-                                    sd_file_num++;
-                                }
-                                
-                                memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN], &sd_file_num, FILE_NUM_LEN);
-
-                                i = sd_file_num;
-                                j = 0;
-                                while(i && (j < MAX_FILE_NUM))
-                                {
-                                    memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN + FILE_NUM_LEN + FILE_NAME_LEN * j + FILE_SIZE_LEN * j], SD_FileName[j], FILE_NAME_LEN);
-                                    memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN + FILE_NUM_LEN + FILE_NAME_LEN * j + FILE_SIZE_LEN * j + FILE_NAME_LEN], &SD_FileSize[j], FILE_SIZE_LEN);
-
-                                    i--;
-                                    j++;
-                                }
-
-                                send_file_num = j;
-
-                                pc_frame_send.L = DL645_07_DATA_ITEM_LEN + FILE_NUM_LEN + FILE_NAME_LEN * send_file_num + FILE_SIZE_LEN * send_file_num;
-
-                                pc_frame_send.C = 0x91;
-
-                                Create_DL645_Frame(pc_addr, pc_frame_send.C, pc_frame_send.L, &pc_frame_send);
-        
-                                send_len = pc_frame_send.L + DL645_FIX_LEN;
-
-                                while(OSSemAccept(g_sem_pc));
+                                        memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN], fname, FILE_NAME_LEN);
+                                        
+                                        memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN + FILE_NAME_LEN], buf, br);
                             
-                                pc_uart_send((u8 *)&pc_frame_send, send_len);                                    
-                            } 
+                                        pc_frame_send.L = DL645_07_DATA_ITEM_LEN + FILE_NAME_LEN + br;
 
+                                        if(offset >= fsize)
+                                        {
+                                            pc_frame_send.C = 0x91;
+                                        }
+                                        else
+                                        {
+                                            pc_frame_send.C = 0xB1;
+
+                                            seq++;
+                                        }
+                            
+                                        Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.C, pc_frame_send.L, &pc_frame_send);
+                            
+                                        send_len = pc_frame_send.L + DL645_FIX_LEN;
+                            
+                                        while(OSSemAccept(g_sem_pc));
+                                    
+                                        pc_uart_send((u8 *)&pc_frame_send, send_len);                                            
+                                    }    
+                                }
+
+                                f_close(&fp);
+                            } 
+                            
                             f_mount(SD_DRV, NULL);
                             break;
 
-                        case READ_FILE_CMD: //读指定文件内容
-                            switch(pc_frame_recv.C)
+                        case FRM_CTRW_07_EXT_READ_SLVS_DATA:
+                            memcpy(fname, &pc_frame_recv.Data[DL645_07_DATA_ITEM_LEN], FILE_NAME_LEN);
+                            
+                            fname[FILE_NAME_LEN] = '\0';
+                            
+                            if(FR_OK == f_mount(SD_DRV, &fs))
                             {
-                            case FRM_CTRW_07_READ_SLVS_DATA:
-                                fsize = 0;
-                                offset = 0;
-                                seq = 0;
-                                
-                                memcpy(fname, &pc_frame_recv.Data[DL645_07_DATA_ITEM_LEN], FILE_NAME_LEN);
-                                
-                                fname[FILE_NAME_LEN] = '\0';
-                                
-                                if(FR_OK == f_mount(SD_DRV, &fs))
+                                if(FR_OK == f_open(&fp, fname, FA_OPEN_EXISTING | FA_READ))
                                 {
-                                    if(FR_OK == f_open(&fp, fname, FA_OPEN_EXISTING | FA_READ))
+                                    f_lseek(&fp, offset);
+                                    
+                                    if(FR_OK == f_read(&fp, buf, 128, &br))
                                     {
-                                        if(FR_OK == f_read(&fp, buf, 128, &br))
+                                        offset += br;
+
+                                        memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN], fname, FILE_NAME_LEN);
+                                        
+                                        memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN + FILE_NAME_LEN], buf, br);
+
+                                        memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN + FILE_NAME_LEN + br], &seq, SEQ_LEN);
+                            
+                                        pc_frame_send.L = DL645_07_DATA_ITEM_LEN + FILE_NAME_LEN + br + SEQ_LEN;
+
+                                        if(offset >= fsize)
                                         {
-                                            fsize = f_size(&fp);
-                                            offset += br;
-
-                                            memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN], fname, FILE_NAME_LEN);
-                                            
-                                            memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN + FILE_NAME_LEN], buf, br);
-                                
-                                            pc_frame_send.L = DL645_07_DATA_ITEM_LEN + FILE_NAME_LEN + br;
-
-                                            if(offset >= fsize)
-                                            {
-                                                pc_frame_send.C = 0x91;
-                                            }
-                                            else
-                                            {
-                                                pc_frame_send.C = 0xB1;
-
-                                                seq++;
-                                            }
-                                
-                                            Create_DL645_Frame(pc_addr, pc_frame_send.C, pc_frame_send.L, &pc_frame_send);
-                                
-                                            send_len = pc_frame_send.L + DL645_FIX_LEN;
-                                
-                                            while(OSSemAccept(g_sem_pc));
-                                        
-                                            pc_uart_send((u8 *)&pc_frame_send, send_len);                                            
-                                        }    
-                                    }
-
-                                    f_close(&fp);
-                                } 
-                                
-                                f_mount(SD_DRV, NULL);
-                                break;
-
-                            case FRM_CTRW_07_EXT_READ_SLVS_DATA:
-                                memcpy(fname, &pc_frame_recv.Data[DL645_07_DATA_ITEM_LEN], FILE_NAME_LEN);
-                                
-                                fname[FILE_NAME_LEN] = '\0';
-                                
-                                if(FR_OK == f_mount(SD_DRV, &fs))
-                                {
-                                    if(FR_OK == f_open(&fp, fname, FA_OPEN_EXISTING | FA_READ))
-                                    {
-                                        f_lseek(&fp, offset);
-                                        
-                                        if(FR_OK == f_read(&fp, buf, 128, &br))
+                                            pc_frame_send.C = 0x92;
+                                        }
+                                        else
                                         {
-                                            offset += br;
+                                            pc_frame_send.C = 0xB2;
 
-                                            memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN], fname, FILE_NAME_LEN);
-                                            
-                                            memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN + FILE_NAME_LEN], buf, br);
+                                            seq++;
+                                        }
+                            
+                                        Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.C, pc_frame_send.L, &pc_frame_send);
+                            
+                                        send_len = pc_frame_send.L + DL645_FIX_LEN;
+                            
+                                        while(OSSemAccept(g_sem_pc));
+                                    
+                                        pc_uart_send((u8 *)&pc_frame_send, send_len);                                            
+                                    }    
+                                }
 
-                                            memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN + FILE_NAME_LEN + br], &seq, SEQ_LEN);
-                                
-                                            pc_frame_send.L = DL645_07_DATA_ITEM_LEN + FILE_NAME_LEN + br + SEQ_LEN;
-
-                                            if(offset >= fsize)
-                                            {
-                                                pc_frame_send.C = 0x92;
-                                            }
-                                            else
-                                            {
-                                                pc_frame_send.C = 0xB2;
-
-                                                seq++;
-                                            }
-                                
-                                            Create_DL645_Frame(pc_addr, pc_frame_send.C, pc_frame_send.L, &pc_frame_send);
-                                
-                                            send_len = pc_frame_send.L + DL645_FIX_LEN;
-                                
-                                            while(OSSemAccept(g_sem_pc));
-                                        
-                                            pc_uart_send((u8 *)&pc_frame_send, send_len);                                            
-                                        }    
-                                    }
-
-                                    f_close(&fp);
-                                } 
-                                
-                                f_mount(SD_DRV, NULL);
-                                break;
-                                
-                            default:
-                                break;
-                            }
-                            break;
-
-                        case READ_TIME_CMD:
-                            memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN], &g_rtc_time, MAX_RTC_ITEM);
+                                f_close(&fp);
+                            } 
                             
-                            pc_frame_send.L = DL645_07_DATA_ITEM_LEN + MAX_RTC_ITEM;
-                            
-                            pc_frame_send.C = 0x91;
-                            
-                            Create_DL645_Frame(pc_addr, pc_frame_send.C, pc_frame_send.L, &pc_frame_send);
-                            
-                            send_len = pc_frame_send.L + DL645_FIX_LEN;
-                            
-                            while(OSSemAccept(g_sem_pc));
-                            
-                            pc_uart_send((u8 *)&pc_frame_send, send_len); 
-                            break;
-
-                        case WRITE_TIME_CMD:
-                            u8 new_time[MAX_RTC_ITEM];
-
-                            
-                            new_time[SEC_POS] = Hex2BcdChar(pc_frame_recv.Data[12]);
-                            new_time[MIN_POS] = Hex2BcdChar(pc_frame_recv.Data[13]);
-                            new_time[HOUR_POS] = Hex2BcdChar(pc_frame_recv.Data[14]);
-                            new_time[WEEK_POS] = Hex2BcdChar(pc_frame_recv.Data[15]);
-                            new_time[DATE_POS] = Hex2BcdChar(pc_frame_recv.Data[16]);
-                            new_time[MONTH_POS] = Hex2BcdChar(pc_frame_recv.Data[17]);
-                            new_time[YEAR_POS] = Hex2BcdChar(pc_frame_recv.Data[18]);
-
-                            RTC_WriteTime(new_time);
-
-                            pc_frame_send.L = 0;
-                            
-                            pc_frame_send.C = 0x94;
-                            
-                            Create_DL645_Frame(pc_addr, pc_frame_send.C, pc_frame_send.L, &pc_frame_send);
-                            
-                            send_len = pc_frame_send.L + DL645_FIX_LEN;
-                            
-                            while(OSSemAccept(g_sem_pc));
-                            
-                            pc_uart_send((u8 *)&pc_frame_send, send_len); 
-                            break;
-
-                        case READ_VERSION_CMD:
-                            u32 temp;
-
-                            
-                            buf[0] = HARDWARE_VERSION;
-                            buf[1] = SOFTWARE_VERSION;
-                            temp = VERSION_DATE;
-                            memcpy(&buf[2], &temp, sizeof(temp));
-                            
-                            memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN], buf, VERSION_LEN);
-                            
-                            pc_frame_send.L = DL645_07_DATA_ITEM_LEN + VERSION_LEN;
-                            
-                            pc_frame_send.C = 0x91;
-                            
-                            Create_DL645_Frame(pc_addr, pc_frame_send.C, pc_frame_send.L, &pc_frame_send);
-                            
-                            send_len = pc_frame_send.L + DL645_FIX_LEN;
-                            
-                            while(OSSemAccept(g_sem_pc));
-                            
-                            pc_uart_send((u8 *)&pc_frame_send, send_len); 
-                            break;
-
-                        case RESET_CMD:
-                            dev_para_recover();
-                            
-                            pc_frame_send.L = 0;
-                            
-                            pc_frame_send.C = 0x94;
-                            
-                            Create_DL645_Frame(pc_addr, pc_frame_send.C, pc_frame_send.L, &pc_frame_send);
-                            
-                            send_len = pc_frame_send.L + DL645_FIX_LEN;
-                            
-                            while(OSSemAccept(g_sem_pc));
-                            
-                            pc_uart_send((u8 *)&pc_frame_send, send_len);
+                            f_mount(SD_DRV, NULL);
                             break;
                             
                         default:
                             break;
                         }
+                        break;
+
+                    case READ_TIME_CMD:
+                        memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN], &g_rtc_time, MAX_RTC_ITEM);
+                        
+                        pc_frame_send.L = DL645_07_DATA_ITEM_LEN + MAX_RTC_ITEM;
+                        
+                        pc_frame_send.C = 0x91;
+                        
+                        Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.C, pc_frame_send.L, &pc_frame_send);
+                        
+                        send_len = pc_frame_send.L + DL645_FIX_LEN;
+                        
+                        while(OSSemAccept(g_sem_pc));
+                        
+                        pc_uart_send((u8 *)&pc_frame_send, send_len); 
+                        break;
+
+                    case WRITE_TIME_CMD:
+                        u8 new_time[MAX_RTC_ITEM];
+
+                        
+                        new_time[SEC_POS] = Hex2BcdChar(pc_frame_recv.Data[12]);
+                        new_time[MIN_POS] = Hex2BcdChar(pc_frame_recv.Data[13]);
+                        new_time[HOUR_POS] = Hex2BcdChar(pc_frame_recv.Data[14]);
+                        new_time[WEEK_POS] = Hex2BcdChar(pc_frame_recv.Data[15]) % 7;
+                        new_time[DATE_POS] = Hex2BcdChar(pc_frame_recv.Data[16]);
+                        new_time[MONTH_POS] = Hex2BcdChar(pc_frame_recv.Data[17]);
+                        new_time[YEAR_POS] = Hex2BcdChar(pc_frame_recv.Data[18]);
+
+                        RTC_WriteTime(new_time);
+
+                        pc_frame_send.L = 0;
+                        
+                        pc_frame_send.C = 0x94;
+                        
+                        Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.C, pc_frame_send.L, &pc_frame_send);
+                        
+                        send_len = pc_frame_send.L + DL645_FIX_LEN;
+                        
+                        while(OSSemAccept(g_sem_pc));
+                        
+                        pc_uart_send((u8 *)&pc_frame_send, send_len); 
+                        break;
+
+                    case READ_VERSION_CMD:
+                        u32 temp;
+
+                        
+                        buf[0] = HARDWARE_VERSION;
+                        buf[1] = SOFTWARE_VERSION;
+                        temp = VERSION_DATE;
+                        memcpy(&buf[2], &temp, sizeof(temp));
+                        
+                        memcpy(&pc_frame_send.Data[DL645_07_DATA_ITEM_LEN], buf, VERSION_LEN);
+                        
+                        pc_frame_send.L = DL645_07_DATA_ITEM_LEN + VERSION_LEN;
+                        
+                        pc_frame_send.C = 0x91;
+                        
+                        Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.C, pc_frame_send.L, &pc_frame_send);
+                        
+                        send_len = pc_frame_send.L + DL645_FIX_LEN;
+                        
+                        while(OSSemAccept(g_sem_pc));
+                        
+                        pc_uart_send((u8 *)&pc_frame_send, send_len); 
+                        break;
+
+                    case RESET_CMD:
+                        dev_para_recover();
+                        
+                        pc_frame_send.L = 0;
+                        
+                        pc_frame_send.C = 0x94;
+                        
+                        Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.C, pc_frame_send.L, &pc_frame_send);
+                        
+                        send_len = pc_frame_send.L + DL645_FIX_LEN;
+                        
+                        while(OSSemAccept(g_sem_pc));
+                        
+                        pc_uart_send((u8 *)&pc_frame_send, send_len);
+                        break;
+                        
+                    default:
+                        break;
                     }
                 }
             }
-        }
-        else
-        {
-
         }
     }
 }
@@ -1317,7 +1272,8 @@ void  App_TaskPC (void *p_arg)
 #endif
 void  App_TaskRS485 (void *p_arg)
 {
-    INT8U err, send_len, rs485_addr[6] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA};
+    const INT8U rs485_addr[6] = {0x99, 0x99, 0x99, 0x99, 0x99, 0x99};
+    INT8U err, send_len;
     INT32U rs485_data_item;
 
 
@@ -1328,38 +1284,36 @@ void  App_TaskRS485 (void *p_arg)
 
         if(OS_ERR_NONE == err)
         {
-            if(DL645_FRAME_ERROR != Analysis_DL645_Frame(rs485_addr, (u8 *)&rs485_frame_recv, &rs485_frame_stat))
+            if(DL645_FRAME_OK == Analysis_DL645_Frame((u8 *)rs485_addr, (u8 *)&rs485_frame_recv, &rs485_frame_stat))
             {
-                if(0 != rs485_frame_stat.Status)
+                memcpy(&rs485_frame_send, &rs485_frame_recv, sizeof(DL645_Frame_C));
+
+                if((FRM_CTRW_07_READ_SLVS_DATA == (rs485_frame_stat.C & CCTT_CONTROL_CODE_MASK)) ||
+                   (FRM_CTRW_07_EXT_READ_SLVS_DATA == (rs485_frame_stat.C & CCTT_CONTROL_CODE_MASK)))
                 {
-                    memcpy(&rs485_frame_send, &rs485_frame_recv, sizeof(DL645_Frame_C));
+                    rs485_data_item = ((INT32U)rs485_frame_recv.Data[3] << 24) | ((INT32U)rs485_frame_recv.Data[2] << 16) | ((INT32U)rs485_frame_recv.Data[1] << 8) | ((INT32U)rs485_frame_recv.Data[0] << 0);
 
-                    if((FRM_CTRW_07_READ_SLVS_DATA == (rs485_frame_stat.C & CCTT_CONTROL_CODE_MASK)) ||
-                       (FRM_CTRW_07_EXT_READ_SLVS_DATA == (rs485_frame_stat.C & CCTT_CONTROL_CODE_MASK)))
+                    switch(rs485_data_item)
                     {
-                        rs485_data_item = ((INT32U)rs485_frame_recv.Data[3] << 24) | ((INT32U)rs485_frame_recv.Data[2] << 16) | ((INT32U)rs485_frame_recv.Data[1] << 8) | ((INT32U)rs485_frame_recv.Data[0] << 0);
+                    case SHAKE_HANDS_CMD:
+                        rs485_frame_send.L = DL645_07_DATA_ITEM_LEN;
+                        rs485_frame_send.C = 0x91;
 
-                        switch(rs485_data_item)
-                        {
-                        case SHAKE_HANDS_CMD:
-                            rs485_frame_send.L = DL645_07_DATA_ITEM_LEN;
-                            rs485_frame_send.C = 0x91;
+                        Create_DL645_Frame((u8 *)rs485_addr, rs485_frame_send.C, rs485_frame_send.L, &rs485_frame_send);
 
-                            Create_DL645_Frame(rs485_addr, rs485_frame_send.C, rs485_frame_send.L, &rs485_frame_send);
+                        send_len = rs485_frame_send.L + DL645_FIX_LEN;
 
-                            send_len = rs485_frame_send.L + DL645_FIX_LEN;
+                        while(OSSemAccept(g_sem_rs485));
 
-                            while(OSSemAccept(g_sem_rs485));
+                        rs485_uart_send((u8 *)&rs485_frame_send, send_len);
+                        break;
 
-                            rs485_uart_send((u8 *)&rs485_frame_send, send_len);
-                            break;
-
-                        default:
-                            break;
-                        }
+                    default:
+                        break;
                     }
                 }
             }
         }
     }
 }
+

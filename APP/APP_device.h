@@ -4,7 +4,7 @@
 
 #define HARDWARE_VERSION         23
 #define SOFTWARE_VERSION         30
-#define VERSION_DATE     0x20150803
+#define VERSION_DATE     0x20150804
 
 #define BOOT_REQUEST_ACT   0xffffbbcc
 #define BOOT_FINISH_ACT    0xffff0000
@@ -77,7 +77,6 @@ typedef struct _rom_para_
     unsigned int stopbit;
     unsigned int plc_freq;
     unsigned int bpsSpeed;
-
     unsigned int meter_pwd;
     unsigned int meter_opcode;
 

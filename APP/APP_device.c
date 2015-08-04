@@ -3,51 +3,55 @@
 
 ROM_PARA g_rom_para = 
 {
-    TAG_WORD_TABLE_MAP, //标签
-    0xffffbb00,         //升级标志，不能改动
-    0,                  //校验和
-    VERSION_DATE,       //版本日期
+    TAG_WORD_TABLE_MAP,     //标签
+    0xffffbb00,             //升级标志，不能改动
+    0,                      //校验和
+    VERSION_DATE,           //版本日期
 
-    60,                 //自动睡眠时间
-    180,                //自动关机时间
-    SYS_BEEP_ON,        //蜂鸣器开关
-    4000,               //接受数据延时
-    1000,               //执行时间
-    DL645_2007,         //规约
-    CHANNEL_PLC,        //通道
-    BAUD_RATE_9600,     //波特率
-    0xFA,               //前导符
-    ONE_STOPBIT,        //停止位
-    PLC_421_1200BPS,    //速率
-    PLC_BPS_MIDDLE,     //通讯时延
+    60,                     //自动睡眠时间
+    180,                    //自动关机时间
+    SYS_BEEP_ON,            //蜂鸣器开关
+    4000,                   //接受数据延时
+    1000,                   //执行时间
+    DL645_2007,             //规约
+    CHANNEL_PLC,            //通道
+    BAUD_RATE_9600,         //波特率
+    0xFA,                   //前导符
+    ONE_STOPBIT,            //停止位
+    PLC_421_1200BPS,        //速率
+    PLC_BPS_MIDDLE,         //通讯时延
+    METER_PWD_DEFAULT,      //电表密码
+    METER_OPCODE_DEFAULT,   //电表操作码
     
     {
-        0,              //保留
+        0,                  //保留
     }
 };
 
 const ROM_PARA g_rom_para_default = 
 {
-    TAG_WORD_TABLE_MAP, //标签
-    0xffffbb00,         //升级标志，不能改动
-    0,                  //校验和
-    VERSION_DATE,       //版本日期
+    TAG_WORD_TABLE_MAP,     //标签
+    0xffffbb00,             //升级标志，不能改动
+    0,                      //校验和
+    VERSION_DATE,           //版本日期
 
-    60,                 //自动睡眠时间
-    180,                //自动关机时间
-    SYS_BEEP_ON,        //蜂鸣器开关
-    4000,               //接受数据延时
-    1000,               //执行时间
-    DL645_2007,         //规约
-    CHANNEL_PLC,        //通道
-    BAUD_RATE_9600,     //波特率
-    0xFA,               //前导符
-    ONE_STOPBIT,        //停止位
-    PLC_421_1200BPS,    //速率
-    PLC_BPS_MIDDLE,     //通讯时延
+    60,                     //自动睡眠时间
+    180,                    //自动关机时间
+    SYS_BEEP_ON,            //蜂鸣器开关
+    4000,                   //接受数据延时
+    1000,                   //执行时间
+    DL645_2007,             //规约
+    CHANNEL_PLC,            //通道
+    BAUD_RATE_9600,         //波特率
+    0xFA,                   //前导符
+    ONE_STOPBIT,            //停止位
+    PLC_421_1200BPS,        //速率
+    PLC_BPS_MIDDLE,         //通讯时延
+    METER_PWD_DEFAULT,      //电表密码
+    METER_OPCODE_DEFAULT,   //电表操作码
     
     {
-        0,              //保留
+        0,                  //保留
     }
 };
 
