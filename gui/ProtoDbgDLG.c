@@ -273,7 +273,7 @@ static u32 Get_Para_From_Widget(WM_MESSAGE * pMsg)
     {
         if(0x13 == g_gui_para.ctrlCode)
         {
-            g_gui_para.cmd = GUI_CMD_BROAD_READ_DEV_ADDR;
+            g_gui_para.cmd = GUI_CMD_BROAD_READ_ADDR;
         }
         else if(0x08 == g_gui_para.ctrlCode)
         {

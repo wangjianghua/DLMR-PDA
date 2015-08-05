@@ -302,7 +302,7 @@ void RMD_proc_resp_data(void)
 
     if(g_hWin_ReadMeter != WM_HWIN_NULL)
     {
-        if(g_gui_para.cmd == GUI_CMD_BROAD_READ_DEV_ADDR)
+        if(g_gui_para.cmd == GUI_CMD_BROAD_READ_ADDR)
         {
             if((0x13 == g_gui_para.ctrlCode) && (6 == len))
             {
@@ -504,7 +504,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
                 if(CHANNEL_RF != g_rom_para.channel)
                 {
                     g_gui_para.ctrlCode = 0x13;
-                    g_gui_para.cmd = GUI_CMD_BROAD_READ_DEV_ADDR;
+                    g_gui_para.cmd = GUI_CMD_BROAD_READ_ADDR;
                     g_gui_para.state = GUI_STATE_AMR;                        
                     OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
                 }
@@ -622,7 +622,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
             {
                 if(CHANNEL_RF != g_rom_para.channel)
                 {
-                    g_gui_para.cmd = GUI_CMD_BROAD_READ_DEV_ADDR;
+                    g_gui_para.cmd = GUI_CMD_BROAD_READ_ADDR;
                     g_gui_para.state = GUI_STATE_AMR;                        
                     OSMboxPost(g_sys_ctrl.up_mbox, (void*)&g_gui_para);
                 }

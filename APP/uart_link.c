@@ -713,21 +713,21 @@ void UART_IRQProc(UART_CCB *uccb, UART_HandleTypeDef *UARTx)
 
 void UART4_IRQHandler(void)
 {
-    UART_IRQProc(&g_uart_ccb[PC_COM_PORT], &huart4);    
+    UART_IRQProc(&g_uart_ccb[PC_COM_PORT], &PC_UART);    
 }
 
 void USART2_IRQHandler(void)
 {
-    UART_IRQProc(&g_uart_ccb[PLC_COM_PORT], &huart2);    
+    UART_IRQProc(&g_uart_ccb[PLC_COM_PORT], &PLC_UART);    
 }
 
 void USART1_IRQHandler(void)
 {
-    UART_IRQProc(&g_uart_ccb[RS485_COM_PORT], &huart1);    
+    UART_IRQProc(&g_uart_ccb[RS485_COM_PORT], &RS485_UART);    
 }
 
 void USART3_IRQHandler(void)
 {
-    UART_IRQProc(&g_uart_ccb[IR_COM_PORT], &huart3);    
+    UART_IRQProc(&g_uart_ccb[IR_COM_PORT], &IR_UART);    
 }
 

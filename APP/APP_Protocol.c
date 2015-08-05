@@ -1,15 +1,12 @@
 #include "includes.h"
 
 
-const INT8U cPLC_READ_ADDR[] = {0xFE, 0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
-const INT8U mPLC_REPLY_ADDR[] = {0x68, 0x62, 0x33, 0x19, 0x00, 0x00, 0x00, 0x68, 0x93, 0x06, 0x95, 0x66, 0x4C, 0x33, 0x33, 0x33, 0xF7, 0x16};
-
 const INT8U rPLC_TO_mPLC[] = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68, 0x04, 0x07, 0x33, 0x34, 0x36, 0x33, 0x33, 0x33, 0x34, 0x1C, 0x16};
 const INT8U mPLC_TO_rPLC[] = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68, 0x04, 0x07, 0x33, 0x34, 0x36, 0x33, 0x33, 0x33, 0x33, 0x1B, 0x16};
 
 const INT8U READ_PLC_NODE[] = {0x68, 0x1E, 0x00, 0x41, 0x04, 0x00, 0x5F, 0x64, 0x04, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x16, 0x01, 0x00, 0x02, 0x02, 0xB4, 0xD8, 0x16};
 
-const INT8U Broad_Read_Dev_Addr[12] = {0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
+const INT8U Broad_Read_Addr[] = {0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
 
 const INT8U rPLC_270III[]  = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68, 0x04, 0x08, 0x34, 0x34, 0x36, 0x33, 0x33, 0x33, 0x33, 0x33, 0x50, 0x16};
 const INT8U rPLC_270III5[] = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68, 0x04, 0x08, 0x34, 0x34, 0x36, 0x33, 0x33, 0x33, 0x34, 0x33, 0x51, 0x16};
@@ -19,12 +16,6 @@ const INT8U rPLC_421_50BPS[]   = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68
 const INT8U rPLC_421_100BPS[]  = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68, 0x04, 0x08, 0x34, 0x34, 0x36, 0x33, 0x33, 0x33, 0x34, 0x34, 0x52, 0x16};
 const INT8U rPLC_421_600BPS[]  = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68, 0x04, 0x08, 0x34, 0x34, 0x36, 0x33, 0x33, 0x33, 0x35, 0x34, 0x53, 0x16};
 const INT8U rPLC_421_1200BPS[] = {0x68, 0xDD, 0xAB, 0xCF, 0xEA, 0xBC, 0xDA, 0x68, 0x04, 0x08, 0x34, 0x34, 0x36, 0x33, 0x33, 0x33, 0x36, 0x34, 0x54, 0x16};
-
-//√‹¬Î
-const INT8U wPLC_PWD[] = {0x34, 0x64, 0x74, 0x84};
-
-//≤Ÿ◊˜¬Î 87 86 74 78
-const INT8U wPLC_OP_CODE[] = {0x78, 0x74, 0x86, 0x87};
 
 OS_EVENT *g_sem_plc;
 OS_EVENT *g_sem_rf;
@@ -36,15 +27,12 @@ OS_EVENT *g_sem_chk_plc;
 OS_EVENT *g_sem_chk_rf;
 OS_EVENT *g_sem_chk_ir;
 
-u8 g_cdl645_read_addr[13];
-
-u8 g_cur_freq;
-
 PROTO_PARA g_proto_para;
 
 DL645_Frame_C pc_frame_send;
 DL645_Frame_C pc_frame_recv;
 DL645_Frame_Stat_C pc_frame_stat;
+
 DL645_Frame_C rs485_frame_send;
 DL645_Frame_C rs485_frame_recv;
 DL645_Frame_Stat_C rs485_frame_stat;
@@ -290,9 +278,9 @@ void Proto_Data_Proc(void)
         }      
         else if((FRM_CTRW_07_BROAD_READ_ADDR == (g_proto_para.dl645_frame_stat.C & CCTT_CONTROL_CODE_MASK)))
         {
-            if(6 == len)
+            if(DL645_ADDR_LEN == len)
             {
-                g_proto_para.data_len = 6;
+                g_proto_para.data_len = DL645_ADDR_LEN;
                 memcpy(g_proto_para.data_buf, &g_proto_para.dl645_frame_recv.Data[0], g_proto_para.data_len);    
             }
         }
@@ -320,8 +308,8 @@ void Proto_Data_Proc(void)
 void  App_TaskProto (void *p_arg)
 {
     const INT8U dl645_broad_addr[6] = {0x99, 0x99, 0x99, 0x99, 0x99, 0x99};
-    INT8U rf_dev_addr[] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88};
-    INT8U dl645_read_addr[16];
+    INT8U rf_addr[] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88};
+    INT8U dl645_read_addr[32];
     INT8U err, index;
     INT16U len;
     WM_HWIN hItem;
@@ -345,14 +333,14 @@ void  App_TaskProto (void *p_arg)
             
             switch(g_gui_para.cmd)
             {
-            case GUI_CMD_BROAD_READ_DEV_ADDR: //π„≤•∂¡…Ë±∏µÿ÷∑
+            case GUI_CMD_BROAD_READ_ADDR: //π„≤•∂¡…Ë±∏µÿ÷∑
                 if(CHANNEL_PLC == g_rom_para.channel) //‘ÿ≤®
                 {
-                    memcpy(&dl645_read_addr[DL645_INDEX], Broad_Read_Dev_Addr, sizeof(Broad_Read_Dev_Addr));
+                    memcpy(&dl645_read_addr[DL645_INDEX], Broad_Read_Addr, sizeof(Broad_Read_Addr));
 
                     dl645_read_addr[PREAMBLE_INDEX] = g_rom_para.preamble;
 
-                    g_proto_para.send_len = sizeof(Broad_Read_Dev_Addr) + PREAMBLE_LEN;
+                    g_proto_para.send_len = sizeof(Broad_Read_Addr) + PREAMBLE_LEN;
                     
                     memcpy(g_proto_para.send_buf, dl645_read_addr, g_proto_para.send_len);
 
@@ -385,13 +373,13 @@ void  App_TaskProto (void *p_arg)
                 }
                 else if(CHANNEL_RF == g_rom_para.channel) //…‰∆µ
                 {
-                    memcpy(g_proto_para.send_buf, Broad_Read_Dev_Addr, sizeof(Broad_Read_Dev_Addr));
+                    memcpy(g_proto_para.send_buf, Broad_Read_Addr, sizeof(Broad_Read_Addr));
 
-                    g_proto_para.send_len = sizeof(Broad_Read_Dev_Addr);
+                    g_proto_para.send_len = sizeof(Broad_Read_Addr);
 
                     while(OSSemAccept(g_sem_rf));
                     
-                    RF_SEND_LEN = GDW_RF_Protocol_2013(rf_dev_addr, 0x00, 0x00, 0x00, (u8 *)g_proto_para.send_buf, g_proto_para.send_len, RF_SEND_BUF);
+                    RF_SEND_LEN = GDW_RF_Protocol_2013(rf_addr, 0x00, 0x00, 0x00, (u8 *)g_proto_para.send_buf, g_proto_para.send_len, RF_SEND_BUF);
 
                     g_proto_para.msg_state = MSG_STATE_SENDING;
 
@@ -421,11 +409,11 @@ void  App_TaskProto (void *p_arg)
                 }
                 else if(CHANNEL_IR == g_rom_para.channel) //∫ÏÕ‚
                 {
-                    memcpy(&dl645_read_addr[DL645_INDEX], Broad_Read_Dev_Addr, sizeof(Broad_Read_Dev_Addr));
+                    memcpy(&dl645_read_addr[DL645_INDEX], Broad_Read_Addr, sizeof(Broad_Read_Addr));
 
                     dl645_read_addr[PREAMBLE_INDEX] = g_rom_para.preamble;
 
-                    g_proto_para.send_len = sizeof(Broad_Read_Dev_Addr) + PREAMBLE_LEN;
+                    g_proto_para.send_len = sizeof(Broad_Read_Addr) + PREAMBLE_LEN;
 
                     g_proto_para.ir_send_len = g_proto_para.send_len;
                     
@@ -521,7 +509,7 @@ void  App_TaskProto (void *p_arg)
 
                     while(OSSemAccept(g_sem_rf));
                     
-                    RF_SEND_LEN = GDW_RF_Protocol_2013(rf_dev_addr, 0x00, 0x00, 0x00, (u8 *)g_proto_para.send_buf, g_proto_para.send_len, RF_SEND_BUF);
+                    RF_SEND_LEN = GDW_RF_Protocol_2013(rf_addr, 0x00, 0x00, 0x00, (u8 *)g_proto_para.send_buf, g_proto_para.send_len, RF_SEND_BUF);
 
                     g_proto_para.msg_state = MSG_STATE_SENDING;
 
@@ -783,13 +771,13 @@ void  App_TaskProto (void *p_arg)
                 }                
                 else if(CHANNEL_RF == g_rom_para.channel) //…‰∆µ
                 {                    
-                    memcpy(&rf_dev_addr[6], g_gui_para.dstAddr, DL645_ADDR_LEN);
+                    memcpy(&rf_addr[6], g_gui_para.dstAddr, DL645_ADDR_LEN);
 
                     memcpy(g_proto_para.send_buf, (u8 *)&g_proto_para.dl645_frame_send, g_proto_para.send_len);
 
                     while(OSSemAccept(g_sem_rf));
                     
-                    RF_SEND_LEN = GDW_RF_Protocol_2013(rf_dev_addr, 0x00, 0x00, 0x00, (u8 *)g_proto_para.send_buf, g_proto_para.send_len, RF_SEND_BUF);
+                    RF_SEND_LEN = GDW_RF_Protocol_2013(rf_addr, 0x00, 0x00, 0x00, (u8 *)g_proto_para.send_buf, g_proto_para.send_len, RF_SEND_BUF);
 
                     g_proto_para.msg_state = MSG_STATE_SENDING;              
 

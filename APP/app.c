@@ -651,7 +651,7 @@ typedef enum
     MAX_CHECK_INFO,
 } CHECK_INFO;
 
-typedef struct _check_info_pos
+typedef struct _check_info_pos_
 {
     int x;
     int y;
@@ -717,10 +717,10 @@ const char *key_chk_msg[KEYBOARD_COL_NUM * KEYBOARD_ROW_NUM + 2] =
 #endif
 static  void  App_TaskCheck (void *p_arg)
 {
-    const INT8U plc_freq_270KHz_read_dev_addr[] = {PLC_FREQ_270KHz_PREAMBLE, 0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
-    const INT8U plc_freq_421KHz_read_dev_addr[] = {PLC_FREQ_421KHz_PREAMBLE, 0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
-    const INT8U ir_read_dev_addr[] = {IR_PREAMBLE, 0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
-    const INT8U rf_dev_addr[] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88};
+    const INT8U plc_freq_270KHz_read_addr[] = {PLC_FREQ_270KHz_PREAMBLE, 0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
+    const INT8U plc_freq_421KHz_read_addr[] = {PLC_FREQ_421KHz_PREAMBLE, 0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
+    const INT8U ir_read_addr[] = {IR_PREAMBLE, 0x68, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x68, 0x13, 0x00, 0xDF, 0x16};
+    const INT8U rf_addr[] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88};
     const INT8U rf_dl645_read[] = {0x68, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x68, 0x11, 0x04, 0x33, 0x32, 0x34, 0x33, 0xE1, 0x16};
     INT8U i, err, count, index, buf[32];
     int *p_key_msg;
@@ -807,7 +807,7 @@ static  void  App_TaskCheck (void *p_arg)
 
     /* ºÏ≤‚‘ÿ≤® */
     while(OSSemAccept(g_sem_chk_plc));
-    plc_uart_send((INT8U *)plc_freq_270KHz_read_dev_addr, sizeof(plc_freq_270KHz_read_dev_addr));
+    plc_uart_send((INT8U *)plc_freq_270KHz_read_addr, sizeof(plc_freq_270KHz_read_addr));
     OSSemPend(g_sem_chk_plc, 3 * OS_TICKS_PER_SEC, &err);
     if(OS_ERR_NONE == err)
     {
@@ -835,7 +835,7 @@ static  void  App_TaskCheck (void *p_arg)
 
     /* ºÏ≤‚…‰∆µ */
     while(OSSemAccept(g_sem_chk_rf));
-    RF_SEND_LEN = GDW_RF_Protocol_2013((INT8U *)rf_dev_addr, 0x00, 0x00, 0x00, (INT8U *)rf_dl645_read, sizeof(rf_dl645_read), RF_SEND_BUF);
+    RF_SEND_LEN = GDW_RF_Protocol_2013((INT8U *)rf_addr, 0x00, 0x00, 0x00, (INT8U *)rf_dl645_read, sizeof(rf_dl645_read), RF_SEND_BUF);
     OSSemPend(g_sem_chk_rf, 2 * OS_TICKS_PER_SEC, &err);
     if(OS_ERR_NONE == err)
     {
@@ -864,9 +864,9 @@ static  void  App_TaskCheck (void *p_arg)
     }
 
     /* ºÏ≤‚∫ÏÕ‚ */
-    g_proto_para.ir_send_len = sizeof(ir_read_dev_addr);
+    g_proto_para.ir_send_len = sizeof(ir_read_addr);
     while(OSSemAccept(g_sem_chk_ir));
-    ir_uart_send((INT8U *)ir_read_dev_addr, sizeof(ir_read_dev_addr));
+    ir_uart_send((INT8U *)ir_read_addr, sizeof(ir_read_addr));
     OSSemPend(g_sem_chk_ir, 2 * OS_TICKS_PER_SEC, &err);
     if(OS_ERR_NONE == err)
     {
