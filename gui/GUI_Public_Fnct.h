@@ -230,9 +230,6 @@ typedef enum
 
 #define USED_DATAFLAG_NUM       9
 
-
-
-
 #define ON                         0
 #define OFF                        1
 

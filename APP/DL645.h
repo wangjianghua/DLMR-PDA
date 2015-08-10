@@ -16,7 +16,7 @@
 #define FRM_CTRW_97_WRITE_SLVS_DATA          0x04 //主机发出命令写数据
 
 #define FRM_CTRW_07_READ_SLVS_DATA           0x11 //主机发出命令读数据
-#define FRM_CTRW_07_EXT_READ_SLVS_DATA       0x12 //华兄
+#define FRM_CTRW_07_READ_SLVS_EXTRA_DATA     0x12 //主机发出命令读后续数据
 #define FRM_CTRW_07_WRITE_SLVS_DATA          0x14 //主机发出命令写数据
 
 #define FRM_CTRW_07_BROAD_READ_ADDR          0x13 //广播读地址
@@ -30,17 +30,17 @@
 
 #define DL645_FIX_LEN                          12
 
-#define DL645_MAX_DATA_LEN                    230 //华兄
+#define DL645_MAX_DATA_LEN                    230 //数据域最大长度
 
 #define DL645_FRAME_OK                          0
 #define DL645_FRAME_ERROR                     128
 
 typedef struct
 {
-	u8 Status; //帧状态: 0非法、1合法、2地址符合、3地址不符合
-	u8 protocol; //协议
-	u8 C; //645控制码
-	u8 ID_Leng; //表示码长度
+	u8 State; //帧状态: 0非法、1合法、2地址符合、3地址不符合
+	u8 Protocol; //协议
+	u8 C; //控制码
+	u8 ID_Length; //标识码长度
 } DL645_Frame_Stat_C;
 
 #pragma pack(push)

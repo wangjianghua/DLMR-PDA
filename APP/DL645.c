@@ -124,25 +124,25 @@ u32 Analysis_DL645_Frame(u8 *Addr, u8 *buff, DL645_Frame_Stat_C *pFreame_st)
 {
 	DL645_Frame_C *DL645_Frame;
 	u8 i;
-	pFreame_st->protocol=DL645_NONE;
-	pFreame_st->ID_Leng=0;
-	pFreame_st->Status=0;
+	pFreame_st->Protocol=DL645_NONE;
+	pFreame_st->ID_Length=0;
+	pFreame_st->State=0;
     
 	i = CheckDL645_Frame(buff);
     
 	if(i != DL645_FRAME_ERROR)
 	{
-		pFreame_st->Status=1; //合法645报文
+		pFreame_st->State=1; //合法645报文
 		
 		DL645_Frame=(DL645_Frame_C *)(buff+i);
         
 		if(!memcmp(Addr,DL645_Frame->Addr,6))
 		{
-			pFreame_st->Status=2; //地址相同
+			pFreame_st->State=2; //地址相同
 		}
         else
         {
-			pFreame_st->Status=3; //地址不相同
+			pFreame_st->State=3; //地址不相同
         }
         
 		Frame_Sub_33(DL645_Frame->Data,DL645_Frame->L);
@@ -151,13 +151,13 @@ u32 Analysis_DL645_Frame(u8 *Addr, u8 *buff, DL645_Frame_Stat_C *pFreame_st)
         
 		if((DL645_Frame->C&0x10)||(DL645_Frame->C==0x83))
 		{
-			pFreame_st->protocol=DL645_2007;
-			if(DL645_Frame->C==0x91) pFreame_st->ID_Leng=4;
+			pFreame_st->Protocol=DL645_2007;
+			if(DL645_Frame->C==0x91) pFreame_st->ID_Length=4;
 		}
 		else
 		{
-			pFreame_st->protocol=DL645_1997;
-			if(DL645_Frame->C==0x81) pFreame_st->ID_Leng=2;
+			pFreame_st->Protocol=DL645_1997;
+			if(DL645_Frame->C==0x81) pFreame_st->ID_Length=2;
 		}     
 
         return (DL645_FRAME_OK);

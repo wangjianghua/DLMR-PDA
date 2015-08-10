@@ -351,7 +351,7 @@ u16 sprintf_trm_msg_record(u8 msg_type)
                 len += 3;
             }
 
-            sprintf(buf, " LEN: %03u", g_proto_para.recv_len);
+            sprintf(buf, " L: %03u", g_proto_para.recv_len);
         }   
         else if(TRM_MSG_SEND == msg_type)      
         {
@@ -368,7 +368,7 @@ u16 sprintf_trm_msg_record(u8 msg_type)
                 len += 3;
             }
             
-            sprintf(buf, " LEN: %03u", g_proto_para.send_len);
+            sprintf(buf, " L: %03u", g_proto_para.send_len);
         }
         else if(TRM_MSG_RECV == msg_type)
         {   
@@ -385,7 +385,7 @@ u16 sprintf_trm_msg_record(u8 msg_type)
                 len += 3;
             }
             
-            sprintf(buf, " LEN: %03u", g_proto_para.recv_len);
+            sprintf(buf, " L: %03u", g_proto_para.recv_len);
         }
         else
         {
@@ -394,12 +394,12 @@ u16 sprintf_trm_msg_record(u8 msg_type)
             *ptr++ = ' ';
             len += 3;
             
-            sprintf(buf, " LEN: %03u", 0);
+            sprintf(buf, " L: %03u", 0);
         }
 
-        memcpy(ptr, buf, 9);
-        ptr += 9;
-        len += 9;
+        memcpy(ptr, buf, 7);
+        ptr += 7;
+        len += 7;
 
         *ptr++ = '\r';
         *ptr++ = '\n';

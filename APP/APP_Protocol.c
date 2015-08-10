@@ -351,8 +351,6 @@ void  App_TaskProto (void *p_arg)
                     g_proto_para.msg_state = MSG_STATE_SENDING;
 
                     OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
-
-                    OSTimeDlyHMSM(0, 0, 0, 200);
                     
                     OSSemPend(g_sem_plc, g_rom_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
 
@@ -384,8 +382,6 @@ void  App_TaskProto (void *p_arg)
                     g_proto_para.msg_state = MSG_STATE_SENDING;
 
                     OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
-
-                    OSTimeDlyHMSM(0, 0, 0, 200);                    
 
                     OSSemPend(g_sem_rf, 5 * OS_TICKS_PER_SEC, &err);
 
@@ -426,8 +422,6 @@ void  App_TaskProto (void *p_arg)
                     g_proto_para.msg_state = MSG_STATE_SENDING;
 
                     OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
-
-                    OSTimeDlyHMSM(0, 0, 0, 200);
                     
                     OSSemPend(g_sem_ir, 5 * OS_TICKS_PER_SEC, &err);
 
@@ -490,8 +484,6 @@ void  App_TaskProto (void *p_arg)
                     g_proto_para.msg_state = MSG_STATE_SENDING;
 
                     OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
-
-                    OSTimeDlyHMSM(0, 0, 0, 200);
                     
                     g_proto_para.recv_len = 0;
 
@@ -514,8 +506,6 @@ void  App_TaskProto (void *p_arg)
                     g_proto_para.msg_state = MSG_STATE_SENDING;
 
                     OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
-
-                    OSTimeDlyHMSM(0, 0, 0, 200);
                     
                     g_proto_para.recv_len = 0;
 
@@ -543,8 +533,6 @@ void  App_TaskProto (void *p_arg)
                     g_proto_para.msg_state = MSG_STATE_SENDING;
 
                     OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
-
-                    OSTimeDlyHMSM(0, 0, 0, 200);
                     
                     g_proto_para.recv_len = 0;
 
@@ -749,8 +737,6 @@ void  App_TaskProto (void *p_arg)
                     g_proto_para.msg_state = MSG_STATE_SENDING;
                     
                     OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
-
-                    OSTimeDlyHMSM(0, 0, 0, 200);
                     
                     OSSemPend(g_sem_plc, g_rom_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
 
@@ -782,8 +768,6 @@ void  App_TaskProto (void *p_arg)
                     g_proto_para.msg_state = MSG_STATE_SENDING;              
 
                     OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
-
-                    OSTimeDlyHMSM(0, 0, 0, 200);                    
 
                     OSSemPend(g_sem_rf, 5 * OS_TICKS_PER_SEC, &err);
 
@@ -821,8 +805,6 @@ void  App_TaskProto (void *p_arg)
                     g_proto_para.msg_state = MSG_STATE_SENDING;
                     
                     OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
-
-                    OSTimeDlyHMSM(0, 0, 0, 200);
                     
                     OSSemPend(g_sem_ir, 5 * OS_TICKS_PER_SEC, &err);
 
@@ -877,8 +859,6 @@ void  App_TaskProto (void *p_arg)
                     g_proto_para.msg_state = MSG_STATE_SENDING;
                     
                     OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
-
-                    OSTimeDlyHMSM(0, 0, 0, 200);
                     
                     OSSemPend(g_sem_plc, g_rom_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
 
@@ -948,12 +928,11 @@ void  App_TaskProto (void *p_arg)
 void  App_TaskPC (void *p_arg)
 {
     const INT8U pc_addr[6] = {0x99, 0x99, 0x99, 0x99, 0x99, 0x99};
-    INT8U err, send_file_num, fname[16], buf[128];
+    INT8U err, seq, send_file_num, fname[16], buf[128];
     INT16U send_len;
     INT32U i, j, pc_data_item, sd_file_num;
     FATFS fs;
     UINT br;
-    static INT8U seq;
     static FIL fp;
     static INT32U fsize, offset;
     
@@ -971,7 +950,7 @@ void  App_TaskPC (void *p_arg)
                 
                 if((FRM_CTRW_07_READ_SLVS_DATA == (pc_frame_stat.C & CCTT_CONTROL_CODE_MASK)) ||
                    (FRM_CTRW_07_WRITE_SLVS_DATA == (pc_frame_stat.C & CCTT_CONTROL_CODE_MASK)) || 
-                   (FRM_CTRW_07_EXT_READ_SLVS_DATA == (pc_frame_stat.C & CCTT_CONTROL_CODE_MASK)))
+                   (FRM_CTRW_07_READ_SLVS_EXTRA_DATA == (pc_frame_stat.C & CCTT_CONTROL_CODE_MASK)))
                 {
                     pc_data_item = ((INT32U)pc_frame_recv.Data[3] << 24) | ((INT32U)pc_frame_recv.Data[2] << 16) | ((INT32U)pc_frame_recv.Data[1] << 8) | ((INT32U)pc_frame_recv.Data[0] << 0);
                 
@@ -1045,7 +1024,6 @@ void  App_TaskPC (void *p_arg)
                         case FRM_CTRW_07_READ_SLVS_DATA:
                             fsize = 0;
                             offset = 0;
-                            seq = 0;
                             
                             memcpy(fname, &pc_frame_recv.Data[DL645_07_DATA_ITEM_LEN], FILE_NAME_LEN);
                             
@@ -1073,8 +1051,6 @@ void  App_TaskPC (void *p_arg)
                                         else
                                         {
                                             pc_frame_send.C = 0xB1;
-
-                                            seq++;
                                         }
                             
                                         Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.C, pc_frame_send.L, &pc_frame_send);
@@ -1093,10 +1069,12 @@ void  App_TaskPC (void *p_arg)
                             f_mount(SD_DRV, NULL);
                             break;
 
-                        case FRM_CTRW_07_EXT_READ_SLVS_DATA:
+                        case FRM_CTRW_07_READ_SLVS_EXTRA_DATA:
                             memcpy(fname, &pc_frame_recv.Data[DL645_07_DATA_ITEM_LEN], FILE_NAME_LEN);
                             
                             fname[FILE_NAME_LEN] = '\0';
+
+                            memcpy(&seq, &pc_frame_recv.Data[DL645_07_DATA_ITEM_LEN + FILE_NAME_LEN], SEQ_LEN);
                             
                             if(FR_OK == f_mount(SD_DRV, &fs))
                             {
@@ -1123,8 +1101,6 @@ void  App_TaskPC (void *p_arg)
                                         else
                                         {
                                             pc_frame_send.C = 0xB2;
-
-                                            seq++;
                                         }
                             
                                         Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.C, pc_frame_send.L, &pc_frame_send);
@@ -1277,7 +1253,7 @@ void  App_TaskRS485 (void *p_arg)
                 memcpy(&rs485_frame_send, &rs485_frame_recv, sizeof(DL645_Frame_C));
 
                 if((FRM_CTRW_07_READ_SLVS_DATA == (rs485_frame_stat.C & CCTT_CONTROL_CODE_MASK)) ||
-                   (FRM_CTRW_07_EXT_READ_SLVS_DATA == (rs485_frame_stat.C & CCTT_CONTROL_CODE_MASK)))
+                   (FRM_CTRW_07_READ_SLVS_EXTRA_DATA == (rs485_frame_stat.C & CCTT_CONTROL_CODE_MASK)))
                 {
                     rs485_data_item = ((INT32U)rs485_frame_recv.Data[3] << 24) | ((INT32U)rs485_frame_recv.Data[2] << 16) | ((INT32U)rs485_frame_recv.Data[1] << 8) | ((INT32U)rs485_frame_recv.Data[0] << 0);
 
