@@ -19,7 +19,7 @@
 RF_PARA g_rf_para;
 u8 RF_LED_Timeout;
 
-u8 g_plc_buf[100]={0};
+u8 g_rf_buf[100]={0};
 
 
 

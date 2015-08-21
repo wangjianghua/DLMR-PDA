@@ -860,7 +860,7 @@ void  App_TaskProto (void *p_arg)
                     
                     OSMboxPost(g_sys_ctrl.down_mbox, (void *)&g_proto_para);
                     
-                    OSSemPend(g_sem_plc, g_rom_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
+                    OSSemPend(g_sem_plc, (g_sys_ctrl.sysAddrLevel + 1) * g_rom_para.bpsSpeed * OS_TICKS_PER_SEC, &err);
 
                     g_proto_para.data_len = 0;
                     
@@ -950,7 +950,7 @@ void  App_TaskPC (void *p_arg)
                 
                 if((FRM_CTRW_07_READ_SLVS_DATA == (pc_frame_stat.C & CCTT_CONTROL_CODE_MASK)) ||
                    (FRM_CTRW_07_WRITE_SLVS_DATA == (pc_frame_stat.C & CCTT_CONTROL_CODE_MASK)) || 
-                   (FRM_CTRW_07_READ_SLVS_EXTRA_DATA == (pc_frame_stat.C & CCTT_CONTROL_CODE_MASK)))
+                   (FRM_CTRW_07_READ_SLVS_FOLLOW_DATA == (pc_frame_stat.C & CCTT_CONTROL_CODE_MASK)))
                 {
                     pc_data_item = ((INT32U)pc_frame_recv.Data[3] << 24) | ((INT32U)pc_frame_recv.Data[2] << 16) | ((INT32U)pc_frame_recv.Data[1] << 8) | ((INT32U)pc_frame_recv.Data[0] << 0);
                 
@@ -1069,7 +1069,7 @@ void  App_TaskPC (void *p_arg)
                             f_mount(SD_DRV, NULL);
                             break;
 
-                        case FRM_CTRW_07_READ_SLVS_EXTRA_DATA:
+                        case FRM_CTRW_07_READ_SLVS_FOLLOW_DATA:
                             memcpy(fname, &pc_frame_recv.Data[DL645_07_DATA_ITEM_LEN], FILE_NAME_LEN);
                             
                             fname[FILE_NAME_LEN] = '\0';
@@ -1191,8 +1191,8 @@ void  App_TaskPC (void *p_arg)
                         pc_uart_send((u8 *)&pc_frame_send, send_len); 
                         break;
 
-                    case RESET_CMD:
-                        dev_para_recover();
+                    case RESTORE_CMD:
+                        dev_para_restore();
                         
                         pc_frame_send.L = 0;
                         
@@ -1253,7 +1253,7 @@ void  App_TaskRS485 (void *p_arg)
                 memcpy(&rs485_frame_send, &rs485_frame_recv, sizeof(DL645_Frame_C));
 
                 if((FRM_CTRW_07_READ_SLVS_DATA == (rs485_frame_stat.C & CCTT_CONTROL_CODE_MASK)) ||
-                   (FRM_CTRW_07_READ_SLVS_EXTRA_DATA == (rs485_frame_stat.C & CCTT_CONTROL_CODE_MASK)))
+                   (FRM_CTRW_07_READ_SLVS_FOLLOW_DATA == (rs485_frame_stat.C & CCTT_CONTROL_CODE_MASK)))
                 {
                     rs485_data_item = ((INT32U)rs485_frame_recv.Data[3] << 24) | ((INT32U)rs485_frame_recv.Data[2] << 16) | ((INT32U)rs485_frame_recv.Data[1] << 8) | ((INT32U)rs485_frame_recv.Data[0] << 0);
 

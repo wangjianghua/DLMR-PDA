@@ -75,13 +75,13 @@ typedef enum
 #define SEQ_LEN                  1
 #define VERSION_LEN              6
 
-#define SHAKE_HANDS_CMD     0xF0000000
-#define SCAN_FILE_CMD       0xF0000100
-#define READ_FILE_CMD       0xF0010100
-#define READ_TIME_CMD       0xF0100000
-#define WRITE_TIME_CMD      0xF0110000
-#define READ_VERSION_CMD    0xF0100001
-#define RESET_CMD           0xF0100100
+#define SHAKE_HANDS_CMD     0xFF000001
+#define SCAN_FILE_CMD       0xFF000010
+#define READ_FILE_CMD       0xFF000011
+#define READ_TIME_CMD       0xFF000100
+#define WRITE_TIME_CMD      0xFF000101
+#define READ_VERSION_CMD    0xFF000110
+#define RESTORE_CMD         0xFF000111
 
 typedef struct _proto_para_
 {

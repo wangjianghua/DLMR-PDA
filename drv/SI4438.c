@@ -146,7 +146,7 @@ u8 Api_Write[16];			/*ะดรüม๎สýื้*/
 
 
 extern RF_PARA g_rf_para;
-extern u8 g_plc_buf[];
+extern u8 g_rf_buf[];
 extern u8 rf_part_info[8];
 extern u8 rf_device_id[8];
 extern u8 rf_int_status[8];

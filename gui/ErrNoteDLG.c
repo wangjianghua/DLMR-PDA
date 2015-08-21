@@ -172,7 +172,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
 
                 if(g_hWin_AdvanSet > 0)
                 {
-                    dev_para_recover();
+                    dev_para_restore();
 
                     GUI_Refresh_AdvanceSetDLG();
                     GUI_Refresh_ParaSetDLG();

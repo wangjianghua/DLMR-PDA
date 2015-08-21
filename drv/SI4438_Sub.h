@@ -38,7 +38,7 @@
 #define RF_INT_CLEAR()	    __HAL_GPIO_EXTI_CLEAR_FLAG(GPIO_PIN_14);  
 //开启外部中断
 
-#define  RF_buf g_plc_buf
+#define  RF_buf g_rf_buf
 
 #define _sys_plc_stop() 
 #define _sys_plc_reset()

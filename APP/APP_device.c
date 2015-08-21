@@ -290,7 +290,7 @@ void DEV_Init(void)
     g_sys_ctrl.data_item_index = 0;
 }
 
-void dev_para_recover(void)
+void dev_para_restore(void)
 {
     memcpy(&g_rom_para, &g_rom_para_default, sizeof(ROM_PARA));
 

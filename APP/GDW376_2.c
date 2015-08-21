@@ -3,7 +3,7 @@
 //static  u8 PL_Up_ch;  //上行通讯信道
 
 //const u8 Bit_Def[8]={0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};
-//extern UCHAR g_plc_buf[PLC_BUF_MAX_LEN+6];
+//extern UCHAR g_rf_buf[PLC_BUF_MAX_LEN+6];
 //=====================国网本地模块通讯协议帧头构造======================
 //说明1：通讯方式固定为集中式载波
 //说明2：通讯波特率固定为9600bps
@@ -368,7 +368,7 @@ u16 GDW3762_Comm_Sub(u8 *buff)
 		else
 		if(Info_ptr->bps==10000)
 		{
-			GDW_RF_Protocol_2013(Frame_3762_Ptr->Data+6,Info_ptr->Lever,0x13,GDW3762_App_Ptr->Data[0],GDW3762_App_Ptr->Data+3,GDW3762_App_Ptr->Data[2],g_plc_buf);
+			GDW_RF_Protocol_2013(Frame_3762_Ptr->Data+6,Info_ptr->Lever,0x13,GDW3762_App_Ptr->Data[0],GDW3762_App_Ptr->Data+3,GDW3762_App_Ptr->Data[2],g_rf_buf);
 		}
 #endif
              else

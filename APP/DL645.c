@@ -102,7 +102,7 @@ u8 Create_DL645_LeveFrame(u8 *leve_Addr, u8 leve, u8 *Addr, u8 C, u8 len, u8 *da
 		//memcpy(DL645_Frame->Data+Point,Addr,6); //HRK
 		//Point+=6; //HRK
 		memcpy(DL645_Frame->Addr,leve_Addr,6);
-		//memcpy(DL645_Frame->Data+Point,data,len); /*add on 03.23*/ //HRK
+		//memcpy(DL645_Frame->Data+Point,data,len); //HRK
 		//Point+=len; //HRK
 	}
 	else
@@ -126,23 +126,23 @@ u32 Analysis_DL645_Frame(u8 *Addr, u8 *buff, DL645_Frame_Stat_C *pFreame_st)
 	u8 i;
 	pFreame_st->Protocol=DL645_NONE;
 	pFreame_st->ID_Length=0;
-	pFreame_st->State=0;
+	pFreame_st->Status=0;
     
 	i = CheckDL645_Frame(buff);
     
 	if(i != DL645_FRAME_ERROR)
 	{
-		pFreame_st->State=1; //合法645报文
+		pFreame_st->Status=1; //合法645报文
 		
 		DL645_Frame=(DL645_Frame_C *)(buff+i);
         
 		if(!memcmp(Addr,DL645_Frame->Addr,6))
 		{
-			pFreame_st->State=2; //地址相同
+			pFreame_st->Status=2; //地址相同
 		}
         else
         {
-			pFreame_st->State=3; //地址不相同
+			pFreame_st->Status=3; //地址不相同
         }
         
 		Frame_Sub_33(DL645_Frame->Data,DL645_Frame->L);

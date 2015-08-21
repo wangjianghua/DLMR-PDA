@@ -3,8 +3,8 @@
 
 
 #define HARDWARE_VERSION         23
-#define SOFTWARE_VERSION         30
-#define VERSION_DATE     0x20150810
+#define SOFTWARE_VERSION         31
+#define VERSION_DATE     0x20150821
 
 #define BOOT_REQUEST_ACT   0xffffbbcc
 #define BOOT_FINISH_ACT    0xffff0000
@@ -126,7 +126,7 @@ extern ROM_PARA g_rom_para;
 extern SYS_CTRL g_sys_ctrl;
 
 void DEV_Init(void);
-void dev_para_recover(void);
+void dev_para_restore(void);
 
 unsigned int DEV_Parameters_Write(void);
 void DEV_Parameters_Read(void);

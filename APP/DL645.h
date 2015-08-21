@@ -16,7 +16,7 @@
 #define FRM_CTRW_97_WRITE_SLVS_DATA          0x04 //主机发出命令写数据
 
 #define FRM_CTRW_07_READ_SLVS_DATA           0x11 //主机发出命令读数据
-#define FRM_CTRW_07_READ_SLVS_EXTRA_DATA     0x12 //主机发出命令读后续数据
+#define FRM_CTRW_07_READ_SLVS_FOLLOW_DATA    0x12 //主机发出命令读后续数据
 #define FRM_CTRW_07_WRITE_SLVS_DATA          0x14 //主机发出命令写数据
 
 #define FRM_CTRW_07_BROAD_READ_ADDR          0x13 //广播读地址
@@ -37,7 +37,7 @@
 
 typedef struct
 {
-	u8 State; //帧状态: 0非法、1合法、2地址符合、3地址不符合
+	u8 Status; //帧状态: 0非法、1合法、2地址符合、3地址不符合
 	u8 Protocol; //协议
 	u8 C; //控制码
 	u8 ID_Length; //标识码长度
