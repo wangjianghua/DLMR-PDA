@@ -29,8 +29,6 @@
 
 #define DL645_REPLY_STAT_MASK                0x40
 
-#define DL645_FIX_LEN                          12
-
 #define DL645_FRAME_MAX_DATA_LEN              257
 
 #define DL645_FRAME_OK                          0
@@ -57,9 +55,9 @@ typedef struct
 } DL645_FRAME;
 #pragma pack(pop)
 
-void Create_DL645_Frame(u8 *Addr, u8 Ctrl, u8 Len, DL645_FRAME *DL645_Frame);
-u32 Create_DL645_Relay_Frame(u8 *Relay_Addr, u8 Level, u8 *Addr, u8 Ctrl, u8 Len, u8 *Data, u8 *Send_Buf);
-u32 Analysis_DL645_Frame(u8 *Addr, u8 *Buf, DL645_FRAME_STAT *P_DL645_Frame_Stat);
+u16 Create_DL645_Frame(u8 *Addr, u8 Ctrl, u8 Len, DL645_FRAME *DL645_Frame);
+u16 Create_DL645_Relay_Frame(u8 *Relay_Addr, u8 Level, u8 *Addr, u8 Ctrl, u8 Len, u8 *Data, u8 *Send_Buf);
+u16 Analysis_DL645_Frame(u8 *Addr, u8 *Buf, DL645_FRAME_STAT *P_DL645_Frame_Stat);
 
 
 #ifdef __cplusplus

@@ -466,10 +466,8 @@ void  App_TaskProto (void *p_arg)
                 
                 memcpy(g_proto_para.dl645_frame_send.Data, g_gui_para.dataBuf, g_gui_para.dataLen);
                 
-                Create_DL645_Frame(g_gui_para.dstAddr, g_gui_para.ctrlCode, g_gui_para.dataLen, &g_proto_para.dl645_frame_send);
-                
-                g_proto_para.send_len = g_gui_para.dataLen + DL645_FIX_LEN;
-                
+                g_proto_para.send_len = Create_DL645_Frame(g_gui_para.dstAddr, g_gui_para.ctrlCode, g_gui_para.dataLen, &g_proto_para.dl645_frame_send);
+                                
                 if(CHANNEL_PLC == g_rom_para.channel) //‘ÿ≤®
                 {                    
                     memcpy(&g_proto_para.send_buf[DL645_INDEX], &g_proto_para.dl645_frame_send, g_proto_para.send_len);
@@ -719,9 +717,7 @@ void  App_TaskProto (void *p_arg)
                     memcpy(g_proto_para.dl645_frame_send.Data, g_gui_para.dataBuf, g_gui_para.dataLen);
                 } 
                 
-                Create_DL645_Frame(g_gui_para.dstAddr, g_gui_para.ctrlCode, g_gui_para.dataLen, &g_proto_para.dl645_frame_send);
-
-                g_proto_para.send_len = g_gui_para.dataLen + DL645_FIX_LEN;
+                g_proto_para.send_len = Create_DL645_Frame(g_gui_para.dstAddr, g_gui_para.ctrlCode, g_gui_para.dataLen, &g_proto_para.dl645_frame_send);
 
                 if(CHANNEL_PLC == g_rom_para.channel) //‘ÿ≤®
                 {
@@ -960,9 +956,7 @@ void  App_TaskPC (void *p_arg)
                         pc_frame_send.Len = DL645_07_DATA_ITEM_LEN;
                         pc_frame_send.Ctrl = 0x91;
 
-                        Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.Ctrl, pc_frame_send.Len, &pc_frame_send);
-
-                        send_len = pc_frame_send.Len + DL645_FIX_LEN;
+                        send_len = Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.Ctrl, pc_frame_send.Len, &pc_frame_send);
 
                         while(OSSemAccept(g_sem_pc));
 
@@ -1006,10 +1000,8 @@ void  App_TaskPC (void *p_arg)
 
                             pc_frame_send.Ctrl = 0x91;
 
-                            Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.Ctrl, pc_frame_send.Len, &pc_frame_send);
+                            send_len = Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.Ctrl, pc_frame_send.Len, &pc_frame_send);
     
-                            send_len = pc_frame_send.Len + DL645_FIX_LEN;
-
                             while(OSSemAccept(g_sem_pc));
                         
                             pc_uart_send((u8 *)&pc_frame_send, send_len);                                    
@@ -1053,10 +1045,8 @@ void  App_TaskPC (void *p_arg)
                                             pc_frame_send.Ctrl = 0xB1;
                                         }
                             
-                                        Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.Ctrl, pc_frame_send.Len, &pc_frame_send);
-                            
-                                        send_len = pc_frame_send.Len + DL645_FIX_LEN;
-                            
+                                        send_len = Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.Ctrl, pc_frame_send.Len, &pc_frame_send);
+                                                        
                                         while(OSSemAccept(g_sem_pc));
                                     
                                         pc_uart_send((u8 *)&pc_frame_send, send_len);                                            
@@ -1103,10 +1093,8 @@ void  App_TaskPC (void *p_arg)
                                             pc_frame_send.Ctrl = 0xB2;
                                         }
                             
-                                        Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.Ctrl, pc_frame_send.Len, &pc_frame_send);
-                            
-                                        send_len = pc_frame_send.Len + DL645_FIX_LEN;
-                            
+                                        send_len = Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.Ctrl, pc_frame_send.Len, &pc_frame_send);
+                                                        
                                         while(OSSemAccept(g_sem_pc));
                                     
                                         pc_uart_send((u8 *)&pc_frame_send, send_len);                                            
@@ -1131,10 +1119,8 @@ void  App_TaskPC (void *p_arg)
                         
                         pc_frame_send.Ctrl = 0x91;
                         
-                        Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.Ctrl, pc_frame_send.Len, &pc_frame_send);
-                        
-                        send_len = pc_frame_send.Len + DL645_FIX_LEN;
-                        
+                        send_len = Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.Ctrl, pc_frame_send.Len, &pc_frame_send);
+                                                
                         while(OSSemAccept(g_sem_pc));
                         
                         pc_uart_send((u8 *)&pc_frame_send, send_len); 
@@ -1158,10 +1144,8 @@ void  App_TaskPC (void *p_arg)
                         
                         pc_frame_send.Ctrl = 0x94;
                         
-                        Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.Ctrl, pc_frame_send.Len, &pc_frame_send);
-                        
-                        send_len = pc_frame_send.Len + DL645_FIX_LEN;
-                        
+                        send_len = Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.Ctrl, pc_frame_send.Len, &pc_frame_send);
+                                                
                         while(OSSemAccept(g_sem_pc));
                         
                         pc_uart_send((u8 *)&pc_frame_send, send_len); 
@@ -1182,10 +1166,8 @@ void  App_TaskPC (void *p_arg)
                         
                         pc_frame_send.Ctrl = 0x91;
                         
-                        Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.Ctrl, pc_frame_send.Len, &pc_frame_send);
-                        
-                        send_len = pc_frame_send.Len + DL645_FIX_LEN;
-                        
+                        send_len = Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.Ctrl, pc_frame_send.Len, &pc_frame_send);
+                                                
                         while(OSSemAccept(g_sem_pc));
                         
                         pc_uart_send((u8 *)&pc_frame_send, send_len); 
@@ -1198,10 +1180,8 @@ void  App_TaskPC (void *p_arg)
                         
                         pc_frame_send.Ctrl = 0x94;
                         
-                        Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.Ctrl, pc_frame_send.Len, &pc_frame_send);
-                        
-                        send_len = pc_frame_send.Len + DL645_FIX_LEN;
-                        
+                        send_len = Create_DL645_Frame((u8 *)pc_addr, pc_frame_send.Ctrl, pc_frame_send.Len, &pc_frame_send);
+                                                
                         while(OSSemAccept(g_sem_pc));
                         
                         pc_uart_send((u8 *)&pc_frame_send, send_len);
@@ -1263,9 +1243,7 @@ void  App_TaskRS485 (void *p_arg)
                         rs485_frame_send.Len = DL645_07_DATA_ITEM_LEN;
                         rs485_frame_send.Ctrl = 0x91;
 
-                        Create_DL645_Frame((u8 *)rs485_addr, rs485_frame_send.Ctrl, rs485_frame_send.Len, &rs485_frame_send);
-
-                        send_len = rs485_frame_send.Len + DL645_FIX_LEN;
+                        send_len = Create_DL645_Frame((u8 *)rs485_addr, rs485_frame_send.Ctrl, rs485_frame_send.Len, &rs485_frame_send);
 
                         while(OSSemAccept(g_sem_rs485));
 

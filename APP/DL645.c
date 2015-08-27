@@ -1,7 +1,7 @@
 #include "includes.h"
 
 
-u32 Check_DL645_Frame(u8 *Buf)
+u16 Check_DL645_Frame(u8 *Buf)
 {
     u8 len, i, CS, offset;
     
@@ -65,7 +65,7 @@ void CS_Pack(u8 *Buf)
     Buf[len+1]=0x16;
 }
 
-void Create_DL645_Frame(u8 *Addr, u8 Ctrl, u8 Len, DL645_FRAME *DL645_Frame)
+u16 Create_DL645_Frame(u8 *Addr, u8 Ctrl, u8 Len, DL645_FRAME *DL645_Frame)
 {
     DL645_Frame->Start1=0x68;
     memcpy(DL645_Frame->Addr,Addr,6);
@@ -73,9 +73,11 @@ void Create_DL645_Frame(u8 *Addr, u8 Ctrl, u8 Len, DL645_FRAME *DL645_Frame)
     DL645_Frame->Ctrl=Ctrl;
     DL645_Frame->Len=Len;
     CS_Pack(&DL645_Frame->Start1);
+
+    return (Len+12);
 }
 
-u32 Create_DL645_Relay_Frame(u8 *Relay_Addr, u8 Level, u8 *Addr, u8 Ctrl, u8 Len, u8 *Data, u8 *Send_Buf)
+u16 Create_DL645_Relay_Frame(u8 *Relay_Addr, u8 Level, u8 *Addr, u8 Ctrl, u8 Len, u8 *Data, u8 *Send_Buf)
 {
 	DL645_FRAME *DL645_Frame;
 	u8 index, i;
@@ -110,10 +112,10 @@ u32 Create_DL645_Relay_Frame(u8 *Relay_Addr, u8 Level, u8 *Addr, u8 Ctrl, u8 Len
 	return (index+12);	
 }
 
-u32 Analysis_DL645_Frame(u8 *Addr, u8 *Buf, DL645_FRAME_STAT *P_DL645_Frame_Stat)
+u16 Analysis_DL645_Frame(u8 *Addr, u8 *Buf, DL645_FRAME_STAT *P_DL645_Frame_Stat)
 {
 	DL645_FRAME *DL645_Frame;
-	u8 i;
+	u16 i;
     
 	P_DL645_Frame_Stat->Protocol=DL645_NONE;
 	P_DL645_Frame_Stat->ID_Length=0;
