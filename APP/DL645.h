@@ -13,6 +13,7 @@
 #define CCTT_CONTROL_CODE_MASK               0x1F
 
 #define FRM_CTRW_97_READ_SLVS_DATA           0x01 //主机发出命令读数据
+#define FRM_CTRW_97_READ_SLVS_FOLLOW_DATA    0x02 //主机发出命令读后续数据
 #define FRM_CTRW_97_WRITE_SLVS_DATA          0x04 //主机发出命令写数据
 
 #define FRM_CTRW_07_READ_SLVS_DATA           0x11 //主机发出命令读数据
@@ -30,18 +31,18 @@
 
 #define DL645_FIX_LEN                          12
 
-#define DL645_MAX_DATA_LEN                    230 //数据域最大长度
+#define DL645_MAX_DATA_LEN                    250 //数据域最大长度
 
 #define DL645_FRAME_OK                          0
-#define DL645_FRAME_ERROR                     128
+#define DL645_FRAME_ERROR                     127
 
 typedef struct
 {
 	u8 Status; //帧状态: 0非法、1合法、2地址符合、3地址不符合
 	u8 Protocol; //协议
-	u8 C; //控制码
+	u8 Ctrl; //控制码
 	u8 ID_Length; //标识码长度
-} DL645_Frame_Stat_C;
+} DL645_FRAME_STAT;
 
 #pragma pack(push)
 #pragma pack(1)
@@ -50,15 +51,15 @@ typedef struct
     u8 Start1;
     u8 Addr[6];
     u8 Start2;
-    u8 C;
-    u8 L;
+    u8 Ctrl;
+    u8 Len;
     u8 Data[DL645_MAX_DATA_LEN];
-} DL645_Frame_C;
+} DL645_FRAME;
 #pragma pack(pop)
 
-void Create_DL645_Frame(u8 *Addr, u8 C, u8 len, DL645_Frame_C *DL645_Frame);
-u8 Create_DL645_LeveFrame(u8 *leve_Addr, u8 leve, u8 *Addr, u8 C, u8 len, u8 *data, u8 *Send_buf);
-u32 Analysis_DL645_Frame(u8 *Addr, u8 *buff, DL645_Frame_Stat_C *pFreame_st);
+void Create_DL645_Frame(u8 *Addr, u8 Ctrl, u8 Len, DL645_FRAME *DL645_Frame);
+u32 Create_DL645_Relay_Frame(u8 *Relay_Addr, u8 Level, u8 *Addr, u8 Ctrl, u8 Len, u8 *Data, u8 *Send_Buf);
+u32 Analysis_DL645_Frame(u8 *Addr, u8 *Buf, DL645_FRAME_STAT *P_DL645_Frame_Stat);
 
 
 #ifdef __cplusplus

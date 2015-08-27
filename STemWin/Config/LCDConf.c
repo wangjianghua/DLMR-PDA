@@ -314,7 +314,6 @@ int LCD_X_DisplayDriver(unsigned LayerIndex, unsigned Cmd, void * pData) {
 	lcd_delay(50); //Delay 50ms
 
     LCD_PWR_ON();
-    LCD_BL_ON();
     
     LCD_RST_LOW(); 
     GUI_Delay(150); //Delay 

@@ -460,8 +460,8 @@ static void _Init_ListBox(WM_MESSAGE *pMsg, int ListBoxNum)
     switch(ListBoxNum)
     {
         case LISTBOX_PROTOCOL:
-            LISTBOX_AddString(hItem, "DL645-97");
-            LISTBOX_AddString(hItem, "DL645-07");
+            LISTBOX_AddString(hItem, "DL645-1997");
+            LISTBOX_AddString(hItem, "DL645-2007");
 
 #if 0            
             switch(g_rom_para.protocol)
@@ -567,13 +567,13 @@ static void Select_ListBox_Row(int  WidgetNum)
                 case 0:
                     g_rom_para.protocol = DL645_1997;
                     hWin=CPS_Set_Proto();
-                    EDIT_SetText(hWin,"DL645-97");
+                    EDIT_SetText(hWin,"DL645-1997");
                     break;
                     
                 case 1:
                     g_rom_para.protocol = DL645_2007;
                     hWin=CPS_Set_Proto();
-                    EDIT_SetText(hWin,"DL645-07");
+                    EDIT_SetText(hWin,"DL645-2007");
                     break;                    
             }
             break;

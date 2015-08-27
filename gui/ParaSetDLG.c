@@ -344,10 +344,10 @@ static void _init_dialog(WM_MESSAGE * pMsg)
     switch(g_rom_para.protocol)
     {
         case DL645_2007:
-            EDIT_SetText(hItem, "DL645-07");
+            EDIT_SetText(hItem, "DL645-2007");
             break;
         case DL645_1997:
-            EDIT_SetText(hItem, "DL645-97");
+            EDIT_SetText(hItem, "DL645-1997");
     }
     
 
@@ -459,10 +459,10 @@ void GUI_Refresh_ParaSetDLG(void)
     switch(g_rom_para.protocol)
     {
         case DL645_2007:
-            EDIT_SetText(hItem, "DL645-07");
+            EDIT_SetText(hItem, "DL645-2007");
             break;
         case DL645_1997:
-            EDIT_SetText(hItem, "DL645-97");
+            EDIT_SetText(hItem, "DL645-1997");
     }
     
 

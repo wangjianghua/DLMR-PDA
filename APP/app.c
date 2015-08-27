@@ -369,6 +369,9 @@ static  void  App_TaskGUI (void *p_arg)
 
 
     (void)p_arg;
+
+    LCD_BL_ON();
+    
     GUI_StartSys();
 
     g_hWin_menu = CreatePDA_IconMenu();

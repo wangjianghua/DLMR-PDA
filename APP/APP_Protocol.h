@@ -88,9 +88,9 @@ typedef struct _proto_para_
 	u8 msg_state; //MSG_STATE_SENDING, MSG_STATE_RECEIVED
 	u8 recv_result; //RECV_RES_SUCC, RECV_RES_INVALID, RECV_RES_TIMEOUT
 
-    DL645_Frame_C dl645_frame_send;
-    DL645_Frame_C dl645_frame_recv;
-    DL645_Frame_Stat_C dl645_frame_stat;
+    DL645_FRAME dl645_frame_send;
+    DL645_FRAME dl645_frame_recv;
+    DL645_FRAME_STAT dl645_frame_stat;
     
     u8 send_buf[256]; //DL645发送帧
     u16 send_len; //DL645发送帧长度
