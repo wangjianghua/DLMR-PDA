@@ -1,7 +1,7 @@
 #include "includes.h"
 
 
-u8 Check_DL645_Frame(u8 *Buf)
+u32 Check_DL645_Frame(u8 *Buf)
 {
     u8 len, i, CS, offset;
     
@@ -55,7 +55,7 @@ void CS_Pack(u8 *Buf)
     len=Buf[9];
     CS=0;
     
-    for(i=0; i<len; i++) Buf[10+i]+=0x33;
+    Frame_Add_33H(&Buf[10], len);
     
     len+=10;
     

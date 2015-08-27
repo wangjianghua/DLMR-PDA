@@ -31,7 +31,7 @@
 
 #define DL645_FIX_LEN                          12
 
-#define DL645_MAX_DATA_LEN                    250 //数据域最大长度
+#define DL645_FRAME_MAX_DATA_LEN              257
 
 #define DL645_FRAME_OK                          0
 #define DL645_FRAME_ERROR                     127
@@ -53,7 +53,7 @@ typedef struct
     u8 Start2;
     u8 Ctrl;
     u8 Len;
-    u8 Data[DL645_MAX_DATA_LEN];
+    u8 Data[DL645_FRAME_MAX_DATA_LEN];
 } DL645_FRAME;
 #pragma pack(pop)
 
