@@ -275,7 +275,7 @@ u16 GDW3762_Comm_Sub(u8 *buff)
              if(Info_ptr->bps==330)
                 GDW_DRplc_Frame_head(Frame_3762_Ptr->Data+6,Info_ptr->Lever,0x02,GDW3762_App_Ptr->Data[0],GDW3762_App_Ptr->Data+2);
              else
-                if(Info_ptr->bps==331)Frame_GDW3762CovPLC270_3D5(Frame_3762_Ptr->Data+6,0x02,GDW3762_App_Ptr->Data[0],(DL645_FRAME *)(GDW3762_App_Ptr->Data+2));
+                if(Info_ptr->bps==331)Frame_GDW3762CovPLC270_3D5(Frame_3762_Ptr->Data+6,0x02,GDW3762_App_Ptr->Data[0],(P_DL645_FRAME)(GDW3762_App_Ptr->Data+2));
              else
             PLC421_GDW3762_CopyMeter(Frame_3762_Ptr->Data+6,Info_ptr->Lever,0x02,GDW3762_App_Ptr->Data[0],GDW3762_App_Ptr->Data[1],GDW3762_App_Ptr->Data+2,Info_ptr->Channel,Info_ptr->bps,Info_ptr->Resp_cnt,0);
             }
@@ -317,7 +317,7 @@ u16 GDW3762_Comm_Sub(u8 *buff)
               memcpy(buff+100,PLC_Main_Addr,6);
               memcpy(buff+106,GDW3762_App_Ptr->Data+3,6);
               if(Info_ptr->bps==330)
-              Frame_GDW3762CovPLC270_3D5(PLC_Main_Addr,0x13,GDW3762_App_Ptr->Data[0],(DL645_FRAME *)(GDW3762_App_Ptr->Data+2));
+              Frame_GDW3762CovPLC270_3D5(PLC_Main_Addr,0x13,GDW3762_App_Ptr->Data[0],(P_DL645_FRAME)(GDW3762_App_Ptr->Data+2));
               else
               PLC421_GDW3762_SYN(buff+100,0x13,GDW3762_App_Ptr->Data[0],GDW3762_App_Ptr->Data[1],GDW3762_App_Ptr->Data+2,Info_ptr->Channel,Info_ptr->bps);
               memset(Frame_3762_Ptr->Data,0,6);
@@ -375,7 +375,7 @@ u16 GDW3762_Comm_Sub(u8 *buff)
                 if(Info_ptr->bps==331)
                 {
                     _sys_plc_reset();
-                    Frame_GDW3762CovPLC270_3D5(Frame_3762_Ptr->Data+6,0x13,GDW3762_App_Ptr->Data[0],(DL645_FRAME *)(GDW3762_App_Ptr->Data+3));
+                    Frame_GDW3762CovPLC270_3D5(Frame_3762_Ptr->Data+6,0x13,GDW3762_App_Ptr->Data[0],(P_DL645_FRAME)(GDW3762_App_Ptr->Data+3));
                 }
              else
                 if(Info_ptr->bps==329)

@@ -40,7 +40,7 @@ typedef struct
 	u8 Protocol; //协议
 	u8 Ctrl; //控制码
 	u8 ID_Length; //标识码长度
-} DL645_FRAME_STAT;
+} DL645_FRAME_STAT, *P_DL645_FRAME_STAT;
 
 #pragma pack(push)
 #pragma pack(1)
@@ -52,12 +52,12 @@ typedef struct
     u8 Ctrl;
     u8 Len;
     u8 Data[DL645_FRAME_MAX_DATA_LEN];
-} DL645_FRAME;
+} DL645_FRAME, *P_DL645_FRAME;
 #pragma pack(pop)
 
-u16 Create_DL645_Frame(u8 *Addr, u8 Ctrl, u8 Len, DL645_FRAME *DL645_Frame);
-u16 Create_DL645_Relay_Frame(u8 *Relay_Addr, u8 Level, u8 *Addr, u8 Ctrl, u8 Len, u8 *Data, u8 *Send_Buf);
-u16 Analysis_DL645_Frame(u8 *Addr, u8 *Buf, DL645_FRAME_STAT *P_DL645_Frame_Stat);
+u16 Create_DL645_Frame(u8 *Addr, u8 Ctrl, u8 Len, P_DL645_FRAME P_DL645_Frame);
+u16 Create_DL645_Relay_Frame(u8 *Relay_Addr, u8 Level, u8 *Addr, u8 Ctrl, u8 Len, u8 *Data, P_DL645_FRAME P_DL645_Frame);
+u16 Analysis_DL645_Frame(u8 *Addr, u8 *Buf, P_DL645_FRAME_STAT P_DL645_Frame_Stat);
 
 
 #ifdef __cplusplus

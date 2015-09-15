@@ -841,7 +841,7 @@ void  App_TaskProto (void *p_arg)
                     len = (DL645_1997 == g_rom_para.protocol) ? (DL645_97_DATA_ITEM_LEN) : (DL645_07_DATA_ITEM_LEN);
 
                     g_proto_para.send_len = Create_DL645_Relay_Frame((u8 *)g_gui_para.relayAddr, g_sys_ctrl.sysAddrLevel, g_gui_para.dstAddr,
-                                                                   g_gui_para.ctrlCode, len, g_gui_para.dataItem, (u8 *)&g_proto_para.dl645_frame_send);
+                                                                      g_gui_para.ctrlCode, len, g_gui_para.dataItem, &g_proto_para.dl645_frame_send);
 
                     memcpy(&g_proto_para.send_buf[DL645_INDEX], &g_proto_para.dl645_frame_send, g_proto_para.send_len);
                     

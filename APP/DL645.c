@@ -65,56 +65,54 @@ void CS_Pack(u8 *Buf)
     Buf[len+1]=0x16;
 }
 
-u16 Create_DL645_Frame(u8 *Addr, u8 Ctrl, u8 Len, DL645_FRAME *DL645_Frame)
+u16 Create_DL645_Frame(u8 *Addr, u8 Ctrl, u8 Len, P_DL645_FRAME P_DL645_Frame)
 {
-    DL645_Frame->Start1=0x68;
-    memcpy(DL645_Frame->Addr,Addr,6);
-    DL645_Frame->Start2=0x68;
-    DL645_Frame->Ctrl=Ctrl;
-    DL645_Frame->Len=Len;
-    CS_Pack(&DL645_Frame->Start1);
+    P_DL645_Frame->Start1=0x68;
+    memcpy(P_DL645_Frame->Addr,Addr,6);
+    P_DL645_Frame->Start2=0x68;
+    P_DL645_Frame->Ctrl=Ctrl;
+    P_DL645_Frame->Len=Len;
+    CS_Pack(&P_DL645_Frame->Start1);
 
     return (Len+12);
 }
 
-u16 Create_DL645_Relay_Frame(u8 *Relay_Addr, u8 Level, u8 *Addr, u8 Ctrl, u8 Len, u8 *Data, u8 *Send_Buf)
+u16 Create_DL645_Relay_Frame(u8 *Relay_Addr, u8 Level, u8 *Addr, u8 Ctrl, u8 Len, u8 *Data, P_DL645_FRAME P_DL645_Frame)
 {
-	DL645_FRAME *DL645_Frame;
 	u8 index, i;
 	
-	DL645_Frame=(DL645_FRAME *)Send_Buf;
-	DL645_Frame->Ctrl=Ctrl;
+	P_DL645_Frame->Ctrl=Ctrl;
 	index=0;
     
 	if(Level)
 	{
 		for(i=0;i<(Level);i++)
 		{
-			memcpy(DL645_Frame->Data+index,Relay_Addr+index+6,6);
+			memcpy(P_DL645_Frame->Data+index,Relay_Addr+index+6,6);
 			index+=6;
-			DL645_Frame->Ctrl+=0x20;
+			P_DL645_Frame->Ctrl+=0x20;
 		}
 
-		memcpy(DL645_Frame->Addr,Relay_Addr,6);
+		memcpy(P_DL645_Frame->Addr,Relay_Addr,6);
 	}
 	else
 	{
-		memcpy(DL645_Frame->Addr,Addr,6);
+		memcpy(P_DL645_Frame->Addr,Addr,6);
 	}
     
-	memcpy(DL645_Frame->Data+index,Data,Len);
+	memcpy(P_DL645_Frame->Data+index,Data,Len);
 	index+=Len;
-	DL645_Frame->Start1=0x68;
-	DL645_Frame->Start2=0x68;
-	DL645_Frame->Len=index;
-    CS_Pack(&DL645_Frame->Start1);
+	P_DL645_Frame->Start1=0x68;
+	P_DL645_Frame->Start2=0x68;
+	P_DL645_Frame->Len=index;
+    CS_Pack(&P_DL645_Frame->Start1);
     
 	return (index+12);	
 }
 
-u16 Analysis_DL645_Frame(u8 *Addr, u8 *Buf, DL645_FRAME_STAT *P_DL645_Frame_Stat)
+u16 Analysis_DL645_Frame(u8 *Addr, u8 *Buf, P_DL645_FRAME_STAT P_DL645_Frame_Stat)
 {
-	DL645_FRAME *DL645_Frame;
+	P_DL645_FRAME P_DL645_Frame;
 	u16 i;
     
 	P_DL645_Frame_Stat->Protocol=DL645_NONE;
@@ -128,9 +126,9 @@ u16 Analysis_DL645_Frame(u8 *Addr, u8 *Buf, DL645_FRAME_STAT *P_DL645_Frame_Stat
     
 	P_DL645_Frame_Stat->Status=1;
 	
-	DL645_Frame=(DL645_FRAME *)(Buf+i);
+	P_DL645_Frame=(P_DL645_FRAME)(Buf+i);
     
-	if(!memcmp(Addr,DL645_Frame->Addr,6))
+	if(!memcmp(Addr,P_DL645_Frame->Addr,6))
 	{
 		P_DL645_Frame_Stat->Status=2;
 	}
@@ -139,21 +137,21 @@ u16 Analysis_DL645_Frame(u8 *Addr, u8 *Buf, DL645_FRAME_STAT *P_DL645_Frame_Stat
 		P_DL645_Frame_Stat->Status=3;
     }
     
-	Frame_Sub_33H(DL645_Frame->Data,DL645_Frame->Len);
+	Frame_Sub_33H(P_DL645_Frame->Data,P_DL645_Frame->Len);
     
-	P_DL645_Frame_Stat->Ctrl = DL645_Frame->Ctrl;
+	P_DL645_Frame_Stat->Ctrl = P_DL645_Frame->Ctrl;
     
-	if((DL645_Frame->Ctrl&0x10)||(DL645_Frame->Ctrl==0x83))
+	if((P_DL645_Frame->Ctrl&0x10)||(P_DL645_Frame->Ctrl==0x83))
 	{
 		P_DL645_Frame_Stat->Protocol=DL645_2007;
         
-		if(DL645_Frame->Ctrl==0x91) P_DL645_Frame_Stat->ID_Length=4;
+		if(P_DL645_Frame->Ctrl==0x91) P_DL645_Frame_Stat->ID_Length=4;
 	}
 	else
 	{
 		P_DL645_Frame_Stat->Protocol=DL645_1997;
         
-		if(DL645_Frame->Ctrl==0x81) P_DL645_Frame_Stat->ID_Length=2;
+		if(P_DL645_Frame->Ctrl==0x81) P_DL645_Frame_Stat->ID_Length=2;
 	}     
 
     return (DL645_FRAME_OK);
